@@ -1,56 +1,64 @@
 import { GameObject } from "../../interfaces/game-object.js";
 
 export class Target implements GameObject {
-    private canvas: HTMLCanvasElement;
-    private radius: number;
-    private xPos: number;
-    private yPos: number;
-    private scale: number;
-    private opacity: number;
-    private fadeInDuration: number;
+  private canvas: HTMLCanvasElement;
+  private radius: number;
+  private xPos: number;
+  private yPos: number;
+  private scale: number;
+  private opacity: number;
+  private fadeInDuration: number;
 
-    constructor(canvas: HTMLCanvasElement) {
-        this.canvas = canvas;
-        this.radius = 10; // Radius of the circle
-        this.scale = 0; // Initial scale
-        this.opacity = 0; // Initial opacity
-        this.fadeInDuration = 1000; // Fade in duration in milliseconds
+  constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+    this.radius = 10; // Radius of the circle
+    this.scale = 0; // Initial scale
+    this.opacity = 0; // Initial opacity
+    this.fadeInDuration = 1000; // Fade in duration in milliseconds
 
-        // Set random position for the circle
-        this.xPos = Math.random() * (this.canvas.width - this.radius * 2) + this.radius;
-        this.yPos = Math.random() * (this.canvas.height - this.radius * 2) + this.radius;
+    // Set random position for the circle
+    this.xPos = Math.random() * (this.canvas.width - this.radius * 2) +
+      this.radius;
+    this.yPos = Math.random() * (this.canvas.height - this.radius * 2) +
+      this.radius;
+  }
+
+  update(deltaTimeStamp: number): void {
+    // Implement scaling animation
+    if (this.scale < 1) {
+      // Ease-in scaling
+      this.scale += deltaTimeStamp / this.fadeInDuration;
+      this.scale = Math.min(this.scale, 1);
     }
 
-    update(deltaTimeStamp: number): void {
-        // Implement scaling animation
-        if (this.scale < 1) {
-            // Ease-in scaling
-            this.scale += deltaTimeStamp / this.fadeInDuration;
-            this.scale = Math.min(this.scale, 1);
-        }
-
-        // Implement fade-in animation
-        if (this.opacity < 1) {
-            // Ease-in opacity
-            this.opacity += deltaTimeStamp / this.fadeInDuration;
-            this.opacity = Math.min(this.opacity, 1);
-        }
+    // Implement fade-in animation
+    if (this.opacity < 1) {
+      // Ease-in opacity
+      this.opacity += deltaTimeStamp / this.fadeInDuration;
+      this.opacity = Math.min(this.opacity, 1);
     }
+  }
 
-    render(context: CanvasRenderingContext2D): void {
-        // Save the context state
-        context.save();
+  render(context: CanvasRenderingContext2D): void {
+    // Save the context state
+    context.save();
 
-        // Set the circle color to yellow with the specified opacity
-        context.fillStyle = `rgba(255, 255, 0, ${this.opacity})`;
+    // Set the circle color to yellow with the specified opacity
+    context.fillStyle = `rgba(255, 165, 0, ${this.opacity})`;
 
-        // Scale and draw the circle
-        context.beginPath();
-        context.arc(this.xPos, this.yPos, Math.abs(this.radius) * this.scale, 0, Math.PI * 2);
-        context.fill();
-        context.closePath();
+    // Scale and draw the circle
+    context.beginPath();
+    context.arc(
+      this.xPos,
+      this.yPos,
+      Math.abs(this.radius) * this.scale,
+      0,
+      Math.PI * 2,
+    );
+    context.fill();
+    context.closePath();
 
-        // Restore the context state
-        context.restore();
-    }
+    // Restore the context state
+    context.restore();
+  }
 }

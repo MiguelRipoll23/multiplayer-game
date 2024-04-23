@@ -19,8 +19,11 @@ export class LocalCar extends Car {
     handleControls() {
         if (!this.joystick || !this.gearStick)
             return;
+        if (this.gearStick.isActive()) {
+            return;
+        }
         const currentGear = this.gearStick.getCurrentGear();
-        if (this.joystick.isPressed) {
+        if (this.joystick.isActive()) {
             if (currentGear === "F" && this.speed < this.topSpeed) {
                 this.speed += this.acceleration;
             }
@@ -29,6 +32,6 @@ export class LocalCar extends Car {
             }
         }
         this.angle += this.handling * (this.speed / this.topSpeed) *
-            this.joystick.controlX;
+            this.joystick.getControlX();
     }
 }

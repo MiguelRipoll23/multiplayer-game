@@ -1,5 +1,6 @@
 export class GearStick {
     canvas;
+    active = false;
     currentGear = "F";
     x = 25;
     size = 65; // Adjust size as needed
@@ -10,7 +11,7 @@ export class GearStick {
     constructor(canvas) {
         this.canvas = canvas;
         this.y = this.canvas.height - (this.size + this.yOffset); // Position the gear stick 50px from the bottom
-        document.addEventListener("click", this.switchGear.bind(this));
+        this.addEventListeners();
     }
     y;
     update(deltaTimeStamp) {
@@ -20,24 +21,49 @@ export class GearStick {
         this.drawSquare(context);
         this.drawGearLetter(context);
     }
+    isActive() {
+        return this.active;
+    }
     getCurrentGear() {
         return this.currentGear;
     }
-    // Method for gracefully switching gears
-    switchGear(event) {
+    addEventListeners() {
+        this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this));
+        this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this));
+        this.canvas.addEventListener("click", this.handleClick.bind(this));
+    }
+    handleClick(event) {
         if (!event.target)
             return;
         const rect = event.target.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
-        // Check if the click occurred within the boundaries of the gear stick
-        if (mouseX >= this.x &&
-            mouseX <= this.x + this.size &&
-            mouseY >= this.y &&
-            mouseY <= this.y + this.size) {
-            // Effortlessly toggle between forward (F) and reverse (R)
-            this.currentGear = this.currentGear === "F" ? "R" : "F";
+        if (this.isWithinGearStick(mouseX, mouseY)) {
+            this.switchGear();
         }
+    }
+    handleTouchStart(event) {
+        const touch = event.touches[0];
+        if (!touch)
+            return;
+        const rect = this.canvas.getBoundingClientRect();
+        const touchX = touch.clientX - rect.left;
+        const touchY = touch.clientY - rect.top;
+        if (this.isWithinGearStick(touchX, touchY)) {
+            this.active = true;
+        }
+    }
+    handleTouchEnd(event) {
+        this.active = false;
+    }
+    isWithinGearStick(x, y) {
+        return (x >= this.x &&
+            x <= this.x + this.size &&
+            y >= this.y &&
+            y <= this.y + this.size);
+    }
+    switchGear() {
+        this.currentGear = this.currentGear === "F" ? "R" : "F";
     }
     drawSquare(context) {
         // Draw the filled rounded square

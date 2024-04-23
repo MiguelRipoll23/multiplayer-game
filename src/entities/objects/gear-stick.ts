@@ -1,7 +1,9 @@
 import { GameObject } from "../../interfaces/game-object.js";
 
 export class GearStick implements GameObject {
+  private active: boolean = false;
   private currentGear = "F";
+
   private readonly x = 25;
   private readonly size = 65; // Adjust size as needed
   private readonly cornerRadius = 12; // Adjust corner radius as needed
@@ -12,7 +14,7 @@ export class GearStick implements GameObject {
   constructor(private readonly canvas: HTMLCanvasElement) {
     this.y = this.canvas.height - (this.size + this.yOffset); // Position the gear stick 50px from the bottom
 
-    document.addEventListener("click", this.switchGear.bind(this));
+    this.addEventListeners();
   }
 
   private y: number;
@@ -26,28 +28,63 @@ export class GearStick implements GameObject {
     this.drawGearLetter(context);
   }
 
+  public isActive(): boolean {
+    return this.active;
+  }
+
   public getCurrentGear(): string {
     return this.currentGear;
   }
 
-  // Method for gracefully switching gears
-  private switchGear(event: MouseEvent): void {
+  private addEventListeners(): void {
+    this.canvas.addEventListener(
+      "touchstart",
+      this.handleTouchStart.bind(this),
+    );
+    this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this));
+    this.canvas.addEventListener("click", this.handleClick.bind(this));
+  }
+
+  private handleClick(event: MouseEvent): void {
     if (!event.target) return;
 
     const rect = (event.target as Element).getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    // Check if the click occurred within the boundaries of the gear stick
-    if (
-      mouseX >= this.x &&
-      mouseX <= this.x + this.size &&
-      mouseY >= this.y &&
-      mouseY <= this.y + this.size
-    ) {
-      // Effortlessly toggle between forward (F) and reverse (R)
-      this.currentGear = this.currentGear === "F" ? "R" : "F";
+    if (this.isWithinGearStick(mouseX, mouseY)) {
+      this.switchGear();
     }
+  }
+
+  private handleTouchStart(event: TouchEvent): void {
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    const rect = this.canvas.getBoundingClientRect();
+    const touchX = touch.clientX - rect.left;
+    const touchY = touch.clientY - rect.top;
+
+    if (this.isWithinGearStick(touchX, touchY)) {
+      this.active = true;
+    }
+  }
+
+  private handleTouchEnd(event: TouchEvent): void {
+    this.active = false;
+  }
+
+  private isWithinGearStick(x: number, y: number): boolean {
+    return (
+      x >= this.x &&
+      x <= this.x + this.size &&
+      y >= this.y &&
+      y <= this.y + this.size
+    );
+  }
+
+  private switchGear(): void {
+    this.currentGear = this.currentGear === "F" ? "R" : "F";
   }
 
   private drawSquare(context: CanvasRenderingContext2D): void {

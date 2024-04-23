@@ -13,8 +13,10 @@ export class Target {
         this.opacity = 0; // Initial opacity
         this.fadeInDuration = 1000; // Fade in duration in milliseconds
         // Set random position for the circle
-        this.xPos = Math.random() * (this.canvas.width - this.radius * 2) + this.radius;
-        this.yPos = Math.random() * (this.canvas.height - this.radius * 2) + this.radius;
+        this.xPos = Math.random() * (this.canvas.width - this.radius * 2) +
+            this.radius;
+        this.yPos = Math.random() * (this.canvas.height - this.radius * 2) +
+            this.radius;
     }
     update(deltaTimeStamp) {
         // Implement scaling animation
@@ -34,7 +36,7 @@ export class Target {
         // Save the context state
         context.save();
         // Set the circle color to yellow with the specified opacity
-        context.fillStyle = `rgba(255, 255, 0, ${this.opacity})`;
+        context.fillStyle = `rgba(255, 165, 0, ${this.opacity})`;
         // Scale and draw the circle
         context.beginPath();
         context.arc(this.xPos, this.yPos, Math.abs(this.radius) * this.scale, 0, Math.PI * 2);

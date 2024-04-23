@@ -1,17 +1,13 @@
 import { GameObject } from "../../interfaces/game-object.js";
-
-interface TouchPoint {
-  x: number;
-  y: number;
-}
+import { TouchPoint } from "../../interfaces/touch-point.js";
 
 export class Joystick implements GameObject {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
 
-  public isPressed: boolean = false;
-  public controlX: number = 0;
-  public controlY: number = 0;
+  private active: boolean = false;
+  private controlX: number = 0;
+  private controlY: number = 0;
 
   private x: number = 0;
   private y: number = 0;
@@ -37,61 +33,113 @@ export class Joystick implements GameObject {
 
   public update(deltaTimeStamp: number) {
     if (this.usingTouch) {
-      const distance = Math.sqrt(
-        Math.pow(this.touchPoint.x - this.initialTouch.x, 2) +
-          Math.pow(this.touchPoint.y - this.initialTouch.y, 2),
-      );
-
-      if (distance <= this.maxDistance) {
-        this.x = this.touchPoint.x;
-        this.y = this.touchPoint.y;
-      } else {
-        const angle = Math.atan2(
-          this.touchPoint.y - this.initialTouch.y,
-          this.touchPoint.x - this.initialTouch.x,
-        );
-        const newX = this.initialTouch.x + this.maxDistance * Math.cos(angle);
-        const newY = this.initialTouch.y + this.maxDistance * Math.sin(angle);
-        this.x = newX;
-        this.y = newY;
-      }
-
-      const relativeX = this.x - this.initialTouch.x;
-      const relativeY = this.y - this.initialTouch.y;
-
-      this.controlX = relativeX / this.maxDistance;
-      this.controlY = relativeY / this.maxDistance;
+      this.updateJoystickPosition();
     } else {
       this.resetJoystick();
     }
   }
 
+  private updateJoystickPosition() {
+    const distance = this.calculateDistance();
+    if (distance <= this.maxDistance) {
+      this.x = this.touchPoint.x;
+      this.y = this.touchPoint.y;
+    } else {
+      this.adjustPosition(distance);
+    }
+
+    this.calculateControlValues();
+  }
+
+  private calculateDistance(): number {
+    return Math.sqrt(
+      Math.pow(this.touchPoint.x - this.initialTouch.x, 2) +
+        Math.pow(this.touchPoint.y - this.initialTouch.y, 2),
+    );
+  }
+
+  private adjustPosition(distance: number) {
+    const angle = Math.atan2(
+      this.touchPoint.y - this.initialTouch.y,
+      this.touchPoint.x - this.initialTouch.x,
+    );
+    const newX = this.initialTouch.x + this.maxDistance * Math.cos(angle);
+    const newY = this.initialTouch.y + this.maxDistance * Math.sin(angle);
+    this.x = newX;
+    this.y = newY;
+  }
+
+  private calculateControlValues() {
+    const relativeX = this.x - this.initialTouch.x;
+    const relativeY = this.y - this.initialTouch.y;
+
+    this.controlX = relativeX / this.maxDistance;
+    this.controlY = relativeY / this.maxDistance;
+  }
+
   public render() {
     if (this.usingTouch) {
-      this.context.beginPath();
-      this.context.arc(
-        this.x,
-        this.y,
-        this.radius,
-        0,
-        Math.PI * 2,
-      );
-      const gradient = this.context.createRadialGradient(
-        this.x,
-        this.y,
-        0,
-        this.x,
-        this.y,
-        this.radius,
-      );
-      gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
-      gradient.addColorStop(1, "rgba(200, 200, 200, 0.8)");
-      this.context.fillStyle = gradient;
-      this.context.shadowColor = "rgba(0, 0, 0, 0.3)";
-      this.context.shadowBlur = 10;
-      this.context.fill();
-      this.context.closePath();
+      this.drawJoystick();
     }
+  }
+
+  public isActive() {
+    return this.active;
+  }
+
+  public getControlX() {
+    return this.controlX;
+  }
+
+  public getControlY() {
+    return this.controlY;
+  }
+
+  private drawJoystick() {
+    this.drawInitialTouchCircleBorder();
+    this.drawJoystickCircle();
+  }
+
+  private drawInitialTouchCircleBorder() {
+    this.context.beginPath();
+    this.context.arc(
+      this.initialTouch.x,
+      this.initialTouch.y,
+      this.radius,
+      0,
+      Math.PI * 2,
+    );
+    this.context.strokeStyle = "rgba(255, 255, 255, 0.8)";
+    this.context.lineWidth = 2; // Adjust line width as needed
+    this.context.stroke();
+    this.context.closePath();
+  }
+
+  private drawJoystickCircle() {
+    this.context.beginPath();
+    this.context.arc(
+      this.x,
+      this.y,
+      this.radius,
+      0,
+      Math.PI * 2,
+    );
+    const gradient = this.context.createRadialGradient(
+      this.x,
+      this.y,
+      0,
+      this.x,
+      this.y,
+      this.radius,
+    );
+    gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
+    gradient.addColorStop(1, "rgba(200, 200, 200, 0.8)");
+    this.context.fillStyle = gradient;
+    this.context.shadowColor = "rgba(0, 0, 0, 0.3)";
+    this.context.shadowBlur = 10;
+    this.context.fill();
+    this.context.closePath();
+    this.context.restore();
   }
 
   private addTouchEventListeners() {
@@ -105,7 +153,7 @@ export class Joystick implements GameObject {
   }
 
   private handleTouchStart(event: TouchEvent) {
-    this.isPressed = true;
+    this.active = true;
     this.usingTouch = true;
 
     const touch = event.touches[0];
@@ -132,7 +180,7 @@ export class Joystick implements GameObject {
   }
 
   private resetJoystick() {
-    this.isPressed = false;
+    this.active = false;
     this.usingTouch = false;
     this.touchPoint = { x: 0, y: 0 };
     this.controlX = 0;

@@ -62,7 +62,6 @@ export class Joystick {
         this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this));
     }
     handleTouchStart(event) {
-        event.preventDefault();
         this.isPressed = true;
         this.usingTouch = true;
         const touch = event.touches[0];
@@ -71,13 +70,11 @@ export class Joystick {
         this.touchPoint = this.initialTouch;
     }
     handleTouchMove(event) {
-        event.preventDefault();
         const touch = event.touches[0];
         const rect = this.canvas.getBoundingClientRect();
         this.touchPoint = this.getTouchPoint(touch, rect);
     }
     handleTouchEnd(event) {
-        event.preventDefault();
         this.resetJoystick();
     }
     getTouchPoint(touch, rect) {

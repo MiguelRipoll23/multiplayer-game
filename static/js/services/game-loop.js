@@ -63,8 +63,11 @@ export class GameLoop {
         this.gameState.objects.ui.forEach((object) => object.update(deltaTimeStamp));
     }
     render() {
+        // fill black
+        this.context.fillStyle = "black";
         // Clear the entire canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillStyle = "black";
         this.gameState.objects.scene.forEach((object) => object.render(this.context));
         this.gameState.objects.ui.forEach((object) => object.render(this.context));
     }

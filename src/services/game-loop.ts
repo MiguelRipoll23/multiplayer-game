@@ -97,8 +97,12 @@ export class GameLoop {
   }
 
   private render(): void {
+    // fill black
+    this.context.fillStyle = "black";
+
     // Clear the entire canvas
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillStyle = "black";
 
     this.gameState.objects.scene.forEach((object: GameObject) =>
       object.render(this.context)

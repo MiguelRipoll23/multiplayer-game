@@ -106,7 +106,7 @@ export class Joystick implements GameObject {
       0,
       Math.PI * 2,
     );
-    context.strokeStyle = "rgba(255, 255, 255, 0.8)";
+    context.strokeStyle = "rgba(0, 0, 0, 0.1)";
     context.lineWidth = 2; // Adjust line width as needed
     context.stroke();
     context.closePath();

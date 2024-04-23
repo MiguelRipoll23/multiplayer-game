@@ -14,7 +14,7 @@ export class Car implements GameObject {
   private vx: number = 0;
   private vy: number = 0;
   private readonly friction: number = 0.1;
-  private readonly bounceMultiplier: number = 0.8;
+  private readonly bounceMultiplier: number = 1.5;
   private readonly width: number = 50;
   private readonly height: number = 50;
   private carImage: HTMLImageElement | null = null;

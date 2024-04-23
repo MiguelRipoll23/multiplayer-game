@@ -10,7 +10,7 @@ export class Car {
     vx = 0;
     vy = 0;
     friction = 0.1;
-    bounceMultiplier = 0.8;
+    bounceMultiplier = 1.5;
     width = 50;
     height = 50;
     carImage = null;

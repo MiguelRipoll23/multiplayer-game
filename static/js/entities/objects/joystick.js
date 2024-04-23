@@ -10,7 +10,7 @@ export class Joystick {
     initialTouch = { x: 0, y: 0 };
     touchPoint = { x: 0, y: 0 };
     usingTouch = false;
-    constructor(canvas, radius = 40, maxDistance = 25) {
+    constructor(canvas, radius = 40, maxDistance = 30) {
         this.canvas = canvas;
         this.radius = radius;
         this.maxDistance = maxDistance;

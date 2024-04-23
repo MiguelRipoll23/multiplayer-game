@@ -43,7 +43,7 @@ export class Car {
         this.carImage.onload = () => {
             this.imageLoaded = true;
         };
-        this.carImage.src = "/images/car-local.png";
+        this.carImage.src = "./images/car-local.png";
     }
     wrapAngle() {
         this.angle = (this.angle + 360) % 360;

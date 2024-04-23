@@ -59,7 +59,7 @@ export class Car implements GameObject {
     this.carImage.onload = () => {
       this.imageLoaded = true;
     };
-    this.carImage.src = "/images/car-local.png";
+    this.carImage.src = "./images/car-local.png";
   }
 
   private wrapAngle(): void {

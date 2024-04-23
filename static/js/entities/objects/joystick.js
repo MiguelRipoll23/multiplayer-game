@@ -28,7 +28,6 @@ export class Joystick {
         if (this.usingTouch) {
             this.drawJoystick(context);
         }
-        context.restore();
     }
     updateJoystickPosition() {
         const distance = this.calculateDistance();
@@ -86,9 +85,14 @@ export class Joystick {
         gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
         gradient.addColorStop(1, "rgba(200, 200, 200, 0.8)");
         context.fillStyle = gradient;
+        // Save the current state
+        context.save();
+        // Apply shadow settings only to the joystick
         context.shadowColor = "rgba(0, 0, 0, 0.3)";
         context.shadowBlur = 10;
         context.fill();
+        // Restore the previous state
+        context.restore();
         context.closePath();
     }
     addTouchEventListeners() {

@@ -105,6 +105,8 @@ export class Joystick implements GameObject {
   }
 
   private handleTouchStart(event: TouchEvent) {
+    event.preventDefault();
+
     this.isPressed = true;
     this.usingTouch = true;
 
@@ -123,6 +125,8 @@ export class Joystick implements GameObject {
   }
 
   private handleTouchEnd(event: TouchEvent) {
+    event.preventDefault();
+    
     this.resetJoystick();
   }
 

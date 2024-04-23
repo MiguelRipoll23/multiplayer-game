@@ -19,7 +19,7 @@ export class Joystick implements GameObject {
   constructor(
     canvas: HTMLCanvasElement,
     radius: number = 40,
-    maxDistance: number = 40,
+    maxDistance: number = 25,
   ) {
     this.canvas = canvas;
     this.radius = radius;

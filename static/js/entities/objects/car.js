@@ -1,5 +1,5 @@
 export class Car {
-    topSpeed = 10;
+    topSpeed = 6;
     speed = 0;
     acceleration = 0.4;
     angle;

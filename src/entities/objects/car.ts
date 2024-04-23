@@ -1,9 +1,7 @@
 import { GameObject } from "../../interfaces/game-object.js";
-import { GearStick } from "./gear-stick.js";
-import { Joystick } from "./joystick.js";
 
 export class Car implements GameObject {
-  protected readonly topSpeed: number = 10;
+  protected readonly topSpeed: number = 6;
   protected speed: number = 0;
   protected readonly acceleration: number = 0.4;
 

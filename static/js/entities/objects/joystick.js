@@ -1,6 +1,5 @@
 export class Joystick {
     canvas;
-    context;
     active = false;
     controlX = 0;
     controlY = 0;
@@ -11,9 +10,8 @@ export class Joystick {
     initialTouch = { x: 0, y: 0 };
     touchPoint = { x: 0, y: 0 };
     usingTouch = false;
-    constructor(canvas, context, radius = 40, maxDistance = 60) {
+    constructor(canvas, radius = 40, maxDistance = 40) {
         this.canvas = canvas;
-        this.context = context;
         this.radius = radius;
         this.maxDistance = maxDistance;
         this.addTouchEventListeners();
@@ -25,6 +23,12 @@ export class Joystick {
         else {
             this.resetJoystick();
         }
+    }
+    render(context) {
+        if (this.usingTouch) {
+            this.drawJoystick(context);
+        }
+        context.restore();
     }
     updateJoystickPosition() {
         const distance = this.calculateDistance();
@@ -54,11 +58,6 @@ export class Joystick {
         this.controlX = relativeX / this.maxDistance;
         this.controlY = relativeY / this.maxDistance;
     }
-    render() {
-        if (this.usingTouch) {
-            this.drawJoystick();
-        }
-    }
     isActive() {
         return this.active;
     }
@@ -68,30 +67,29 @@ export class Joystick {
     getControlY() {
         return this.controlY;
     }
-    drawJoystick() {
-        this.drawInitialTouchCircleBorder();
-        this.drawJoystickCircle();
+    drawJoystick(context) {
+        this.drawInitialTouchCircleBorder(context);
+        this.drawJoystickCircle(context);
     }
-    drawInitialTouchCircleBorder() {
-        this.context.beginPath();
-        this.context.arc(this.initialTouch.x, this.initialTouch.y, this.radius, 0, Math.PI * 2);
-        this.context.strokeStyle = "rgba(255, 255, 255, 0.8)";
-        this.context.lineWidth = 2; // Adjust line width as needed
-        this.context.stroke();
-        this.context.closePath();
+    drawInitialTouchCircleBorder(context) {
+        context.beginPath();
+        context.arc(this.initialTouch.x, this.initialTouch.y, this.radius, 0, Math.PI * 2);
+        context.strokeStyle = "rgba(255, 255, 255, 0.8)";
+        context.lineWidth = 2; // Adjust line width as needed
+        context.stroke();
+        context.closePath();
     }
-    drawJoystickCircle() {
-        this.context.beginPath();
-        this.context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        const gradient = this.context.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+    drawJoystickCircle(context) {
+        context.beginPath();
+        context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        const gradient = context.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
         gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
         gradient.addColorStop(1, "rgba(200, 200, 200, 0.8)");
-        this.context.fillStyle = gradient;
-        this.context.shadowColor = "rgba(0, 0, 0, 0.3)";
-        this.context.shadowBlur = 10;
-        this.context.fill();
-        this.context.closePath();
-        this.context.restore();
+        context.fillStyle = gradient;
+        context.shadowColor = "rgba(0, 0, 0, 0.3)";
+        context.shadowBlur = 10;
+        context.fill();
+        context.closePath();
     }
     addTouchEventListeners() {
         this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this));

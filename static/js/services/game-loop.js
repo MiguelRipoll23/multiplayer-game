@@ -27,7 +27,7 @@ export class GameLoop {
         this.addResizeEventListener();
         requestAnimationFrame(this.loop.bind(this));
         const gearStick = new GearStick(this.canvas);
-        const joystick = new Joystick(this.canvas, this.context);
+        const joystick = new Joystick(this.canvas);
         const localCar = new LocalCar((this.canvas.width / 2) - 25, (this.canvas.height / 2) - 25, 90, this.canvas);
         localCar.setControls(joystick, gearStick);
         this.gameState.objects.ui.push(gearStick);

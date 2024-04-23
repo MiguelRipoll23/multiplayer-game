@@ -38,7 +38,7 @@ export class GameLoop {
     requestAnimationFrame(this.loop.bind(this));
 
     const gearStick = new GearStick(this.canvas);
-    const joystick = new Joystick(this.canvas, this.context);
+    const joystick = new Joystick(this.canvas);
 
     const localCar = new LocalCar(
       (this.canvas.width / 2) - 25,
@@ -116,7 +116,7 @@ export class GameLoop {
         this.gameState.objects.scene.splice(index, 1);
       }
     }
-  
+
     this.target = new Target(this.canvas);
     this.gameState.objects.scene.push(this.target);
   }

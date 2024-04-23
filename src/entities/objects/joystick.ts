@@ -3,7 +3,6 @@ import { TouchPoint } from "../../interfaces/touch-point.js";
 
 export class Joystick implements GameObject {
   private canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D;
 
   private active: boolean = false;
   private controlX: number = 0;
@@ -19,12 +18,10 @@ export class Joystick implements GameObject {
 
   constructor(
     canvas: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
     radius: number = 40,
-    maxDistance: number = 60,
+    maxDistance: number = 40,
   ) {
     this.canvas = canvas;
-    this.context = context;
     this.radius = radius;
     this.maxDistance = maxDistance;
 
@@ -37,6 +34,14 @@ export class Joystick implements GameObject {
     } else {
       this.resetJoystick();
     }
+  }
+
+  public render(context: CanvasRenderingContext2D) {
+    if (this.usingTouch) {
+      this.drawJoystick(context);
+    }
+
+    context.restore();
   }
 
   private updateJoystickPosition() {
@@ -77,12 +82,6 @@ export class Joystick implements GameObject {
     this.controlY = relativeY / this.maxDistance;
   }
 
-  public render() {
-    if (this.usingTouch) {
-      this.drawJoystick();
-    }
-  }
-
   public isActive() {
     return this.active;
   }
@@ -95,36 +94,36 @@ export class Joystick implements GameObject {
     return this.controlY;
   }
 
-  private drawJoystick() {
-    this.drawInitialTouchCircleBorder();
-    this.drawJoystickCircle();
+  private drawJoystick(context: CanvasRenderingContext2D) {
+    this.drawInitialTouchCircleBorder(context);
+    this.drawJoystickCircle(context);
   }
 
-  private drawInitialTouchCircleBorder() {
-    this.context.beginPath();
-    this.context.arc(
+  private drawInitialTouchCircleBorder(context: CanvasRenderingContext2D) {
+    context.beginPath();
+    context.arc(
       this.initialTouch.x,
       this.initialTouch.y,
       this.radius,
       0,
       Math.PI * 2,
     );
-    this.context.strokeStyle = "rgba(255, 255, 255, 0.8)";
-    this.context.lineWidth = 2; // Adjust line width as needed
-    this.context.stroke();
-    this.context.closePath();
+    context.strokeStyle = "rgba(255, 255, 255, 0.8)";
+    context.lineWidth = 2; // Adjust line width as needed
+    context.stroke();
+    context.closePath();
   }
 
-  private drawJoystickCircle() {
-    this.context.beginPath();
-    this.context.arc(
+  private drawJoystickCircle(context: CanvasRenderingContext2D) {
+    context.beginPath();
+    context.arc(
       this.x,
       this.y,
       this.radius,
       0,
       Math.PI * 2,
     );
-    const gradient = this.context.createRadialGradient(
+    const gradient = context.createRadialGradient(
       this.x,
       this.y,
       0,
@@ -134,12 +133,11 @@ export class Joystick implements GameObject {
     );
     gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
     gradient.addColorStop(1, "rgba(200, 200, 200, 0.8)");
-    this.context.fillStyle = gradient;
-    this.context.shadowColor = "rgba(0, 0, 0, 0.3)";
-    this.context.shadowBlur = 10;
-    this.context.fill();
-    this.context.closePath();
-    this.context.restore();
+    context.fillStyle = gradient;
+    context.shadowColor = "rgba(0, 0, 0, 0.3)";
+    context.shadowBlur = 10;
+    context.fill();
+    context.closePath();
   }
 
   private addTouchEventListeners() {

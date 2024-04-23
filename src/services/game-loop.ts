@@ -3,6 +3,7 @@ import { LocalCar } from "../entities/objects/local-car.js";
 import { Joystick } from "../entities/objects/joystick.js";
 import { GameObject } from "../interfaces/game-object.js";
 import { GearStick } from "../entities/objects/gear-stick.js";
+import { Target } from "../entities/objects/target.js";
 
 export class GameLoop {
   private isRunning: boolean = false;
@@ -12,6 +13,9 @@ export class GameLoop {
   private oldTimeStamp: number = 0;
 
   private gameState: GameFrame;
+
+  // test only
+  private target: Target | null = null;
 
   constructor() {
     this.gameState = new GameFrame();
@@ -47,7 +51,15 @@ export class GameLoop {
 
     this.gameState.objects.ui.push(gearStick);
     this.gameState.objects.ui.push(joystick);
+
     this.gameState.objects.scene.push(localCar);
+
+    // test only
+    this.testTarget();
+
+    setInterval(() => {
+      this.testTarget();
+    }, 5_000);
   }
 
   public stop(): void {
@@ -95,5 +107,17 @@ export class GameLoop {
     this.gameState.objects.ui.forEach((object: GameObject) =>
       object.render(this.context)
     );
+  }
+
+  private testTarget(): void {
+    if (this.target) {
+      const index = this.gameState.objects.scene.indexOf(this.target);
+      if (index !== -1) {
+        this.gameState.objects.scene.splice(index, 1);
+      }
+    }
+  
+    this.target = new Target(this.canvas);
+    this.gameState.objects.scene.push(this.target);
   }
 }

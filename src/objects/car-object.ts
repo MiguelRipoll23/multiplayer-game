@@ -1,7 +1,7 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
-export class Car extends BaseGameObject implements GameObject {
+export class CarObject extends BaseGameObject implements GameObject {
   protected readonly topSpeed: number = 5;
   protected speed: number = 0;
   protected readonly acceleration: number = 0.4;

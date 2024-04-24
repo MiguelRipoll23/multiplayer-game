@@ -125,6 +125,7 @@ export class ScreenManager {
   }
 
   private updateCurrentAndNextScreen(nextScreen: GameScreen): void {
+    console.log("Transition to", nextScreen.constructor.name, "finished");
     this.gameFrame.setCurrentScreen(nextScreen);
     this.gameFrame.setNextScreen(null);
   }

@@ -1,14 +1,14 @@
 import { GameScreen } from "./interfaces/game-screen.js";
-import { GearStick } from "../objects/gear-stick.js";
-import { Joystick } from "../objects/joystick.js";
-import { LocalCar } from "../objects/car-local.js";
+import { GearStickObject } from "../objects/gear-stick-object.js";
+import { JoystickObject } from "../objects/joystick-object.js";
+import { LocalCarObject } from "../objects/car-local-object.js";
 import { BaseGameScreen } from "./base/base-game-screen.js";
 
 export class WorldScreen extends BaseGameScreen implements GameScreen {
   private canvas: HTMLCanvasElement;
 
-  private joystick: Joystick | null = null;
-  private gearStick: GearStick | null = null;
+  private joystick: JoystickObject | null = null;
+  private gearStick: GearStickObject | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
     super();
@@ -24,15 +24,15 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
   }
 
   private addControls(): void {
-    this.gearStick = new GearStick(this.canvas);
+    this.gearStick = new GearStickObject(this.canvas);
     this.uiObjects.push(this.gearStick);
 
-    this.joystick = new Joystick(this.canvas);
+    this.joystick = new JoystickObject(this.canvas);
     this.uiObjects.push(this.joystick);
   }
 
   private addLocalCar(): void {
-    const localCar = new LocalCar(
+    const localCar = new LocalCarObject(
       this.canvas.width / 2 - 25,
       this.canvas.height / 2 - 25,
       90,

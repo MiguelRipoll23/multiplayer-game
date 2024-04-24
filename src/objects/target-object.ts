@@ -1,7 +1,7 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
-export class Target extends BaseGameObject implements GameObject {
+export class TargetObject extends BaseGameObject implements GameObject {
   private canvas: HTMLCanvasElement;
   private radius: number;
   private xPos: number;

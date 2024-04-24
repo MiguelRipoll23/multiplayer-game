@@ -1,7 +1,7 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
-export class GearStick extends BaseGameObject implements GameObject {
+export class GearStickObject extends BaseGameObject implements GameObject {
   private y: number = 0;
   private x: number = 25;
 

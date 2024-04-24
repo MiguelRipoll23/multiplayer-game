@@ -6,7 +6,7 @@ interface TouchPoint {
   y: number;
 }
 
-export class Joystick extends BaseGameObject implements GameObject {
+export class JoystickObject extends BaseGameObject implements GameObject {
   private canvas: HTMLCanvasElement;
 
   private active: boolean = false;
@@ -51,11 +51,12 @@ export class Joystick extends BaseGameObject implements GameObject {
 
   private updateJoystickPosition() {
     const distance = this.calculateDistance();
+
     if (distance <= this.maxDistance) {
       this.x = this.touchPoint.x;
       this.y = this.touchPoint.y;
     } else {
-      this.adjustPosition(distance);
+      this.adjustPosition();
     }
 
     this.calculateControlValues();
@@ -68,7 +69,7 @@ export class Joystick extends BaseGameObject implements GameObject {
     );
   }
 
-  private adjustPosition(distance: number) {
+  private adjustPosition() {
     const angle = Math.atan2(
       this.touchPoint.y - this.initialTouch.y,
       this.touchPoint.x - this.initialTouch.x

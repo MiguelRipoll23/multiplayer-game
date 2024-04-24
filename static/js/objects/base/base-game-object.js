@@ -1,7 +1,10 @@
 export class BaseGameObject {
     loaded = false;
+    constructor() {
+        console.log(`${this.constructor.name} created`);
+    }
     load() {
-        console.log(`Object ${this.constructor.name} loaded`);
+        console.log(`${this.constructor.name} loaded`);
         this.loaded = true;
     }
     hasLoaded() {

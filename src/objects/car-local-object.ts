@@ -1,10 +1,10 @@
-import { Car } from "./car.js";
-import { GearStick } from "./gear-stick.js";
-import { Joystick } from "./joystick.js";
+import { CarObject } from "./car-object.js";
+import { GearStickObject } from "./gear-stick-object.js";
+import { JoystickObject } from "./joystick-object.js";
 
-export class LocalCar extends Car {
-  private joystick: Joystick | null = null;
-  private gearStick: GearStick | null = null;
+export class LocalCarObject extends CarObject {
+  private joystick: JoystickObject | null = null;
+  private gearStick: GearStickObject | null = null;
 
   constructor(x: number, y: number, angle: number, canvas: HTMLCanvasElement) {
     super(x, y, angle, canvas);
@@ -20,7 +20,10 @@ export class LocalCar extends Car {
     super.render(context);
   }
 
-  public setControls(joystick: Joystick, gearStick: GearStick): void {
+  public setControls(
+    joystick: JoystickObject,
+    gearStick: GearStickObject
+  ): void {
     this.joystick = joystick;
     this.gearStick = gearStick;
   }
@@ -42,7 +45,9 @@ export class LocalCar extends Car {
       }
     }
 
-    this.angle += this.handling * (this.speed / this.topSpeed) *
+    this.angle +=
+      this.handling *
+      (this.speed / this.topSpeed) *
       this.joystick.getControlX();
   }
 }

@@ -79,6 +79,7 @@ export class ScreenManager {
         }
     }
     updateCurrentAndNextScreen(nextScreen) {
+        console.log("Transition to", nextScreen.constructor.name, "finished");
         this.gameFrame.setCurrentScreen(nextScreen);
         this.gameFrame.setNextScreen(null);
     }

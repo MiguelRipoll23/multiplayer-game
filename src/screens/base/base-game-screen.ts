@@ -8,7 +8,7 @@ export class BaseGameScreen {
   private loadedMessagePending: boolean = true;
 
   constructor() {
-    console.log(`Scene ${this.constructor.name} created`);
+    console.log(`${this.constructor.name} created`);
 
     this.sceneObjects = [];
     this.uiObjects = [];
@@ -51,7 +51,7 @@ export class BaseGameScreen {
   private logScreenLoadedMessageIfPending(): void {
     if (this.loadedMessagePending && this.hasLoaded()) {
       this.loadedMessagePending = false;
-      console.log(`Scene ${this.constructor.name} loaded`);
+      console.log(`${this.constructor.name} loaded`);
     }
   }
 

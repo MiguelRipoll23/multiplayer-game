@@ -1,12 +1,22 @@
-import { GameObjects } from "../interfaces/game-objects.js";
+import { GameScreen } from "../interfaces/game-screen.js";
 
 export class GameFrame {
-  public objects: GameObjects;
+  private currentScreen: GameScreen | null = null;
+  private nextScreen: GameScreen | null = null;
 
-  constructor() {
-    this.objects = {
-      scene: [],
-      ui: [],
-    };
+  public getCurrentScreen(): GameScreen | null {
+    return this.currentScreen;
+  }
+
+  public getNextScreen(): GameScreen | null {
+    return this.nextScreen;
+  }
+
+  public setCurrentScreen(screen: GameScreen): void {
+    this.currentScreen = screen;
+  }
+
+  public setNextScreen(screen: GameScreen | null): void {
+    this.nextScreen = screen;
   }
 }

@@ -1,46 +1,36 @@
 import { GameFrame } from "../entities/game-frame.js";
-import { LocalCar } from "../entities/objects/local-car.js";
-import { Joystick } from "../entities/objects/joystick.js";
-import { GearStick } from "../entities/objects/gear-stick.js";
-import { Target } from "../entities/objects/target.js";
+import { WorldScreen } from "../entities/screens/world-screen.js";
+import { ScreenManager } from "./screen-manager.js";
 export class GameLoop {
     isRunning = false;
     canvas;
     context;
-    oldTimeStamp = 0;
-    gameState;
-    // test only
-    target = null;
+    gameFrame;
+    sceneManager;
+    previousTimeStamp = 0;
     constructor() {
-        this.gameState = new GameFrame();
         this.canvas = document.getElementById("canvas");
         this.context = this.canvas.getContext("2d");
-        this.oldTimeStamp = performance.now();
-        this.canvas.width = document.body.clientWidth;
-        this.canvas.height = document.body.clientHeight;
+        this.gameFrame = new GameFrame();
+        this.sceneManager = new ScreenManager(this);
+        this.previousTimeStamp = performance.now();
+        this.setCanvasSize();
+        this.addResizeEventListener();
     }
-    getGameState() {
-        return this.gameState;
+    getGameFrame() {
+        return this.gameFrame;
     }
     start() {
         this.isRunning = true;
-        this.addResizeEventListener();
+        this.setInitialScreen();
         requestAnimationFrame(this.loop.bind(this));
-        const gearStick = new GearStick(this.canvas);
-        const joystick = new Joystick(this.canvas);
-        const localCar = new LocalCar((this.canvas.width / 2) - 25, (this.canvas.height / 2) - 25, 90, this.canvas);
-        localCar.setControls(joystick, gearStick);
-        this.gameState.objects.ui.push(gearStick);
-        this.gameState.objects.ui.push(joystick);
-        this.gameState.objects.scene.push(localCar);
-        // test only
-        this.testTarget();
-        setInterval(() => {
-            this.testTarget();
-        }, 5_000);
     }
     stop() {
         this.isRunning = false;
+    }
+    setCanvasSize() {
+        this.canvas.width = document.body.clientWidth;
+        this.canvas.height = document.body.clientHeight;
     }
     addResizeEventListener() {
         window.addEventListener("resize", () => {
@@ -48,10 +38,15 @@ export class GameLoop {
             this.canvas.height = document.body.clientHeight;
         });
     }
+    setInitialScreen() {
+        const worldScreen = new WorldScreen(this.canvas);
+        worldScreen.addObjects();
+        this.sceneManager.crossfade(worldScreen, 0.001);
+    }
     loop(timeStamp) {
         // Calculate delta time
-        const deltaTimeStamp = timeStamp - this.oldTimeStamp;
-        this.oldTimeStamp = timeStamp;
+        const deltaTimeStamp = timeStamp - this.previousTimeStamp;
+        this.previousTimeStamp = timeStamp;
         this.update(deltaTimeStamp);
         this.render();
         if (this.isRunning) {
@@ -59,26 +54,13 @@ export class GameLoop {
         }
     }
     update(deltaTimeStamp) {
-        this.gameState.objects.scene.forEach((object) => object.update(deltaTimeStamp));
-        this.gameState.objects.ui.forEach((object) => object.update(deltaTimeStamp));
+        this.sceneManager.update(deltaTimeStamp);
+        this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
+        this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
     }
     render() {
-        // fill black
-        this.context.fillStyle = "black";
-        // Clear the entire canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.fillStyle = "black";
-        this.gameState.objects.scene.forEach((object) => object.render(this.context));
-        this.gameState.objects.ui.forEach((object) => object.render(this.context));
-    }
-    testTarget() {
-        if (this.target) {
-            const index = this.gameState.objects.scene.indexOf(this.target);
-            if (index !== -1) {
-                this.gameState.objects.scene.splice(index, 1);
-            }
-        }
-        this.target = new Target(this.canvas);
-        this.gameState.objects.scene.push(this.target);
+        this.gameFrame.getNextScreen()?.render(this.context);
+        this.gameFrame.getCurrentScreen()?.render(this.context);
     }
 }

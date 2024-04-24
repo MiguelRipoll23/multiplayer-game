@@ -1,7 +1,5 @@
-import { GameFrame } from "../entities/game-frame.js";
-import { WorldScreen } from "../entities/screens/world-screen.js";
-import { GameObject } from "../interfaces/game-object.js";
-import { GameScreen } from "../interfaces/game-screen.js";
+import { GameFrame } from "../models/game-frame.js";
+import { WorldScreen } from "../screens/world-screen.js";
 import { ScreenManager } from "./screen-manager.js";
 
 export class GameLoop {
@@ -11,7 +9,7 @@ export class GameLoop {
   private context: CanvasRenderingContext2D;
 
   private gameFrame: GameFrame;
-  private sceneManager: ScreenManager;
+  private screenManager: ScreenManager;
 
   private previousTimeStamp: number = 0;
 
@@ -20,7 +18,7 @@ export class GameLoop {
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 
     this.gameFrame = new GameFrame();
-    this.sceneManager = new ScreenManager(this);
+    this.screenManager = new ScreenManager(this);
 
     this.previousTimeStamp = performance.now();
 
@@ -57,9 +55,9 @@ export class GameLoop {
 
   private setInitialScreen() {
     const worldScreen = new WorldScreen(this.canvas);
-    worldScreen.addObjects();
+    worldScreen.loadObjects();
 
-    this.sceneManager.crossfade(worldScreen, 0.001);
+    this.screenManager.crossfade(worldScreen, 0.001);
   }
 
   private loop(timeStamp: number): void {
@@ -76,7 +74,7 @@ export class GameLoop {
   }
 
   private update(deltaTimeStamp: number): void {
-    this.sceneManager.update(deltaTimeStamp);
+    this.screenManager.update(deltaTimeStamp);
     this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
     this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
   }

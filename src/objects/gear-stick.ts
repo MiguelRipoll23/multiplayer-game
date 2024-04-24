@@ -1,23 +1,27 @@
-import { GameObject } from "../../interfaces/game-object.js";
+import { BaseGameObject } from "./base/base-game-object.js";
+import { GameObject } from "./interfaces/game-object.js";
 
-export class GearStick implements GameObject {
+export class GearStick extends BaseGameObject implements GameObject {
+  private y: number = 0;
+  private x: number = 25;
+
   private active: boolean = false;
   private currentGear = "F";
 
-  private readonly x = 25;
-  private readonly size = 65; // Adjust size as needed
-  private readonly cornerRadius = 12; // Adjust corner radius as needed
-  private readonly fillColor = "black"; // Change fill color to black
-  private readonly fontSize = 36; // Adjust font size as needed
-  private readonly yOffset = 25;
+  private readonly size: number = 65; // Adjust size as needed
+  private readonly cornerRadius: number = 12; // Adjust corner radius as needed
+  private readonly fillColor: string = "black"; // Change fill color to black
+  private readonly fontSize: number = 36; // Adjust font size as needed
+  private readonly yOffset: number = 25;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
-    this.y = this.canvas.height - (this.size + this.yOffset); // Position the gear stick 50px from the bottom
+    super();
+
+    // Position the gear stick 50px from the bottom
+    this.y = this.canvas.height - (this.size + this.yOffset);
 
     this.addEventListeners();
   }
-
-  private y: number;
 
   public update(deltaTimeStamp: number): void {
     // Implement update logic if required
@@ -40,8 +44,13 @@ export class GearStick implements GameObject {
     this.canvas.addEventListener(
       "touchstart",
       this.handleTouchStart.bind(this),
+      { passive: true }
     );
-    this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this));
+
+    this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
+      passive: true,
+    });
+
     this.canvas.addEventListener("click", this.handleClick.bind(this));
   }
 
@@ -97,28 +106,28 @@ export class GearStick implements GameObject {
       this.y,
       this.x + this.size,
       this.y + this.size,
-      this.cornerRadius,
+      this.cornerRadius
     );
     context.arcTo(
       this.x + this.size,
       this.y + this.size,
       this.x,
       this.y + this.size,
-      this.cornerRadius,
+      this.cornerRadius
     );
     context.arcTo(
       this.x,
       this.y + this.size,
       this.x,
       this.y,
-      this.cornerRadius,
+      this.cornerRadius
     );
     context.arcTo(
       this.x,
       this.y,
       this.x + this.size,
       this.y,
-      this.cornerRadius,
+      this.cornerRadius
     );
     context.closePath();
     context.fill();
@@ -133,7 +142,7 @@ export class GearStick implements GameObject {
     context.fillText(
       this.currentGear,
       this.x + this.size / 2,
-      this.y + this.size / 2,
+      this.y + this.size / 2
     );
   }
 }

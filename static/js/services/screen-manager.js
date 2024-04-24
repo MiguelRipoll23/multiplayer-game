@@ -5,8 +5,7 @@ export class ScreenManager {
     crossfadeSpeed = 0;
     isFadingOutAndIn = false;
     isCrossfading = false;
-    isTransitioning = this.isFadingOutAndIn ||
-        this.isCrossfading;
+    isTransitioning = this.isFadingOutAndIn || this.isCrossfading;
     constructor(gameLoop) {
         this.gameFrame = gameLoop.getGameFrame();
     }
@@ -22,14 +21,14 @@ export class ScreenManager {
         return this.isTransitioning;
     }
     fadeOutAndIn(nextScreen, fadeOutSpeed, fadeInSpeed) {
-        console.log("Fading out and in to", nextScreen.getId());
+        console.log("Fading out and in to", nextScreen.constructor.name);
         this.isFadingOutAndIn = true;
         this.fadeInSpeed = fadeInSpeed;
         this.fadeOutSpeed = fadeOutSpeed;
         this.gameFrame.setNextScreen(nextScreen);
     }
     crossfade(nextScreen, crossfadeSpeed) {
-        console.log("Crossfading to", nextScreen.getId());
+        console.log("Crossfading to", nextScreen.constructor.name);
         this.isCrossfading = true;
         this.crossfadeSpeed = crossfadeSpeed;
         this.gameFrame.setNextScreen(nextScreen);
@@ -43,7 +42,10 @@ export class ScreenManager {
         this.fadeOutCurrentScreen(deltaTime, currentScreen);
         // Check if the current screen has faded out
         if (currentScreen.getOpacity() === 0) {
-            this.fadeInNextScreen(deltaTime, nextScreen);
+            // Check if the next screen has loaded
+            if (nextScreen.hasLoaded()) {
+                this.fadeInNextScreen(deltaTime, nextScreen);
+            }
         }
         this.updateCurrentAndNextScreen(nextScreen);
         this.isFadingOutAndIn = false;
@@ -60,7 +62,12 @@ export class ScreenManager {
     }
     handleCrossfading(deltaTimeStamp) {
         const nextScreen = this.gameFrame.getNextScreen();
+        // No screen, no transition
         if (nextScreen === null) {
+            return;
+        }
+        // Wait until screen has loaded
+        if (nextScreen.hasLoaded() === false) {
             return;
         }
         const opacity = nextScreen.getOpacity();

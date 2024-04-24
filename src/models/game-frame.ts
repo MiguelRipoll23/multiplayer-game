@@ -1,4 +1,4 @@
-import { GameScreen } from "../interfaces/game-screen.js";
+import { GameScreen } from "../screens/interfaces/game-screen.js";
 
 export class GameFrame {
   private currentScreen: GameScreen | null = null;

@@ -1,6 +1,7 @@
-import { GameObject } from "../../interfaces/game-object.js";
+import { BaseGameObject } from "./base/base-game-object.js";
+import { GameObject } from "./interfaces/game-object.js";
 
-export class Target implements GameObject {
+export class Target extends BaseGameObject implements GameObject {
   private canvas: HTMLCanvasElement;
   private radius: number;
   private xPos: number;
@@ -10,6 +11,8 @@ export class Target implements GameObject {
   private fadeInDuration: number;
 
   constructor(canvas: HTMLCanvasElement) {
+    super();
+
     this.canvas = canvas;
     this.radius = 10; // Radius of the circle
     this.scale = 0; // Initial scale
@@ -17,10 +20,10 @@ export class Target implements GameObject {
     this.fadeInDuration = 1000; // Fade in duration in milliseconds
 
     // Set random position for the circle
-    this.xPos = Math.random() * (this.canvas.width - this.radius * 2) +
-      this.radius;
-    this.yPos = Math.random() * (this.canvas.height - this.radius * 2) +
-      this.radius;
+    this.xPos =
+      Math.random() * (this.canvas.width - this.radius * 2) + this.radius;
+    this.yPos =
+      Math.random() * (this.canvas.height - this.radius * 2) + this.radius;
   }
 
   update(deltaTimeStamp: number): void {
@@ -53,7 +56,7 @@ export class Target implements GameObject {
       this.yPos,
       Math.abs(this.radius) * this.scale,
       0,
-      Math.PI * 2,
+      Math.PI * 2
     );
     context.fill();
     context.closePath();

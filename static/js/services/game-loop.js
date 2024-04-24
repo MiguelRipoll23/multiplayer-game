@@ -1,18 +1,18 @@
-import { GameFrame } from "../entities/game-frame.js";
-import { WorldScreen } from "../entities/screens/world-screen.js";
+import { GameFrame } from "../models/game-frame.js";
+import { WorldScreen } from "../screens/world-screen.js";
 import { ScreenManager } from "./screen-manager.js";
 export class GameLoop {
     isRunning = false;
     canvas;
     context;
     gameFrame;
-    sceneManager;
+    screenManager;
     previousTimeStamp = 0;
     constructor() {
         this.canvas = document.getElementById("canvas");
         this.context = this.canvas.getContext("2d");
         this.gameFrame = new GameFrame();
-        this.sceneManager = new ScreenManager(this);
+        this.screenManager = new ScreenManager(this);
         this.previousTimeStamp = performance.now();
         this.setCanvasSize();
         this.addResizeEventListener();
@@ -40,8 +40,8 @@ export class GameLoop {
     }
     setInitialScreen() {
         const worldScreen = new WorldScreen(this.canvas);
-        worldScreen.addObjects();
-        this.sceneManager.crossfade(worldScreen, 0.001);
+        worldScreen.loadObjects();
+        this.screenManager.crossfade(worldScreen, 0.001);
     }
     loop(timeStamp) {
         // Calculate delta time
@@ -54,7 +54,7 @@ export class GameLoop {
         }
     }
     update(deltaTimeStamp) {
-        this.sceneManager.update(deltaTimeStamp);
+        this.screenManager.update(deltaTimeStamp);
         this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
         this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
     }

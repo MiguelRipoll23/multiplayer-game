@@ -15,10 +15,10 @@ export class TargetObject extends BaseGameObject {
         this.opacity = 0; // Initial opacity
         this.fadeInDuration = 1000; // Fade in duration in milliseconds
         // Set random position for the circle
-        this.xPos =
-            Math.random() * (this.canvas.width - this.radius * 2) + this.radius;
-        this.yPos =
-            Math.random() * (this.canvas.height - this.radius * 2) + this.radius;
+        this.xPos = Math.random() * (this.canvas.width - this.radius * 2) +
+            this.radius;
+        this.yPos = Math.random() * (this.canvas.height - this.radius * 2) +
+            this.radius;
     }
     update(deltaTimeStamp) {
         // Implement scaling animation

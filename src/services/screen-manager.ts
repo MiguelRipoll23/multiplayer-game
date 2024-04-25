@@ -4,22 +4,22 @@ import { GameLoop } from "./game-loop.js";
 
 export class ScreenManager {
   private gameFrame: GameFrame;
+  private elapsedTransitionMilliseconds: number = 0;
 
-  private fadeInSpeed: number = 0;
-  private fadeOutSpeed: number = 0;
-  private crossfadeSpeed: number = 0;
-
+  // Transition state flags
   private isFadingOutAndIn: boolean = false;
   private isCrossfading: boolean = false;
 
-  private isTransitioning: boolean =
-    this.isFadingOutAndIn || this.isCrossfading;
+  // Duration properties in milliseconds
+  private fadeInDurationMilliseconds: number = 0;
+  private fadeOutDurationMilliseconds: number = 0;
+  private crossfadeDurationMilliseconds: number = 0;
 
-  constructor(gameLoop: GameLoop) {
+  constructor(private gameLoop: GameLoop) {
     this.gameFrame = gameLoop.getGameFrame();
   }
 
-  public update(deltaTimeStamp: number): void {
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     if (this.isFadingOutAndIn) {
       this.handleFadingOutAndIn(deltaTimeStamp);
     } else if (this.isCrossfading) {
@@ -27,105 +27,119 @@ export class ScreenManager {
     }
   }
 
-  public isTransitioningScreens(): boolean {
-    return this.isTransitioning;
+  public isTransitionActive(): boolean {
+    return this.isFadingOutAndIn || this.isCrossfading;
   }
 
   public fadeOutAndIn(
     nextScreen: GameScreen,
-    fadeOutSpeed: number,
-    fadeInSpeed: number
+    fadeOutDurationSeconds: number,
+    fadeInDurationSeconds: number,
   ): void {
     console.log("Fading out and in to", nextScreen.constructor.name);
+
+    // Check if there is an active transition
+    if (this.isTransitionActive()) {
+      this.resetTransitionState();
+    }
+
+    this.fadeOutDurationMilliseconds = fadeOutDurationSeconds * 1000;
+    this.fadeInDurationMilliseconds = fadeInDurationSeconds * 1000;
     this.isFadingOutAndIn = true;
-    this.fadeInSpeed = fadeInSpeed;
-    this.fadeOutSpeed = fadeOutSpeed;
     this.gameFrame.setNextScreen(nextScreen);
   }
 
-  public crossfade(nextScreen: GameScreen, crossfadeSpeed: number): void {
+  public crossfade(
+    nextScreen: GameScreen,
+    crossfadeDurationSeconds: number,
+  ): void {
     console.log("Crossfading to", nextScreen.constructor.name);
 
+    // Check if there is an active transition
+    if (this.isTransitionActive()) {
+      this.resetTransitionState();
+    }
+
+    this.crossfadeDurationMilliseconds = crossfadeDurationSeconds * 1000;
     this.isCrossfading = true;
-    this.crossfadeSpeed = crossfadeSpeed;
     this.gameFrame.setNextScreen(nextScreen);
   }
 
-  private handleFadingOutAndIn(deltaTime: number): void {
+  private handleFadingOutAndIn(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.elapsedTransitionMilliseconds += deltaTimeStamp;
+
+    this.fadeOutCurrentScreen();
+    this.fadeInNextScreen();
+  }
+
+  private fadeOutCurrentScreen(): void {
     const currentScreen = this.gameFrame.getCurrentScreen();
+
+    if (!currentScreen) return;
+
+    const fadeOutProgress = Math.min(
+      1,
+      this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds,
+    );
+
+    currentScreen.setOpacity(1 - fadeOutProgress);
+
+    if (fadeOutProgress === 1) {
+      // Fade out complete
+      this.elapsedTransitionMilliseconds = 0;
+    }
+  }
+
+  private fadeInNextScreen(): void {
     const nextScreen = this.gameFrame.getNextScreen();
 
-    if (currentScreen === null || nextScreen === null) {
-      return;
-    }
+    if (!nextScreen) return;
 
-    this.fadeOutCurrentScreen(deltaTime, currentScreen);
-
-    // Check if the current screen has faded out
-    if (currentScreen.getOpacity() === 0) {
-      // Check if the next screen has loaded
-      if (nextScreen.hasLoaded()) {
-        this.fadeInNextScreen(deltaTime, nextScreen);
-      }
-    }
-
-    this.updateCurrentAndNextScreen(nextScreen);
-
-    this.isFadingOutAndIn = false;
-  }
-
-  private fadeOutCurrentScreen(
-    deltaTime: number,
-    currentScreen: GameScreen
-  ): void {
-    const currentScreenOpacity = currentScreen.getOpacity();
-    const targetCurrentOpacity = Math.max(
-      currentScreenOpacity - this.fadeOutSpeed * deltaTime,
-      0
+    const fadeInProgress = Math.min(
+      1,
+      this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds,
     );
 
-    currentScreen.setOpacity(targetCurrentOpacity);
+    nextScreen.setOpacity(fadeInProgress);
+
+    if (fadeInProgress === 1) {
+      // Fade in complete
+      this.updateCurrentAndNextScreen(nextScreen);
+      this.isFadingOutAndIn = false;
+    }
   }
 
-  private fadeInNextScreen(deltaTime: number, nextScreen: GameScreen): void {
-    const nextScreenOpacity = nextScreen.getOpacity();
-    const targetNextScreenOpacity = Math.min(
-      nextScreenOpacity + this.fadeInSpeed * deltaTime,
-      1
-    );
-
-    nextScreen.setOpacity(targetNextScreenOpacity);
-  }
-
-  private handleCrossfading(deltaTimeStamp: number): void {
+  private handleCrossfading(deltaTimeStamp: DOMHighResTimeStamp): void {
     const nextScreen = this.gameFrame.getNextScreen();
 
-    // No screen, no transition
-    if (nextScreen === null) {
-      return;
-    }
+    if (!nextScreen || !nextScreen.hasLoaded()) return;
 
-    // Wait until screen has loaded
-    if (nextScreen.hasLoaded() === false) {
-      return;
-    }
+    this.elapsedTransitionMilliseconds += deltaTimeStamp;
 
-    const opacity = nextScreen.getOpacity();
-    const targetOpacity = Math.min(
-      opacity + this.crossfadeSpeed * deltaTimeStamp,
-      1
+    const crossfadeProgress = Math.min(
+      1,
+      this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds,
     );
 
-    nextScreen.setOpacity(targetOpacity);
+    nextScreen.setOpacity(crossfadeProgress);
 
-    if (targetOpacity === 1) {
+    if (crossfadeProgress === 1) {
       this.updateCurrentAndNextScreen(nextScreen);
       this.isCrossfading = false;
     }
   }
 
+  private resetTransitionState(): void {
+    this.isFadingOutAndIn = false;
+    this.isCrossfading = false;
+    this.elapsedTransitionMilliseconds = 0;
+
+    console.log("Previous transition stopped");
+  }
+
   private updateCurrentAndNextScreen(nextScreen: GameScreen): void {
     console.log("Transition to", nextScreen.constructor.name, "finished");
+    this.elapsedTransitionMilliseconds = 0;
     this.gameFrame.setCurrentScreen(nextScreen);
     this.gameFrame.setNextScreen(null);
   }

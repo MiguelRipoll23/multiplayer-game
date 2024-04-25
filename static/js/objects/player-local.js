@@ -14,7 +14,7 @@ export class LocalPlayer extends Player {
         this.joystick =
         ;
     }
-    update(deltaTimeStamp) {
+    update(deltaFrameMilliseconds) {
         // TODO
     }
     render(context) {

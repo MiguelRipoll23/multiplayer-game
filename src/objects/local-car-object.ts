@@ -3,29 +3,32 @@ import { GearStickObject } from "./gear-stick-object.js";
 import { JoystickObject } from "./joystick-object.js";
 
 export class LocalCarObject extends CarObject {
-  private joystick: JoystickObject | null = null;
-  private gearStick: GearStickObject | null = null;
+  private joystick: JoystickObject;
+  private gearStick: GearStickObject;
 
   constructor(x: number, y: number, angle: number, canvas: HTMLCanvasElement) {
     super(x, y, angle, canvas);
+
+    this.joystick = new JoystickObject(this.canvas);
+    this.gearStick = new GearStickObject(this.canvas);
   }
 
-  public update(deltaTimeStamp: number): void {
+  public update(deltaFrameMilliseconds: number): void {
     this.handleControls();
 
-    super.update(deltaTimeStamp);
+    super.update(deltaFrameMilliseconds);
   }
 
   public render(context: CanvasRenderingContext2D): void {
     super.render(context);
   }
 
-  public setControls(
-    joystick: JoystickObject,
-    gearStick: GearStickObject
-  ): void {
-    this.joystick = joystick;
-    this.gearStick = gearStick;
+  public getJoystick(): JoystickObject {
+    return this.joystick;
+  }
+
+  public getGearStick(): GearStickObject {
+    return this.gearStick;
   }
 
   private handleControls(): void {
@@ -45,8 +48,7 @@ export class LocalCarObject extends CarObject {
       }
     }
 
-    this.angle +=
-      this.handling *
+    this.angle += this.handling *
       (this.speed / this.topSpeed) *
       this.joystick.getControlX();
   }

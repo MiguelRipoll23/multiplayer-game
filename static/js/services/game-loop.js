@@ -8,6 +8,7 @@ export class GameLoop {
     gameFrame;
     screenManager;
     previousTimeStamp = 0;
+    deltaTimeStamp = 0;
     constructor() {
         this.canvas = document.getElementById("canvas");
         this.context = this.canvas.getContext("2d");
@@ -41,13 +42,12 @@ export class GameLoop {
     setInitialScreen() {
         const worldScreen = new WorldScreen(this.canvas);
         worldScreen.loadObjects();
-        this.screenManager.crossfade(worldScreen, 0.001);
+        this.screenManager.crossfade(worldScreen, 1);
     }
     loop(timeStamp) {
-        // Calculate delta time
-        const deltaTimeStamp = timeStamp - this.previousTimeStamp;
+        this.deltaTimeStamp = timeStamp - this.previousTimeStamp;
         this.previousTimeStamp = timeStamp;
-        this.update(deltaTimeStamp);
+        this.update(this.deltaTimeStamp);
         this.render();
         if (this.isRunning) {
             requestAnimationFrame(this.loop.bind(this));

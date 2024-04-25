@@ -23,7 +23,7 @@ export class GearStickObject extends BaseGameObject implements GameObject {
     this.addEventListeners();
   }
 
-  public update(deltaTimeStamp: number): void {
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     // Implement update logic if required
   }
 
@@ -44,7 +44,7 @@ export class GearStickObject extends BaseGameObject implements GameObject {
     this.canvas.addEventListener(
       "touchstart",
       this.handleTouchStart.bind(this),
-      { passive: true }
+      { passive: true },
     );
 
     this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
@@ -106,28 +106,28 @@ export class GearStickObject extends BaseGameObject implements GameObject {
       this.y,
       this.x + this.size,
       this.y + this.size,
-      this.cornerRadius
+      this.cornerRadius,
     );
     context.arcTo(
       this.x + this.size,
       this.y + this.size,
       this.x,
       this.y + this.size,
-      this.cornerRadius
+      this.cornerRadius,
     );
     context.arcTo(
       this.x,
       this.y + this.size,
       this.x,
       this.y,
-      this.cornerRadius
+      this.cornerRadius,
     );
     context.arcTo(
       this.x,
       this.y,
       this.x + this.size,
       this.y,
-      this.cornerRadius
+      this.cornerRadius,
     );
     context.closePath();
     context.fill();
@@ -142,7 +142,7 @@ export class GearStickObject extends BaseGameObject implements GameObject {
     context.fillText(
       this.currentGear,
       this.x + this.size / 2,
-      this.y + this.size / 2
+      this.y + this.size / 2,
     );
   }
 }

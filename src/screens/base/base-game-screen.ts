@@ -25,7 +25,7 @@ export class BaseGameScreen {
     );
   }
 
-  public update(deltaTimeStamp: number): void {
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.logScreenLoadedMessageIfPending();
     this.updateObjects(this.sceneObjects, deltaTimeStamp);
     this.updateObjects(this.uiObjects, deltaTimeStamp);
@@ -55,13 +55,16 @@ export class BaseGameScreen {
     }
   }
 
-  private updateObjects(objects: GameObject[], deltaTimeStamp: number): void {
+  private updateObjects(
+    objects: GameObject[],
+    deltaTimeStamp: DOMHighResTimeStamp,
+  ): void {
     objects.forEach((object) => object.update(deltaTimeStamp));
   }
 
   private renderObjects(
     objects: GameObject[],
-    context: CanvasRenderingContext2D
+    context: CanvasRenderingContext2D,
   ): void {
     objects.forEach((object) => object.render(context));
   }

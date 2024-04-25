@@ -1,5 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class CarObject extends BaseGameObject {
+    canvas;
     topSpeed = 5;
     speed = 0;
     acceleration = 0.4;
@@ -7,7 +8,6 @@ export class CarObject extends BaseGameObject {
     handling = 6;
     x;
     y;
-    canvas;
     vx = 0;
     vy = 0;
     friction = 0.1;
@@ -69,18 +69,16 @@ export class CarObject extends BaseGameObject {
         const canvasBoundsY = this.canvas.height - this.height;
         if (this.x <= 0 || this.x >= canvasBoundsX) {
             this.x = Math.max(0, Math.min(this.x, canvasBoundsX));
-            this.speed =
-                Math.abs(this.speed) > this.topSpeed
-                    ? Math.sign(this.speed) * this.topSpeed
-                    : this.speed;
+            this.speed = Math.abs(this.speed) > this.topSpeed
+                ? Math.sign(this.speed) * this.topSpeed
+                : this.speed;
             this.speed = -this.speed * this.bounceMultiplier;
         }
         if (this.y <= 0 || this.y >= canvasBoundsY) {
             this.y = Math.max(0, Math.min(this.y, canvasBoundsY));
-            this.speed =
-                Math.abs(this.speed) > this.topSpeed
-                    ? Math.sign(this.speed) * this.topSpeed
-                    : this.speed;
+            this.speed = Math.abs(this.speed) > this.topSpeed
+                ? Math.sign(this.speed) * this.topSpeed
+                : this.speed;
             this.speed = -this.speed * this.bounceMultiplier;
         }
     }

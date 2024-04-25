@@ -20,13 +20,13 @@ export class TargetObject extends BaseGameObject implements GameObject {
     this.fadeInDuration = 1000; // Fade in duration in milliseconds
 
     // Set random position for the circle
-    this.xPos =
-      Math.random() * (this.canvas.width - this.radius * 2) + this.radius;
-    this.yPos =
-      Math.random() * (this.canvas.height - this.radius * 2) + this.radius;
+    this.xPos = Math.random() * (this.canvas.width - this.radius * 2) +
+      this.radius;
+    this.yPos = Math.random() * (this.canvas.height - this.radius * 2) +
+      this.radius;
   }
 
-  update(deltaTimeStamp: number): void {
+  update(deltaTimeStamp: DOMHighResTimeStamp): void {
     // Implement scaling animation
     if (this.scale < 1) {
       // Ease-in scaling
@@ -56,7 +56,7 @@ export class TargetObject extends BaseGameObject implements GameObject {
       this.yPos,
       Math.abs(this.radius) * this.scale,
       0,
-      Math.PI * 2
+      Math.PI * 2,
     );
     context.fill();
     context.closePath();

@@ -2,6 +2,8 @@ import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
 export class CarObject extends BaseGameObject implements GameObject {
+  protected canvas: HTMLCanvasElement;
+
   protected readonly topSpeed: number = 5;
   protected speed: number = 0;
   protected readonly acceleration: number = 0.4;
@@ -11,7 +13,6 @@ export class CarObject extends BaseGameObject implements GameObject {
 
   private x: number;
   private y: number;
-  private canvas: HTMLCanvasElement;
   private vx: number = 0;
   private vy: number = 0;
   private readonly friction: number = 0.1;
@@ -33,7 +34,7 @@ export class CarObject extends BaseGameObject implements GameObject {
     this.loadCarImage();
   }
 
-  public update(deltaTimeStamp: number): void {
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     if (this.loaded === false) {
       return;
     }
@@ -56,7 +57,7 @@ export class CarObject extends BaseGameObject implements GameObject {
       -this.width / 2,
       -this.height / 2,
       this.width,
-      this.height
+      this.height,
     );
     context.restore();
   }
@@ -95,19 +96,17 @@ export class CarObject extends BaseGameObject implements GameObject {
 
     if (this.x <= 0 || this.x >= canvasBoundsX) {
       this.x = Math.max(0, Math.min(this.x, canvasBoundsX));
-      this.speed =
-        Math.abs(this.speed) > this.topSpeed
-          ? Math.sign(this.speed) * this.topSpeed
-          : this.speed;
+      this.speed = Math.abs(this.speed) > this.topSpeed
+        ? Math.sign(this.speed) * this.topSpeed
+        : this.speed;
       this.speed = -this.speed * this.bounceMultiplier;
     }
 
     if (this.y <= 0 || this.y >= canvasBoundsY) {
       this.y = Math.max(0, Math.min(this.y, canvasBoundsY));
-      this.speed =
-        Math.abs(this.speed) > this.topSpeed
-          ? Math.sign(this.speed) * this.topSpeed
-          : this.speed;
+      this.speed = Math.abs(this.speed) > this.topSpeed
+        ? Math.sign(this.speed) * this.topSpeed
+        : this.speed;
       this.speed = -this.speed * this.bounceMultiplier;
     }
   }

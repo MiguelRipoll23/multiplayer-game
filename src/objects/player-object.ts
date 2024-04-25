@@ -10,7 +10,7 @@ export class PlayerObject extends BaseGameObject implements GameObject {
     this.name = name;
   }
 
-  public update(deltaTimeStamp: number): void {
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     // TODO
   }
 

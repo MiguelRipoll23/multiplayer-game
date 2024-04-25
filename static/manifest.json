@@ -1,0 +1,15 @@
+{
+  "background_color": "#000000",
+  "categories": ["games"],
+  "description": "Enter a velocity vendetta in this multiplayer race, battling to catch targets and emerge victorious with your car!",
+  "dir": "ltr",
+  "display": "standalone",
+  "id": "game",
+  "lang": "en",
+  "name": "Target Pursuit",
+  "orientation": "portrait",
+  "scope": "/",
+  "short_name": "Target Pursuit",
+  "start_url": "/?utm_source=homescreen&utm_medium=shortcut",
+  "theme_color": "#000000"
+}

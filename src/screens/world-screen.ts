@@ -13,28 +13,34 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
   }
 
   public override loadObjects(): void {
-    this.loadInitialObjects();
+    const playerObject = this.loadAndGetPlayerObject();
+    this.loadLocalCarObjects(playerObject);
+
     super.loadObjects();
   }
 
-  private loadInitialObjects(): void {
+  private loadAndGetPlayerObject(): PlayerObject {
     const playerObject = new PlayerObject("player1");
-    const localCarObject = this.createLocalCarObject();
-
-    localCarObject.setPlayerObject(playerObject);
-
-    this.uiObjects.push(localCarObject.getJoystickObject());
-    this.uiObjects.push(localCarObject.getGearStickObject());
     this.sceneObjects.push(playerObject);
-    this.sceneObjects.push(localCarObject);
+
+    return playerObject;
   }
 
-  private createLocalCarObject(): LocalCarObject {
-    return new LocalCarObject(
+  private loadLocalCarObjects(playerObject: PlayerObject) {
+    const localCarObject = new LocalCarObject(
       this.canvas.width / 2 - 25,
       this.canvas.height / 2 - 25,
       90,
-      this.canvas,
+      this.canvas
     );
+
+    localCarObject.setPlayerObject(playerObject);
+
+    // Scene
+    this.sceneObjects.push(localCarObject);
+
+    // UI
+    this.uiObjects.push(localCarObject.getGearStickObject());
+    this.uiObjects.push(localCarObject.getJoystickObject());
   }
 }

@@ -1,15 +1,15 @@
 import { GameFrame } from "../models/game-frame.js";
 import { WorldScreen } from "../screens/world-screen.js";
-import { ScreenManager } from "./screen-manager.js";
+import { ScreenManagerService } from "./screen-manager-service.js";
 
-export class GameLoop {
+export class GameLoopService {
   private isRunning: boolean = false;
 
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
 
   private gameFrame: GameFrame;
-  private screenManager: ScreenManager;
+  private screenManager: ScreenManagerService;
 
   private previousTimeStamp: DOMHighResTimeStamp = 0;
   private deltaTimeStamp: DOMHighResTimeStamp = 0;
@@ -19,7 +19,7 @@ export class GameLoop {
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 
     this.gameFrame = new GameFrame();
-    this.screenManager = new ScreenManager(this);
+    this.screenManager = new ScreenManagerService(this);
 
     this.previousTimeStamp = performance.now();
 

@@ -1,8 +1,8 @@
 import { GameFrame } from "../models/game-frame.js";
 import { GameScreen } from "../screens/interfaces/game-screen.js";
-import { GameLoop } from "./game-loop.js";
+import { GameLoopService } from "./game-loop-service.js";
 
-export class ScreenManager {
+export class ScreenManagerService {
   private gameFrame: GameFrame;
   private elapsedTransitionMilliseconds: number = 0;
 
@@ -15,7 +15,7 @@ export class ScreenManager {
   private fadeOutDurationMilliseconds: number = 0;
   private crossfadeDurationMilliseconds: number = 0;
 
-  constructor(private gameLoop: GameLoop) {
+  constructor(private gameLoop: GameLoopService) {
     this.gameFrame = gameLoop.getGameFrame();
   }
 
@@ -34,7 +34,7 @@ export class ScreenManager {
   public fadeOutAndIn(
     nextScreen: GameScreen,
     fadeOutDurationSeconds: number,
-    fadeInDurationSeconds: number,
+    fadeInDurationSeconds: number
   ): void {
     console.log("Fading out and in to", nextScreen.constructor.name);
 
@@ -51,7 +51,7 @@ export class ScreenManager {
 
   public crossfade(
     nextScreen: GameScreen,
-    crossfadeDurationSeconds: number,
+    crossfadeDurationSeconds: number
   ): void {
     console.log("Crossfading to", nextScreen.constructor.name);
 
@@ -79,7 +79,7 @@ export class ScreenManager {
 
     const fadeOutProgress = Math.min(
       1,
-      this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds,
+      this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds
     );
 
     currentScreen.setOpacity(1 - fadeOutProgress);
@@ -97,7 +97,7 @@ export class ScreenManager {
 
     const fadeInProgress = Math.min(
       1,
-      this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds,
+      this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds
     );
 
     nextScreen.setOpacity(fadeInProgress);
@@ -118,7 +118,7 @@ export class ScreenManager {
 
     const crossfadeProgress = Math.min(
       1,
-      this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds,
+      this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds
     );
 
     nextScreen.setOpacity(crossfadeProgress);

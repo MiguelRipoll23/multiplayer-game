@@ -1,4 +1,4 @@
-import { GameLoop } from "./services/game-loop.js";
+import { GameLoopService } from "./services/game-loop-service.js";
 
-const gameLoop = new GameLoop();
+const gameLoop = new GameLoopService();
 gameLoop.start();

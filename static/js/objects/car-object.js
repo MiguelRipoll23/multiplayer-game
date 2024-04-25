@@ -4,8 +4,8 @@ export class CarObject extends BaseGameObject {
     ACCELERATION = 0.4;
     HANDLING = 6;
     canvas;
-    speed = 0;
     angle;
+    speed = 0;
     player = null;
     FRICTION = 0.1;
     BOUNCE_MULTIPLIER = 0.7;

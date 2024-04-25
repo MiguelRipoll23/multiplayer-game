@@ -8,8 +8,8 @@ export class CarObject extends BaseGameObject implements GameObject {
   protected readonly HANDLING: number = 6;
 
   protected readonly canvas: HTMLCanvasElement;
-  protected speed: number = 0;
   protected angle: number;
+  protected speed: number = 0;
   protected player: PlayerObject | null = null;
 
   private readonly FRICTION: number = 0.1;

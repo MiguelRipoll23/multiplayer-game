@@ -62,7 +62,7 @@ export class GameLoop {
   }
 
   private loop(timeStamp: DOMHighResTimeStamp): void {
-    this.deltaTimeStamp = timeStamp - this.previousTimeStamp;
+    this.deltaTimeStamp = Math.min(timeStamp - this.previousTimeStamp, 100);
     this.previousTimeStamp = timeStamp;
 
     this.update(this.deltaTimeStamp);

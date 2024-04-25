@@ -45,7 +45,7 @@ export class GameLoop {
         this.screenManager.crossfade(worldScreen, 1);
     }
     loop(timeStamp) {
-        this.deltaTimeStamp = timeStamp - this.previousTimeStamp;
+        this.deltaTimeStamp = Math.min(timeStamp - this.previousTimeStamp, 100);
         this.previousTimeStamp = timeStamp;
         this.update(this.deltaTimeStamp);
         this.render();

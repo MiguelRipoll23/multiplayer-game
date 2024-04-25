@@ -2,42 +2,41 @@ import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
 export class TargetObject extends BaseGameObject implements GameObject {
-  private canvas: HTMLCanvasElement;
-  private radius: number;
-  private xPos: number;
-  private yPos: number;
-  private scale: number;
-  private opacity: number;
-  private fadeInDuration: number;
+  private readonly RADIUS: number = 10;
+  private readonly FADE_IN_DURATION_SECONDS: number = 1000;
+
+  private readonly canvas: HTMLCanvasElement;
+
+  private scale: number = 0;
+  private opacity: number = 0;
+
+  private x: number;
+  private y: number;
 
   constructor(canvas: HTMLCanvasElement) {
     super();
 
     this.canvas = canvas;
-    this.radius = 10; // Radius of the circle
-    this.scale = 0; // Initial scale
-    this.opacity = 0; // Initial opacity
-    this.fadeInDuration = 1000; // Fade in duration in milliseconds
 
     // Set random position for the circle
-    this.xPos = Math.random() * (this.canvas.width - this.radius * 2) +
-      this.radius;
-    this.yPos = Math.random() * (this.canvas.height - this.radius * 2) +
-      this.radius;
+    this.x = Math.random() * (this.canvas.width - this.RADIUS * 2) +
+      this.RADIUS;
+    this.y = Math.random() * (this.canvas.height - this.RADIUS * 2) +
+      this.RADIUS;
   }
 
   update(deltaTimeStamp: DOMHighResTimeStamp): void {
     // Implement scaling animation
     if (this.scale < 1) {
       // Ease-in scaling
-      this.scale += deltaTimeStamp / this.fadeInDuration;
+      this.scale += deltaTimeStamp / this.FADE_IN_DURATION_SECONDS;
       this.scale = Math.min(this.scale, 1);
     }
 
     // Implement fade-in animation
     if (this.opacity < 1) {
       // Ease-in opacity
-      this.opacity += deltaTimeStamp / this.fadeInDuration;
+      this.opacity += deltaTimeStamp / this.FADE_IN_DURATION_SECONDS;
       this.opacity = Math.min(this.opacity, 1);
     }
   }
@@ -52,9 +51,9 @@ export class TargetObject extends BaseGameObject implements GameObject {
     // Scale and draw the circle
     context.beginPath();
     context.arc(
-      this.xPos,
-      this.yPos,
-      Math.abs(this.radius) * this.scale,
+      this.x,
+      this.y,
+      Math.abs(this.RADIUS) * this.scale,
       0,
       Math.PI * 2,
     );

@@ -1,22 +1,20 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class JoystickObject extends BaseGameObject {
+    RADIUS = 40;
+    MAX_DISTANCE = 30;
     canvas;
     active = false;
     controlX = 0;
     controlY = 0;
     x = 0;
     y = 0;
-    radius;
-    maxDistance;
     initialTouch = { x: 0, y: 0 };
     touchPoint = { x: 0, y: 0 };
     usingTouch = false;
     pressedKeys = new Set();
-    constructor(canvas, radius = 40, maxDistance = 30) {
+    constructor(canvas) {
         super();
         this.canvas = canvas;
-        this.radius = radius;
-        this.maxDistance = maxDistance;
         this.addTouchEventListeners();
         this.addKeyboardEventListeners();
     }
@@ -32,7 +30,7 @@ export class JoystickObject extends BaseGameObject {
     }
     updateJoystickPosition() {
         const distance = this.calculateDistance();
-        if (distance <= this.maxDistance) {
+        if (distance <= this.MAX_DISTANCE) {
             this.x = this.touchPoint.x;
             this.y = this.touchPoint.y;
         }
@@ -47,16 +45,16 @@ export class JoystickObject extends BaseGameObject {
     }
     adjustPosition() {
         const angle = Math.atan2(this.touchPoint.y - this.initialTouch.y, this.touchPoint.x - this.initialTouch.x);
-        const newX = this.initialTouch.x + this.maxDistance * Math.cos(angle);
-        const newY = this.initialTouch.y + this.maxDistance * Math.sin(angle);
+        const newX = this.initialTouch.x + this.MAX_DISTANCE * Math.cos(angle);
+        const newY = this.initialTouch.y + this.MAX_DISTANCE * Math.sin(angle);
         this.x = newX;
         this.y = newY;
     }
     calculateControlValues() {
         const relativeX = this.x - this.initialTouch.x;
         const relativeY = this.y - this.initialTouch.y;
-        this.controlX = relativeX / this.maxDistance;
-        this.controlY = relativeY / this.maxDistance;
+        this.controlX = relativeX / this.MAX_DISTANCE;
+        this.controlY = relativeY / this.MAX_DISTANCE;
     }
     isActive() {
         return this.active;
@@ -73,7 +71,7 @@ export class JoystickObject extends BaseGameObject {
     }
     drawInitialTouchCircleBorder(context) {
         context.beginPath();
-        context.arc(this.initialTouch.x, this.initialTouch.y, this.radius, 0, Math.PI * 2);
+        context.arc(this.initialTouch.x, this.initialTouch.y, this.RADIUS, 0, Math.PI * 2);
         context.strokeStyle = "rgba(0, 0, 0, 0.1)";
         context.lineWidth = 2; // Adjust line width as needed
         context.stroke();
@@ -81,8 +79,8 @@ export class JoystickObject extends BaseGameObject {
     }
     drawJoystickCircle(context) {
         context.beginPath();
-        context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        const gradient = context.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+        context.arc(this.x, this.y, this.RADIUS, 0, Math.PI * 2);
+        const gradient = context.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.RADIUS);
         gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
         gradient.addColorStop(1, "rgba(200, 200, 200, 0.8)");
         context.fillStyle = gradient;

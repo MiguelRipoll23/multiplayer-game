@@ -1,20 +1,20 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class GearStickObject extends BaseGameObject {
     canvas;
+    SIZE = 65; // Adjust size as needed
+    CORNER_RADIUS = 12; // Adjust corner radius as needed
+    FILL_COLOR = "black"; // Change fill color to black
+    FONT_SIZE = 36; // Adjust font size as needed
+    Y_OFFSET = 25;
     y = 0;
     x = 25;
     active = false;
     currentGear = "F";
-    size = 65; // Adjust size as needed
-    cornerRadius = 12; // Adjust corner radius as needed
-    fillColor = "black"; // Change fill color to black
-    fontSize = 36; // Adjust font size as needed
-    yOffset = 25;
     constructor(canvas) {
         super();
         this.canvas = canvas;
         // Position the gear stick 50px from the bottom
-        this.y = this.canvas.height - (this.size + this.yOffset);
+        this.y = this.canvas.height - (this.SIZE + this.Y_OFFSET);
         this.addTouchEventListeners();
         this.addKeyboardEventListeners();
     }
@@ -36,23 +36,23 @@ export class GearStickObject extends BaseGameObject {
     }
     drawSquare(context) {
         // Draw the filled rounded square
-        context.fillStyle = this.fillColor;
+        context.fillStyle = this.FILL_COLOR;
         context.beginPath();
-        context.moveTo(this.x + this.cornerRadius, this.y);
-        context.arcTo(this.x + this.size, this.y, this.x + this.size, this.y + this.size, this.cornerRadius);
-        context.arcTo(this.x + this.size, this.y + this.size, this.x, this.y + this.size, this.cornerRadius);
-        context.arcTo(this.x, this.y + this.size, this.x, this.y, this.cornerRadius);
-        context.arcTo(this.x, this.y, this.x + this.size, this.y, this.cornerRadius);
+        context.moveTo(this.x + this.CORNER_RADIUS, this.y);
+        context.arcTo(this.x + this.SIZE, this.y, this.x + this.SIZE, this.y + this.SIZE, this.CORNER_RADIUS);
+        context.arcTo(this.x + this.SIZE, this.y + this.SIZE, this.x, this.y + this.SIZE, this.CORNER_RADIUS);
+        context.arcTo(this.x, this.y + this.SIZE, this.x, this.y, this.CORNER_RADIUS);
+        context.arcTo(this.x, this.y, this.x + this.SIZE, this.y, this.CORNER_RADIUS);
         context.closePath();
         context.fill();
     }
     drawGearLetter(context) {
         // Draw the current gear letter inside the square
         context.fillStyle = "white"; // Set text color to white
-        context.font = `bold ${this.fontSize}px Arial`; // Set font size dynamically
+        context.font = `bold ${this.FONT_SIZE}px Arial`; // Set font size dynamically
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillText(this.currentGear, this.x + this.size / 2, this.y + this.size / 2);
+        context.fillText(this.currentGear, this.x + this.SIZE / 2, this.y + this.SIZE / 2);
     }
     addTouchEventListeners() {
         this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this), { passive: true });
@@ -87,9 +87,9 @@ export class GearStickObject extends BaseGameObject {
     }
     isWithinGearStick(x, y) {
         return (x >= this.x &&
-            x <= this.x + this.size &&
+            x <= this.x + this.SIZE &&
             y >= this.y &&
-            y <= this.y + this.size);
+            y <= this.y + this.SIZE);
     }
     addKeyboardEventListeners() {
         window.addEventListener("keydown", this.handleKeyDown.bind(this));

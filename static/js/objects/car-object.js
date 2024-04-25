@@ -1,21 +1,21 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class CarObject extends BaseGameObject {
+    TOP_SPEED = 5;
+    ACCELERATION = 0.4;
+    HANDLING = 6;
     canvas;
-    topSpeed = 5;
     speed = 0;
-    acceleration = 0.4;
     angle;
-    handling = 6;
+    player = null;
+    FRICTION = 0.1;
+    BOUNCE_MULTIPLIER = 0.7;
+    WIDTH = 50;
+    HEIGHT = 50;
     x;
     y;
     vx = 0;
     vy = 0;
-    friction = 0.1;
-    bounceMultiplier = 0.7;
-    width = 50;
-    height = 50;
     carImage = null;
-    player = null;
     constructor(x, y, angle, canvas) {
         super();
         this.x = x;
@@ -39,9 +39,9 @@ export class CarObject extends BaseGameObject {
             return;
         }
         context.save();
-        context.translate(this.x + this.width / 2, this.y + this.height / 2);
+        context.translate(this.x + this.WIDTH / 2, this.y + this.HEIGHT / 2);
         context.rotate((this.angle * Math.PI) / 180);
-        context.drawImage(this.carImage, -this.width / 2, -this.height / 2, this.width, this.height);
+        context.drawImage(this.carImage, -this.WIDTH / 2, -this.HEIGHT / 2, this.WIDTH, this.HEIGHT);
         context.restore();
     }
     setPlayerObject(player) {
@@ -58,7 +58,7 @@ export class CarObject extends BaseGameObject {
         this.angle = (this.angle + 360) % 360;
     }
     applyFriction() {
-        this.speed += -this.friction * Math.sign(this.speed);
+        this.speed += -this.FRICTION * Math.sign(this.speed);
     }
     calculateMovement() {
         const angleInRadians = (this.angle * Math.PI) / 180;
@@ -69,21 +69,21 @@ export class CarObject extends BaseGameObject {
         this.handleCanvasBounds();
     }
     handleCanvasBounds() {
-        const canvasBoundsX = this.canvas.width - this.width;
-        const canvasBoundsY = this.canvas.height - this.height;
+        const canvasBoundsX = this.canvas.width - this.WIDTH;
+        const canvasBoundsY = this.canvas.height - this.HEIGHT;
         if (this.x <= 0 || this.x >= canvasBoundsX) {
             this.x = Math.max(0, Math.min(this.x, canvasBoundsX));
-            this.speed = Math.abs(this.speed) > this.topSpeed
-                ? Math.sign(this.speed) * this.topSpeed
+            this.speed = Math.abs(this.speed) > this.TOP_SPEED
+                ? Math.sign(this.speed) * this.TOP_SPEED
                 : this.speed;
-            this.speed = -this.speed * this.bounceMultiplier;
+            this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
         }
         if (this.y <= 0 || this.y >= canvasBoundsY) {
             this.y = Math.max(0, Math.min(this.y, canvasBoundsY));
-            this.speed = Math.abs(this.speed) > this.topSpeed
-                ? Math.sign(this.speed) * this.topSpeed
+            this.speed = Math.abs(this.speed) > this.TOP_SPEED
+                ? Math.sign(this.speed) * this.TOP_SPEED
                 : this.speed;
-            this.speed = -this.speed * this.bounceMultiplier;
+            this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
         }
     }
 }

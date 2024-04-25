@@ -15,6 +15,7 @@ export class CarObject extends BaseGameObject {
     width = 50;
     height = 50;
     carImage = null;
+    player = null;
     constructor(x, y, angle, canvas) {
         super();
         this.x = x;
@@ -42,6 +43,9 @@ export class CarObject extends BaseGameObject {
         context.rotate((this.angle * Math.PI) / 180);
         context.drawImage(this.carImage, -this.width / 2, -this.height / 2, this.width, this.height);
         context.restore();
+    }
+    setPlayerObject(player) {
+        this.player = player;
     }
     loadCarImage() {
         this.carImage = new Image();

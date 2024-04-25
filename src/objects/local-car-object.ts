@@ -3,14 +3,14 @@ import { GearStickObject } from "./gear-stick-object.js";
 import { JoystickObject } from "./joystick-object.js";
 
 export class LocalCarObject extends CarObject {
-  private joystick: JoystickObject;
-  private gearStick: GearStickObject;
+  private joystickObject: JoystickObject;
+  private gearStickObject: GearStickObject;
 
   constructor(x: number, y: number, angle: number, canvas: HTMLCanvasElement) {
     super(x, y, angle, canvas);
 
-    this.joystick = new JoystickObject(this.canvas);
-    this.gearStick = new GearStickObject(this.canvas);
+    this.joystickObject = new JoystickObject(this.canvas);
+    this.gearStickObject = new GearStickObject(this.canvas);
   }
 
   public update(deltaFrameMilliseconds: number): void {
@@ -23,24 +23,24 @@ export class LocalCarObject extends CarObject {
     super.render(context);
   }
 
-  public getJoystick(): JoystickObject {
-    return this.joystick;
+  public getJoystickObject(): JoystickObject {
+    return this.joystickObject;
   }
 
-  public getGearStick(): GearStickObject {
-    return this.gearStick;
+  public getGearStickObject(): GearStickObject {
+    return this.gearStickObject;
   }
 
   private handleControls(): void {
-    if (!this.joystick || !this.gearStick) return;
+    if (!this.joystickObject || !this.gearStickObject) return;
 
-    if (this.gearStick.isActive()) {
+    if (this.gearStickObject.isActive()) {
       return;
     }
 
-    const currentGear = this.gearStick.getCurrentGear();
+    const currentGear = this.gearStickObject.getCurrentGear();
 
-    if (this.joystick.isActive()) {
+    if (this.joystickObject.isActive()) {
       if (currentGear === "F" && this.speed < this.topSpeed) {
         this.speed += this.acceleration;
       } else if (currentGear === "R" && this.speed > -this.topSpeed) {
@@ -50,6 +50,6 @@ export class LocalCarObject extends CarObject {
 
     this.angle += this.handling *
       (this.speed / this.topSpeed) *
-      this.joystick.getControlX();
+      this.joystickObject.getControlX();
   }
 }

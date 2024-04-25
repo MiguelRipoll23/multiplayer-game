@@ -2,12 +2,12 @@ import { CarObject } from "./car-object.js";
 import { GearStickObject } from "./gear-stick-object.js";
 import { JoystickObject } from "./joystick-object.js";
 export class LocalCarObject extends CarObject {
-    joystick;
-    gearStick;
+    joystickObject;
+    gearStickObject;
     constructor(x, y, angle, canvas) {
         super(x, y, angle, canvas);
-        this.joystick = new JoystickObject(this.canvas);
-        this.gearStick = new GearStickObject(this.canvas);
+        this.joystickObject = new JoystickObject(this.canvas);
+        this.gearStickObject = new GearStickObject(this.canvas);
     }
     update(deltaFrameMilliseconds) {
         this.handleControls();
@@ -16,20 +16,20 @@ export class LocalCarObject extends CarObject {
     render(context) {
         super.render(context);
     }
-    getJoystick() {
-        return this.joystick;
+    getJoystickObject() {
+        return this.joystickObject;
     }
-    getGearStick() {
-        return this.gearStick;
+    getGearStickObject() {
+        return this.gearStickObject;
     }
     handleControls() {
-        if (!this.joystick || !this.gearStick)
+        if (!this.joystickObject || !this.gearStickObject)
             return;
-        if (this.gearStick.isActive()) {
+        if (this.gearStickObject.isActive()) {
             return;
         }
-        const currentGear = this.gearStick.getCurrentGear();
-        if (this.joystick.isActive()) {
+        const currentGear = this.gearStickObject.getCurrentGear();
+        if (this.joystickObject.isActive()) {
             if (currentGear === "F" && this.speed < this.topSpeed) {
                 this.speed += this.acceleration;
             }
@@ -39,6 +39,6 @@ export class LocalCarObject extends CarObject {
         }
         this.angle += this.handling *
             (this.speed / this.topSpeed) *
-            this.joystick.getControlX();
+            this.joystickObject.getControlX();
     }
 }

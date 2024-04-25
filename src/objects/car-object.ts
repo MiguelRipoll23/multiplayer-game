@@ -1,5 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
+import { PlayerObject } from "./player-object.js";
 
 export class CarObject extends BaseGameObject implements GameObject {
   protected canvas: HTMLCanvasElement;
@@ -20,6 +21,8 @@ export class CarObject extends BaseGameObject implements GameObject {
   private readonly width: number = 50;
   private readonly height: number = 50;
   private carImage: HTMLImageElement | null = null;
+
+  protected player: PlayerObject | null = null;
 
   constructor(x: number, y: number, angle: number, canvas: HTMLCanvasElement) {
     super();
@@ -60,6 +63,10 @@ export class CarObject extends BaseGameObject implements GameObject {
       this.height,
     );
     context.restore();
+  }
+
+  public setPlayerObject(player: PlayerObject): void {
+    this.player = player;
   }
 
   private loadCarImage(): void {

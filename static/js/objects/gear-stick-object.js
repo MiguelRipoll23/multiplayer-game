@@ -15,7 +15,8 @@ export class GearStickObject extends BaseGameObject {
         this.canvas = canvas;
         // Position the gear stick 50px from the bottom
         this.y = this.canvas.height - (this.size + this.yOffset);
-        this.addEventListeners();
+        this.addTouchEventListeners();
+        this.addKeyboardEventListeners();
     }
     update(deltaTimeStamp) {
         // Implement update logic if required
@@ -30,7 +31,30 @@ export class GearStickObject extends BaseGameObject {
     getCurrentGear() {
         return this.currentGear;
     }
-    addEventListeners() {
+    switchGear() {
+        this.currentGear = this.currentGear === "F" ? "R" : "F";
+    }
+    drawSquare(context) {
+        // Draw the filled rounded square
+        context.fillStyle = this.fillColor;
+        context.beginPath();
+        context.moveTo(this.x + this.cornerRadius, this.y);
+        context.arcTo(this.x + this.size, this.y, this.x + this.size, this.y + this.size, this.cornerRadius);
+        context.arcTo(this.x + this.size, this.y + this.size, this.x, this.y + this.size, this.cornerRadius);
+        context.arcTo(this.x, this.y + this.size, this.x, this.y, this.cornerRadius);
+        context.arcTo(this.x, this.y, this.x + this.size, this.y, this.cornerRadius);
+        context.closePath();
+        context.fill();
+    }
+    drawGearLetter(context) {
+        // Draw the current gear letter inside the square
+        context.fillStyle = "white"; // Set text color to white
+        context.font = `bold ${this.fontSize}px Arial`; // Set font size dynamically
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(this.currentGear, this.x + this.size / 2, this.y + this.size / 2);
+    }
+    addTouchEventListeners() {
         this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this), { passive: true });
         this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
             passive: true,
@@ -67,27 +91,15 @@ export class GearStickObject extends BaseGameObject {
             y >= this.y &&
             y <= this.y + this.size);
     }
-    switchGear() {
-        this.currentGear = this.currentGear === "F" ? "R" : "F";
+    addKeyboardEventListeners() {
+        window.addEventListener("keydown", this.handleKeyDown.bind(this));
     }
-    drawSquare(context) {
-        // Draw the filled rounded square
-        context.fillStyle = this.fillColor;
-        context.beginPath();
-        context.moveTo(this.x + this.cornerRadius, this.y);
-        context.arcTo(this.x + this.size, this.y, this.x + this.size, this.y + this.size, this.cornerRadius);
-        context.arcTo(this.x + this.size, this.y + this.size, this.x, this.y + this.size, this.cornerRadius);
-        context.arcTo(this.x, this.y + this.size, this.x, this.y, this.cornerRadius);
-        context.arcTo(this.x, this.y, this.x + this.size, this.y, this.cornerRadius);
-        context.closePath();
-        context.fill();
-    }
-    drawGearLetter(context) {
-        // Draw the current gear letter inside the square
-        context.fillStyle = "white"; // Set text color to white
-        context.font = `bold ${this.fontSize}px Arial`; // Set font size dynamically
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText(this.currentGear, this.x + this.size / 2, this.y + this.size / 2);
+    handleKeyDown(event) {
+        if (event.key === "ArrowUp" || event.key === "w") {
+            this.currentGear = "F";
+        }
+        else if (event.key === "ArrowDown" || event.key === "s") {
+            this.currentGear = "R";
+        }
     }
 }

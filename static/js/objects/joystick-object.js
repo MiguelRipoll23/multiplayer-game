@@ -11,19 +11,18 @@ export class JoystickObject extends BaseGameObject {
     initialTouch = { x: 0, y: 0 };
     touchPoint = { x: 0, y: 0 };
     usingTouch = false;
+    pressedKeys = new Set();
     constructor(canvas, radius = 40, maxDistance = 30) {
         super();
         this.canvas = canvas;
         this.radius = radius;
         this.maxDistance = maxDistance;
         this.addTouchEventListeners();
+        this.addKeyboardEventListeners();
     }
     update(deltaTimeStamp) {
         if (this.usingTouch) {
             this.updateJoystickPosition();
-        }
-        else {
-            this.resetJoystick();
         }
     }
     render(context) {
@@ -126,6 +125,47 @@ export class JoystickObject extends BaseGameObject {
             x: touch.clientX - rect.left,
             y: touch.clientY - rect.top,
         };
+    }
+    addKeyboardEventListeners() {
+        window.addEventListener("keydown", this.handleKeyDown.bind(this));
+        window.addEventListener("keyup", this.handleKeyUp.bind(this));
+    }
+    handleKeyDown(event) {
+        this.pressedKeys.add(event.key);
+        this.updateControlValues();
+    }
+    handleKeyUp(event) {
+        this.pressedKeys.delete(event.key);
+        this.updateControlValues();
+    }
+    updateControlValues() {
+        const isArrowUpPressed = this.pressedKeys.has("ArrowUp") ||
+            this.pressedKeys.has("w");
+        const isArrowDownPressed = this.pressedKeys.has("ArrowDown") ||
+            this.pressedKeys.has("s");
+        const isArrowLeftPressed = this.pressedKeys.has("ArrowLeft") ||
+            this.pressedKeys.has("a");
+        const isArrowRightPressed = this.pressedKeys.has("ArrowRight") ||
+            this.pressedKeys.has("d");
+        this.active = isArrowUpPressed || isArrowDownPressed;
+        if (isArrowUpPressed && !isArrowDownPressed) {
+            this.controlY = -1;
+        }
+        else if (!isArrowUpPressed && isArrowDownPressed) {
+            this.controlY = 1;
+        }
+        else {
+            this.controlY = 0;
+        }
+        if (isArrowLeftPressed && !isArrowRightPressed) {
+            this.controlX = -1;
+        }
+        else if (!isArrowLeftPressed && isArrowRightPressed) {
+            this.controlX = 1;
+        }
+        else {
+            this.controlX = 0;
+        }
     }
     resetJoystick() {
         this.active = false;

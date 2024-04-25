@@ -20,7 +20,8 @@ export class GearStickObject extends BaseGameObject implements GameObject {
     // Position the gear stick 50px from the bottom
     this.y = this.canvas.height - (this.size + this.yOffset);
 
-    this.addEventListeners();
+    this.addTouchEventListeners();
+    this.addKeyboardEventListeners();
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -38,58 +39,6 @@ export class GearStickObject extends BaseGameObject implements GameObject {
 
   public getCurrentGear(): string {
     return this.currentGear;
-  }
-
-  private addEventListeners(): void {
-    this.canvas.addEventListener(
-      "touchstart",
-      this.handleTouchStart.bind(this),
-      { passive: true },
-    );
-
-    this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
-      passive: true,
-    });
-
-    this.canvas.addEventListener("click", this.handleClick.bind(this));
-  }
-
-  private handleClick(event: MouseEvent): void {
-    if (!event.target) return;
-
-    const rect = (event.target as Element).getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    if (this.isWithinGearStick(mouseX, mouseY)) {
-      this.switchGear();
-    }
-  }
-
-  private handleTouchStart(event: TouchEvent): void {
-    const touch = event.touches[0];
-    if (!touch) return;
-
-    const rect = this.canvas.getBoundingClientRect();
-    const touchX = touch.clientX - rect.left;
-    const touchY = touch.clientY - rect.top;
-
-    if (this.isWithinGearStick(touchX, touchY)) {
-      this.active = true;
-    }
-  }
-
-  private handleTouchEnd(event: TouchEvent): void {
-    this.active = false;
-  }
-
-  private isWithinGearStick(x: number, y: number): boolean {
-    return (
-      x >= this.x &&
-      x <= this.x + this.size &&
-      y >= this.y &&
-      y <= this.y + this.size
-    );
   }
 
   private switchGear(): void {
@@ -144,5 +93,69 @@ export class GearStickObject extends BaseGameObject implements GameObject {
       this.x + this.size / 2,
       this.y + this.size / 2,
     );
+  }
+
+  private addTouchEventListeners(): void {
+    this.canvas.addEventListener(
+      "touchstart",
+      this.handleTouchStart.bind(this),
+      { passive: true },
+    );
+
+    this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
+      passive: true,
+    });
+
+    this.canvas.addEventListener("click", this.handleClick.bind(this));
+  }
+
+  private handleClick(event: MouseEvent): void {
+    if (!event.target) return;
+
+    const rect = (event.target as Element).getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    if (this.isWithinGearStick(mouseX, mouseY)) {
+      this.switchGear();
+    }
+  }
+
+  private handleTouchStart(event: TouchEvent): void {
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    const rect = this.canvas.getBoundingClientRect();
+    const touchX = touch.clientX - rect.left;
+    const touchY = touch.clientY - rect.top;
+
+    if (this.isWithinGearStick(touchX, touchY)) {
+      this.active = true;
+    }
+  }
+
+  private handleTouchEnd(event: TouchEvent): void {
+    this.active = false;
+  }
+
+  private isWithinGearStick(x: number, y: number): boolean {
+    return (
+      x >= this.x &&
+      x <= this.x + this.size &&
+      y >= this.y &&
+      y <= this.y + this.size
+    );
+  }
+
+  private addKeyboardEventListeners(): void {
+    window.addEventListener("keydown", this.handleKeyDown.bind(this));
+  }
+
+  private handleKeyDown(event: KeyboardEvent): void {
+    if (event.key === "ArrowUp" || event.key === "w") {
+      this.currentGear = "F";
+    } else if (event.key === "ArrowDown" || event.key === "s") {
+      this.currentGear = "R";
+    }
   }
 }

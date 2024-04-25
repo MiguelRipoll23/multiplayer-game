@@ -1,10 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
-
-interface TouchPoint {
-  x: number;
-  y: number;
-}
+import { TouchPoint } from "./interfaces/touch-point.js";
 
 export class JoystickObject extends BaseGameObject implements GameObject {
   private canvas: HTMLCanvasElement;
@@ -15,11 +11,14 @@ export class JoystickObject extends BaseGameObject implements GameObject {
 
   private x: number = 0;
   private y: number = 0;
+
   private radius: number;
   private maxDistance: number;
   private initialTouch: TouchPoint = { x: 0, y: 0 };
   private touchPoint: TouchPoint = { x: 0, y: 0 };
   private usingTouch: boolean = false;
+
+  private pressedKeys: Set<string> = new Set();
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -33,13 +32,12 @@ export class JoystickObject extends BaseGameObject implements GameObject {
     this.maxDistance = maxDistance;
 
     this.addTouchEventListeners();
+    this.addKeyboardEventListeners();
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp) {
     if (this.usingTouch) {
       this.updateJoystickPosition();
-    } else {
-      this.resetJoystick();
     }
   }
 
@@ -190,6 +188,52 @@ export class JoystickObject extends BaseGameObject implements GameObject {
       x: touch.clientX - rect.left,
       y: touch.clientY - rect.top,
     };
+  }
+
+  private addKeyboardEventListeners() {
+    window.addEventListener("keydown", this.handleKeyDown.bind(this));
+    window.addEventListener("keyup", this.handleKeyUp.bind(this));
+  }
+
+  private handleKeyDown(event: KeyboardEvent) {
+    this.pressedKeys.add(event.key);
+
+    this.updateControlValues();
+  }
+
+  private handleKeyUp(event: KeyboardEvent) {
+    this.pressedKeys.delete(event.key);
+
+    this.updateControlValues();
+  }
+
+  private updateControlValues() {
+    const isArrowUpPressed = this.pressedKeys.has("ArrowUp") ||
+      this.pressedKeys.has("w");
+    const isArrowDownPressed = this.pressedKeys.has("ArrowDown") ||
+      this.pressedKeys.has("s");
+    const isArrowLeftPressed = this.pressedKeys.has("ArrowLeft") ||
+      this.pressedKeys.has("a");
+    const isArrowRightPressed = this.pressedKeys.has("ArrowRight") ||
+      this.pressedKeys.has("d");
+
+    this.active = isArrowUpPressed || isArrowDownPressed;
+
+    if (isArrowUpPressed && !isArrowDownPressed) {
+      this.controlY = -1;
+    } else if (!isArrowUpPressed && isArrowDownPressed) {
+      this.controlY = 1;
+    } else {
+      this.controlY = 0;
+    }
+
+    if (isArrowLeftPressed && !isArrowRightPressed) {
+      this.controlX = -1;
+    } else if (!isArrowLeftPressed && isArrowRightPressed) {
+      this.controlX = 1;
+    } else {
+      this.controlX = 0;
+    }
   }
 
   private resetJoystick() {

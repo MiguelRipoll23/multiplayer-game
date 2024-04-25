@@ -16,3 +16,7 @@ canvas {
   -ms-user-select: none;
   user-select: none;
 }
+
+canvas {
+  outline: none;
+}

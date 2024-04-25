@@ -6,7 +6,7 @@ export class CarObject extends BaseGameObject {
     canvas;
     angle;
     speed = 0;
-    player = null;
+    playerObject = null;
     FRICTION = 0.1;
     BOUNCE_MULTIPLIER = 0.7;
     WIDTH = 50;
@@ -44,8 +44,8 @@ export class CarObject extends BaseGameObject {
         context.drawImage(this.carImage, -this.WIDTH / 2, -this.HEIGHT / 2, this.WIDTH, this.HEIGHT);
         context.restore();
     }
-    setPlayerObject(player) {
-        this.player = player;
+    setPlayerObject(playerObject) {
+        this.playerObject = playerObject;
     }
     loadCarImage() {
         this.carImage = new Image();

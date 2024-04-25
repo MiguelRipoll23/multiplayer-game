@@ -10,7 +10,7 @@ export class CarObject extends BaseGameObject implements GameObject {
   protected readonly canvas: HTMLCanvasElement;
   protected angle: number;
   protected speed: number = 0;
-  protected player: PlayerObject | null = null;
+  protected playerObject: PlayerObject | null = null;
 
   private readonly FRICTION: number = 0.1;
   private readonly BOUNCE_MULTIPLIER: number = 0.7;
@@ -65,8 +65,8 @@ export class CarObject extends BaseGameObject implements GameObject {
     context.restore();
   }
 
-  public setPlayerObject(player: PlayerObject): void {
-    this.player = player;
+  public setPlayerObject(playerObject: PlayerObject): void {
+    this.playerObject = playerObject;
   }
 
   private loadCarImage(): void {

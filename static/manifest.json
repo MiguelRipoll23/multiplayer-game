@@ -10,6 +10,6 @@
   "orientation": "portrait",
   "scope": "/",
   "short_name": "Target Pursuit",
-  "start_url": "/?utm_source=homescreen&utm_medium=shortcut",
+  "start_url": "/game/static/index.html",
   "theme_color": "#000000"
 }

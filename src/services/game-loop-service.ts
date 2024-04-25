@@ -3,8 +3,6 @@ import { WorldScreen } from "../screens/world-screen.js";
 import { ScreenManagerService } from "./screen-manager-service.js";
 
 export class GameLoopService {
-  private isRunning: boolean = false;
-
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
 
@@ -14,8 +12,10 @@ export class GameLoopService {
   private previousTimeStamp: DOMHighResTimeStamp = 0;
   private deltaTimeStamp: DOMHighResTimeStamp = 0;
 
-  constructor() {
-    this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  private isRunning: boolean = false;
+
+  constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 
     this.gameFrame = new GameFrame();

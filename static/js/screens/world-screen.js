@@ -4,6 +4,8 @@ import { PlayerObject } from "../objects/player-object.js";
 import { WorldBackgroundObject } from "../objects/world-background-object.js";
 import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
+import { CountdownObject } from "../objects/countdown-object.js";
+import { ScoreObject } from "../objects/score-object.js";
 export class WorldScreen extends BaseGameScreen {
     canvas;
     constructor(canvas) {
@@ -12,6 +14,8 @@ export class WorldScreen extends BaseGameScreen {
     }
     loadObjects() {
         this.loadBackgroundObject();
+        this.loadCountdownObject();
+        this.loadScoreObjects();
         this.loadBallObject();
         this.loadGoalObjects();
         this.loadPlayerAndLocalCarObjects();
@@ -21,16 +25,27 @@ export class WorldScreen extends BaseGameScreen {
         const backgroundObject = new WorldBackgroundObject(this.canvas);
         this.sceneObjects.push(backgroundObject);
     }
+    loadCountdownObject() {
+        const countdownObject = new CountdownObject(this.canvas);
+        countdownObject.startCountdown(60 * 5);
+        this.sceneObjects.push(countdownObject);
+    }
+    loadScoreObjects() {
+        const redScoreObject = new ScoreObject(false, this.canvas);
+        const blueScoreObject = new ScoreObject(true, this.canvas);
+        this.sceneObjects.push(redScoreObject);
+        this.sceneObjects.push(blueScoreObject);
+    }
     loadBallObject() {
         const ballObject = new BallObject(0, 0, 90, this.canvas);
         ballObject.setCenterPosition();
         this.sceneObjects.push(ballObject);
     }
     loadGoalObjects() {
-        const goalObject1 = new GoalObject(false, this.canvas);
-        this.sceneObjects.push(goalObject1);
-        const goalObject2 = new GoalObject(true, this.canvas);
-        this.sceneObjects.push(goalObject2);
+        const redGoalObject = new GoalObject(false, this.canvas);
+        const blueGoalObject = new GoalObject(true, this.canvas);
+        this.sceneObjects.push(redGoalObject);
+        this.sceneObjects.push(blueGoalObject);
     }
     loadPlayerAndLocalCarObjects() {
         const playerObject = this.loadAndGetPlayerObject();

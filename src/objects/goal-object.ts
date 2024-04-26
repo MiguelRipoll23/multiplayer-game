@@ -4,31 +4,31 @@ import { GameObject } from "./interfaces/game-object.js";
 export class GoalObject extends BaseGameObject implements GameObject {
   private readonly RED_FILL_COLOR: string = "#EF5350";
   private readonly BLUE_FILL_COLOR: string = "#42A5F5";
-  private readonly LNE_BORDER_COLOR: string = "#fff";
+  private readonly LINE_BORDER_COLOR: string = "#fff";
 
-  private readonly WIDTH: number = 200; // Width of the goal
-  private readonly HEIGHT: number = 0; // Height of the goal
+  private readonly WIDTH: number = 100; // Width of the goal
+  private readonly HEIGHT: number = 40; // Height of the goal (adjusted)
   private readonly BORDER_SIZE: number = 2; // Border size
-  private readonly Y_OFSSET: number = 12;
+  private readonly Y_OFFSET: number = 13;
 
   private x: number = 0;
   private y: number = 0;
   private fillColor: string;
   private borderColor: string;
-  private blueTeam: boolean; // New property to save whether the goal is at the top
+  private blueTeam: boolean;
 
   constructor(blueTeam: boolean, canvas: HTMLCanvasElement) {
     super();
     this.blueTeam = blueTeam;
-    this.borderColor = this.LNE_BORDER_COLOR;
+    this.borderColor = this.LINE_BORDER_COLOR;
 
     if (blueTeam) {
       // Position goal at the bottom of the canvas
-      this.y = canvas.height - this.HEIGHT - this.Y_OFSSET;
+      this.y = canvas.height - this.HEIGHT - this.Y_OFFSET;
       this.fillColor = this.BLUE_FILL_COLOR;
     } else {
       // Position goal at the top of the canvas
-      this.y = this.Y_OFSSET;
+      this.y = this.Y_OFFSET;
       this.fillColor = this.RED_FILL_COLOR;
     }
 
@@ -46,27 +46,39 @@ export class GoalObject extends BaseGameObject implements GameObject {
     context.lineWidth = this.BORDER_SIZE;
 
     context.beginPath();
-    if (this.blueTeam) {
-      context.arc(
-        this.x + this.WIDTH / 2,
-        this.y + this.HEIGHT,
-        this.WIDTH / 2,
-        0,
-        Math.PI,
-        true
-      );
-    } else {
-      context.arc(
-        this.x + this.WIDTH / 2,
-        this.y,
-        this.WIDTH / 2,
-        Math.PI,
-        0,
-        true
-      );
-    }
+    context.rect(this.x, this.y, this.WIDTH, this.HEIGHT);
     context.closePath();
     context.fill();
+
+    // Draw left border
+    context.beginPath();
+    context.moveTo(this.x, this.y);
+    context.lineTo(this.x, this.y + this.HEIGHT);
+    context.closePath();
     context.stroke();
+
+    // Draw right border
+    context.beginPath();
+    context.moveTo(this.x + this.WIDTH, this.y);
+    context.lineTo(this.x + this.WIDTH, this.y + this.HEIGHT);
+    context.closePath();
+    context.stroke();
+
+    // Determine which border to remove
+    if (this.blueTeam) {
+      // Remove bottom border for blue team
+      context.beginPath();
+      context.moveTo(this.x, this.y);
+      context.lineTo(this.x + this.WIDTH, this.y);
+      context.closePath();
+      context.stroke();
+    } else {
+      // Remove top border for red team
+      context.beginPath();
+      context.moveTo(this.x, this.y + this.HEIGHT);
+      context.lineTo(this.x + this.WIDTH, this.y + this.HEIGHT);
+      context.closePath();
+      context.stroke();
+    }
   }
 }

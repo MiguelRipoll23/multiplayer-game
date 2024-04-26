@@ -16,7 +16,7 @@ export class CarObject extends BaseGameObject implements GameObject {
 
   private readonly WIDTH: number = 50;
   private readonly HEIGHT: number = 50;
-  private readonly DISTANCE_CENTER: number = 150;
+  private readonly DISTANCE_CENTER: number = 250;
   private readonly FRICTION: number = 0.1;
   private readonly BOUNCE_MULTIPLIER: number = 0.7;
 

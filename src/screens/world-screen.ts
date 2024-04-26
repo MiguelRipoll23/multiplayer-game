@@ -5,6 +5,8 @@ import { PlayerObject } from "../objects/player-object.js";
 import { WorldBackgroundObject } from "../objects/world-background-object.js";
 import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
+import { CountdownObject } from "../objects/countdown-object.js";
+import { ScoreObject } from "../objects/score-object.js";
 
 export class WorldScreen extends BaseGameScreen implements GameScreen {
   private canvas: HTMLCanvasElement;
@@ -17,6 +19,8 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
 
   public override loadObjects(): void {
     this.loadBackgroundObject();
+    this.loadCountdownObject();
+    this.loadScoreObjects();
     this.loadBallObject();
     this.loadGoalObjects();
     this.loadPlayerAndLocalCarObjects();
@@ -29,6 +33,20 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
     this.sceneObjects.push(backgroundObject);
   }
 
+  private loadCountdownObject() {
+    const countdownObject = new CountdownObject(this.canvas);
+    countdownObject.startCountdown(60 * 5);
+    this.sceneObjects.push(countdownObject);
+  }
+
+  private loadScoreObjects() {
+    const redScoreObject = new ScoreObject(false, this.canvas);
+    const blueScoreObject = new ScoreObject(true, this.canvas);
+
+    this.sceneObjects.push(redScoreObject);
+    this.sceneObjects.push(blueScoreObject);
+  }
+
   private loadBallObject() {
     const ballObject = new BallObject(0, 0, 90, this.canvas);
     ballObject.setCenterPosition();
@@ -37,11 +55,11 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
   }
 
   private loadGoalObjects() {
-    const goalObject1 = new GoalObject(false, this.canvas);
-    this.sceneObjects.push(goalObject1);
+    const redGoalObject = new GoalObject(false, this.canvas);
+    const blueGoalObject = new GoalObject(true, this.canvas);
 
-    const goalObject2 = new GoalObject(true, this.canvas);
-    this.sceneObjects.push(goalObject2);
+    this.sceneObjects.push(redGoalObject);
+    this.sceneObjects.push(blueGoalObject);
   }
 
   private loadPlayerAndLocalCarObjects() {

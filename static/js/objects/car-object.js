@@ -10,7 +10,7 @@ export class CarObject extends BaseGameObject {
     IMAGE_PATH = "./images/car-local.png";
     WIDTH = 50;
     HEIGHT = 50;
-    DISTANCE_CENTER = 150;
+    DISTANCE_CENTER = 250;
     FRICTION = 0.1;
     BOUNCE_MULTIPLIER = 0.7;
     x;

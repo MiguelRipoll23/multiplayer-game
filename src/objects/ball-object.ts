@@ -5,7 +5,7 @@ export class BallObject extends BaseGameObject implements GameObject {
   private x: number;
   private y: number;
   private angle: number;
-  protected readonly canvas: HTMLCanvasElement;
+  private readonly canvas: HTMLCanvasElement;
   private readonly RADIUS: number = 20; // Define the radius
   private readonly CENTER_X: number;
   private readonly CENTER_Y: number;

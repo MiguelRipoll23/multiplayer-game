@@ -1,24 +1,53 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class WorldBackgroundObject extends BaseGameObject {
+    BACKGROUND_COLOR = "#00a000";
+    BOUNDARY_COOLOR = "#ffffff";
     canvas;
-    BACKGROUND_COLOR = "#00A000";
-    LINE_BLUE_COLOR = "#52cee2";
-    LINE_RED_COLOR = "#e26652";
+    fieldWidth = 0;
+    fieldHeight = 0;
+    fieldX = 0;
+    fieldY = 0;
+    centerX = 0;
+    centerY = 0;
+    radius = 50;
     constructor(canvas) {
         super();
         this.canvas = canvas;
+        this.calculateFieldDimensions();
+        this.calculateCenter();
+    }
+    calculateFieldDimensions() {
+        this.fieldWidth = this.canvas.width - 25;
+        this.fieldHeight = this.canvas.height - 25;
+        this.fieldX = (this.canvas.width - this.fieldWidth) / 2;
+        this.fieldY = (this.canvas.height - this.fieldHeight) / 2;
+    }
+    calculateCenter() {
+        this.centerX = this.canvas.width / 2;
+        this.centerY = this.canvas.height / 2;
     }
     update(deltaTimeStamp) {
         // No update logic required
     }
     render(context) {
-        const canvasWidth = this.canvas.width;
-        const canvasHeight = this.canvas.height;
-        // Draw top half (red)
-        context.fillStyle = this.LINE_RED_COLOR;
-        context.fillRect(0, 0, canvasWidth, canvasHeight / 2);
-        // Draw bottom half (blue)
-        context.fillStyle = this.LINE_BLUE_COLOR;
-        context.fillRect(0, canvasHeight / 2, canvasWidth, canvasHeight / 2);
+        // Set background color
+        context.fillStyle = this.BACKGROUND_COLOR;
+        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // Draw football field
+        context.fillStyle = this.BACKGROUND_COLOR;
+        context.fillRect(this.fieldX, this.fieldY, this.fieldWidth, this.fieldHeight);
+        // Draw boundary lines
+        context.strokeStyle = this.BOUNDARY_COOLOR;
+        context.lineWidth = 2;
+        context.strokeRect(this.fieldX, this.fieldY, this.fieldWidth, this.fieldHeight);
+        // Draw midfield line
+        context.beginPath();
+        context.moveTo(this.fieldX, this.canvas.height / 2);
+        context.lineTo(this.fieldX + this.fieldWidth, this.canvas.height / 2);
+        context.stroke();
+        // Draw center circle
+        context.beginPath();
+        context.arc(this.centerX, this.centerY, this.radius, 0, 2 * Math.PI);
+        context.stroke();
     }
 }

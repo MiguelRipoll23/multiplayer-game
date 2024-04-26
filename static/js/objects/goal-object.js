@@ -1,32 +1,30 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class GoalObject extends BaseGameObject {
-    ORANGE_FILL_COLOR = "rgba(254, 118, 99, 0.5)";
-    ORANGE_BORDER_COLOR = "rgba(254, 118, 99, 1)";
-    BLUE_FILL_COLOR = "rgba(133, 222, 255, 0.5)";
-    BLUE_BORDER_COLOR = "rgba(133, 222, 255, 1)";
+    RED_FILL_COLOR = "#EF5350";
+    BLUE_FILL_COLOR = "#42A5F5";
+    LNE_BORDER_COLOR = "#fff";
     WIDTH = 200; // Width of the goal
     HEIGHT = 0; // Height of the goal
-    BORDER_SIZE = 5; // Border size
-    Y_OFSSET = 15; // Border size
+    BORDER_SIZE = 2; // Border size
+    Y_OFSSET = 12;
     x = 0;
     y = 0;
     fillColor;
     borderColor;
-    isTop; // New property to save whether the goal is at the top
-    constructor(top, canvas) {
+    blueTeam; // New property to save whether the goal is at the top
+    constructor(blueTeam, canvas) {
         super();
-        this.isTop = top; // Save the 'top' value to the 'isTop' property
-        if (top) {
-            // Position goal at the top of the canvas
-            this.y = -this.Y_OFSSET;
-            this.fillColor = this.ORANGE_FILL_COLOR;
-            this.borderColor = this.ORANGE_BORDER_COLOR;
+        this.blueTeam = blueTeam;
+        this.borderColor = this.LNE_BORDER_COLOR;
+        if (blueTeam) {
+            // Position goal at the bottom of the canvas
+            this.y = canvas.height - this.HEIGHT - this.Y_OFSSET;
+            this.fillColor = this.BLUE_FILL_COLOR;
         }
         else {
-            // Position goal at the bottom of the canvas
-            this.y = canvas.height - this.HEIGHT + this.Y_OFSSET;
-            this.fillColor = this.BLUE_FILL_COLOR;
-            this.borderColor = this.BLUE_BORDER_COLOR;
+            // Position goal at the top of the canvas
+            this.y = this.Y_OFSSET;
+            this.fillColor = this.RED_FILL_COLOR;
         }
         // Calculate x position to center the goal horizontally
         this.x = (canvas.width - this.WIDTH) / 2;
@@ -39,11 +37,11 @@ export class GoalObject extends BaseGameObject {
         context.strokeStyle = this.borderColor;
         context.lineWidth = this.BORDER_SIZE;
         context.beginPath();
-        if (this.isTop) {
-            context.arc(this.x + this.WIDTH / 2, this.y, this.WIDTH / 2, Math.PI, 0, true);
+        if (this.blueTeam) {
+            context.arc(this.x + this.WIDTH / 2, this.y + this.HEIGHT, this.WIDTH / 2, 0, Math.PI, true);
         }
         else {
-            context.arc(this.x + this.WIDTH / 2, this.y + this.HEIGHT, this.WIDTH / 2, 0, Math.PI, true);
+            context.arc(this.x + this.WIDTH / 2, this.y, this.WIDTH / 2, Math.PI, 0, true);
         }
         context.closePath();
         context.fill();

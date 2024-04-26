@@ -13,24 +13,35 @@ export class CarObject extends BaseGameObject implements GameObject {
   protected playerObject: PlayerObject | null = null;
 
   private readonly IMAGE_PATH = "./images/car-local.png";
-  private readonly FRICTION: number = 0.1;
-  private readonly BOUNCE_MULTIPLIER: number = 0.7;
+
   private readonly WIDTH: number = 50;
   private readonly HEIGHT: number = 50;
+  private readonly DISTANCE_CENTER: number = 150;
+  private readonly FRICTION: number = 0.1;
+  private readonly BOUNCE_MULTIPLIER: number = 0.7;
 
   private x: number;
   private y: number;
   private vx: number = 0;
   private vy: number = 0;
 
+  private blueTeam: boolean = false;
+
   private carImage: HTMLImageElement | null = null;
 
-  constructor(x: number, y: number, angle: number, canvas: HTMLCanvasElement) {
+  constructor(
+    x: number,
+    y: number,
+    angle: number,
+    blueTeam: boolean,
+    canvas: HTMLCanvasElement
+  ) {
     super();
 
     this.x = x;
     this.y = y;
     this.angle = angle;
+    this.blueTeam = blueTeam;
     this.canvas = canvas;
   }
 
@@ -53,7 +64,7 @@ export class CarObject extends BaseGameObject implements GameObject {
       -this.WIDTH / 2,
       -this.HEIGHT / 2,
       this.WIDTH,
-      this.HEIGHT,
+      this.HEIGHT
     );
     context.restore();
   }
@@ -61,6 +72,12 @@ export class CarObject extends BaseGameObject implements GameObject {
   public setCenterPosition(): void {
     this.x = this.canvas.width / 2 - this.WIDTH / 2;
     this.y = this.canvas.height / 2 - this.HEIGHT / 2;
+
+    if (this.blueTeam) {
+      this.y += this.DISTANCE_CENTER;
+    } else {
+      this.y -= this.DISTANCE_CENTER;
+    }
   }
 
   public setPlayerObject(playerObject: PlayerObject): void {
@@ -101,17 +118,19 @@ export class CarObject extends BaseGameObject implements GameObject {
 
     if (this.x <= 0 || this.x >= canvasBoundsX) {
       this.x = Math.max(0, Math.min(this.x, canvasBoundsX));
-      this.speed = Math.abs(this.speed) > this.TOP_SPEED
-        ? Math.sign(this.speed) * this.TOP_SPEED
-        : this.speed;
+      this.speed =
+        Math.abs(this.speed) > this.TOP_SPEED
+          ? Math.sign(this.speed) * this.TOP_SPEED
+          : this.speed;
       this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
     }
 
     if (this.y <= 0 || this.y >= canvasBoundsY) {
       this.y = Math.max(0, Math.min(this.y, canvasBoundsY));
-      this.speed = Math.abs(this.speed) > this.TOP_SPEED
-        ? Math.sign(this.speed) * this.TOP_SPEED
-        : this.speed;
+      this.speed =
+        Math.abs(this.speed) > this.TOP_SPEED
+          ? Math.sign(this.speed) * this.TOP_SPEED
+          : this.speed;
       this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
     }
   }

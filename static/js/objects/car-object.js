@@ -7,6 +7,7 @@ export class CarObject extends BaseGameObject {
     angle;
     speed = 0;
     playerObject = null;
+    IMAGE_PATH = "./images/car-local.png";
     FRICTION = 0.1;
     BOUNCE_MULTIPLIER = 0.7;
     WIDTH = 50;
@@ -50,7 +51,7 @@ export class CarObject extends BaseGameObject {
         this.carImage.onload = () => {
             super.load();
         };
-        this.carImage.src = "./images/car-local.png";
+        this.carImage.src = this.IMAGE_PATH;
     }
     wrapAngle() {
         this.angle = (this.angle + 360) % 360;

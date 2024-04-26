@@ -34,7 +34,7 @@ export class ScreenManagerService {
   public fadeOutAndIn(
     nextScreen: GameScreen,
     fadeOutDurationSeconds: number,
-    fadeInDurationSeconds: number
+    fadeInDurationSeconds: number,
   ): void {
     console.log("Fading out and in to", nextScreen.constructor.name);
 
@@ -51,7 +51,7 @@ export class ScreenManagerService {
 
   public crossfade(
     nextScreen: GameScreen,
-    crossfadeDurationSeconds: number
+    crossfadeDurationSeconds: number,
   ): void {
     console.log("Crossfading to", nextScreen.constructor.name);
 
@@ -79,7 +79,7 @@ export class ScreenManagerService {
 
     const fadeOutProgress = Math.min(
       1,
-      this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds
+      this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds,
     );
 
     currentScreen.setOpacity(1 - fadeOutProgress);
@@ -97,7 +97,7 @@ export class ScreenManagerService {
 
     const fadeInProgress = Math.min(
       1,
-      this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds
+      this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds,
     );
 
     nextScreen.setOpacity(fadeInProgress);
@@ -118,7 +118,7 @@ export class ScreenManagerService {
 
     const crossfadeProgress = Math.min(
       1,
-      this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds
+      this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds,
     );
 
     nextScreen.setOpacity(crossfadeProgress);

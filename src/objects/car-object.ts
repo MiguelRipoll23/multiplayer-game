@@ -12,6 +12,7 @@ export class CarObject extends BaseGameObject implements GameObject {
   protected speed: number = 0;
   protected playerObject: PlayerObject | null = null;
 
+  private readonly IMAGE_PATH = "./images/car-local.png";
   private readonly FRICTION: number = 0.1;
   private readonly BOUNCE_MULTIPLIER: number = 0.7;
   private readonly WIDTH: number = 50;
@@ -72,7 +73,7 @@ export class CarObject extends BaseGameObject implements GameObject {
       super.load();
     };
 
-    this.carImage.src = "./images/car-local.png";
+    this.carImage.src = this.IMAGE_PATH;
   }
 
   private wrapAngle(): void {

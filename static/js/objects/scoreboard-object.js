@@ -5,7 +5,7 @@ export class ScoreboardObject extends BaseGameObject {
     BLUE_SCORE = 0;
     ORANGE_SCORE = 0;
     SQUARE_SIZE = 50;
-    SPACE_BETWEEN = 15;
+    SPACE_BETWEEN = 10;
     TIME_BOX_WIDTH = 120;
     TIME_BOX_HEIGHT = 50;
     CORNER_RADIUS = 10;

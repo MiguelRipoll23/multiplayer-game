@@ -7,7 +7,7 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
   private readonly ORANGE_SCORE: number = 0;
 
   private readonly SQUARE_SIZE: number = 50;
-  private readonly SPACE_BETWEEN: number = 15;
+  private readonly SPACE_BETWEEN: number = 10;
   private readonly TIME_BOX_WIDTH: number = 120;
   private readonly TIME_BOX_HEIGHT: number = 50;
   private readonly CORNER_RADIUS: number = 10;

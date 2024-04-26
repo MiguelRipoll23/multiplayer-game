@@ -25,7 +25,7 @@ export class CarObject extends BaseGameObject implements GameObject {
   private vx: number = 0;
   private vy: number = 0;
 
-  private blueTeam: boolean = false;
+  private orangeTeam: boolean = false;
 
   private carImage: HTMLImageElement | null = null;
 
@@ -33,7 +33,7 @@ export class CarObject extends BaseGameObject implements GameObject {
     x: number,
     y: number,
     angle: number,
-    blueTeam: boolean,
+    orangeTeam: boolean,
     canvas: HTMLCanvasElement
   ) {
     super();
@@ -41,7 +41,7 @@ export class CarObject extends BaseGameObject implements GameObject {
     this.x = x;
     this.y = y;
     this.angle = angle;
-    this.blueTeam = blueTeam;
+    this.orangeTeam = orangeTeam;
     this.canvas = canvas;
   }
 
@@ -73,10 +73,10 @@ export class CarObject extends BaseGameObject implements GameObject {
     this.x = this.canvas.width / 2 - this.WIDTH / 2;
     this.y = this.canvas.height / 2 - this.HEIGHT / 2;
 
-    if (this.blueTeam) {
-      this.y += this.DISTANCE_CENTER;
-    } else {
+    if (this.orangeTeam) {
       this.y -= this.DISTANCE_CENTER;
+    } else {
+      this.y += this.DISTANCE_CENTER;
     }
   }
 

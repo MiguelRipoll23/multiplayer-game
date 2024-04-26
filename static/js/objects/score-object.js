@@ -1,4 +1,4 @@
-import { BLUE_TEAM_TRANSPARENCY_COLOR, RED_TEAM_TRANSPARENCY_COLOR, } from "../constants/colors.js";
+import { BLUE_TEAM_TRANSPARENCY_COLOR, ORANGE_TEAM_TRANSPARENCY_COLOR, } from "../constants/colors.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 export class ScoreObject extends BaseGameObject {
     TEXT_COLOR = "#FFFFFF"; // White text color
@@ -23,7 +23,7 @@ export class ScoreObject extends BaseGameObject {
             : this.y - this.DISTANCE_CENTER;
         this.SQUARE_FILL_COLOR = blueTeam
             ? BLUE_TEAM_TRANSPARENCY_COLOR
-            : RED_TEAM_TRANSPARENCY_COLOR;
+            : ORANGE_TEAM_TRANSPARENCY_COLOR;
     }
     update(deltaTimeStamp) { }
     render(context) {

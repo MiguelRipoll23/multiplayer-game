@@ -2,7 +2,6 @@ import { BaseGameObject } from "./base/base-game-object.js";
 export class GearStickObject extends BaseGameObject {
     canvas;
     SIZE = 65; // Adjust size as needed
-    CORNER_RADIUS = 12; // Adjust corner radius as needed
     FILL_COLOR = "black"; // Change fill color to black
     FONT_SIZE = 36; // Adjust font size as needed
     Y_OFFSET = 25;
@@ -22,7 +21,7 @@ export class GearStickObject extends BaseGameObject {
         // Implement update logic if required
     }
     render(context) {
-        this.drawSquare(context);
+        this.drawCircle(context); // Modified to draw a circle
         this.drawGearLetter(context);
     }
     isActive() {
@@ -34,20 +33,21 @@ export class GearStickObject extends BaseGameObject {
     switchGear() {
         this.currentGear = this.currentGear === "F" ? "R" : "F";
     }
-    drawSquare(context) {
-        // Draw the filled rounded square
+    drawCircle(context) {
+        // Draw the filled circle
         context.fillStyle = this.FILL_COLOR;
         context.beginPath();
-        context.moveTo(this.x + this.CORNER_RADIUS, this.y);
-        context.arcTo(this.x + this.SIZE, this.y, this.x + this.SIZE, this.y + this.SIZE, this.CORNER_RADIUS);
-        context.arcTo(this.x + this.SIZE, this.y + this.SIZE, this.x, this.y + this.SIZE, this.CORNER_RADIUS);
-        context.arcTo(this.x, this.y + this.SIZE, this.x, this.y, this.CORNER_RADIUS);
-        context.arcTo(this.x, this.y, this.x + this.SIZE, this.y, this.CORNER_RADIUS);
+        context.arc(this.x + this.SIZE / 2, // x-coordinate of the center
+        this.y + this.SIZE / 2, // y-coordinate of the center
+        this.SIZE / 2, // radius
+        0, // start angle
+        Math.PI * 2 // end angle
+        );
         context.closePath();
         context.fill();
     }
     drawGearLetter(context) {
-        // Draw the current gear letter inside the square
+        // Draw the current gear letter inside the circle
         context.fillStyle = "white"; // Set text color to white
         context.font = `bold ${this.FONT_SIZE}px Arial`; // Set font size dynamically
         context.textAlign = "center";

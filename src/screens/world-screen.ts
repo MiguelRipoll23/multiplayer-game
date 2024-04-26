@@ -22,8 +22,8 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
     this.loadCountdownObject();
     this.loadScoreObjects();
     this.loadBallObject();
-    this.loadGoalObjects();
     this.loadPlayerAndLocalCarObjects();
+    this.loadGoalObjects();
 
     super.loadObjects();
   }
@@ -40,10 +40,10 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
   }
 
   private loadScoreObjects() {
-    const redScoreObject = new ScoreObject(false, this.canvas);
+    const orangeScoreObject = new ScoreObject(false, this.canvas);
     const blueScoreObject = new ScoreObject(true, this.canvas);
 
-    this.sceneObjects.push(redScoreObject);
+    this.sceneObjects.push(orangeScoreObject);
     this.sceneObjects.push(blueScoreObject);
   }
 
@@ -55,10 +55,10 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
   }
 
   private loadGoalObjects() {
-    const redGoalObject = new GoalObject(false, this.canvas);
-    const blueGoalObject = new GoalObject(true, this.canvas);
+    const orangeGoalObject = new GoalObject(true, this.canvas);
+    const blueGoalObject = new GoalObject(false, this.canvas);
 
-    this.sceneObjects.push(redGoalObject);
+    this.sceneObjects.push(orangeGoalObject);
     this.sceneObjects.push(blueGoalObject);
   }
 

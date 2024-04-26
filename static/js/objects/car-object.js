@@ -17,14 +17,14 @@ export class CarObject extends BaseGameObject {
     y;
     vx = 0;
     vy = 0;
-    blueTeam = false;
+    orangeTeam = false;
     carImage = null;
-    constructor(x, y, angle, blueTeam, canvas) {
+    constructor(x, y, angle, orangeTeam, canvas) {
         super();
         this.x = x;
         this.y = y;
         this.angle = angle;
-        this.blueTeam = blueTeam;
+        this.orangeTeam = orangeTeam;
         this.canvas = canvas;
     }
     load() {
@@ -45,11 +45,11 @@ export class CarObject extends BaseGameObject {
     setCenterPosition() {
         this.x = this.canvas.width / 2 - this.WIDTH / 2;
         this.y = this.canvas.height / 2 - this.HEIGHT / 2;
-        if (this.blueTeam) {
-            this.y += this.DISTANCE_CENTER;
+        if (this.orangeTeam) {
+            this.y -= this.DISTANCE_CENTER;
         }
         else {
-            this.y -= this.DISTANCE_CENTER;
+            this.y += this.DISTANCE_CENTER;
         }
     }
     setPlayerObject(playerObject) {

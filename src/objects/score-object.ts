@@ -1,6 +1,6 @@
 import {
   BLUE_TEAM_TRANSPARENCY_COLOR,
-  RED_TEAM_TRANSPARENCY_COLOR,
+  ORANGE_TEAM_TRANSPARENCY_COLOR,
 } from "../constants/colors.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
@@ -29,7 +29,7 @@ export class ScoreObject extends BaseGameObject implements GameObject {
       : this.y - this.DISTANCE_CENTER;
     this.SQUARE_FILL_COLOR = blueTeam
       ? BLUE_TEAM_TRANSPARENCY_COLOR
-      : RED_TEAM_TRANSPARENCY_COLOR;
+      : ORANGE_TEAM_TRANSPARENCY_COLOR;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {}

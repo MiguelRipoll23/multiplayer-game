@@ -7,7 +7,7 @@ export class LocalCarObject extends CarObject {
   private readonly gearStickObject: GearStickObject;
 
   constructor(x: number, y: number, angle: number, canvas: HTMLCanvasElement) {
-    super(x, y, angle, true, canvas);
+    super(x, y, angle, false, canvas);
 
     this.joystickObject = new JoystickObject(this.canvas);
     this.gearStickObject = new GearStickObject(this.canvas);

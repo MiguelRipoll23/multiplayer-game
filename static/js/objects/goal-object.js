@@ -1,7 +1,6 @@
+import { BLUE_TEAM_TRANSPARENCY_COLOR, ORANGE_TEAM_TRANSPARENCY_COLOR, } from "../constants/colors.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 export class GoalObject extends BaseGameObject {
-    RED_FILL_COLOR = "#EF5350";
-    BLUE_FILL_COLOR = "#42A5F5";
     LINE_BORDER_COLOR = "#fff";
     WIDTH = 100; // Width of the goal
     HEIGHT = 40; // Height of the goal (adjusted)
@@ -11,20 +10,20 @@ export class GoalObject extends BaseGameObject {
     y = 0;
     fillColor;
     borderColor;
-    blueTeam;
-    constructor(blueTeam, canvas) {
+    orangeTeam;
+    constructor(orangeTeam, canvas) {
         super();
-        this.blueTeam = blueTeam;
+        this.orangeTeam = orangeTeam;
         this.borderColor = this.LINE_BORDER_COLOR;
-        if (blueTeam) {
-            // Position goal at the bottom of the canvas
-            this.y = canvas.height - this.HEIGHT - this.Y_OFFSET;
-            this.fillColor = this.BLUE_FILL_COLOR;
-        }
-        else {
+        if (orangeTeam) {
             // Position goal at the top of the canvas
             this.y = this.Y_OFFSET;
-            this.fillColor = this.RED_FILL_COLOR;
+            this.fillColor = ORANGE_TEAM_TRANSPARENCY_COLOR;
+        }
+        else {
+            // Position goal at the bottom of the canvas
+            this.y = canvas.height - this.HEIGHT - this.Y_OFFSET;
+            this.fillColor = BLUE_TEAM_TRANSPARENCY_COLOR;
         }
         // Calculate x position to center the goal horizontally
         this.x = (canvas.width - this.WIDTH) / 2;
@@ -53,19 +52,19 @@ export class GoalObject extends BaseGameObject {
         context.closePath();
         context.stroke();
         // Determine which border to remove
-        if (this.blueTeam) {
-            // Remove bottom border for blue team
+        if (this.orangeTeam) {
+            // Remove top border for orange team
             context.beginPath();
-            context.moveTo(this.x, this.y);
-            context.lineTo(this.x + this.WIDTH, this.y);
+            context.moveTo(this.x, this.y + this.HEIGHT);
+            context.lineTo(this.x + this.WIDTH, this.y + this.HEIGHT);
             context.closePath();
             context.stroke();
         }
         else {
-            // Remove top border for red team
+            // Remove bottom border for blue team
             context.beginPath();
-            context.moveTo(this.x, this.y + this.HEIGHT);
-            context.lineTo(this.x + this.WIDTH, this.y + this.HEIGHT);
+            context.moveTo(this.x, this.y);
+            context.lineTo(this.x + this.WIDTH, this.y);
             context.closePath();
             context.stroke();
         }

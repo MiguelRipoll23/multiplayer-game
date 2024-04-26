@@ -3,7 +3,6 @@ import { GameObject } from "./interfaces/game-object.js";
 
 export class GearStickObject extends BaseGameObject implements GameObject {
   private readonly SIZE: number = 65; // Adjust size as needed
-  private readonly CORNER_RADIUS: number = 12; // Adjust corner radius as needed
   private readonly FILL_COLOR: string = "black"; // Change fill color to black
   private readonly FONT_SIZE: number = 36; // Adjust font size as needed
   private readonly Y_OFFSET: number = 25;
@@ -29,7 +28,7 @@ export class GearStickObject extends BaseGameObject implements GameObject {
   }
 
   public render(context: CanvasRenderingContext2D): void {
-    this.drawSquare(context);
+    this.drawCircle(context); // Modified to draw a circle
     this.drawGearLetter(context);
   }
 
@@ -45,45 +44,23 @@ export class GearStickObject extends BaseGameObject implements GameObject {
     this.currentGear = this.currentGear === "F" ? "R" : "F";
   }
 
-  private drawSquare(context: CanvasRenderingContext2D): void {
-    // Draw the filled rounded square
+  private drawCircle(context: CanvasRenderingContext2D): void {
+    // Draw the filled circle
     context.fillStyle = this.FILL_COLOR;
     context.beginPath();
-    context.moveTo(this.x + this.CORNER_RADIUS, this.y);
-    context.arcTo(
-      this.x + this.SIZE,
-      this.y,
-      this.x + this.SIZE,
-      this.y + this.SIZE,
-      this.CORNER_RADIUS,
-    );
-    context.arcTo(
-      this.x + this.SIZE,
-      this.y + this.SIZE,
-      this.x,
-      this.y + this.SIZE,
-      this.CORNER_RADIUS,
-    );
-    context.arcTo(
-      this.x,
-      this.y + this.SIZE,
-      this.x,
-      this.y,
-      this.CORNER_RADIUS,
-    );
-    context.arcTo(
-      this.x,
-      this.y,
-      this.x + this.SIZE,
-      this.y,
-      this.CORNER_RADIUS,
+    context.arc(
+      this.x + this.SIZE / 2, // x-coordinate of the center
+      this.y + this.SIZE / 2, // y-coordinate of the center
+      this.SIZE / 2, // radius
+      0, // start angle
+      Math.PI * 2 // end angle
     );
     context.closePath();
     context.fill();
   }
 
   private drawGearLetter(context: CanvasRenderingContext2D): void {
-    // Draw the current gear letter inside the square
+    // Draw the current gear letter inside the circle
     context.fillStyle = "white"; // Set text color to white
     context.font = `bold ${this.FONT_SIZE}px Arial`; // Set font size dynamically
     context.textAlign = "center";
@@ -91,7 +68,7 @@ export class GearStickObject extends BaseGameObject implements GameObject {
     context.fillText(
       this.currentGear,
       this.x + this.SIZE / 2,
-      this.y + this.SIZE / 2,
+      this.y + this.SIZE / 2
     );
   }
 
@@ -99,7 +76,7 @@ export class GearStickObject extends BaseGameObject implements GameObject {
     this.canvas.addEventListener(
       "touchstart",
       this.handleTouchStart.bind(this),
-      { passive: true },
+      { passive: true }
     );
 
     this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {

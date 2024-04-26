@@ -7,7 +7,7 @@ export class CountdownObject extends BaseGameObject implements GameObject {
   private readonly RECTANGLE = {
     WIDTH: 150,
     HEIGHT: 60,
-    COLOR: "rgba(0, 0, 0, 0.5)",
+    COLOR: "#4CAF50",
     CORNER_RADIUS: 10,
   };
 

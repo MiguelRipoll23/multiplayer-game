@@ -1,10 +1,9 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class StatusObject extends BaseGameObject {
     canvas;
-    DISTANCE_CENTER = 100;
     FILL_COLOR = "rgba(0, 0, 0, 0.5)";
     TEXT_PADDING = 140;
-    DEFAULT_HEIGHT = 40;
+    DEFAULT_HEIGHT = 45;
     x = 0;
     y = 180;
     width = 0;
@@ -34,7 +33,7 @@ export class StatusObject extends BaseGameObject {
         context.font = "16px Arial";
         context.fillStyle = "WHITE";
         context.textAlign = "center";
-        context.fillText(this.text, this.x, this.y + 5); // Adjust y position for better centering
+        context.fillText(this.text, this.x, this.y + 2.5);
     }
     // Setter for the active property
     setActive(value) {

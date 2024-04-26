@@ -2,10 +2,9 @@ import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
 export class StatusObject extends BaseGameObject implements GameObject {
-  private readonly DISTANCE_CENTER = 100;
   private readonly FILL_COLOR = "rgba(0, 0, 0, 0.5)";
   private readonly TEXT_PADDING = 140;
-  private readonly DEFAULT_HEIGHT = 40;
+  private readonly DEFAULT_HEIGHT = 45;
 
   private x = 0;
   private y = 180;
@@ -48,7 +47,7 @@ export class StatusObject extends BaseGameObject implements GameObject {
     context.font = "16px Arial";
     context.fillStyle = "WHITE";
     context.textAlign = "center";
-    context.fillText(this.text, this.x, this.y + 5); // Adjust y position for better centering
+    context.fillText(this.text, this.x, this.y + 2.5);
   }
 
   // Setter for the active property

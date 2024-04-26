@@ -18,7 +18,8 @@ export class WorldScreen extends BaseGameScreen {
         return playerObject;
     }
     loadLocalCarObjects(playerObject) {
-        const localCarObject = new LocalCarObject(this.canvas.width / 2 - 25, this.canvas.height / 2 - 25, 90, this.canvas);
+        const localCarObject = new LocalCarObject(0, 0, 90, this.canvas);
+        localCarObject.setCenterPosition();
         localCarObject.setPlayerObject(playerObject);
         // Scene
         this.sceneObjects.push(localCarObject);

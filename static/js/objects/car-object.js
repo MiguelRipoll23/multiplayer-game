@@ -27,22 +27,20 @@ export class CarObject extends BaseGameObject {
         this.loadCarImage();
     }
     update(deltaTimeStamp) {
-        if (this.loaded === false) {
-            return;
-        }
         this.wrapAngle();
         this.applyFriction();
         this.calculateMovement();
     }
     render(context) {
-        if (this.loaded === false) {
-            return;
-        }
         context.save();
         context.translate(this.x + this.WIDTH / 2, this.y + this.HEIGHT / 2);
         context.rotate((this.angle * Math.PI) / 180);
         context.drawImage(this.carImage, -this.WIDTH / 2, -this.HEIGHT / 2, this.WIDTH, this.HEIGHT);
         context.restore();
+    }
+    setCenterPosition() {
+        this.x = this.canvas.width / 2 - this.WIDTH / 2;
+        this.y = this.canvas.height / 2 - this.HEIGHT / 2;
     }
     setPlayerObject(playerObject) {
         this.playerObject = playerObject;

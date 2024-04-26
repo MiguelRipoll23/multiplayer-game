@@ -59,13 +59,21 @@ export class BaseGameScreen {
     objects: GameObject[],
     deltaTimeStamp: DOMHighResTimeStamp,
   ): void {
-    objects.forEach((object) => object.update(deltaTimeStamp));
+    objects.forEach((object) => {
+      if (object.hasLoaded()) {
+        object.update(deltaTimeStamp);
+      }
+    });
   }
 
   private renderObjects(
     objects: GameObject[],
     context: CanvasRenderingContext2D,
   ): void {
-    objects.forEach((object) => object.render(context));
+    objects.forEach((object) => {
+      if (object.hasLoaded()) {
+        object.render(context);
+      }
+    });
   }
 }

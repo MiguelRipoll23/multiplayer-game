@@ -1,5 +1,5 @@
 import { BaseGameObject } from "./base/base-game-object.js";
-export class CountdownObject extends BaseGameObject {
+export class ScoreboardObject extends BaseGameObject {
     canvas;
     RECTANGLE = {
         WIDTH: 150,

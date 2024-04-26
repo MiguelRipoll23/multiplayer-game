@@ -2,8 +2,6 @@ import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
 export class CountdownObject extends BaseGameObject implements GameObject {
-  private readonly DISTANCE_CENTER = 300;
-
   private readonly RECTANGLE = {
     WIDTH: 150,
     HEIGHT: 60,
@@ -12,7 +10,7 @@ export class CountdownObject extends BaseGameObject implements GameObject {
   };
 
   private x: number = 0;
-  private y: number = 0;
+  private y: number = 120;
 
   private active = false;
   private elapsedMilliseconds = 0;
@@ -20,12 +18,7 @@ export class CountdownObject extends BaseGameObject implements GameObject {
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
-    this.setPosition();
-  }
-
-  private setPosition(): void {
     this.x = this.canvas.width / 2;
-    this.y = this.canvas.height / 2 - this.DISTANCE_CENTER;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {

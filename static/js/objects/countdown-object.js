@@ -1,7 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class CountdownObject extends BaseGameObject {
     canvas;
-    DISTANCE_CENTER = 300;
     RECTANGLE = {
         WIDTH: 150,
         HEIGHT: 60,
@@ -9,18 +8,14 @@ export class CountdownObject extends BaseGameObject {
         CORNER_RADIUS: 10,
     };
     x = 0;
-    y = 0;
+    y = 120;
     active = false;
     elapsedMilliseconds = 0;
     durationMilliseconds = 0;
     constructor(canvas) {
         super();
         this.canvas = canvas;
-        this.setPosition();
-    }
-    setPosition() {
         this.x = this.canvas.width / 2;
-        this.y = this.canvas.height / 2 - this.DISTANCE_CENTER;
     }
     update(deltaTimeStamp) {
         if (this.active) {

@@ -6,6 +6,7 @@ import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
 import { CountdownObject } from "../objects/countdown-object.js";
 import { ScoreObject } from "../objects/score-object.js";
+import { StatusObject } from "../objects/status-object.js";
 export class WorldScreen extends BaseGameScreen {
     canvas;
     constructor(canvas) {
@@ -19,6 +20,7 @@ export class WorldScreen extends BaseGameScreen {
         this.loadBallObject();
         this.loadPlayerAndLocalCarObjects();
         this.loadGoalObjects();
+        this.loadStatusObject();
         super.loadObjects();
     }
     loadBackgroundObject() {
@@ -62,5 +64,11 @@ export class WorldScreen extends BaseGameScreen {
         const playerObject = new PlayerObject("player1");
         this.sceneObjects.push(playerObject);
         return playerObject;
+    }
+    loadStatusObject() {
+        const statusObject = new StatusObject(this.canvas);
+        statusObject.setText("Waiting for players");
+        statusObject.setActive(true);
+        this.uiObjects.push(statusObject);
     }
 }

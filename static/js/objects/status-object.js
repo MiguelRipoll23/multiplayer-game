@@ -33,7 +33,7 @@ export class StatusObject extends BaseGameObject {
         context.font = "16px Arial";
         context.fillStyle = "WHITE";
         context.textAlign = "center";
-        context.fillText(this.text, this.x, this.y + 2.5);
+        context.fillText(this.text, this.x, this.y);
     }
     // Setter for the active property
     setActive(value) {

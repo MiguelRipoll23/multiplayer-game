@@ -1,8 +1,8 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
-export class IceBackgroundObject extends BaseGameObject implements GameObject {
-  private readonly TEXTURE_PATH = "./textures/ice02.jpg";
+export class GrassBackground extends BaseGameObject implements GameObject {
+  private readonly TEXTURE_PATH = "./textures/grass12.png";
 
   private image: HTMLImageElement;
 

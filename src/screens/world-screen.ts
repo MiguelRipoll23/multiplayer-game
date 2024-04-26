@@ -2,7 +2,7 @@ import { GameScreen } from "./interfaces/game-screen.js";
 import { LocalCarObject } from "../objects/local-car-object.js";
 import { BaseGameScreen } from "./base/base-game-screen.js";
 import { PlayerObject } from "../objects/player-object.js";
-import { IceBackgroundObject } from "../objects/background-object.js";
+import { GrassBackground } from "../objects/grass-background-object.js";
 import { GoalObject } from "../objects/goal-object.js";
 
 export class WorldScreen extends BaseGameScreen implements GameScreen {
@@ -37,7 +37,7 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
   }
 
   private loadBackgroundObject() {
-    const backgroundObject = new IceBackgroundObject();
+    const backgroundObject = new GrassBackground();
     this.sceneObjects.push(backgroundObject);
   }
 

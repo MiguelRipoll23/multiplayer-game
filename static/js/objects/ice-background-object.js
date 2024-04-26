@@ -1,5 +1,5 @@
 import { BaseGameObject } from "./base/base-game-object.js";
-export class IceBackgroundObject extends BaseGameObject {
+export class GrassBackground extends BaseGameObject {
     TEXTURE_PATH = "./textures/ice02_e.jpg";
     image;
     constructor() {

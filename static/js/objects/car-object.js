@@ -1,3 +1,4 @@
+import { BOUNDS_MARGIN } from "../constants/map.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 export class CarObject extends BaseGameObject {
     TOP_SPEED = 5;
@@ -77,18 +78,18 @@ export class CarObject extends BaseGameObject {
         this.handleCanvasBounds();
     }
     handleCanvasBounds() {
-        const canvasBoundsX = this.canvas.width - this.WIDTH;
-        const canvasBoundsY = this.canvas.height - this.HEIGHT;
-        if (this.x <= 0 || this.x >= canvasBoundsX) {
-            this.x = Math.max(0, Math.min(this.x, canvasBoundsX));
+        const canvasBoundsX = this.canvas.width - this.WIDTH - BOUNDS_MARGIN;
+        const canvasBoundsY = this.canvas.height - this.HEIGHT - BOUNDS_MARGIN;
+        if (this.x <= BOUNDS_MARGIN || this.x >= canvasBoundsX) {
+            this.x = Math.max(BOUNDS_MARGIN, Math.min(this.x, canvasBoundsX));
             this.speed =
                 Math.abs(this.speed) > this.TOP_SPEED
                     ? Math.sign(this.speed) * this.TOP_SPEED
                     : this.speed;
             this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
         }
-        if (this.y <= 0 || this.y >= canvasBoundsY) {
-            this.y = Math.max(0, Math.min(this.y, canvasBoundsY));
+        if (this.y <= BOUNDS_MARGIN || this.y >= canvasBoundsY) {
+            this.y = Math.max(BOUNDS_MARGIN, Math.min(this.y, canvasBoundsY));
             this.speed =
                 Math.abs(this.speed) > this.TOP_SPEED
                     ? Math.sign(this.speed) * this.TOP_SPEED

@@ -2,13 +2,13 @@ import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
 export class StatusObject extends BaseGameObject implements GameObject {
-  private readonly DISTANCE_CENTER = 350;
+  private readonly DISTANCE_CENTER = 100;
   private readonly FILL_COLOR = "rgba(0, 0, 0, 0.5)";
   private readonly TEXT_PADDING = 140;
   private readonly DEFAULT_HEIGHT = 40;
 
   private x = 0;
-  private y = 0;
+  private y = 180;
   private width = 0;
   private height = this.DEFAULT_HEIGHT;
   private active = false;
@@ -21,7 +21,6 @@ export class StatusObject extends BaseGameObject implements GameObject {
 
   private setPosition(): void {
     this.x = this.canvas.width / 2;
-    this.y = this.canvas.height / 2 + this.DISTANCE_CENTER;
   }
 
   public update(_deltaTimeStamp: DOMHighResTimeStamp): void {

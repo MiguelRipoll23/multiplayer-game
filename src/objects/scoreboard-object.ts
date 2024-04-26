@@ -7,7 +7,7 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
   private readonly ORANGE_SCORE: number = 0;
 
   private readonly SQUARE_SIZE: number = 50;
-  private readonly SPACE_BETWEEN: number = 5;
+  private readonly SPACE_BETWEEN: number = 15;
   private readonly TIME_BOX_WIDTH: number = 120;
   private readonly TIME_BOX_HEIGHT: number = 50;
   private readonly CORNER_RADIUS: number = 10;
@@ -22,9 +22,10 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
   private readonly BLUE_SHAPE_COLOR: string = BLUE_TEAM_COLOR;
   private readonly ORANGE_SHAPE_COLOR: string = ORANGE_TEAM_COLOR;
   private readonly SHAPE_FILL_COLOR: string = "white";
+  private readonly TIME_BOX_FILL_COLOR: string = "#4caf50"; // Added property for time box fill color
 
   private x: number;
-  private y: number = 120;
+  private y: number = 90;
 
   private active: boolean = false;
   private elapsedMilliseconds: number = 0;
@@ -32,7 +33,7 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
-    this.x = this.canvas.width / 2;
+    this.x = this.canvas.width / 2 - this.SPACE_BETWEEN / 2;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -45,23 +46,17 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
   }
 
   public render(context: CanvasRenderingContext2D): void {
-    // Calculate total width
     const totalWidth =
       2 * this.SQUARE_SIZE + this.SPACE_BETWEEN + this.TIME_BOX_WIDTH;
-
-    // Calculate starting x coordinate for rendering
     const startX = this.x - totalWidth / 2;
 
-    // Render blue score square with rounded corners
     this.renderSquare(context, startX, this.BLUE_SHAPE_COLOR, this.BLUE_SCORE);
-
-    // Render formatted time inside a rectangle with rounded corners
     const remainingTimeSeconds = Math.ceil(
       (this.durationMilliseconds - this.elapsedMilliseconds) / 1000
     );
     const formattedTime = this.formatTime(remainingTimeSeconds);
     const timeX = startX + this.SQUARE_SIZE + this.SPACE_BETWEEN;
-    const timeY = this.y + (this.SQUARE_SIZE - this.TIME_BOX_HEIGHT) / 2; // Center the time box vertically
+    const timeY = this.y + (this.SQUARE_SIZE - this.TIME_BOX_HEIGHT) / 2;
     this.renderTimeBox(
       context,
       timeX,
@@ -71,7 +66,6 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
       formattedTime
     );
 
-    // Render orange score square with rounded corners
     const orangeScoreX =
       startX +
       this.SQUARE_SIZE +
@@ -102,9 +96,8 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
       this.CORNER_RADIUS
     );
     context.fill();
-    context.fillStyle = this.TEXT_COLOR;
-    context.font = `${this.FONT_SIZE} ${this.FONT_FAMILY}`;
-    context.fillText(
+    this.renderText(
+      context,
       score.toString(),
       x + this.SQUARE_SIZE / 2,
       this.y + this.SQUARE_SIZE / 2
@@ -119,16 +112,13 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
     height: number,
     text: string
   ): void {
-    context.fillStyle = "black";
+    context.fillStyle = this.TIME_BOX_FILL_COLOR;
     this.roundedRect(context, x, y, width, height, this.CORNER_RADIUS);
     context.fill();
-    context.fillStyle = this.TIME_TEXT_COLOR;
-    context.font = `${this.TIME_FONT_SIZE} ${this.FONT_FAMILY}`;
     context.textAlign = "center";
-    context.fillText(text, x + width / 2, y + height / 2);
+    this.renderText(context, text, x + width / 2, y + height / 2);
   }
 
-  // Helper method to draw rounded rectangle
   private roundedRect(
     context: CanvasRenderingContext2D,
     x: number,
@@ -144,6 +134,17 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
     context.arcTo(x, y + height, x, y, radius);
     context.arcTo(x, y, x + width, y, radius);
     context.closePath();
+  }
+
+  private renderText(
+    context: CanvasRenderingContext2D,
+    text: string,
+    x: number,
+    y: number
+  ) {
+    context.fillStyle = this.TEXT_COLOR;
+    context.font = `${this.FONT_SIZE} ${this.FONT_FAMILY}`;
+    context.fillText(text, x, y);
   }
 
   private formatTime(timeInSeconds: number): string {

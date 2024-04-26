@@ -1,12 +1,12 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class StatusObject extends BaseGameObject {
     canvas;
-    DISTANCE_CENTER = 350;
+    DISTANCE_CENTER = 100;
     FILL_COLOR = "rgba(0, 0, 0, 0.5)";
     TEXT_PADDING = 140;
     DEFAULT_HEIGHT = 40;
     x = 0;
-    y = 0;
+    y = 180;
     width = 0;
     height = this.DEFAULT_HEIGHT;
     active = false;
@@ -18,7 +18,6 @@ export class StatusObject extends BaseGameObject {
     }
     setPosition() {
         this.x = this.canvas.width / 2;
-        this.y = this.canvas.height / 2 + this.DISTANCE_CENTER;
     }
     update(_deltaTimeStamp) {
         // No need to check if active here

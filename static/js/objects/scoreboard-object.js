@@ -5,7 +5,7 @@ export class ScoreboardObject extends BaseGameObject {
     BLUE_SCORE = 0;
     ORANGE_SCORE = 0;
     SQUARE_SIZE = 50;
-    SPACE_BETWEEN = 5;
+    SPACE_BETWEEN = 15;
     TIME_BOX_WIDTH = 120;
     TIME_BOX_HEIGHT = 50;
     CORNER_RADIUS = 10;
@@ -17,15 +17,16 @@ export class ScoreboardObject extends BaseGameObject {
     BLUE_SHAPE_COLOR = BLUE_TEAM_COLOR;
     ORANGE_SHAPE_COLOR = ORANGE_TEAM_COLOR;
     SHAPE_FILL_COLOR = "white";
+    TIME_BOX_FILL_COLOR = "#4caf50"; // Added property for time box fill color
     x;
-    y = 120;
+    y = 90;
     active = false;
     elapsedMilliseconds = 0;
     durationMilliseconds = 0;
     constructor(canvas) {
         super();
         this.canvas = canvas;
-        this.x = this.canvas.width / 2;
+        this.x = this.canvas.width / 2 - this.SPACE_BETWEEN / 2;
     }
     update(deltaTimeStamp) {
         if (this.active) {
@@ -36,19 +37,14 @@ export class ScoreboardObject extends BaseGameObject {
         }
     }
     render(context) {
-        // Calculate total width
         const totalWidth = 2 * this.SQUARE_SIZE + this.SPACE_BETWEEN + this.TIME_BOX_WIDTH;
-        // Calculate starting x coordinate for rendering
         const startX = this.x - totalWidth / 2;
-        // Render blue score square with rounded corners
         this.renderSquare(context, startX, this.BLUE_SHAPE_COLOR, this.BLUE_SCORE);
-        // Render formatted time inside a rectangle with rounded corners
         const remainingTimeSeconds = Math.ceil((this.durationMilliseconds - this.elapsedMilliseconds) / 1000);
         const formattedTime = this.formatTime(remainingTimeSeconds);
         const timeX = startX + this.SQUARE_SIZE + this.SPACE_BETWEEN;
-        const timeY = this.y + (this.SQUARE_SIZE - this.TIME_BOX_HEIGHT) / 2; // Center the time box vertically
+        const timeY = this.y + (this.SQUARE_SIZE - this.TIME_BOX_HEIGHT) / 2;
         this.renderTimeBox(context, timeX, timeY, this.TIME_BOX_WIDTH, this.TIME_BOX_HEIGHT, formattedTime);
-        // Render orange score square with rounded corners
         const orangeScoreX = startX +
             this.SQUARE_SIZE +
             this.SPACE_BETWEEN +
@@ -60,20 +56,15 @@ export class ScoreboardObject extends BaseGameObject {
         context.fillStyle = color;
         this.roundedRect(context, x, this.y, this.SQUARE_SIZE, this.SQUARE_SIZE, this.CORNER_RADIUS);
         context.fill();
-        context.fillStyle = this.TEXT_COLOR;
-        context.font = `${this.FONT_SIZE} ${this.FONT_FAMILY}`;
-        context.fillText(score.toString(), x + this.SQUARE_SIZE / 2, this.y + this.SQUARE_SIZE / 2);
+        this.renderText(context, score.toString(), x + this.SQUARE_SIZE / 2, this.y + this.SQUARE_SIZE / 2);
     }
     renderTimeBox(context, x, y, width, height, text) {
-        context.fillStyle = "black";
+        context.fillStyle = this.TIME_BOX_FILL_COLOR;
         this.roundedRect(context, x, y, width, height, this.CORNER_RADIUS);
         context.fill();
-        context.fillStyle = this.TIME_TEXT_COLOR;
-        context.font = `${this.TIME_FONT_SIZE} ${this.FONT_FAMILY}`;
         context.textAlign = "center";
-        context.fillText(text, x + width / 2, y + height / 2);
+        this.renderText(context, text, x + width / 2, y + height / 2);
     }
-    // Helper method to draw rounded rectangle
     roundedRect(context, x, y, width, height, radius) {
         context.beginPath();
         context.moveTo(x + radius, y);
@@ -82,6 +73,11 @@ export class ScoreboardObject extends BaseGameObject {
         context.arcTo(x, y + height, x, y, radius);
         context.arcTo(x, y, x + width, y, radius);
         context.closePath();
+    }
+    renderText(context, text, x, y) {
+        context.fillStyle = this.TEXT_COLOR;
+        context.font = `${this.FONT_SIZE} ${this.FONT_FAMILY}`;
+        context.fillText(text, x, y);
     }
     formatTime(timeInSeconds) {
         const minutes = Math.floor(timeInSeconds / 60);

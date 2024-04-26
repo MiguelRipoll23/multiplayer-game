@@ -5,7 +5,7 @@ export class GearStickObject extends BaseGameObject {
     CORNER_RADIUS = 12; // Adjust corner radius as needed
     FILL_COLOR = "black"; // Change fill color to black
     FONT_SIZE = 36; // Adjust font size as needed
-    Y_OFFSET = 15;
+    Y_OFFSET = 10;
     y = 0;
     x = 15;
     active = false;

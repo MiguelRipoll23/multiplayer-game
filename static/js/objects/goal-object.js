@@ -5,8 +5,9 @@ export class GoalObject extends BaseGameObject {
     BLUE_FILL_COLOR = "rgba(133, 222, 255, 0.5)";
     BLUE_BORDER_COLOR = "rgba(133, 222, 255, 1)";
     WIDTH = 200; // Width of the goal
-    HEIGHT = 200; // Height of the goal
+    HEIGHT = 0; // Height of the goal
     BORDER_SIZE = 5; // Border size
+    Y_OFSSET = 15; // Border size
     x = 0;
     y = 0;
     fillColor;
@@ -17,13 +18,13 @@ export class GoalObject extends BaseGameObject {
         this.isTop = top; // Save the 'top' value to the 'isTop' property
         if (top) {
             // Position goal at the top of the canvas
-            this.y = -5;
+            this.y = -this.Y_OFSSET;
             this.fillColor = this.ORANGE_FILL_COLOR;
             this.borderColor = this.ORANGE_BORDER_COLOR;
         }
         else {
             // Position goal at the bottom of the canvas
-            this.y = canvas.height - this.HEIGHT + 5;
+            this.y = canvas.height - this.HEIGHT + this.Y_OFSSET;
             this.fillColor = this.BLUE_FILL_COLOR;
             this.borderColor = this.BLUE_BORDER_COLOR;
         }

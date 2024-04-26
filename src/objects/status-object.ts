@@ -3,7 +3,7 @@ import { GameObject } from "./interfaces/game-object.js";
 
 export class StatusObject extends BaseGameObject implements GameObject {
   private readonly FILL_COLOR = "rgba(0, 0, 0, 0.5)";
-  private readonly TEXT_PADDING = 140;
+  private readonly TEXT_PADDING = 150;
   private readonly DEFAULT_HEIGHT = 45;
 
   private x = 0;

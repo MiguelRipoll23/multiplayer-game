@@ -2,7 +2,7 @@ import { BaseGameObject } from "./base/base-game-object.js";
 export class StatusObject extends BaseGameObject {
     canvas;
     FILL_COLOR = "rgba(0, 0, 0, 0.5)";
-    TEXT_PADDING = 140;
+    TEXT_PADDING = 150;
     DEFAULT_HEIGHT = 45;
     x = 0;
     y = 180;

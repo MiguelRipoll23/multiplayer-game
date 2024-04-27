@@ -1,3 +1,5 @@
+import { BaseCollidableGameObject } from "../../objects/base/base-collidable-game-object.js";
+import { HitboxObject } from "../../objects/hitbox-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 
 export class BaseGameScreen {
@@ -5,7 +7,7 @@ export class BaseGameScreen {
   protected sceneObjects: GameObject[];
   protected uiObjects: GameObject[];
 
-  private loadedMessagePending: boolean = true;
+  private isScreenloading: boolean = true;
 
   constructor() {
     console.log(`${this.constructor.name} created`);
@@ -26,9 +28,35 @@ export class BaseGameScreen {
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    this.logScreenLoadedMessageIfPending();
+    this.checkIfScreenHasLoaded();
+
     this.updateObjects(this.sceneObjects, deltaTimeStamp);
     this.updateObjects(this.uiObjects, deltaTimeStamp);
+
+    this.detectCollisions();
+  }
+
+  public detectCollisions(): void {
+    const collidableGameObjects: BaseCollidableGameObject[] = this.sceneObjects
+      .filter(
+        (sceneObject) => sceneObject instanceof BaseCollidableGameObject,
+      ) as unknown as BaseCollidableGameObject[];
+
+    collidableGameObjects.forEach((collidableGameObject) => {
+      collidableGameObject.setColliding(false);
+      collidableGameObject.getHitbox()?.setColliding(false);
+
+      collidableGameObjects.forEach((otherCollidableGameObject) => {
+        if (collidableGameObject === otherCollidableGameObject) {
+          return;
+        }
+
+        this.detectCollision(
+          collidableGameObject,
+          otherCollidableGameObject,
+        );
+      });
+    });
   }
 
   public render(context: CanvasRenderingContext2D): void {
@@ -48,9 +76,9 @@ export class BaseGameScreen {
     this.opacity = opacity;
   }
 
-  private logScreenLoadedMessageIfPending(): void {
-    if (this.loadedMessagePending && this.hasLoaded()) {
-      this.loadedMessagePending = false;
+  private checkIfScreenHasLoaded(): void {
+    if (this.isScreenloading && this.hasLoaded()) {
+      this.isScreenloading = false;
       console.log(`${this.constructor.name} loaded`);
     }
   }
@@ -64,6 +92,38 @@ export class BaseGameScreen {
         object.update(deltaTimeStamp);
       }
     });
+  }
+
+  private detectCollision(
+    sceneObject: BaseCollidableGameObject,
+    otherSceneObject: BaseCollidableGameObject,
+  ) {
+    const hitbox = sceneObject.getHitbox();
+    const otherHitbox = otherSceneObject.getHitbox();
+
+    if (!hitbox || !otherHitbox) {
+      return;
+    }
+
+    if (this.hitboxesIntersect(hitbox, otherHitbox)) {
+      hitbox.setColliding(true);
+      otherHitbox.setColliding(true);
+
+      sceneObject.setColliding(true);
+      sceneObject.setCollidedObject(otherSceneObject);
+    }
+  }
+
+  private hitboxesIntersect(
+    hitbox: HitboxObject,
+    otherHitbox: HitboxObject,
+  ): boolean {
+    return (
+      hitbox.getX() < otherHitbox.getX() + otherHitbox.getWidth() &&
+      hitbox.getX() + hitbox.getWidth() > otherHitbox.getX() &&
+      hitbox.getY() < otherHitbox.getY() + otherHitbox.getHeight() &&
+      hitbox.getY() + hitbox.getHeight() > otherHitbox.getY()
+    );
   }
 
   private renderObjects(

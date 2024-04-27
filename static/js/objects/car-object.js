@@ -1,5 +1,5 @@
 import { BOUNDS_MARGIN } from "../constants/map.js";
-import { ObjectHitbox } from "../models/object-hitbox.js";
+import { HitboxObject } from "./hitbox-object.js";
 import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
 export class CarObject extends BaseCollidableGameObject {
     TOP_SPEED = 5;
@@ -37,6 +37,7 @@ export class CarObject extends BaseCollidableGameObject {
         this.wrapAngle();
         this.applyFriction();
         this.calculateMovement();
+        this.updateHitbox();
     }
     render(context) {
         context.save();
@@ -44,9 +45,7 @@ export class CarObject extends BaseCollidableGameObject {
         context.rotate((this.angle * Math.PI) / 180);
         context.drawImage(this.carImage, -this.WIDTH / 2, -this.HEIGHT / 2, this.WIDTH, this.HEIGHT);
         context.restore();
-        // Hitbox
-        this.getHitbox()?.setX(this.x);
-        this.getHitbox()?.setY(this.y);
+        // Hitbox debug
         super.render(context);
     }
     setCenterPosition() {
@@ -63,7 +62,11 @@ export class CarObject extends BaseCollidableGameObject {
         this.playerObject = playerObject;
     }
     createHitbox() {
-        this.setHitbox(new ObjectHitbox(this.x, this.y, this.WIDTH, this.WIDTH));
+        this.setHitbox(new HitboxObject(this.x, this.y, this.WIDTH, this.WIDTH));
+    }
+    updateHitbox() {
+        this.getHitbox()?.setX(this.x);
+        this.getHitbox()?.setY(this.y);
     }
     loadCarImage() {
         this.carImage = new Image();

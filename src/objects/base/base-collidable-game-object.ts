@@ -1,11 +1,11 @@
-import { ObjectHitbox } from "../../models/object-hitbox.js";
+import { HitboxObject } from "../hitbox-object.js";
 import { CollidableGameObject } from "../interfaces/collidable-game-object.js";
 import { GameObject } from "../interfaces/game-object.js";
 import { BaseGameObject } from "./base-game-object.js";
 
 export class BaseCollidableGameObject extends BaseGameObject
   implements CollidableGameObject {
-  protected objectHitbox: ObjectHitbox | null = null;
+  protected objectHitbox: HitboxObject | null = null;
 
   private colliding: boolean = false;
   private collidedObject: GameObject | null = null;
@@ -14,11 +14,11 @@ export class BaseCollidableGameObject extends BaseGameObject
     super();
   }
 
-  public getHitbox(): ObjectHitbox | null {
+  public getHitbox(): HitboxObject | null {
     return this.objectHitbox;
   }
 
-  public setHitbox(objectHitbox: ObjectHitbox): void {
+  public setHitbox(objectHitbox: HitboxObject): void {
     this.objectHitbox = objectHitbox;
   }
 

@@ -1,10 +1,14 @@
-export class ObjectHitbox {
+import { BaseGameObject } from "./base/base-game-object.js";
+
+export class HitboxObject extends BaseGameObject {
   private x: number;
   private y: number;
   private width: number;
   private height: number;
+  private colliding: boolean = false;
 
   constructor(x: number, y: number, width: number, height: number) {
+    super();
     this.x = x;
     this.y = y;
     this.width = width;
@@ -35,11 +39,21 @@ export class ObjectHitbox {
     return this.height;
   }
 
+  public setColliding(colliding: boolean): void {
+    this.colliding = colliding;
+  }
+
   public render(context: CanvasRenderingContext2D): void {
     context.save(); // Save the current context state
 
-    context.strokeStyle = "#ff0000"; // Red color
+    context.strokeStyle = "#E91E63";
     context.strokeRect(this.x, this.y, this.width, this.height);
+
+    if (this.colliding) {
+      // Fill with transparent purple
+      context.fillStyle = "rgba(148, 0, 211, 0.5)"; // Adjust alpha value for transparency
+      context.fillRect(this.x, this.y, this.width, this.height);
+    }
 
     context.restore(); // Restore the context state
   }

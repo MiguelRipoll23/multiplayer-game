@@ -2,7 +2,7 @@ import {
   BLUE_TEAM_TRANSPARENCY_COLOR,
   ORANGE_TEAM_TRANSPARENCY_COLOR,
 } from "../constants/colors.js";
-import { ObjectHitbox } from "../models/object-hitbox.js";
+import { HitboxObject } from "./hitbox-object.js";
 import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
 
 export class GoalObject extends BaseCollidableGameObject {
@@ -89,15 +89,14 @@ export class GoalObject extends BaseCollidableGameObject {
     }
 
     // Hitbox
-    this.getHitbox()?.setX(this.x);
-    this.getHitbox()?.setY(this.y);
-
     super.render(context);
   }
 
   private createHitbox(): void {
+    const y = this.orangeTeam ? this.y : this.y + this.HEIGHT / 2;
+
     this.setHitbox(
-      new ObjectHitbox(this.x, this.y, this.WIDTH, this.HEIGHT / 2),
+      new HitboxObject(this.x, y, this.WIDTH, this.HEIGHT / 2),
     );
   }
 }

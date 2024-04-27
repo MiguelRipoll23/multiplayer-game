@@ -1,5 +1,5 @@
 import { BOUNDS_MARGIN } from "../constants/map.js";
-import { ObjectHitbox } from "../models/object-hitbox.js";
+import { HitboxObject } from "./hitbox-object.js";
 import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
 import { PlayerObject } from "./player-object.js";
 
@@ -55,6 +55,7 @@ export class CarObject extends BaseCollidableGameObject {
     this.wrapAngle();
     this.applyFriction();
     this.calculateMovement();
+    this.updateHitbox();
   }
 
   public render(context: CanvasRenderingContext2D): void {
@@ -70,10 +71,7 @@ export class CarObject extends BaseCollidableGameObject {
     );
     context.restore();
 
-    // Hitbox
-    this.getHitbox()?.setX(this.x);
-    this.getHitbox()?.setY(this.y);
-
+    // Hitbox debug
     super.render(context);
   }
 
@@ -94,8 +92,13 @@ export class CarObject extends BaseCollidableGameObject {
 
   private createHitbox(): void {
     this.setHitbox(
-      new ObjectHitbox(this.x, this.y, this.WIDTH, this.WIDTH),
+      new HitboxObject(this.x, this.y, this.WIDTH, this.WIDTH),
     );
+  }
+
+  private updateHitbox(): void {
+    this.getHitbox()?.setX(this.x);
+    this.getHitbox()?.setY(this.y);
   }
 
   private loadCarImage(): void {

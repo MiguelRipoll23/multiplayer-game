@@ -1,4 +1,4 @@
-import { ObjectHitbox } from "../models/object-hitbox.js";
+import { HitboxObject } from "./hitbox-object.js";
 import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
 export class BallObject extends BaseCollidableGameObject {
     x;
@@ -24,8 +24,7 @@ export class BallObject extends BaseCollidableGameObject {
         super.load();
     }
     update(deltaTimeStamp) {
-        this.getHitbox()?.setX(this.x - this.RADIUS);
-        this.getHitbox()?.setY(this.y - this.RADIUS);
+        this.updateHitbox();
     }
     render(context) {
         context.save(); // Save the current context state
@@ -53,6 +52,10 @@ export class BallObject extends BaseCollidableGameObject {
         this.y = this.CENTER_Y;
     }
     createHitbox() {
-        this.setHitbox(new ObjectHitbox(this.x - this.RADIUS * 2, this.y - this.RADIUS * 2, this.RADIUS * 2, this.RADIUS * 2));
+        this.setHitbox(new HitboxObject(this.x - this.RADIUS * 2, this.y - this.RADIUS * 2, this.RADIUS * 2, this.RADIUS * 2));
+    }
+    updateHitbox() {
+        this.getHitbox()?.setX(this.x - this.RADIUS);
+        this.getHitbox()?.setY(this.y - this.RADIUS);
     }
 }

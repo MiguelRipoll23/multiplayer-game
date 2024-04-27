@@ -2,7 +2,7 @@ import { BOUNDS_MARGIN } from "../constants/map.js";
 import { HitboxObject } from "./hitbox-object.js";
 import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
 export class CarObject extends BaseCollidableGameObject {
-    TOP_SPEED = 5;
+    TOP_SPEED = 4;
     ACCELERATION = 0.4;
     HANDLING = 6;
     canvas;

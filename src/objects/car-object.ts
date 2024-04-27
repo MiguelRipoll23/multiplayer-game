@@ -4,7 +4,7 @@ import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js"
 import { PlayerObject } from "./player-object.js";
 
 export class CarObject extends BaseCollidableGameObject {
-  protected readonly TOP_SPEED: number = 5;
+  protected readonly TOP_SPEED: number = 4;
   protected readonly ACCELERATION: number = 0.4;
   protected readonly HANDLING: number = 6;
 

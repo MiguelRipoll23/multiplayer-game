@@ -1,6 +1,7 @@
 import { BOUNDS_MARGIN } from "../constants/map.js";
-import { BaseGameObject } from "./base/base-game-object.js";
-export class CarObject extends BaseGameObject {
+import { ObjectHitbox } from "../models/object-hitbox.js";
+import { BaseCollidableObject } from "./base/base-collidable-object.js";
+export class CarObject extends BaseCollidableObject {
     TOP_SPEED = 5;
     ACCELERATION = 0.4;
     HANDLING = 6;
@@ -11,7 +12,7 @@ export class CarObject extends BaseGameObject {
     IMAGE_PATH = "./images/car-local.png";
     WIDTH = 50;
     HEIGHT = 50;
-    DISTANCE_CENTER = 250;
+    DISTANCE_CENTER = 220;
     FRICTION = 0.1;
     BOUNCE_MULTIPLIER = 0.7;
     x;
@@ -29,6 +30,7 @@ export class CarObject extends BaseGameObject {
         this.canvas = canvas;
     }
     load() {
+        this.createHitbox();
         this.loadCarImage();
     }
     update(deltaTimeStamp) {
@@ -56,6 +58,9 @@ export class CarObject extends BaseGameObject {
     setPlayerObject(playerObject) {
         this.playerObject = playerObject;
     }
+    createHitbox() {
+        this.setHitbox(new ObjectHitbox(this.x, this.y, this.WIDTH, this.HEIGHT));
+    }
     loadCarImage() {
         this.carImage = new Image();
         this.carImage.onload = () => {
@@ -82,18 +87,16 @@ export class CarObject extends BaseGameObject {
         const canvasBoundsY = this.canvas.height - this.HEIGHT - BOUNDS_MARGIN;
         if (this.x <= BOUNDS_MARGIN || this.x >= canvasBoundsX) {
             this.x = Math.max(BOUNDS_MARGIN, Math.min(this.x, canvasBoundsX));
-            this.speed =
-                Math.abs(this.speed) > this.TOP_SPEED
-                    ? Math.sign(this.speed) * this.TOP_SPEED
-                    : this.speed;
+            this.speed = Math.abs(this.speed) > this.TOP_SPEED
+                ? Math.sign(this.speed) * this.TOP_SPEED
+                : this.speed;
             this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
         }
         if (this.y <= BOUNDS_MARGIN || this.y >= canvasBoundsY) {
             this.y = Math.max(BOUNDS_MARGIN, Math.min(this.y, canvasBoundsY));
-            this.speed =
-                Math.abs(this.speed) > this.TOP_SPEED
-                    ? Math.sign(this.speed) * this.TOP_SPEED
-                    : this.speed;
+            this.speed = Math.abs(this.speed) > this.TOP_SPEED
+                ? Math.sign(this.speed) * this.TOP_SPEED
+                : this.speed;
             this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
         }
     }

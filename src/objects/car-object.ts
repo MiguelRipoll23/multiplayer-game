@@ -1,9 +1,11 @@
 import { BOUNDS_MARGIN } from "../constants/map.js";
+import { ObjectHitbox } from "../models/object-hitbox.js";
+import { BaseCollidableObject } from "./base/base-collidable-object.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 import { PlayerObject } from "./player-object.js";
 
-export class CarObject extends BaseGameObject implements GameObject {
+export class CarObject extends BaseCollidableObject implements GameObject {
   protected readonly TOP_SPEED: number = 5;
   protected readonly ACCELERATION: number = 0.4;
   protected readonly HANDLING: number = 6;
@@ -17,7 +19,7 @@ export class CarObject extends BaseGameObject implements GameObject {
 
   private readonly WIDTH: number = 50;
   private readonly HEIGHT: number = 50;
-  private readonly DISTANCE_CENTER: number = 250;
+  private readonly DISTANCE_CENTER: number = 220;
   private readonly FRICTION: number = 0.1;
   private readonly BOUNCE_MULTIPLIER: number = 0.7;
 
@@ -35,7 +37,7 @@ export class CarObject extends BaseGameObject implements GameObject {
     y: number,
     angle: number,
     orangeTeam: boolean,
-    canvas: HTMLCanvasElement
+    canvas: HTMLCanvasElement,
   ) {
     super();
 
@@ -47,6 +49,7 @@ export class CarObject extends BaseGameObject implements GameObject {
   }
 
   public override load(): void {
+    this.createHitbox();
     this.loadCarImage();
   }
 
@@ -65,7 +68,7 @@ export class CarObject extends BaseGameObject implements GameObject {
       -this.WIDTH / 2,
       -this.HEIGHT / 2,
       this.WIDTH,
-      this.HEIGHT
+      this.HEIGHT,
     );
     context.restore();
   }
@@ -83,6 +86,12 @@ export class CarObject extends BaseGameObject implements GameObject {
 
   public setPlayerObject(playerObject: PlayerObject): void {
     this.playerObject = playerObject;
+  }
+
+  private createHitbox(): void {
+    this.setHitbox(
+      new ObjectHitbox(this.x, this.y, this.WIDTH, this.HEIGHT),
+    );
   }
 
   private loadCarImage(): void {
@@ -119,19 +128,17 @@ export class CarObject extends BaseGameObject implements GameObject {
 
     if (this.x <= BOUNDS_MARGIN || this.x >= canvasBoundsX) {
       this.x = Math.max(BOUNDS_MARGIN, Math.min(this.x, canvasBoundsX));
-      this.speed =
-        Math.abs(this.speed) > this.TOP_SPEED
-          ? Math.sign(this.speed) * this.TOP_SPEED
-          : this.speed;
+      this.speed = Math.abs(this.speed) > this.TOP_SPEED
+        ? Math.sign(this.speed) * this.TOP_SPEED
+        : this.speed;
       this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
     }
 
     if (this.y <= BOUNDS_MARGIN || this.y >= canvasBoundsY) {
       this.y = Math.max(BOUNDS_MARGIN, Math.min(this.y, canvasBoundsY));
-      this.speed =
-        Math.abs(this.speed) > this.TOP_SPEED
-          ? Math.sign(this.speed) * this.TOP_SPEED
-          : this.speed;
+      this.speed = Math.abs(this.speed) > this.TOP_SPEED
+        ? Math.sign(this.speed) * this.TOP_SPEED
+        : this.speed;
       this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
     }
   }

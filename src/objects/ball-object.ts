@@ -1,25 +1,25 @@
 import { HitboxObject } from "./hitbox-object.js";
-import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
+import { BaseDynamicCollidableGameObject } from "./base/base-dynamic-collidable-game-object.js";
 
-export class BallObject extends BaseCollidableGameObject {
-  private x: number;
-  private y: number;
-  private angle: number;
-  private readonly canvas: HTMLCanvasElement;
+export class BallObject extends BaseDynamicCollidableGameObject {
+  private readonly MASS: number = 1;
   private readonly RADIUS: number = 20; // Define the radius
-  private readonly CENTER_X: number;
-  private readonly CENTER_Y: number;
   private readonly BALL_COLOR_LIGHT: string = "#ffffff"; // Light color
   private readonly BALL_COLOR_DARK: string = "#cccccc"; // Dark color
 
-  constructor(x: number, y: number, angle: number, canvas: HTMLCanvasElement) {
+  private readonly canvas: HTMLCanvasElement;
+  private readonly centerX: number;
+  private readonly centerY: number;
+
+  constructor(x: number, y: number, canvas: HTMLCanvasElement) {
     super();
     this.x = x;
     this.y = y;
-    this.angle = angle;
     this.canvas = canvas;
-    this.CENTER_X = this.canvas.width / 2;
-    this.CENTER_Y = this.canvas.height / 2;
+
+    this.mass = this.MASS;
+    this.centerX = this.canvas.width / 2;
+    this.centerY = this.canvas.height / 2;
   }
 
   public override load(): void {
@@ -29,16 +29,11 @@ export class BallObject extends BaseCollidableGameObject {
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.updateHitbox();
+    this.calculateMovement();
   }
 
-  public render(context: CanvasRenderingContext2D): void {
+  public override render(context: CanvasRenderingContext2D): void {
     context.save(); // Save the current context state
-
-    // Translate context to ball position
-    context.translate(this.x, this.y);
-
-    // Rotate context by the angle
-    context.rotate(this.angle);
 
     // Draw the football ball
     const gradient = context.createRadialGradient(0, 0, 0, 0, 0, this.RADIUS);
@@ -47,7 +42,7 @@ export class BallObject extends BaseCollidableGameObject {
     context.fillStyle = gradient;
 
     context.beginPath();
-    context.arc(0, 0, this.RADIUS, 0, Math.PI * 2);
+    context.arc(this.x, this.y, this.RADIUS, 0, Math.PI * 2);
     context.fill();
     context.closePath();
 
@@ -60,23 +55,30 @@ export class BallObject extends BaseCollidableGameObject {
 
   public setCenterPosition(): void {
     // Set position to the center of the canvas accounting for the radius
-    this.x = this.CENTER_X;
-    this.y = this.CENTER_Y;
+    this.x = this.centerX;
+    this.y = this.centerY;
   }
 
   private createHitbox(): void {
-    this.setHitbox(
-      new HitboxObject(
-        this.x - this.RADIUS * 2,
-        this.y - this.RADIUS * 2,
-        this.RADIUS * 2,
-        this.RADIUS * 2,
-      ),
+    const hitboxObject = new HitboxObject(
+      this.x - this.RADIUS * 2,
+      this.y - this.RADIUS * 2,
+      this.RADIUS * 2,
+      this.RADIUS * 2
     );
+
+    this.setHitboxObjects([hitboxObject]);
   }
 
   private updateHitbox(): void {
-    this.getHitbox()?.setX(this.x - this.RADIUS);
-    this.getHitbox()?.setY(this.y - this.RADIUS);
+    this.getHitboxObjects().forEach((object) => {
+      object.setX(this.x - this.RADIUS);
+      object.setY(this.y - this.RADIUS);
+    });
+  }
+
+  private calculateMovement(): void {
+    this.x -= this.vx;
+    this.y -= this.vy;
   }
 }

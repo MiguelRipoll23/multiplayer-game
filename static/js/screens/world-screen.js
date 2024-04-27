@@ -1,16 +1,14 @@
 import { LocalCarObject } from "../objects/local-car-object.js";
 import { BaseGameScreen } from "./base/base-game-screen.js";
 import { PlayerObject } from "../objects/player-object.js";
-import { WorldBackgroundObject } from "../objects/world-background-object.js";
+import { WorldBackgroundObject } from "../objects/backgrounds/world-background-object.js";
 import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
 import { ScoreboardObject } from "../objects/scoreboard-object.js";
 import { StatusObject } from "../objects/status-object.js";
 export class WorldScreen extends BaseGameScreen {
-    canvas;
     constructor(canvas) {
-        super();
-        this.canvas = canvas;
+        super(canvas);
     }
     loadObjects() {
         this.loadBackgroundObject();
@@ -24,6 +22,9 @@ export class WorldScreen extends BaseGameScreen {
     loadBackgroundObject() {
         const backgroundObject = new WorldBackgroundObject(this.canvas);
         this.sceneObjects.push(backgroundObject);
+        backgroundObject.getCollisionHitboxes().forEach((object) => {
+            this.sceneObjects.push(object);
+        });
     }
     loadCountdownObject() {
         const countdownObject = new ScoreboardObject(this.canvas);
@@ -31,7 +32,7 @@ export class WorldScreen extends BaseGameScreen {
         this.sceneObjects.push(countdownObject);
     }
     loadBallObject() {
-        const ballObject = new BallObject(0, 0, 90, this.canvas);
+        const ballObject = new BallObject(0, 0, this.canvas);
         ballObject.setCenterPosition();
         this.sceneObjects.push(ballObject);
     }

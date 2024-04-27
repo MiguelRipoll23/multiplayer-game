@@ -1,14 +1,12 @@
 import { BLUE_TEAM_TRANSPARENCY_COLOR, ORANGE_TEAM_TRANSPARENCY_COLOR, } from "../constants/colors.js";
 import { HitboxObject } from "./hitbox-object.js";
-import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
-export class GoalObject extends BaseCollidableGameObject {
+import { BaseStaticCollidableGameObject } from "./base/base-static-collidable-game-object.js";
+export class GoalObject extends BaseStaticCollidableGameObject {
     LINE_BORDER_COLOR = "#fff";
     WIDTH = 100; // Width of the goal
     HEIGHT = 40; // Height of the goal (adjusted)
     BORDER_SIZE = 2; // Border size
     Y_OFFSET = 13;
-    x = 0;
-    y = 0;
     fillColor;
     borderColor;
     orangeTeam;
@@ -77,7 +75,9 @@ export class GoalObject extends BaseCollidableGameObject {
         super.render(context);
     }
     createHitbox() {
-        const y = this.orangeTeam ? this.y : this.y + this.HEIGHT / 2;
-        this.setHitbox(new HitboxObject(this.x, y, this.WIDTH, this.HEIGHT / 2));
+        const y = this.orangeTeam ? this.y + 1 : this.y + this.HEIGHT / 2;
+        this.setHitboxObjects([
+            new HitboxObject(this.x, y, this.WIDTH, this.HEIGHT / 2),
+        ]);
     }
 }

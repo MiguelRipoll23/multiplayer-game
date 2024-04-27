@@ -1,7 +1,6 @@
-import { BOUNDS_MARGIN } from "../constants/map.js";
 import { HitboxObject } from "./hitbox-object.js";
-import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
-export class CarObject extends BaseCollidableGameObject {
+import { BaseDynamicCollidableGameObject } from "./base/base-dynamic-collidable-game-object.js";
+export class CarObject extends BaseDynamicCollidableGameObject {
     TOP_SPEED = 4;
     ACCELERATION = 0.4;
     HANDLING = 6;
@@ -10,15 +9,12 @@ export class CarObject extends BaseCollidableGameObject {
     speed = 0;
     playerObject = null;
     IMAGE_PATH = "./images/car-local.png";
+    MASS = 100;
     WIDTH = 50;
     HEIGHT = 50;
     DISTANCE_CENTER = 220;
     FRICTION = 0.1;
     BOUNCE_MULTIPLIER = 0.7;
-    x;
-    y;
-    vx = 0;
-    vy = 0;
     orangeTeam = false;
     carImage = null;
     constructor(x, y, angle, orangeTeam, canvas) {
@@ -28,6 +24,7 @@ export class CarObject extends BaseCollidableGameObject {
         this.angle = angle;
         this.orangeTeam = orangeTeam;
         this.canvas = canvas;
+        this.mass = this.MASS;
     }
     load() {
         this.createHitbox();
@@ -62,11 +59,15 @@ export class CarObject extends BaseCollidableGameObject {
         this.playerObject = playerObject;
     }
     createHitbox() {
-        this.setHitbox(new HitboxObject(this.x, this.y, this.WIDTH, this.WIDTH));
+        this.setHitboxObjects([
+            new HitboxObject(this.x, this.y, this.WIDTH, this.WIDTH),
+        ]);
     }
     updateHitbox() {
-        this.getHitbox()?.setX(this.x);
-        this.getHitbox()?.setY(this.y);
+        this.getHitboxObjects().forEach((object) => {
+            object.setX(this.x);
+            object.setY(this.y);
+        });
     }
     loadCarImage() {
         this.carImage = new Image();
@@ -82,29 +83,13 @@ export class CarObject extends BaseCollidableGameObject {
         this.speed += -this.FRICTION * Math.sign(this.speed);
     }
     calculateMovement() {
+        if (this.isColliding() && this.speed !== 0) {
+            this.speed *= -1;
+        }
         const angleInRadians = (this.angle * Math.PI) / 180;
         this.vx = Math.cos(angleInRadians) * this.speed;
         this.vy = Math.sin(angleInRadians) * this.speed;
         this.x -= this.vx;
         this.y -= this.vy;
-        this.handleCanvasBounds();
-    }
-    handleCanvasBounds() {
-        const canvasBoundsX = this.canvas.width - this.WIDTH - BOUNDS_MARGIN;
-        const canvasBoundsY = this.canvas.height - this.HEIGHT - BOUNDS_MARGIN;
-        if (this.x <= BOUNDS_MARGIN || this.x >= canvasBoundsX) {
-            this.x = Math.max(BOUNDS_MARGIN, Math.min(this.x, canvasBoundsX));
-            this.speed = Math.abs(this.speed) > this.TOP_SPEED
-                ? Math.sign(this.speed) * this.TOP_SPEED
-                : this.speed;
-            this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
-        }
-        if (this.y <= BOUNDS_MARGIN || this.y >= canvasBoundsY) {
-            this.y = Math.max(BOUNDS_MARGIN, Math.min(this.y, canvasBoundsY));
-            this.speed = Math.abs(this.speed) > this.TOP_SPEED
-                ? Math.sign(this.speed) * this.TOP_SPEED
-                : this.speed;
-            this.speed = -this.speed * this.BOUNCE_MULTIPLIER;
-        }
     }
 }

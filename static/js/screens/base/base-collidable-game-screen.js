@@ -1,14 +1,12 @@
-import { BaseStaticCollidableGameObject as BaseStaticCollidableGameObject } from "../../objects/base/base-static-collidable-game-object.js";
-import { BaseDynamicCollidableGameObject } from "../../objects/base/base-dynamic-collidable-game-object.js";
-export class BaseGameScreen {
-    canvas;
+import { BaseCollidableGameObject } from "../../objects/base/base-collidable-game-object.js";
+import { BaseMoveableCollidableGameObject } from "../../objects/base/base-moveable-collidable-game-object.js";
+export class BaseCollidableGameScreen {
     opacity = 0;
     sceneObjects;
     uiObjects;
     isScreenLoading = true;
-    constructor(canvas) {
+    constructor() {
         console.log(`${this.constructor.name} created`);
-        this.canvas = canvas;
         this.sceneObjects = [];
         this.uiObjects = [];
     }
@@ -26,22 +24,16 @@ export class BaseGameScreen {
         this.detectCollisions();
     }
     detectCollisions() {
-        const collidableGameObjects = this.sceneObjects.filter((sceneObject) => sceneObject instanceof BaseStaticCollidableGameObject ||
-            sceneObject instanceof BaseDynamicCollidableGameObject);
+        const collidableGameObjects = this.sceneObjects.filter((sceneObject) => sceneObject instanceof BaseCollidableGameObject ||
+            sceneObject instanceof BaseMoveableCollidableGameObject);
         collidableGameObjects.forEach((collidableGameObject) => {
             collidableGameObject.setColliding(false);
-            let hasCollision = false;
             collidableGameObjects.forEach((otherCollidableGameObject) => {
                 if (collidableGameObject === otherCollidableGameObject) {
                     return;
                 }
-                if (this.detectCollision(collidableGameObject, otherCollidableGameObject)) {
-                    hasCollision = true;
-                }
+                this.detectCollision(collidableGameObject, otherCollidableGameObject);
             });
-            if (hasCollision === false) {
-                collidableGameObject.setAvoidingCollision(false);
-            }
         });
     }
     render(context) {
@@ -72,44 +64,29 @@ export class BaseGameScreen {
     detectCollision(sceneObject, otherSceneObject) {
         const hitboxes = sceneObject.getHitboxObjects();
         const otherHitboxes = otherSceneObject.getHitboxObjects();
-        if (this.hitboxesIntersect(hitboxes, otherHitboxes)) {
-            if (sceneObject instanceof BaseDynamicCollidableGameObject &&
-                otherSceneObject instanceof BaseDynamicCollidableGameObject) {
-                this.simulateCollisionBetweenDynamicObjects(sceneObject, otherSceneObject);
-            }
-            else if (sceneObject instanceof BaseDynamicCollidableGameObject &&
-                otherSceneObject instanceof BaseStaticCollidableGameObject) {
-                if (sceneObject.isAvoidingCollision()) {
-                    return true;
-                }
-                this.simulateCollisionBetweenDynamicAndStaticObjects(sceneObject);
-            }
-            return true;
+        if (!hitboxes || !otherHitboxes) {
+            return;
         }
-        return false;
+        if (this.hitboxesIntersect(hitboxes, otherHitboxes)) {
+            sceneObject.setColliding(true);
+            sceneObject.setCollidedObject(otherSceneObject);
+            if (sceneObject instanceof BaseMoveableCollidableGameObject &&
+                otherSceneObject instanceof BaseMoveableCollidableGameObject) {
+                this.simulateCollision(sceneObject, otherSceneObject);
+            }
+        }
     }
     hitboxesIntersect(hitboxes, otherHitboxes) {
-        let intersecting = false;
-        hitboxes.forEach((hitbox) => {
-            otherHitboxes.forEach((otherHitbox) => {
-                if (hitbox.getX() < otherHitbox.getX() + otherHitbox.getWidth() &&
+        return hitboxes.some((hitbox) => {
+            return otherHitboxes.some(function (otherHitbox) {
+                return (hitbox.getX() < otherHitbox.getX() + otherHitbox.getWidth() &&
                     hitbox.getX() + hitbox.getWidth() > otherHitbox.getX() &&
                     hitbox.getY() < otherHitbox.getY() + otherHitbox.getHeight() &&
-                    hitbox.getY() + hitbox.getHeight() > otherHitbox.getY()) {
-                    intersecting = true;
-                    hitbox.setColliding(true);
-                    otherHitbox.setColliding(true);
-                }
+                    hitbox.getY() + hitbox.getHeight() > otherHitbox.getY());
             });
         });
-        return intersecting;
     }
-    simulateCollisionBetweenDynamicAndStaticObjects(sceneObject) {
-        sceneObject.setAvoidingCollision(true);
-        sceneObject.setVX(-sceneObject.getVX());
-        sceneObject.setVY(-sceneObject.getVY());
-    }
-    simulateCollisionBetweenDynamicObjects(sceneObject, otherSceneObject) {
+    simulateCollision(sceneObject, otherSceneObject) {
         // Calculate collision vector
         const vCollision = {
             x: otherSceneObject.getX() - sceneObject.getX(),
@@ -122,6 +99,16 @@ export class BaseGameScreen {
             x: vCollision.x / distance,
             y: vCollision.y / distance,
         };
+        // Check if any of the objects is movable
+        const moveableSceneObject = sceneObject instanceof BaseMoveableCollidableGameObject
+            ? sceneObject
+            : otherSceneObject instanceof BaseMoveableCollidableGameObject
+                ? otherSceneObject
+                : null;
+        if (!moveableSceneObject) {
+            // Neither object is movable, nothing to simulate
+            return;
+        }
         // Calculate relative velocity
         const vRelativeVelocity = {
             x: otherSceneObject.getVX() - sceneObject.getVX(),

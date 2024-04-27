@@ -1,18 +1,22 @@
 import { BaseGameObject } from "./base-game-object.js";
-export class BaseCollidableGameObject extends BaseGameObject {
-    objectHitbox = null;
+export class BaseStaticCollidableGameObject extends BaseGameObject {
+    x = 0;
+    y = 0;
+    hitboxObjects;
     colliding = false;
     collidedObject = null;
     constructor() {
         super();
+        this.hitboxObjects = [];
     }
-    getHitbox() {
-        return this.objectHitbox;
+    getHitboxObjects() {
+        return this.hitboxObjects;
     }
-    setHitbox(objectHitbox) {
-        this.objectHitbox = objectHitbox;
+    setHitboxObjects(hitboxObjects) {
+        this.hitboxObjects = hitboxObjects;
     }
     setColliding(colliding) {
+        this.getHitboxObjects().forEach((object) => object.setColliding(colliding));
         this.colliding = colliding;
     }
     isColliding() {
@@ -24,9 +28,13 @@ export class BaseCollidableGameObject extends BaseGameObject {
     getCollidedObject() {
         return this.collidedObject;
     }
+    getX() {
+        return this.x;
+    }
+    getY() {
+        return this.y;
+    }
     render(context) {
-        if (this.objectHitbox) {
-            this.objectHitbox.render(context);
-        }
+        this.hitboxObjects.forEach((object) => object.render(context));
     }
 }

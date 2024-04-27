@@ -1,6 +1,8 @@
-import { BaseGameObject } from "./base/base-game-object.js";
+import { BaseStaticCollidableGameObject } from "../base/base-static-collidable-game-object.js";
+import { HitboxObject } from "../hitbox-object.js";
+import { GameObject } from "../interfaces/game-object.js";
 
-export class WorldBackgroundObject extends BaseGameObject {
+export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
   private readonly BACKGROUND_COLOR: string = "#00a000";
   private readonly BOUNDARY_COOLOR: string = "#ffffff";
 
@@ -13,11 +15,19 @@ export class WorldBackgroundObject extends BaseGameObject {
   private centerY: number = 0;
   private radius: number = 50;
 
+  private collisionObjects: GameObject[];
+
   constructor(canvas: HTMLCanvasElement) {
     super();
     this.canvas = canvas;
+    this.collisionObjects = [];
     this.calculateFieldDimensions();
     this.calculateCenter();
+  }
+
+  public override load(): void {
+    this.createHitboxObjects();
+    super.load();
   }
 
   private calculateFieldDimensions(): void {
@@ -32,11 +42,11 @@ export class WorldBackgroundObject extends BaseGameObject {
     this.centerY = this.canvas.height / 2;
   }
 
-  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     // No update logic required
   }
 
-  public render(context: CanvasRenderingContext2D): void {
+  public override render(context: CanvasRenderingContext2D): void {
     // Set background color
     context.fillStyle = this.BACKGROUND_COLOR;
     context.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -47,7 +57,7 @@ export class WorldBackgroundObject extends BaseGameObject {
       this.fieldX,
       this.fieldY,
       this.fieldWidth,
-      this.fieldHeight,
+      this.fieldHeight
     );
 
     // Draw boundary lines
@@ -57,7 +67,7 @@ export class WorldBackgroundObject extends BaseGameObject {
       this.fieldX,
       this.fieldY,
       this.fieldWidth,
-      this.fieldHeight,
+      this.fieldHeight
     );
 
     // Draw midfield line
@@ -70,5 +80,31 @@ export class WorldBackgroundObject extends BaseGameObject {
     context.beginPath();
     context.arc(this.centerX, this.centerY, this.radius, 0, 2 * Math.PI);
     context.stroke();
+
+    // Draw hitboxes
+    super.render(context);
+  }
+
+  public getCollisionHitboxes(): GameObject[] {
+    return this.collisionObjects;
+  }
+
+  private createHitboxObjects() {
+    this.setHitboxObjects([
+      new HitboxObject(this.fieldX, this.fieldY, this.fieldWidth, 1),
+      new HitboxObject(
+        this.fieldX,
+        this.canvas.height - this.fieldY,
+        this.fieldWidth,
+        1
+      ),
+      new HitboxObject(
+        this.canvas.width - this.fieldX,
+        this.fieldY,
+        1,
+        this.fieldHeight
+      ),
+      new HitboxObject(this.fieldX, this.fieldY, 1, this.fieldHeight),
+    ]);
   }
 }

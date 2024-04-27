@@ -30,6 +30,9 @@ export class HitboxObject extends BaseGameObject {
     getHeight() {
         return this.height;
     }
+    isColliding() {
+        return this.colliding;
+    }
     setColliding(colliding) {
         this.colliding = colliding;
     }

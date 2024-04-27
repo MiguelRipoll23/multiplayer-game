@@ -3,9 +3,9 @@ import {
   ORANGE_TEAM_TRANSPARENCY_COLOR,
 } from "../constants/colors.js";
 import { HitboxObject } from "./hitbox-object.js";
-import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
+import { BaseStaticCollidableGameObject } from "./base/base-static-collidable-game-object.js";
 
-export class GoalObject extends BaseCollidableGameObject {
+export class GoalObject extends BaseStaticCollidableGameObject {
   private readonly LINE_BORDER_COLOR: string = "#fff";
 
   private readonly WIDTH: number = 100; // Width of the goal
@@ -13,14 +13,13 @@ export class GoalObject extends BaseCollidableGameObject {
   private readonly BORDER_SIZE: number = 2; // Border size
   private readonly Y_OFFSET: number = 13;
 
-  private x: number = 0;
-  private y: number = 0;
   private fillColor: string;
   private borderColor: string;
   private orangeTeam: boolean;
 
   constructor(orangeTeam: boolean, canvas: HTMLCanvasElement) {
     super();
+
     this.orangeTeam = orangeTeam;
     this.borderColor = this.LINE_BORDER_COLOR;
 
@@ -47,7 +46,7 @@ export class GoalObject extends BaseCollidableGameObject {
     // No update logic required
   }
 
-  public render(context: CanvasRenderingContext2D): void {
+  public override render(context: CanvasRenderingContext2D): void {
     context.fillStyle = this.fillColor;
     context.strokeStyle = this.borderColor;
     context.lineWidth = this.BORDER_SIZE;
@@ -93,10 +92,10 @@ export class GoalObject extends BaseCollidableGameObject {
   }
 
   private createHitbox(): void {
-    const y = this.orangeTeam ? this.y : this.y + this.HEIGHT / 2;
+    const y = this.orangeTeam ? this.y + 1 : this.y + this.HEIGHT / 2;
 
-    this.setHitbox(
+    this.setHitboxObjects([
       new HitboxObject(this.x, y, this.WIDTH, this.HEIGHT / 2),
-    );
+    ]);
   }
 }

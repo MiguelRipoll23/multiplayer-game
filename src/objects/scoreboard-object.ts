@@ -1,8 +1,7 @@
 import { BLUE_TEAM_COLOR, ORANGE_TEAM_COLOR } from "../constants/colors.js";
 import { BaseGameObject } from "./base/base-game-object.js";
-import { GameObject } from "./interfaces/game-object.js";
 
-export class ScoreboardObject extends BaseGameObject implements GameObject {
+export class ScoreboardObject extends BaseGameObject {
   private readonly BLUE_SCORE: number = 0;
   private readonly ORANGE_SCORE: number = 0;
 
@@ -46,13 +45,13 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
   }
 
   public render(context: CanvasRenderingContext2D): void {
-    const totalWidth =
-      2 * this.SQUARE_SIZE + this.SPACE_BETWEEN + this.TIME_BOX_WIDTH;
+    const totalWidth = 2 * this.SQUARE_SIZE + this.SPACE_BETWEEN +
+      this.TIME_BOX_WIDTH;
     const startX = this.x - totalWidth / 2;
 
     this.renderSquare(context, startX, this.BLUE_SHAPE_COLOR, this.BLUE_SCORE);
     const remainingTimeSeconds = Math.ceil(
-      (this.durationMilliseconds - this.elapsedMilliseconds) / 1000
+      (this.durationMilliseconds - this.elapsedMilliseconds) / 1000,
     );
     const formattedTime = this.formatTime(remainingTimeSeconds);
     const timeX = startX + this.SQUARE_SIZE + this.SPACE_BETWEEN;
@@ -63,11 +62,10 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
       timeY,
       this.TIME_BOX_WIDTH,
       this.TIME_BOX_HEIGHT,
-      formattedTime
+      formattedTime,
     );
 
-    const orangeScoreX =
-      startX +
+    const orangeScoreX = startX +
       this.SQUARE_SIZE +
       this.SPACE_BETWEEN +
       this.TIME_BOX_WIDTH +
@@ -76,7 +74,7 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
       context,
       orangeScoreX,
       this.ORANGE_SHAPE_COLOR,
-      this.ORANGE_SCORE
+      this.ORANGE_SCORE,
     );
   }
 
@@ -84,7 +82,7 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
     context: CanvasRenderingContext2D,
     x: number,
     color: string,
-    score: number
+    score: number,
   ): void {
     context.fillStyle = color;
     this.roundedRect(
@@ -93,14 +91,14 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
       this.y,
       this.SQUARE_SIZE,
       this.SQUARE_SIZE,
-      this.CORNER_RADIUS
+      this.CORNER_RADIUS,
     );
     context.fill();
     this.renderText(
       context,
       score.toString(),
       x + this.SQUARE_SIZE / 2,
-      this.y + this.SQUARE_SIZE / 2
+      this.y + this.SQUARE_SIZE / 2,
     );
   }
 
@@ -110,7 +108,7 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
     y: number,
     width: number,
     height: number,
-    text: string
+    text: string,
   ): void {
     context.fillStyle = this.TIME_BOX_FILL_COLOR;
     this.roundedRect(context, x, y, width, height, this.CORNER_RADIUS);
@@ -125,7 +123,7 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
     y: number,
     width: number,
     height: number,
-    radius: number
+    radius: number,
   ) {
     context.beginPath();
     context.moveTo(x + radius, y);
@@ -140,7 +138,7 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
     context: CanvasRenderingContext2D,
     text: string,
     x: number,
-    y: number
+    y: number,
   ) {
     context.fillStyle = this.TEXT_COLOR;
     context.font = `${this.FONT_SIZE} ${this.FONT_FAMILY}`;
@@ -150,9 +148,11 @@ export class ScoreboardObject extends BaseGameObject implements GameObject {
   private formatTime(timeInSeconds: number): string {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = timeInSeconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
+    return `${minutes.toString().padStart(2, "0")}:${
+      seconds
+        .toString()
+        .padStart(2, "0")
+    }`;
   }
 
   public startCountdown(durationSeconds: number): void {

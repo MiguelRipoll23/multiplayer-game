@@ -1,7 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
-import { GameObject } from "./interfaces/game-object.js";
 
-export class GearStickObject extends BaseGameObject implements GameObject {
+export class GearStickObject extends BaseGameObject {
   private readonly SIZE: number = 65; // Adjust size as needed
   private readonly FILL_COLOR: string = "black"; // Change fill color to black
   private readonly FONT_SIZE: number = 36; // Adjust font size as needed
@@ -53,7 +52,7 @@ export class GearStickObject extends BaseGameObject implements GameObject {
       this.y + this.SIZE / 2, // y-coordinate of the center
       this.SIZE / 2, // radius
       0, // start angle
-      Math.PI * 2 // end angle
+      Math.PI * 2, // end angle
     );
     context.closePath();
     context.fill();
@@ -68,7 +67,7 @@ export class GearStickObject extends BaseGameObject implements GameObject {
     context.fillText(
       this.currentGear,
       this.x + this.SIZE / 2,
-      this.y + this.SIZE / 2
+      this.y + this.SIZE / 2,
     );
   }
 
@@ -76,7 +75,7 @@ export class GearStickObject extends BaseGameObject implements GameObject {
     this.canvas.addEventListener(
       "touchstart",
       this.handleTouchStart.bind(this),
-      { passive: true }
+      { passive: true },
     );
 
     this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {

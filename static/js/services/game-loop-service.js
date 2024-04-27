@@ -57,6 +57,8 @@ export class GameLoopService {
         this.screenManager.update(deltaTimeStamp);
         this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
         this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
+        this.gameFrame.getNextScreen()?.detectCollisions();
+        this.gameFrame.getCurrentScreen()?.detectCollisions();
     }
     render() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);

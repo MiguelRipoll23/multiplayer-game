@@ -1,4 +1,6 @@
-export class BaseGameObject {
+import { GameObject } from "../interfaces/game-object.js";
+
+export class BaseGameObject implements GameObject {
   protected loaded: boolean = false;
 
   constructor() {
@@ -12,5 +14,11 @@ export class BaseGameObject {
 
   public hasLoaded(): boolean {
     return this.loaded;
+  }
+
+  public update(deltaTimeStamp: number): void {
+  }
+
+  public render(context: CanvasRenderingContext2D): void {
   }
 }

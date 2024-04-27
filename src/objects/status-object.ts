@@ -1,7 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
-import { GameObject } from "./interfaces/game-object.js";
 
-export class StatusObject extends BaseGameObject implements GameObject {
+export class StatusObject extends BaseGameObject {
   private readonly FILL_COLOR = "rgba(0, 0, 0, 0.5)";
   private readonly TEXT_PADDING = 150;
   private readonly DEFAULT_HEIGHT = 45;
@@ -40,7 +39,7 @@ export class StatusObject extends BaseGameObject implements GameObject {
       this.y - this.height / 2,
       this.width,
       this.height,
-      10
+      10,
     );
 
     // Draw text
@@ -67,7 +66,7 @@ export class StatusObject extends BaseGameObject implements GameObject {
     y: number,
     width: number,
     height: number,
-    radius: number
+    radius: number,
   ) {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);

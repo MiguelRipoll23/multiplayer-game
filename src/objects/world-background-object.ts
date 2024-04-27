@@ -1,10 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
-import { GameObject } from "./interfaces/game-object.js";
 
-export class WorldBackgroundObject
-  extends BaseGameObject
-  implements GameObject
-{
+export class WorldBackgroundObject extends BaseGameObject {
   private readonly BACKGROUND_COLOR: string = "#00a000";
   private readonly BOUNDARY_COOLOR: string = "#ffffff";
 
@@ -51,7 +47,7 @@ export class WorldBackgroundObject
       this.fieldX,
       this.fieldY,
       this.fieldWidth,
-      this.fieldHeight
+      this.fieldHeight,
     );
 
     // Draw boundary lines
@@ -61,7 +57,7 @@ export class WorldBackgroundObject
       this.fieldX,
       this.fieldY,
       this.fieldWidth,
-      this.fieldHeight
+      this.fieldHeight,
     );
 
     // Draw midfield line

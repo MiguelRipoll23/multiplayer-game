@@ -11,8 +11,16 @@ export class ObjectHitbox {
     this.height = height;
   }
 
+  public setX(x: number): void {
+    this.x = x;
+  }
+
   public getX(): number {
     return this.x;
+  }
+
+  public setY(y: number): void {
+    this.y = y;
   }
 
   public getY(): number {
@@ -25,5 +33,14 @@ export class ObjectHitbox {
 
   public getHeight(): number {
     return this.height;
+  }
+
+  public render(context: CanvasRenderingContext2D): void {
+    context.save(); // Save the current context state
+
+    context.strokeStyle = "#ff0000"; // Red color
+    context.strokeRect(this.x, this.y, this.width, this.height);
+
+    context.restore(); // Restore the context state
   }
 }

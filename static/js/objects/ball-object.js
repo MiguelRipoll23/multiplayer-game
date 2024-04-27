@@ -1,6 +1,6 @@
 import { ObjectHitbox } from "../models/object-hitbox.js";
-import { BaseCollidableObject } from "./base/base-collidable-object.js";
-export class BallObject extends BaseCollidableObject {
+import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
+export class BallObject extends BaseCollidableGameObject {
     x;
     y;
     angle;
@@ -24,7 +24,8 @@ export class BallObject extends BaseCollidableObject {
         super.load();
     }
     update(deltaTimeStamp) {
-        // TODO: Implement any update logic if needed
+        this.getHitbox()?.setX(this.x - this.RADIUS);
+        this.getHitbox()?.setY(this.y - this.RADIUS);
     }
     render(context) {
         context.save(); // Save the current context state
@@ -43,6 +44,8 @@ export class BallObject extends BaseCollidableObject {
         context.closePath();
         // Restore the context state
         context.restore();
+        // Hitbox render
+        super.render(context);
     }
     setCenterPosition() {
         // Set position to the center of the canvas accounting for the radius
@@ -50,6 +53,6 @@ export class BallObject extends BaseCollidableObject {
         this.y = this.CENTER_Y;
     }
     createHitbox() {
-        this.setHitbox(new ObjectHitbox(this.x, this.y, this.RADIUS * 2, this.RADIUS * 2));
+        this.setHitbox(new ObjectHitbox(this.x - this.RADIUS * 2, this.y - this.RADIUS * 2, this.RADIUS * 2, this.RADIUS * 2));
     }
 }

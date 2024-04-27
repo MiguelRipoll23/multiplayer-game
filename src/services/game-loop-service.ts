@@ -75,8 +75,12 @@ export class GameLoopService {
 
   private update(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.screenManager.update(deltaTimeStamp);
+
     this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
     this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
+
+    this.gameFrame.getNextScreen()?.detectCollisions();
+    this.gameFrame.getCurrentScreen()?.detectCollisions();
   }
 
   private render(): void {

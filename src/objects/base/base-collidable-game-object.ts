@@ -1,8 +1,10 @@
 import { ObjectHitbox } from "../../models/object-hitbox.js";
+import { CollidableGameObject } from "../interfaces/collidable-game-object.js";
 import { GameObject } from "../interfaces/game-object.js";
 import { BaseGameObject } from "./base-game-object.js";
 
-export class BaseCollidableObject extends BaseGameObject {
+export class BaseCollidableGameObject extends BaseGameObject
+  implements CollidableGameObject {
   protected objectHitbox: ObjectHitbox | null = null;
 
   private colliding: boolean = false;
@@ -34,5 +36,11 @@ export class BaseCollidableObject extends BaseGameObject {
 
   public getCollidedObject(): GameObject | null {
     return this.collidedObject;
+  }
+
+  public render(context: CanvasRenderingContext2D): void {
+    if (this.objectHitbox) {
+      this.objectHitbox.render(context);
+    }
   }
 }

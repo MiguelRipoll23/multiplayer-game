@@ -24,4 +24,9 @@ export class BaseCollidableGameObject extends BaseGameObject {
     getCollidedObject() {
         return this.collidedObject;
     }
+    render(context) {
+        if (this.objectHitbox) {
+            this.objectHitbox.render(context);
+        }
+    }
 }

@@ -41,8 +41,7 @@ export class GearStickObject extends BaseGameObject {
         this.y + this.SIZE / 2, // y-coordinate of the center
         this.SIZE / 2, // radius
         0, // start angle
-        Math.PI * 2 // end angle
-        );
+        Math.PI * 2);
         context.closePath();
         context.fill();
     }

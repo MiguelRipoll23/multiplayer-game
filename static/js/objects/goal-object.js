@@ -1,6 +1,7 @@
 import { BLUE_TEAM_TRANSPARENCY_COLOR, ORANGE_TEAM_TRANSPARENCY_COLOR, } from "../constants/colors.js";
-import { BaseGameObject } from "./base/base-game-object.js";
-export class GoalObject extends BaseGameObject {
+import { ObjectHitbox } from "../models/object-hitbox.js";
+import { BaseCollidableGameObject } from "./base/base-collidable-game-object.js";
+export class GoalObject extends BaseCollidableGameObject {
     LINE_BORDER_COLOR = "#fff";
     WIDTH = 100; // Width of the goal
     HEIGHT = 40; // Height of the goal (adjusted)
@@ -27,6 +28,10 @@ export class GoalObject extends BaseGameObject {
         }
         // Calculate x position to center the goal horizontally
         this.x = (canvas.width - this.WIDTH) / 2;
+    }
+    load() {
+        this.createHitbox();
+        super.load();
     }
     update(deltaTimeStamp) {
         // No update logic required
@@ -68,5 +73,12 @@ export class GoalObject extends BaseGameObject {
             context.closePath();
             context.stroke();
         }
+        // Hitbox
+        this.getHitbox()?.setX(this.x);
+        this.getHitbox()?.setY(this.y);
+        super.render(context);
+    }
+    createHitbox() {
+        this.setHitbox(new ObjectHitbox(this.x, this.y, this.WIDTH, this.HEIGHT / 2));
     }
 }

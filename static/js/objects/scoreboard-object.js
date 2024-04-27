@@ -37,7 +37,8 @@ export class ScoreboardObject extends BaseGameObject {
         }
     }
     render(context) {
-        const totalWidth = 2 * this.SQUARE_SIZE + this.SPACE_BETWEEN + this.TIME_BOX_WIDTH;
+        const totalWidth = 2 * this.SQUARE_SIZE + this.SPACE_BETWEEN +
+            this.TIME_BOX_WIDTH;
         const startX = this.x - totalWidth / 2;
         this.renderSquare(context, startX, this.BLUE_SHAPE_COLOR, this.BLUE_SCORE);
         const remainingTimeSeconds = Math.ceil((this.durationMilliseconds - this.elapsedMilliseconds) / 1000);

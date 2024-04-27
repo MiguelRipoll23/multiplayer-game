@@ -7,6 +7,8 @@ import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
 import { ScoreboardObject } from "../objects/scoreboard-object.js";
 import { StatusObject } from "../objects/status-object.js";
+import { BaseCollidableGameObject } from "../objects/base/base-collidable-game-object.js";
+import { ObjectHitbox } from "../models/object-hitbox.js";
 
 export class WorldScreen extends BaseGameScreen implements GameScreen {
   private canvas: HTMLCanvasElement;
@@ -82,5 +84,53 @@ export class WorldScreen extends BaseGameScreen implements GameScreen {
     statusObject.setText("Waiting for players");
     statusObject.setActive(true);
     this.uiObjects.push(statusObject);
+  }
+
+  public detectCollisions(): void {
+    const collidableGameObjects: BaseCollidableGameObject[] = this.sceneObjects
+      .filter(
+        (sceneObject) => sceneObject instanceof BaseCollidableGameObject,
+      ) as unknown as BaseCollidableGameObject[];
+
+    collidableGameObjects.forEach((collidableGameObject) => {
+      collidableGameObject.setColliding(false);
+
+      collidableGameObjects.forEach((otherCollidableGameObject) => {
+        if (collidableGameObject === otherCollidableGameObject) {
+          return;
+        }
+
+        this.detectCollision(collidableGameObject, otherCollidableGameObject);
+      });
+    });
+  }
+
+  private detectCollision(
+    sceneObject: BaseCollidableGameObject,
+    otherSceneObject: BaseCollidableGameObject,
+  ) {
+    const hitbox = sceneObject.getHitbox();
+    const otherHitbox = otherSceneObject.getHitbox();
+
+    if (!hitbox || !otherHitbox) {
+      return;
+    }
+
+    if (this.hitboxesIntersect(hitbox, otherHitbox)) {
+      sceneObject.setColliding(true);
+      sceneObject.setCollidedObject(otherSceneObject);
+    }
+  }
+
+  private hitboxesIntersect(
+    hitbox: ObjectHitbox,
+    otherHitbox: ObjectHitbox,
+  ): boolean {
+    return (
+      hitbox.getX() < otherHitbox.getX() + otherHitbox.getWidth() &&
+      hitbox.getX() + hitbox.getWidth() > otherHitbox.getX() &&
+      hitbox.getY() < otherHitbox.getY() + otherHitbox.getHeight() &&
+      hitbox.getY() + hitbox.getHeight() > otherHitbox.getY()
+    );
   }
 }

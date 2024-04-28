@@ -38,7 +38,7 @@ export class HitboxObject extends BaseGameObject {
     }
     render(context) {
         context.save(); // Save the current context state
-        context.strokeStyle = "#E91E63";
+        context.strokeStyle = "rgba(148, 0, 211, 0.2)";
         context.strokeRect(this.x, this.y, this.width, this.height);
         if (this.colliding) {
             // Fill with transparent purple

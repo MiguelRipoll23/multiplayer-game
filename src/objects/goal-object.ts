@@ -95,7 +95,7 @@ export class GoalObject extends BaseStaticCollidableGameObject {
     const y = this.orangeTeam ? this.y + 1 : this.y + this.HEIGHT / 2;
 
     this.setHitboxObjects([
-      new HitboxObject(this.x, y, this.WIDTH, this.HEIGHT / 2),
+      new HitboxObject(this.x + 2, y, this.WIDTH - 4, this.HEIGHT / 2),
     ]);
   }
 }

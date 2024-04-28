@@ -31,7 +31,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     y: number,
     angle: number,
     orangeTeam: boolean,
-    canvas: HTMLCanvasElement
+    canvas: HTMLCanvasElement,
   ) {
     super();
 
@@ -65,7 +65,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
       -this.WIDTH / 2,
       -this.HEIGHT / 2,
       this.WIDTH,
-      this.HEIGHT
+      this.HEIGHT,
     );
     context.restore();
 
@@ -115,11 +115,17 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   }
 
   private applyFriction(): void {
-    this.speed += -this.FRICTION * Math.sign(this.speed);
+    if (this.speed !== 0) {
+      if (Math.abs(this.speed) <= this.FRICTION) {
+        this.speed = 0; // If friction would stop the car, set speed to 0
+      } else {
+        this.speed += -Math.sign(this.speed) * this.FRICTION;
+      }
+    }
   }
 
   private calculateMovement(): void {
-    if (this.isColliding() && this.speed !== 0) {
+    if (this.isColliding()) {
       this.speed *= -1;
     }
 

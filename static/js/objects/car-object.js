@@ -80,10 +80,17 @@ export class CarObject extends BaseDynamicCollidableGameObject {
         this.angle = (this.angle + 360) % 360;
     }
     applyFriction() {
-        this.speed += -this.FRICTION * Math.sign(this.speed);
+        if (this.speed !== 0) {
+            if (Math.abs(this.speed) <= this.FRICTION) {
+                this.speed = 0; // If friction would stop the car, set speed to 0
+            }
+            else {
+                this.speed += -Math.sign(this.speed) * this.FRICTION;
+            }
+        }
     }
     calculateMovement() {
-        if (this.isColliding() && this.speed !== 0) {
+        if (this.isColliding()) {
             this.speed *= -1;
         }
         const angleInRadians = (this.angle * Math.PI) / 180;

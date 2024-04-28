@@ -3,10 +3,8 @@ export class BaseStaticCollidableGameObject extends BaseGameObject {
     x = 0;
     y = 0;
     hitboxObjects;
-    colliding = false;
-    avodingCollision = false;
-    collisionDirection = 0;
     collidedObject = null;
+    avodingCollision = false;
     constructor() {
         super();
         this.hitboxObjects = [];
@@ -32,17 +30,12 @@ export class BaseStaticCollidableGameObject extends BaseGameObject {
     setAvoidingCollision(avodingCollision) {
         this.avodingCollision = avodingCollision;
     }
-    getCollisionDirection() {
-        return this.collisionDirection;
-    }
-    setCollisionDirection(collisionDirection) {
-        this.collisionDirection = collisionDirection;
-    }
     getCollidedObject() {
         return this.collidedObject;
     }
     setX(x) {
         this.x = x;
+        // TODO: Adjust relative to old position
         this.getHitboxObjects().forEach((hitboxObject) => {
             hitboxObject.setX(x);
         });
@@ -52,6 +45,7 @@ export class BaseStaticCollidableGameObject extends BaseGameObject {
     }
     setY(y) {
         this.y = y;
+        // TODO: Adjust relative to old position
         this.getHitboxObjects().forEach((hitboxObject) => {
             hitboxObject.setY(y);
         });

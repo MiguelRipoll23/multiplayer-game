@@ -173,9 +173,17 @@ export class BaseGameScreen {
   private simulateCollisionBetweenDynamicAndStaticObjects(
     dynamicCollidableObject: BaseDynamicCollidableGameObject,
   ) {
+    let vx = -dynamicCollidableObject.getVX();
+    let vy = -dynamicCollidableObject.getVY();
+
+    // Impulse to avoid becaming stuck
+    if (vx > -1 && vx < 1) {
+      vx = vx < 0 ? -1 : 1;
+    }
+
     dynamicCollidableObject.setAvoidingCollision(true);
-    dynamicCollidableObject.setVX(-dynamicCollidableObject.getVX());
-    dynamicCollidableObject.setVY(-dynamicCollidableObject.getVY());
+    dynamicCollidableObject.setVX(vx);
+    dynamicCollidableObject.setVY(vy);
   }
 
   private simulateCollisionBetweenDynamicObjects(

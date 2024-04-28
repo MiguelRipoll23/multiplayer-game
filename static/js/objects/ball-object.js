@@ -53,13 +53,13 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         const hitboxObject = new HitboxObject(this.x - this.RADIUS * 2, this.y - this.RADIUS * 2, this.RADIUS * 2, this.RADIUS * 2);
         this.setHitboxObjects([hitboxObject]);
     }
-    calculateMovement() {
-        this.x -= this.vx;
-        this.y -= this.vy;
-    }
     applyFriction() {
         this.vx *= 1 - this.FRICTION;
         this.vy *= 1 - this.FRICTION;
+    }
+    calculateMovement() {
+        this.x -= this.vx;
+        this.y -= this.vy;
     }
     updateHitbox() {
         this.getHitboxObjects().forEach((object) => {

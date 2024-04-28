@@ -42,7 +42,7 @@ export class HitboxObject extends BaseGameObject {
         context.strokeRect(this.x, this.y, this.width, this.height);
         if (this.colliding) {
             // Fill with transparent purple
-            context.fillStyle = "rgba(148, 0, 211, 0.5)"; // Adjust alpha value for transparency
+            context.fillStyle = "rgba(148, 0, 211, 0.9)"; // Adjust alpha value for transparency
             context.fillRect(this.x, this.y, this.width, this.height);
         }
         context.restore(); // Restore the context state

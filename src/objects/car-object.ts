@@ -115,6 +115,12 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   }
 
   private applyFriction(): void {
+    if (this.isColliding()) {
+      // We don't want the car to stop if it's colliding
+      // otherwise it would became stuck
+      return;
+    }
+
     if (this.speed !== 0) {
       if (Math.abs(this.speed) <= this.FRICTION) {
         this.speed = 0; // If friction would stop the car, set speed to 0

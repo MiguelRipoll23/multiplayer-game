@@ -16,9 +16,7 @@ export class BaseGameObject implements GameObject {
     return this.loaded;
   }
 
-  public update(deltaTimeStamp: number): void {
-  }
+  public update(deltaTimeStamp: number): void {}
 
-  public render(context: CanvasRenderingContext2D): void {
-  }
+  public render(context: CanvasRenderingContext2D): void {}
 }

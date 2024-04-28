@@ -56,11 +56,6 @@ export class BaseStaticCollidableGameObject extends BaseGameObject {
 
   public setX(x: number): void {
     this.x = x;
-
-    // TODO: Adjust relative to old position
-    this.getHitboxObjects().forEach((hitboxObject) => {
-      hitboxObject.setX(x);
-    });
   }
 
   public getX(): number {
@@ -69,11 +64,6 @@ export class BaseStaticCollidableGameObject extends BaseGameObject {
 
   public setY(y: number): void {
     this.y = y;
-
-    // TODO: Adjust relative to old position
-    this.getHitboxObjects().forEach((hitboxObject) => {
-      hitboxObject.setY(y);
-    });
   }
 
   public getY(): number {

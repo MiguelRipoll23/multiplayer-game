@@ -35,20 +35,12 @@ export class BaseStaticCollidableGameObject extends BaseGameObject {
     }
     setX(x) {
         this.x = x;
-        // TODO: Adjust relative to old position
-        this.getHitboxObjects().forEach((hitboxObject) => {
-            hitboxObject.setX(x);
-        });
     }
     getX() {
         return this.x;
     }
     setY(y) {
         this.y = y;
-        // TODO: Adjust relative to old position
-        this.getHitboxObjects().forEach((hitboxObject) => {
-            hitboxObject.setY(y);
-        });
     }
     getY() {
         return this.y;

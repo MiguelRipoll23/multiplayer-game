@@ -10,8 +10,6 @@ export class BaseGameObject {
     hasLoaded() {
         return this.loaded;
     }
-    update(deltaTimeStamp) {
-    }
-    render(context) {
-    }
+    update(deltaTimeStamp) { }
+    render(context) { }
 }

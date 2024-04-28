@@ -110,35 +110,35 @@ export class BaseGameScreen {
   }
 
   private areObjectsColliding(
-    sceneObject:
+    collidableObject:
       | BaseStaticCollidableGameObject
       | BaseDynamicCollidableGameObject,
-    otherSceneObject:
+    otherCollidableObject:
       | BaseStaticCollidableGameObject
       | BaseDynamicCollidableGameObject,
   ): boolean {
-    const hitboxes = sceneObject.getHitboxObjects();
-    const otherHitboxes = otherSceneObject.getHitboxObjects();
+    const hitboxes = collidableObject.getHitboxObjects();
+    const otherHitboxes = otherCollidableObject.getHitboxObjects();
 
     const areDynamicObjectsColliding =
-      sceneObject instanceof BaseDynamicCollidableGameObject &&
-      otherSceneObject instanceof BaseDynamicCollidableGameObject;
+      collidableObject instanceof BaseDynamicCollidableGameObject &&
+      otherCollidableObject instanceof BaseDynamicCollidableGameObject;
 
     const isDynamicObjectCollidingWithStatic =
-      sceneObject instanceof BaseDynamicCollidableGameObject &&
-      otherSceneObject instanceof BaseStaticCollidableGameObject;
+      collidableObject instanceof BaseDynamicCollidableGameObject &&
+      otherCollidableObject instanceof BaseStaticCollidableGameObject;
 
-    if (this.hitboxesIntersect(hitboxes, otherHitboxes)) {
+    if (this.doesHitboxesIntersect(hitboxes, otherHitboxes)) {
       if (areDynamicObjectsColliding) {
         this.simulateCollisionBetweenDynamicObjects(
-          sceneObject,
-          otherSceneObject,
+          collidableObject,
+          otherCollidableObject,
         );
       } else if (isDynamicObjectCollidingWithStatic) {
-        if (sceneObject.isAvoidingCollision()) {
+        if (collidableObject.isAvoidingCollision()) {
           return true;
         }
-        this.simulateCollisionBetweenDynamicAndStaticObjects(sceneObject);
+        this.simulateCollisionBetweenDynamicAndStaticObjects(collidableObject);
       }
 
       return true;
@@ -147,14 +147,14 @@ export class BaseGameScreen {
     return false;
   }
 
-  private hitboxesIntersect(
-    hitboxes: HitboxObject[],
-    otherHitboxes: HitboxObject[],
+  private doesHitboxesIntersect(
+    hitboxObjects: HitboxObject[],
+    otherHitboxObjects: HitboxObject[],
   ) {
     let intersecting = false;
 
-    hitboxes.forEach((hitbox) => {
-      otherHitboxes.forEach((otherHitbox) => {
+    hitboxObjects.forEach((hitbox) => {
+      otherHitboxObjects.forEach((otherHitbox) => {
         if (
           hitbox.getX() < otherHitbox.getX() + otherHitbox.getWidth() &&
           hitbox.getX() + hitbox.getWidth() > otherHitbox.getX() &&
@@ -171,21 +171,21 @@ export class BaseGameScreen {
     return intersecting;
   }
   private simulateCollisionBetweenDynamicAndStaticObjects(
-    sceneObject: BaseDynamicCollidableGameObject,
+    dynamicCollidableObject: BaseDynamicCollidableGameObject,
   ) {
-    sceneObject.setAvoidingCollision(true);
-    sceneObject.setVX(-sceneObject.getVX());
-    sceneObject.setVY(-sceneObject.getVY());
+    dynamicCollidableObject.setAvoidingCollision(true);
+    dynamicCollidableObject.setVX(-dynamicCollidableObject.getVX());
+    dynamicCollidableObject.setVY(-dynamicCollidableObject.getVY());
   }
 
   private simulateCollisionBetweenDynamicObjects(
-    sceneObject: BaseDynamicCollidableGameObject,
-    otherSceneObject: BaseDynamicCollidableGameObject,
+    dynamicCollidableObject: BaseDynamicCollidableGameObject,
+    otherDynamicCollidableObject: BaseDynamicCollidableGameObject,
   ) {
     // Calculate collision vector
     const vCollision = {
-      x: otherSceneObject.getX() - sceneObject.getX(),
-      y: otherSceneObject.getY() - sceneObject.getY(),
+      x: otherDynamicCollidableObject.getX() - dynamicCollidableObject.getX(),
+      y: otherDynamicCollidableObject.getY() - dynamicCollidableObject.getY(),
     };
 
     // Calculate distance between objects
@@ -201,8 +201,8 @@ export class BaseGameScreen {
 
     // Calculate relative velocity
     const vRelativeVelocity = {
-      x: otherSceneObject.getVX() - sceneObject.getVX(),
-      y: otherSceneObject.getVY() - sceneObject.getVY(),
+      x: otherDynamicCollidableObject.getVX() - dynamicCollidableObject.getVX(),
+      y: otherDynamicCollidableObject.getVY() - dynamicCollidableObject.getVY(),
     };
 
     // Calculate speed along collision normal
@@ -216,17 +216,24 @@ export class BaseGameScreen {
 
     // Calculate impulse
     const impulse = (2 * speed) /
-      (sceneObject.getMass() + otherSceneObject.getMass());
+      (dynamicCollidableObject.getMass() +
+        otherDynamicCollidableObject.getMass());
 
     // Update velocities for both movable objects
-    const impulseX = impulse * otherSceneObject.getMass() * vCollisionNorm.x;
-    const impulseY = impulse * otherSceneObject.getMass() * vCollisionNorm.y;
+    const impulseX = impulse * otherDynamicCollidableObject.getMass() *
+      vCollisionNorm.x;
+    const impulseY = impulse * otherDynamicCollidableObject.getMass() *
+      vCollisionNorm.y;
 
-    sceneObject.setVX(sceneObject.getVX() + impulseX);
-    sceneObject.setVY(sceneObject.getVY() + impulseY);
+    dynamicCollidableObject.setVX(dynamicCollidableObject.getVX() + impulseX);
+    dynamicCollidableObject.setVY(dynamicCollidableObject.getVY() + impulseY);
 
-    otherSceneObject.setVX(otherSceneObject.getVX() - impulseX);
-    otherSceneObject.setVY(otherSceneObject.getVY() - impulseY);
+    otherDynamicCollidableObject.setVX(
+      otherDynamicCollidableObject.getVX() - impulseX,
+    );
+    otherDynamicCollidableObject.setVY(
+      otherDynamicCollidableObject.getVY() - impulseY,
+    );
   }
 
   private renderObjects(

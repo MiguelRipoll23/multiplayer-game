@@ -1,3 +1,12 @@
+* {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 html,
 body {
   width: 100%;
@@ -5,17 +14,6 @@ body {
   margin: 0;
   overflow: hidden;
   background: #000;
-}
-
-html,
-body,
-canvas {
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  -moz-user-select: -moz-none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 canvas {

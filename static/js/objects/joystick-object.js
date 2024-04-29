@@ -103,6 +103,8 @@ export class JoystickObject extends BaseGameObject {
             { passive: true };
     }
     handleTouchStart(event) {
+        event.preventDefault();
+        event.stopPropagation();
         this.active = true;
         this.usingTouch = true;
         const touch = event.touches[0];

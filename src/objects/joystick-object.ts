@@ -159,9 +159,7 @@ export class JoystickObject extends BaseGameObject {
 
   private handleTouchStart(event: TouchEvent) {
     event.preventDefault();
-
-    // Other listeners
-    this.canvas.dispatchEvent(event);
+    event.stopPropagation();
 
     this.active = true;
     this.usingTouch = true;

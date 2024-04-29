@@ -59,22 +59,10 @@ export class GearStickObject extends BaseGameObject {
         this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
             passive: true,
         });
-        this.canvas.addEventListener("click", this.handleClick.bind(this));
-    }
-    handleClick(event) {
-        if (!event.target)
-            return;
-        const rect = event.target.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-        if (this.isWithinGearStick(mouseX, mouseY)) {
-            this.switchGear();
-        }
     }
     handleTouchStart(event) {
         event.preventDefault();
-        // Other listeners
-        this.canvas.dispatchEvent(event);
+        event.stopPropagation();
         const touch = event.touches[0];
         if (!touch)
             return;
@@ -86,6 +74,15 @@ export class GearStickObject extends BaseGameObject {
         }
     }
     handleTouchEnd(event) {
+        const touch = event.touches[0];
+        if (!touch)
+            return;
+        const rect = this.canvas.getBoundingClientRect();
+        const touchX = touch.clientX - rect.left;
+        const touchY = touch.clientY - rect.top;
+        if (this.isWithinGearStick(touchX, touchY)) {
+            this.switchGear();
+        }
         this.active = false;
     }
     isWithinGearStick(x, y) {

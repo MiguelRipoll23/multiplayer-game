@@ -52,7 +52,7 @@ export class GearStickObject extends BaseGameObject {
       this.y + this.SIZE / 2, // y-coordinate of the center
       this.SIZE / 2, // radius
       0, // start angle
-      Math.PI * 2, // end angle
+      Math.PI * 2 // end angle
     );
     context.closePath();
     context.fill();
@@ -67,7 +67,7 @@ export class GearStickObject extends BaseGameObject {
     context.fillText(
       this.currentGear,
       this.x + this.SIZE / 2,
-      this.y + this.SIZE / 2,
+      this.y + this.SIZE / 2
     );
   }
 
@@ -75,7 +75,7 @@ export class GearStickObject extends BaseGameObject {
     this.canvas.addEventListener(
       "touchstart",
       this.handleTouchStart.bind(this),
-      { passive: true },
+      { passive: false }
     );
 
     this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
@@ -98,6 +98,11 @@ export class GearStickObject extends BaseGameObject {
   }
 
   private handleTouchStart(event: TouchEvent): void {
+    event.preventDefault();
+
+    // Other listeners
+    this.canvas.dispatchEvent(event);
+
     const touch = event.touches[0];
     if (!touch) return;
 

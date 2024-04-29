@@ -38,7 +38,7 @@ export class BaseGameScreen {
                 if (collidableObject === otherCollidableObject) {
                     return;
                 }
-                this.handleObjectsColliding(collidableObject, otherCollidableObject);
+                this.detectStaticAndDynamicCollisions(collidableObject, otherCollidableObject);
             });
             if (collidableObject.isColliding() === false) {
                 collidableObject.setAvoidingCollision(false);
@@ -70,7 +70,7 @@ export class BaseGameScreen {
             }
         });
     }
-    handleObjectsColliding(collidableObject, otherCollidableObject) {
+    detectStaticAndDynamicCollisions(collidableObject, otherCollidableObject) {
         const hitboxes = collidableObject.getHitboxObjects();
         const otherHitboxes = otherCollidableObject.getHitboxObjects();
         const areDynamicObjectsColliding = collidableObject instanceof BaseDynamicCollidableGameObject &&
@@ -121,6 +121,9 @@ export class BaseGameScreen {
         // Impulse to avoid becaming stuck
         if (vx > -1 && vx < 1) {
             vx = vx < 0 ? -1 : 1;
+        }
+        if (vy > -1 && vy < 1) {
+            vy = vy < 0 ? -1 : 1;
         }
         dynamicCollidableObject.setAvoidingCollision(true);
         dynamicCollidableObject.setVX(vx);

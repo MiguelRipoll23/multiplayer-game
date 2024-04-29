@@ -99,7 +99,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
   private handleInactiveState(deltaTimeStamp: DOMHighResTimeStamp) {
     if (this.inactive) {
       this.elapsedInactiveMilliseconds += deltaTimeStamp;
-      this.radius += 0.5;
+      this.radius += 1;
 
       if (
         this.elapsedInactiveMilliseconds > this.INACTIVE_DURATION_MILLISECONDS

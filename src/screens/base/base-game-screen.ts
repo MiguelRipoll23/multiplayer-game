@@ -60,7 +60,7 @@ export class BaseGameScreen {
           return;
         }
 
-        this.handleObjectsColliding(
+        this.detectStaticAndDynamicCollisions(
           collidableObject,
           otherCollidableObject,
         );
@@ -107,7 +107,7 @@ export class BaseGameScreen {
     });
   }
 
-  private handleObjectsColliding(
+  private detectStaticAndDynamicCollisions(
     collidableObject:
       | BaseStaticCollidableGameObject
       | BaseDynamicCollidableGameObject,
@@ -187,6 +187,10 @@ export class BaseGameScreen {
     // Impulse to avoid becaming stuck
     if (vx > -1 && vx < 1) {
       vx = vx < 0 ? -1 : 1;
+    }
+
+    if (vy > -1 && vy < 1) {
+      vy = vy < 0 ? -1 : 1;
     }
 
     dynamicCollidableObject.setAvoidingCollision(true);

@@ -75,7 +75,7 @@ export class GearStickObject extends BaseGameObject {
     this.canvas.addEventListener(
       "touchstart",
       this.handleTouchStart.bind(this),
-      { passive: false }
+      { passive: true }
     );
 
     this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
@@ -84,9 +84,6 @@ export class GearStickObject extends BaseGameObject {
   }
 
   private handleTouchStart(event: TouchEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-
     const touch = event.touches[0];
     if (!touch) return;
 

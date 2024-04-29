@@ -55,14 +55,12 @@ export class GearStickObject extends BaseGameObject {
         context.fillText(this.currentGear, this.x + this.SIZE / 2, this.y + this.SIZE / 2);
     }
     addTouchEventListeners() {
-        this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this), { passive: false });
+        this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this), { passive: true });
         this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
             passive: true,
         });
     }
     handleTouchStart(event) {
-        event.preventDefault();
-        event.stopPropagation();
         const touch = event.touches[0];
         if (!touch)
             return;

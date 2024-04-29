@@ -146,7 +146,7 @@ export class JoystickObject extends BaseGameObject {
     this.canvas.addEventListener(
       "touchstart",
       this.handleTouchStart.bind(this),
-      { passive: false }
+      { passive: true }
     );
 
     this.canvas.addEventListener("touchmove", this.handleTouchMove.bind(this), {
@@ -158,9 +158,6 @@ export class JoystickObject extends BaseGameObject {
   }
 
   private handleTouchStart(event: TouchEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-
     this.active = true;
     this.usingTouch = true;
 

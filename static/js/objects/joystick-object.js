@@ -95,7 +95,7 @@ export class JoystickObject extends BaseGameObject {
         context.closePath();
     }
     addTouchEventListeners() {
-        this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this), { passive: true });
+        this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this), { passive: false });
         this.canvas.addEventListener("touchmove", this.handleTouchMove.bind(this), {
             passive: false,
         });
@@ -137,10 +137,14 @@ export class JoystickObject extends BaseGameObject {
         this.updateControlValues();
     }
     updateControlValues() {
-        const isArrowUpPressed = this.pressedKeys.has("ArrowUp") || this.pressedKeys.has("w");
-        const isArrowDownPressed = this.pressedKeys.has("ArrowDown") || this.pressedKeys.has("s");
-        const isArrowLeftPressed = this.pressedKeys.has("ArrowLeft") || this.pressedKeys.has("a");
-        const isArrowRightPressed = this.pressedKeys.has("ArrowRight") || this.pressedKeys.has("d");
+        const isArrowUpPressed = this.pressedKeys.has("ArrowUp") ||
+            this.pressedKeys.has("w");
+        const isArrowDownPressed = this.pressedKeys.has("ArrowDown") ||
+            this.pressedKeys.has("s");
+        const isArrowLeftPressed = this.pressedKeys.has("ArrowLeft") ||
+            this.pressedKeys.has("a");
+        const isArrowRightPressed = this.pressedKeys.has("ArrowRight") ||
+            this.pressedKeys.has("d");
         this.active = isArrowUpPressed || isArrowDownPressed;
         if (isArrowUpPressed && !isArrowDownPressed) {
             this.controlY = -1;

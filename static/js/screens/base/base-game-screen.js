@@ -26,22 +26,22 @@ export class BaseGameScreen {
         this.detectCollisions();
     }
     detectCollisions() {
-        const collidableGameObjects = this
+        const collidableObjects = this
             .sceneObjects.filter((sceneObject) => sceneObject instanceof BaseStaticCollidableGameObject ||
             sceneObject instanceof BaseDynamicCollidableGameObject);
-        collidableGameObjects.forEach((collidableGameObject) => {
-            collidableGameObject.setColliding(false);
-            collidableGameObjects.forEach((otherCollidableGameObject) => {
-                if (collidableGameObject === otherCollidableGameObject) {
+        collidableObjects.forEach((collidableObject) => {
+            // Reset colliding state for hitboxes
+            collidableObject.getHitboxObjects().forEach((hitbox) => {
+                hitbox.setColliding(false);
+            });
+            collidableObjects.forEach((otherCollidableObject) => {
+                if (collidableObject === otherCollidableObject) {
                     return;
                 }
-                if (this.areObjectsColliding(collidableGameObject, otherCollidableGameObject)) {
-                    collidableGameObject.setColliding(true);
-                    otherCollidableGameObject.setColliding(true);
-                }
+                this.handleObjectsColliding(collidableObject, otherCollidableObject);
             });
-            if (collidableGameObject.isColliding() === false) {
-                collidableGameObject.setAvoidingCollision(false);
+            if (collidableObject.isColliding() === false) {
+                collidableObject.setAvoidingCollision(false);
             }
         });
     }
@@ -70,7 +70,7 @@ export class BaseGameScreen {
             }
         });
     }
-    areObjectsColliding(collidableObject, otherCollidableObject) {
+    handleObjectsColliding(collidableObject, otherCollidableObject) {
         const hitboxes = collidableObject.getHitboxObjects();
         const otherHitboxes = otherCollidableObject.getHitboxObjects();
         const areDynamicObjectsColliding = collidableObject instanceof BaseDynamicCollidableGameObject &&
@@ -78,18 +78,26 @@ export class BaseGameScreen {
         const isDynamicObjectCollidingWithStatic = collidableObject instanceof BaseDynamicCollidableGameObject &&
             otherCollidableObject instanceof BaseStaticCollidableGameObject;
         if (this.doesHitboxesIntersect(hitboxes, otherHitboxes)) {
+            collidableObject.addCollidingObject(otherCollidableObject);
+            otherCollidableObject.addCollidingObject(collidableObject);
+            if (collidableObject.isCrossable() ||
+                otherCollidableObject.isCrossable()) {
+                return;
+            }
             if (areDynamicObjectsColliding) {
                 this.simulateCollisionBetweenDynamicObjects(collidableObject, otherCollidableObject);
             }
             else if (isDynamicObjectCollidingWithStatic) {
                 if (collidableObject.isAvoidingCollision()) {
-                    return true;
+                    return;
                 }
                 this.simulateCollisionBetweenDynamicAndStaticObjects(collidableObject);
             }
-            return true;
         }
-        return false;
+        else {
+            collidableObject.removeCollidingObject(otherCollidableObject);
+            otherCollidableObject.removeCollidingObject(collidableObject);
+        }
     }
     doesHitboxesIntersect(hitboxObjects, otherHitboxObjects) {
         let intersecting = false;

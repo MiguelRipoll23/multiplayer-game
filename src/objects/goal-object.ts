@@ -6,22 +6,20 @@ import { HitboxObject } from "./hitbox-object.js";
 import { BaseStaticCollidableGameObject } from "./base/base-static-collidable-game-object.js";
 
 export class GoalObject extends BaseStaticCollidableGameObject {
-  private readonly LINE_BORDER_COLOR: string = "#fff";
-
   private readonly WIDTH: number = 100; // Width of the goal
   private readonly HEIGHT: number = 40; // Height of the goal (adjusted)
   private readonly BORDER_SIZE: number = 2; // Border size
+  private readonly BORDER_COLOR: string = "#fff";
   private readonly Y_OFFSET: number = 13;
 
   private fillColor: string;
-  private borderColor: string;
   private orangeTeam: boolean;
 
   constructor(orangeTeam: boolean, canvas: HTMLCanvasElement) {
     super();
 
     this.orangeTeam = orangeTeam;
-    this.borderColor = this.LINE_BORDER_COLOR;
+    this.crossable = true;
 
     if (orangeTeam) {
       // Position goal at the top of the canvas
@@ -48,7 +46,7 @@ export class GoalObject extends BaseStaticCollidableGameObject {
 
   public override render(context: CanvasRenderingContext2D): void {
     context.fillStyle = this.fillColor;
-    context.strokeStyle = this.borderColor;
+    context.strokeStyle = this.BORDER_COLOR;
     context.lineWidth = this.BORDER_SIZE;
 
     context.beginPath();

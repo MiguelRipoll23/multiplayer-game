@@ -2,18 +2,17 @@ import { BLUE_TEAM_TRANSPARENCY_COLOR, ORANGE_TEAM_TRANSPARENCY_COLOR, } from ".
 import { HitboxObject } from "./hitbox-object.js";
 import { BaseStaticCollidableGameObject } from "./base/base-static-collidable-game-object.js";
 export class GoalObject extends BaseStaticCollidableGameObject {
-    LINE_BORDER_COLOR = "#fff";
     WIDTH = 100; // Width of the goal
     HEIGHT = 40; // Height of the goal (adjusted)
     BORDER_SIZE = 2; // Border size
+    BORDER_COLOR = "#fff";
     Y_OFFSET = 13;
     fillColor;
-    borderColor;
     orangeTeam;
     constructor(orangeTeam, canvas) {
         super();
         this.orangeTeam = orangeTeam;
-        this.borderColor = this.LINE_BORDER_COLOR;
+        this.crossable = true;
         if (orangeTeam) {
             // Position goal at the top of the canvas
             this.y = this.Y_OFFSET;
@@ -36,7 +35,7 @@ export class GoalObject extends BaseStaticCollidableGameObject {
     }
     render(context) {
         context.fillStyle = this.fillColor;
-        context.strokeStyle = this.borderColor;
+        context.strokeStyle = this.BORDER_COLOR;
         context.lineWidth = this.BORDER_SIZE;
         context.beginPath();
         context.rect(this.x, this.y, this.WIDTH, this.HEIGHT);

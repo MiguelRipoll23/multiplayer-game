@@ -15,7 +15,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
 
   private readonly IMAGE_PATH = "./images/car-local.png";
 
-  private readonly MASS: number = 100;
+  private readonly MASS: number = 500;
   private readonly WIDTH: number = 50;
   private readonly HEIGHT: number = 50;
   private readonly DISTANCE_CENTER: number = 220;
@@ -116,7 +116,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
 
   private applyFriction(): void {
     if (this.isColliding()) {
-      // We don't want the car to stop if it's colliding
+      // We don't want the car to stop if is colliding
       // otherwise it would became stuck
       return;
     }

@@ -7,10 +7,15 @@ export class BallObject extends BaseDynamicCollidableGameObject {
   private readonly FRICTION: number = 0.01;
   private readonly BALL_COLOR_LIGHT: string = "#ffffff"; // Light color
   private readonly BALL_COLOR_DARK: string = "#cccccc"; // Dark color
+  private readonly INACTIVE_DURATION_MILLISECONDS: number = 5_000;
 
   private readonly canvas: HTMLCanvasElement;
   private readonly centerX: number;
   private readonly centerY: number;
+  private radius: number = this.RADIUS;
+
+  private inactive: boolean = false;
+  private elapsedInactiveMilliseconds: number = 0;
 
   constructor(x: number, y: number, canvas: HTMLCanvasElement) {
     super();
@@ -29,6 +34,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.handleInactiveState(deltaTimeStamp);
     this.applyFriction();
     this.calculateMovement();
     this.updateHitbox();
@@ -44,7 +50,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
       0,
       this.x,
       this.y,
-      this.RADIUS,
+      this.radius,
     );
     gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Inner color (white)
     gradient.addColorStop(1, "rgba(200, 200, 200, 1)"); // Outer color (light gray)
@@ -52,7 +58,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     // Draw the football ball with gradient
     context.beginPath();
     context.fillStyle = gradient;
-    context.arc(this.x, this.y, this.RADIUS, 0, Math.PI * 2);
+    context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     context.fill();
     context.closePath();
 
@@ -69,6 +75,16 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     this.y = this.centerY;
   }
 
+  public isInactive(): boolean {
+    return this.inactive;
+  }
+
+  public setInactive(): void {
+    this.inactive = true;
+    this.vx = -this.vx * 2;
+    this.vy = -this.vy * 2;
+  }
+
   private createHitbox(): void {
     const hitboxObject = new HitboxObject(
       this.x - this.RADIUS * 2,
@@ -78,6 +94,28 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     );
 
     this.setHitboxObjects([hitboxObject]);
+  }
+
+  private handleInactiveState(deltaTimeStamp: DOMHighResTimeStamp) {
+    if (this.inactive) {
+      this.elapsedInactiveMilliseconds += deltaTimeStamp;
+      this.radius += 0.5;
+
+      if (
+        this.elapsedInactiveMilliseconds > this.INACTIVE_DURATION_MILLISECONDS
+      ) {
+        this.resetBallState();
+      }
+    }
+  }
+
+  private resetBallState() {
+    this.vx = 0;
+    this.vy = 0;
+    this.radius = this.RADIUS;
+    this.setCenterPosition();
+    this.elapsedInactiveMilliseconds = 0;
+    this.inactive = false;
   }
 
   private applyFriction(): void {

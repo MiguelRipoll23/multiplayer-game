@@ -7,14 +7,18 @@ import { BallObject } from "../objects/ball-object.js";
 import { ScoreboardObject } from "../objects/scoreboard-object.js";
 import { StatusObject } from "../objects/status-object.js";
 export class WorldScreen extends BaseGameScreen {
+    scoreboardObject = null;
+    ballObject = null;
+    orangeGoalObject = null;
+    blueGoalObject = null;
     constructor(canvas) {
         super(canvas);
     }
     loadObjects() {
         this.loadBackgroundObject();
-        this.loadCountdownObject();
-        this.loadBallObject();
+        this.loadScoreboardObject();
         this.loadPlayerAndLocalCarObjects();
+        this.loadBallObject();
         this.loadGoalObjects();
         this.loadStatusObject();
         super.loadObjects();
@@ -26,21 +30,21 @@ export class WorldScreen extends BaseGameScreen {
             this.sceneObjects.push(object);
         });
     }
-    loadCountdownObject() {
-        const countdownObject = new ScoreboardObject(this.canvas);
-        countdownObject.startCountdown(60 * 5);
-        this.sceneObjects.push(countdownObject);
+    loadScoreboardObject() {
+        this.scoreboardObject = new ScoreboardObject(this.canvas);
+        this.scoreboardObject.startCountdown(60 * 5);
+        this.sceneObjects.push(this.scoreboardObject);
     }
     loadBallObject() {
-        const ballObject = new BallObject(0, 0, this.canvas);
-        ballObject.setCenterPosition();
-        this.sceneObjects.push(ballObject);
+        this.ballObject = new BallObject(0, 0, this.canvas);
+        this.ballObject.setCenterPosition();
+        this.sceneObjects.push(this.ballObject);
     }
     loadGoalObjects() {
-        const orangeGoalObject = new GoalObject(true, this.canvas);
-        const blueGoalObject = new GoalObject(false, this.canvas);
-        this.sceneObjects.push(orangeGoalObject);
-        this.sceneObjects.push(blueGoalObject);
+        this.orangeGoalObject = new GoalObject(true, this.canvas);
+        this.blueGoalObject = new GoalObject(false, this.canvas);
+        this.sceneObjects.push(this.orangeGoalObject);
+        this.sceneObjects.push(this.blueGoalObject);
     }
     loadPlayerAndLocalCarObjects() {
         const playerObject = this.loadAndGetPlayerObject();
@@ -63,5 +67,27 @@ export class WorldScreen extends BaseGameScreen {
         statusObject.setText("Waiting for players");
         statusObject.setActive(true);
         this.uiObjects.push(statusObject);
+    }
+    update(deltaTimeStamp) {
+        super.update(deltaTimeStamp);
+        this.detectScores();
+    }
+    detectScores() {
+        if (this.ballObject === null ||
+            this.ballObject.isInactive()) {
+            return;
+        }
+        const hasOrangeTeamScored = this.orangeGoalObject?.getCollidingObjects()
+            .includes(this.ballObject);
+        if (hasOrangeTeamScored) {
+            this.ballObject.setInactive();
+            this.scoreboardObject?.incrementBlueScore();
+        }
+        const hasBlueTeamScored = this.blueGoalObject?.getCollidingObjects()
+            .includes(this.ballObject);
+        if (hasBlueTeamScored) {
+            this.ballObject.setInactive();
+            this.scoreboardObject?.incrementOrangeScore();
+        }
     }
 }

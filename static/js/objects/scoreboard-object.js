@@ -2,8 +2,6 @@ import { BLUE_TEAM_COLOR, ORANGE_TEAM_COLOR } from "../constants/colors.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 export class ScoreboardObject extends BaseGameObject {
     canvas;
-    BLUE_SCORE = 0;
-    ORANGE_SCORE = 0;
     SQUARE_SIZE = 50;
     SPACE_BETWEEN = 10;
     TIME_BOX_WIDTH = 120;
@@ -20,6 +18,8 @@ export class ScoreboardObject extends BaseGameObject {
     TIME_BOX_FILL_COLOR = "#4caf50"; // Added property for time box fill color
     x;
     y = 90;
+    blueScore = 0;
+    orangeScore = 0;
     active = false;
     elapsedMilliseconds = 0;
     durationMilliseconds = 0;
@@ -37,9 +37,10 @@ export class ScoreboardObject extends BaseGameObject {
         }
     }
     render(context) {
-        const totalWidth = 2 * this.SQUARE_SIZE + this.SPACE_BETWEEN + this.TIME_BOX_WIDTH;
+        const totalWidth = 2 * this.SQUARE_SIZE + this.SPACE_BETWEEN +
+            this.TIME_BOX_WIDTH;
         const startX = this.x - totalWidth / 2;
-        this.renderSquare(context, startX, this.BLUE_SHAPE_COLOR, this.BLUE_SCORE);
+        this.renderSquare(context, startX, this.BLUE_SHAPE_COLOR, this.blueScore);
         const remainingTimeSeconds = Math.ceil((this.durationMilliseconds - this.elapsedMilliseconds) / 1000);
         const formattedTime = this.formatTime(remainingTimeSeconds);
         const timeX = startX + this.SQUARE_SIZE + this.SPACE_BETWEEN;
@@ -50,7 +51,13 @@ export class ScoreboardObject extends BaseGameObject {
             this.SPACE_BETWEEN +
             this.TIME_BOX_WIDTH +
             this.SPACE_BETWEEN;
-        this.renderSquare(context, orangeScoreX, this.ORANGE_SHAPE_COLOR, this.ORANGE_SCORE);
+        this.renderSquare(context, orangeScoreX, this.ORANGE_SHAPE_COLOR, this.orangeScore);
+    }
+    incrementBlueScore() {
+        this.blueScore++;
+    }
+    incrementOrangeScore() {
+        this.orangeScore++;
     }
     renderSquare(context, x, color, score) {
         context.fillStyle = color;

@@ -45,13 +45,13 @@ export class ScoreboardObject extends BaseGameObject {
   }
 
   public render(context: CanvasRenderingContext2D): void {
-    const totalWidth = 2 * this.SQUARE_SIZE + this.SPACE_BETWEEN +
-      this.TIME_BOX_WIDTH;
+    const totalWidth =
+      2 * this.SQUARE_SIZE + this.SPACE_BETWEEN + this.TIME_BOX_WIDTH;
     const startX = this.x - totalWidth / 2;
 
     this.renderSquare(context, startX, this.BLUE_SHAPE_COLOR, this.BLUE_SCORE);
     const remainingTimeSeconds = Math.ceil(
-      (this.durationMilliseconds - this.elapsedMilliseconds) / 1000,
+      (this.durationMilliseconds - this.elapsedMilliseconds) / 1000
     );
     const formattedTime = this.formatTime(remainingTimeSeconds);
     const timeX = startX + this.SQUARE_SIZE + this.SPACE_BETWEEN;
@@ -62,10 +62,11 @@ export class ScoreboardObject extends BaseGameObject {
       timeY,
       this.TIME_BOX_WIDTH,
       this.TIME_BOX_HEIGHT,
-      formattedTime,
+      formattedTime
     );
 
-    const orangeScoreX = startX +
+    const orangeScoreX =
+      startX +
       this.SQUARE_SIZE +
       this.SPACE_BETWEEN +
       this.TIME_BOX_WIDTH +
@@ -74,7 +75,7 @@ export class ScoreboardObject extends BaseGameObject {
       context,
       orangeScoreX,
       this.ORANGE_SHAPE_COLOR,
-      this.ORANGE_SCORE,
+      this.ORANGE_SCORE
     );
   }
 
@@ -82,7 +83,7 @@ export class ScoreboardObject extends BaseGameObject {
     context: CanvasRenderingContext2D,
     x: number,
     color: string,
-    score: number,
+    score: number
   ): void {
     context.fillStyle = color;
     this.roundedRect(
@@ -91,14 +92,14 @@ export class ScoreboardObject extends BaseGameObject {
       this.y,
       this.SQUARE_SIZE,
       this.SQUARE_SIZE,
-      this.CORNER_RADIUS,
+      this.CORNER_RADIUS
     );
     context.fill();
     this.renderText(
       context,
       score.toString(),
       x + this.SQUARE_SIZE / 2,
-      this.y + 2 + this.SQUARE_SIZE / 2,
+      this.y + 2 + this.SQUARE_SIZE / 2
     );
   }
 
@@ -108,7 +109,7 @@ export class ScoreboardObject extends BaseGameObject {
     y: number,
     width: number,
     height: number,
-    text: string,
+    text: string
   ): void {
     context.fillStyle = this.TIME_BOX_FILL_COLOR;
     this.roundedRect(context, x, y, width, height, this.CORNER_RADIUS);
@@ -123,7 +124,7 @@ export class ScoreboardObject extends BaseGameObject {
     y: number,
     width: number,
     height: number,
-    radius: number,
+    radius: number
   ) {
     context.beginPath();
     context.moveTo(x + radius, y);
@@ -138,7 +139,7 @@ export class ScoreboardObject extends BaseGameObject {
     context: CanvasRenderingContext2D,
     text: string,
     x: number,
-    y: number,
+    y: number
   ) {
     context.fillStyle = this.TEXT_COLOR;
     context.font = `${this.FONT_SIZE} ${this.FONT_FAMILY}`;
@@ -148,11 +149,9 @@ export class ScoreboardObject extends BaseGameObject {
   private formatTime(timeInSeconds: number): string {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = timeInSeconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${
-      seconds
-        .toString()
-        .padStart(2, "0")
-    }`;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
   }
 
   public startCountdown(durationSeconds: number): void {

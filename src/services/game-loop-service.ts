@@ -1,12 +1,13 @@
 import { GameFrame } from "../models/game-frame.js";
-import { BaseCollidingGameScreen } from "../screens/base/base-colliding-game-screen.js";
-import { WorldScreen } from "../screens/world-screen.js";
+import { GameState } from "../models/game-state.js";
+import { LoadingScreen } from "../screens/loading-screen.js";
 import { ScreenManagerService } from "./screen-manager-service.js";
 
 export class GameLoopService {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
 
+  private gameState: GameState;
   private gameFrame: GameFrame;
   private screenManager: ScreenManagerService;
 
@@ -19,6 +20,7 @@ export class GameLoopService {
     this.canvas = canvas;
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 
+    this.gameState = new GameState();
     this.gameFrame = new GameFrame();
     this.screenManager = new ScreenManagerService(this);
 
@@ -26,6 +28,18 @@ export class GameLoopService {
 
     this.setCanvasSize();
     this.addResizeEventListener();
+  }
+
+  public getCanvas(): HTMLCanvasElement {
+    return this.canvas;
+  }
+
+  public getGameState(): GameState {
+    return this.gameState;
+  }
+
+  public getScreenManager(): ScreenManagerService {
+    return this.screenManager;
   }
 
   public getGameFrame(): GameFrame {
@@ -56,10 +70,10 @@ export class GameLoopService {
   }
 
   private setInitialScreen() {
-    const worldScreen = new WorldScreen(this.canvas);
-    worldScreen.loadObjects();
+    const loadingScreen = new LoadingScreen(this);
+    loadingScreen.loadObjects();
 
-    this.screenManager.crossfade(worldScreen, 1);
+    this.screenManager.crossfade(loadingScreen, 1);
   }
 
   private loop(timeStamp: DOMHighResTimeStamp): void {

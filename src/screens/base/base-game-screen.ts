@@ -1,4 +1,6 @@
+import { GameState } from "../../models/game-state.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
+import { GameLoopService } from "../../services/game-loop-service.js";
 import { GameScreen } from "../interfaces/game-screen.js";
 
 export class BaseGameScreen implements GameScreen {
@@ -8,12 +10,12 @@ export class BaseGameScreen implements GameScreen {
   protected sceneObjects: GameObject[];
   protected uiObjects: GameObject[];
 
-  private loading: boolean = true;
+  private objectsLoadingPending: boolean = true;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(gameLoop: GameLoopService) {
     console.log(`${this.constructor.name} created`);
 
-    this.canvas = canvas;
+    this.canvas = gameLoop.getCanvas();
     this.sceneObjects = [];
     this.uiObjects = [];
   }
@@ -21,9 +23,14 @@ export class BaseGameScreen implements GameScreen {
   public loadObjects(): void {
     this.sceneObjects.forEach((object) => object.load());
     this.uiObjects.forEach((object) => object.load());
+    this.objectsLoadingPending = false;
   }
 
   public hasLoaded(): boolean {
+    if (this.objectsLoadingPending) {
+      return false;
+    }
+
     return [...this.sceneObjects, ...this.uiObjects].every((object) =>
       object.hasLoaded()
     );
@@ -54,12 +61,12 @@ export class BaseGameScreen implements GameScreen {
   }
 
   public hasTransitionFinished(): void {
-    console.log(`${this.constructor.name} transition finished`);
+    console.log(`Transition to ${this.constructor.name} finished`);
   }
 
   private checkIfScreenHasLoaded(): void {
-    if (this.loading && this.hasLoaded()) {
-      this.loading = false;
+    if (this.objectsLoadingPending && this.hasLoaded()) {
+      this.objectsLoadingPending = false;
       console.log(`${this.constructor.name} loaded`);
     }
   }

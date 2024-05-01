@@ -1,4 +1,3 @@
-import { GameScreen } from "./interfaces/game-screen.js";
 import { LocalCarObject } from "../objects/local-car-object.js";
 import { PlayerObject } from "../objects/player-object.js";
 import { WorldBackgroundObject } from "../objects/backgrounds/world-background-object.js";
@@ -7,6 +6,7 @@ import { BallObject } from "../objects/ball-object.js";
 import { ScoreboardObject } from "../objects/scoreboard-object.js";
 import { StatusObject } from "../objects/status-object.js";
 import { BaseCollidingGameScreen } from "./base/base-colliding-game-screen.js";
+import { GameLoopService } from "../services/game-loop-service.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private scoreboardObject: ScoreboardObject | null = null;
@@ -15,22 +15,22 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private orangeGoalObject: GoalObject | null = null;
   private blueGoalObject: GoalObject | null = null;
 
-  constructor(canvas: HTMLCanvasElement) {
-    super(canvas);
+  constructor(gameLoop: GameLoopService) {
+    super(gameLoop);
   }
 
   public override loadObjects(): void {
-    this.loadBackgroundObject();
-    this.loadScoreboardObject();
-    this.loadPlayerAndLocalCarObjects();
-    this.loadBallObject();
-    this.loadGoalObjects();
-    this.loadStatusObject();
+    this.createBackgroundObject();
+    this.createScoreboardObject();
+    this.createPlayerAndLocalCarObjects();
+    this.createBallObject();
+    this.createGoalObjects();
+    this.createStatusObject();
 
     super.loadObjects();
   }
 
-  private loadBackgroundObject() {
+  private createBackgroundObject() {
     const backgroundObject = new WorldBackgroundObject(this.canvas);
     this.sceneObjects.push(backgroundObject);
 
@@ -39,20 +39,20 @@ export class WorldScreen extends BaseCollidingGameScreen {
     });
   }
 
-  private loadScoreboardObject() {
+  private createScoreboardObject() {
     this.scoreboardObject = new ScoreboardObject(this.canvas);
     this.scoreboardObject.startCountdown(60 * 5);
     this.sceneObjects.push(this.scoreboardObject);
   }
 
-  private loadBallObject() {
+  private createBallObject() {
     this.ballObject = new BallObject(0, 0, this.canvas);
     this.ballObject.setCenterPosition();
 
     this.sceneObjects.push(this.ballObject);
   }
 
-  private loadGoalObjects() {
+  private createGoalObjects() {
     this.orangeGoalObject = new GoalObject(true, this.canvas);
     this.blueGoalObject = new GoalObject(false, this.canvas);
 
@@ -60,8 +60,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.sceneObjects.push(this.blueGoalObject);
   }
 
-  private loadPlayerAndLocalCarObjects() {
-    const playerObject = this.loadAndGetPlayerObject();
+  private createPlayerAndLocalCarObjects() {
+    const playerObject = this.createAndGetPlayerObject();
 
     const localCarObject = new LocalCarObject(0, 0, 90, this.canvas);
     localCarObject.setCenterPosition();
@@ -75,14 +75,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.uiObjects.push(localCarObject.getJoystickObject());
   }
 
-  private loadAndGetPlayerObject(): PlayerObject {
+  private createAndGetPlayerObject(): PlayerObject {
     const playerObject = new PlayerObject("player1");
     this.sceneObjects.push(playerObject);
 
     return playerObject;
   }
 
-  private loadStatusObject() {
+  private createStatusObject() {
     const statusObject = new StatusObject(this.canvas);
     statusObject.setText("Waiting for players");
     statusObject.setActive(true);

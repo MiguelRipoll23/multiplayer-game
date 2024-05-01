@@ -1,5 +1,4 @@
 export class ScreenManagerService {
-    gameLoop;
     gameFrame;
     elapsedTransitionMilliseconds = 0;
     // Transition state flags
@@ -10,7 +9,6 @@ export class ScreenManagerService {
     fadeOutDurationMilliseconds = 0;
     crossfadeDurationMilliseconds = 0;
     constructor(gameLoop) {
-        this.gameLoop = gameLoop;
         this.gameFrame = gameLoop.getGameFrame();
     }
     update(deltaTimeStamp) {
@@ -92,7 +90,6 @@ export class ScreenManagerService {
         console.log("Previous transition stopped");
     }
     updateCurrentAndNextScreen(nextScreen) {
-        console.log("Transition to", nextScreen.constructor.name, "finished");
         this.elapsedTransitionMilliseconds = 0;
         this.gameFrame.setCurrentScreen(nextScreen);
         this.gameFrame.getCurrentScreen()?.hasTransitionFinished();

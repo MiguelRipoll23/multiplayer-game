@@ -11,43 +11,43 @@ export class WorldScreen extends BaseCollidingGameScreen {
     ballObject = null;
     orangeGoalObject = null;
     blueGoalObject = null;
-    constructor(canvas) {
-        super(canvas);
+    constructor(gameLoop) {
+        super(gameLoop);
     }
     loadObjects() {
-        this.loadBackgroundObject();
-        this.loadScoreboardObject();
-        this.loadPlayerAndLocalCarObjects();
-        this.loadBallObject();
-        this.loadGoalObjects();
-        this.loadStatusObject();
+        this.createBackgroundObject();
+        this.createScoreboardObject();
+        this.createPlayerAndLocalCarObjects();
+        this.createBallObject();
+        this.createGoalObjects();
+        this.createStatusObject();
         super.loadObjects();
     }
-    loadBackgroundObject() {
+    createBackgroundObject() {
         const backgroundObject = new WorldBackgroundObject(this.canvas);
         this.sceneObjects.push(backgroundObject);
         backgroundObject.getCollisionHitboxes().forEach((object) => {
             this.sceneObjects.push(object);
         });
     }
-    loadScoreboardObject() {
+    createScoreboardObject() {
         this.scoreboardObject = new ScoreboardObject(this.canvas);
         this.scoreboardObject.startCountdown(60 * 5);
         this.sceneObjects.push(this.scoreboardObject);
     }
-    loadBallObject() {
+    createBallObject() {
         this.ballObject = new BallObject(0, 0, this.canvas);
         this.ballObject.setCenterPosition();
         this.sceneObjects.push(this.ballObject);
     }
-    loadGoalObjects() {
+    createGoalObjects() {
         this.orangeGoalObject = new GoalObject(true, this.canvas);
         this.blueGoalObject = new GoalObject(false, this.canvas);
         this.sceneObjects.push(this.orangeGoalObject);
         this.sceneObjects.push(this.blueGoalObject);
     }
-    loadPlayerAndLocalCarObjects() {
-        const playerObject = this.loadAndGetPlayerObject();
+    createPlayerAndLocalCarObjects() {
+        const playerObject = this.createAndGetPlayerObject();
         const localCarObject = new LocalCarObject(0, 0, 90, this.canvas);
         localCarObject.setCenterPosition();
         localCarObject.setPlayerObject(playerObject);
@@ -57,12 +57,12 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.uiObjects.push(localCarObject.getGearStickObject());
         this.uiObjects.push(localCarObject.getJoystickObject());
     }
-    loadAndGetPlayerObject() {
+    createAndGetPlayerObject() {
         const playerObject = new PlayerObject("player1");
         this.sceneObjects.push(playerObject);
         return playerObject;
     }
-    loadStatusObject() {
+    createStatusObject() {
         const statusObject = new StatusObject(this.canvas);
         statusObject.setText("Waiting for players");
         statusObject.setActive(true);

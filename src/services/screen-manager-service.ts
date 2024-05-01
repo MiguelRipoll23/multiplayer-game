@@ -15,7 +15,7 @@ export class ScreenManagerService {
   private fadeOutDurationMilliseconds: number = 0;
   private crossfadeDurationMilliseconds: number = 0;
 
-  constructor(private gameLoop: GameLoopService) {
+  constructor(gameLoop: GameLoopService) {
     this.gameFrame = gameLoop.getGameFrame();
   }
 
@@ -138,7 +138,6 @@ export class ScreenManagerService {
   }
 
   private updateCurrentAndNextScreen(nextScreen: GameScreen): void {
-    console.log("Transition to", nextScreen.constructor.name, "finished");
     this.elapsedTransitionMilliseconds = 0;
     this.gameFrame.setCurrentScreen(nextScreen);
     this.gameFrame.getCurrentScreen()?.hasTransitionFinished();

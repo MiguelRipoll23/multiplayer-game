@@ -1,9 +1,11 @@
 import { GameFrame } from "../models/game-frame.js";
-import { WorldScreen } from "../screens/world-screen.js";
+import { GameState } from "../models/game-state.js";
+import { LoadingScreen } from "../screens/loading-screen.js";
 import { ScreenManagerService } from "./screen-manager-service.js";
 export class GameLoopService {
     canvas;
     context;
+    gameState;
     gameFrame;
     screenManager;
     previousTimeStamp = 0;
@@ -12,11 +14,21 @@ export class GameLoopService {
     constructor(canvas) {
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
+        this.gameState = new GameState();
         this.gameFrame = new GameFrame();
         this.screenManager = new ScreenManagerService(this);
         this.previousTimeStamp = performance.now();
         this.setCanvasSize();
         this.addResizeEventListener();
+    }
+    getCanvas() {
+        return this.canvas;
+    }
+    getGameState() {
+        return this.gameState;
+    }
+    getScreenManager() {
+        return this.screenManager;
     }
     getGameFrame() {
         return this.gameFrame;
@@ -40,9 +52,9 @@ export class GameLoopService {
         });
     }
     setInitialScreen() {
-        const worldScreen = new WorldScreen(this.canvas);
-        worldScreen.loadObjects();
-        this.screenManager.crossfade(worldScreen, 1);
+        const loadingScreen = new LoadingScreen(this);
+        loadingScreen.loadObjects();
+        this.screenManager.crossfade(loadingScreen, 1);
     }
     loop(timeStamp) {
         this.deltaTimeStamp = Math.min(timeStamp - this.previousTimeStamp, 100);

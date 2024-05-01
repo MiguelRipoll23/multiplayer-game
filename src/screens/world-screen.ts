@@ -42,7 +42,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private loadScoreboardObject() {
     this.scoreboardObject = new ScoreboardObject(this.canvas);
     this.scoreboardObject.startCountdown(60 * 5);
-
     this.sceneObjects.push(this.scoreboardObject);
   }
 

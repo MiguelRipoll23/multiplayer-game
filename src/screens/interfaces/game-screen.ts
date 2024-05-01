@@ -7,4 +7,5 @@ export interface GameScreen {
 
   getOpacity(): number;
   setOpacity(opacity: number): void;
+  hasTransitionFinished(): void;
 }

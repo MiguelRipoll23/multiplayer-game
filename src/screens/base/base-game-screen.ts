@@ -37,8 +37,12 @@ export class BaseGameScreen implements GameScreen {
   }
 
   public render(context: CanvasRenderingContext2D): void {
+    context.globalAlpha = this.opacity;
+
     this.renderObjects(this.sceneObjects, context);
     this.renderObjects(this.uiObjects, context);
+
+    context.globalAlpha = 1;
   }
 
   public getOpacity(): number {
@@ -47,6 +51,10 @@ export class BaseGameScreen implements GameScreen {
 
   public setOpacity(opacity: number): void {
     this.opacity = opacity;
+  }
+
+  public hasTransitionFinished(): void {
+    console.log(`${this.constructor.name} transition finished`);
   }
 
   private checkIfScreenHasLoaded(): void {

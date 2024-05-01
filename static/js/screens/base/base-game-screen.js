@@ -23,14 +23,19 @@ export class BaseGameScreen {
         this.updateObjects(this.uiObjects, deltaTimeStamp);
     }
     render(context) {
+        context.globalAlpha = this.opacity;
         this.renderObjects(this.sceneObjects, context);
         this.renderObjects(this.uiObjects, context);
+        context.globalAlpha = 1;
     }
     getOpacity() {
         return this.opacity;
     }
     setOpacity(opacity) {
         this.opacity = opacity;
+    }
+    hasTransitionFinished() {
+        console.log(`${this.constructor.name} transition finished`);
     }
     checkIfScreenHasLoaded() {
         if (this.loading && this.hasLoaded()) {

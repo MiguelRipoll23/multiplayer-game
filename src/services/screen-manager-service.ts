@@ -141,6 +141,7 @@ export class ScreenManagerService {
     console.log("Transition to", nextScreen.constructor.name, "finished");
     this.elapsedTransitionMilliseconds = 0;
     this.gameFrame.setCurrentScreen(nextScreen);
+    this.gameFrame.getCurrentScreen()?.hasTransitionFinished();
     this.gameFrame.setNextScreen(null);
   }
 }

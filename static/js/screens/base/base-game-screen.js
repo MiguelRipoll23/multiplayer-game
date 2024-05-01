@@ -3,7 +3,7 @@ export class BaseGameScreen {
     opacity = 0;
     sceneObjects;
     uiObjects;
-    isScreenLoading = true;
+    loading = true;
     constructor(canvas) {
         console.log(`${this.constructor.name} created`);
         this.canvas = canvas;
@@ -33,8 +33,8 @@ export class BaseGameScreen {
         this.opacity = opacity;
     }
     checkIfScreenHasLoaded() {
-        if (this.isScreenLoading && this.hasLoaded()) {
-            this.isScreenLoading = false;
+        if (this.loading && this.hasLoaded()) {
+            this.loading = false;
             console.log(`${this.constructor.name} loaded`);
         }
     }

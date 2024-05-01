@@ -8,7 +8,7 @@ export class BaseGameScreen implements GameScreen {
   protected sceneObjects: GameObject[];
   protected uiObjects: GameObject[];
 
-  private isScreenLoading: boolean = true;
+  private loading: boolean = true;
 
   constructor(canvas: HTMLCanvasElement) {
     console.log(`${this.constructor.name} created`);
@@ -50,8 +50,8 @@ export class BaseGameScreen implements GameScreen {
   }
 
   private checkIfScreenHasLoaded(): void {
-    if (this.isScreenLoading && this.hasLoaded()) {
-      this.isScreenLoading = false;
+    if (this.loading && this.hasLoaded()) {
+      this.loading = false;
       console.log(`${this.constructor.name} loaded`);
     }
   }

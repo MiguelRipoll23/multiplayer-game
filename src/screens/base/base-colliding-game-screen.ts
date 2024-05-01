@@ -55,6 +55,22 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
     const hitboxes = collidableObject.getHitboxObjects();
     const otherHitboxes = otherCollidableObject.getHitboxObjects();
 
+    if (this.doesHitboxesIntersect(hitboxes, otherHitboxes) === false) {
+      collidableObject.removeCollidingObject(otherCollidableObject);
+      otherCollidableObject.removeCollidingObject(collidableObject);
+      return;
+    }
+
+    collidableObject.addCollidingObject(otherCollidableObject);
+    otherCollidableObject.addCollidingObject(collidableObject);
+
+    if (
+      collidableObject.isCrossable() ||
+      otherCollidableObject.isCrossable()
+    ) {
+      return;
+    }
+
     const areDynamicObjectsColliding =
       collidableObject instanceof BaseDynamicCollidableGameObject &&
       otherCollidableObject instanceof BaseDynamicCollidableGameObject;
@@ -63,32 +79,17 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
       collidableObject instanceof BaseDynamicCollidableGameObject &&
       otherCollidableObject instanceof BaseStaticCollidableGameObject;
 
-    if (this.doesHitboxesIntersect(hitboxes, otherHitboxes)) {
-      collidableObject.addCollidingObject(otherCollidableObject);
-      otherCollidableObject.addCollidingObject(collidableObject);
-
-      if (
-        collidableObject.isCrossable() ||
-        otherCollidableObject.isCrossable()
-      ) {
+    if (areDynamicObjectsColliding) {
+      this.simulateCollisionBetweenDynamicObjects(
+        collidableObject,
+        otherCollidableObject,
+      );
+    } else if (isDynamicObjectCollidingWithStatic) {
+      if (collidableObject.isAvoidingCollision()) {
         return;
       }
 
-      if (areDynamicObjectsColliding) {
-        this.simulateCollisionBetweenDynamicObjects(
-          collidableObject,
-          otherCollidableObject,
-        );
-      } else if (isDynamicObjectCollidingWithStatic) {
-        if (collidableObject.isAvoidingCollision()) {
-          return;
-        }
-
-        this.simulateCollisionBetweenDynamicAndStaticObjects(collidableObject);
-      }
-    } else {
-      collidableObject.removeCollidingObject(otherCollidableObject);
-      otherCollidableObject.removeCollidingObject(collidableObject);
+      this.simulateCollisionBetweenDynamicAndStaticObjects(collidableObject);
     }
   }
 
@@ -115,6 +116,7 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
 
     return intersecting;
   }
+
   private simulateCollisionBetweenDynamicAndStaticObjects(
     dynamicCollidableObject: BaseDynamicCollidableGameObject,
   ) {

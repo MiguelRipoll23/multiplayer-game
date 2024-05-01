@@ -1,4 +1,5 @@
 import { GameFrame } from "../models/game-frame.js";
+import { BaseCollidingGameScreen } from "../screens/base/base-colliding-game-screen.js";
 import { WorldScreen } from "../screens/world-screen.js";
 import { ScreenManagerService } from "./screen-manager-service.js";
 
@@ -78,9 +79,6 @@ export class GameLoopService {
 
     this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
     this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
-
-    this.gameFrame.getNextScreen()?.detectCollisions();
-    this.gameFrame.getCurrentScreen()?.detectCollisions();
   }
 
   private render(): void {

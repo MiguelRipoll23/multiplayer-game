@@ -1,12 +1,12 @@
 import { LocalCarObject } from "../objects/local-car-object.js";
-import { BaseGameScreen } from "./base/base-game-screen.js";
 import { PlayerObject } from "../objects/player-object.js";
 import { WorldBackgroundObject } from "../objects/backgrounds/world-background-object.js";
 import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
 import { ScoreboardObject } from "../objects/scoreboard-object.js";
 import { StatusObject } from "../objects/status-object.js";
-export class WorldScreen extends BaseGameScreen {
+import { BaseCollidingGameScreen } from "./base/base-colliding-game-screen.js";
+export class WorldScreen extends BaseCollidingGameScreen {
     scoreboardObject = null;
     ballObject = null;
     orangeGoalObject = null;

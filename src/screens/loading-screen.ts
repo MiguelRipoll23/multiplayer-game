@@ -130,6 +130,6 @@ export class LoadingScreen extends BaseGameScreen {
     const worldScreen = new WorldScreen(this.gameLoop);
     worldScreen.loadObjects();
 
-    this.screenManagerService.crossfade(worldScreen, 5);
+    this.screenManagerService.fadeOutAndIn(worldScreen, 1, 2);
   }
 }

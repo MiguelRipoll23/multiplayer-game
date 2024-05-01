@@ -45,24 +45,26 @@ export class ScreenManagerService {
     }
     handleFadingOutAndIn(deltaTimeStamp) {
         this.elapsedTransitionMilliseconds += deltaTimeStamp;
-        this.fadeOutCurrentScreen();
-        this.fadeInNextScreen();
-    }
-    fadeOutCurrentScreen() {
         const currentScreen = this.gameFrame.getCurrentScreen();
-        if (!currentScreen)
+        const nextScreen = this.gameFrame.getNextScreen();
+        if (!currentScreen || !nextScreen)
             return;
+        if (currentScreen?.getOpacity() > 0) {
+            this.fadeOutCurrentScreen(currentScreen);
+        }
+        else {
+            this.fadeInNextScreen(nextScreen);
+        }
+    }
+    fadeOutCurrentScreen(currentScreen) {
         const fadeOutProgress = Math.min(1, this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds);
-        currentScreen.setOpacity(1 - fadeOutProgress);
         if (fadeOutProgress === 1) {
             // Fade out complete
             this.elapsedTransitionMilliseconds = 0;
         }
+        currentScreen.setOpacity(1 - fadeOutProgress);
     }
-    fadeInNextScreen() {
-        const nextScreen = this.gameFrame.getNextScreen();
-        if (!nextScreen)
-            return;
+    fadeInNextScreen(nextScreen) {
         const fadeInProgress = Math.min(1, this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds);
         nextScreen.setOpacity(fadeInProgress);
         if (fadeInProgress === 1) {

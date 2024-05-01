@@ -101,6 +101,6 @@ export class LoadingScreen extends BaseGameScreen {
         this.progressBarObject?.setProgress(1);
         const worldScreen = new WorldScreen(this.gameLoop);
         worldScreen.loadObjects();
-        this.screenManagerService.crossfade(worldScreen, 5);
+        this.screenManagerService.fadeOutAndIn(worldScreen, 1, 2);
     }
 }

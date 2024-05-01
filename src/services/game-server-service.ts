@@ -5,16 +5,16 @@ import {
   WEBSOCKET_ENDPOINT,
 } from "../constants/api.js";
 import { GameState } from "../models/game-state.js";
-import { LoadingScreen } from "../screens/loading-screen.js";
+import { MainScreen } from "../screens/main-screen.js";
 
 export class GameServerService {
   private gameState: GameState;
 
   private webSocket: WebSocket | null = null;
-  private loadingScreen: LoadingScreen | null = null;
+  private loadingScreen: MainScreen | null = null;
 
   constructor(
-    loadingScreen: LoadingScreen,
+    loadingScreen: MainScreen,
   ) {
     this.loadingScreen = loadingScreen;
     this.gameState = loadingScreen.getGameState();

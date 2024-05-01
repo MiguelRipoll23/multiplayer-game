@@ -1,5 +1,5 @@
 import { LoadingBackgroundObject } from "../objects/backgrounds/loading-background-object.js";
-import { ProgressBarObject } from "../objects/progress-bar-object.js";
+import { DialogObject } from "../objects/dialog-object.js";
 import { ConfigurationService } from "../services/configuration-service.js";
 import { GameServerService } from "../services/game-server-service.js";
 import { RegistrationService } from "../services/registration-service.js";
@@ -15,7 +15,7 @@ export class MainScreen extends BaseGameScreen {
     registrationService;
     configurationService;
     gameServerService;
-    progressBarObject = null;
+    dialogObject = null;
     constructor(gameLoop) {
         super(gameLoop);
         this.gameLoop = gameLoop;
@@ -29,7 +29,7 @@ export class MainScreen extends BaseGameScreen {
     }
     loadObjects() {
         this.createLoadingBackgroundObject();
-        this.createProgressBarObject();
+        this.createdialogObject();
         super.loadObjects();
     }
     getGameState() {
@@ -45,12 +45,13 @@ export class MainScreen extends BaseGameScreen {
         const loadingBackground = new LoadingBackgroundObject(this.canvas);
         this.sceneObjects.push(loadingBackground);
     }
-    createProgressBarObject() {
-        this.progressBarObject = new ProgressBarObject(this.canvas);
-        this.progressBarObject.setText("Checking for updates...");
-        this.uiObjects.push(this.progressBarObject);
+    createdialogObject() {
+        this.dialogObject = new DialogObject(this.canvas);
+        this.uiObjects.push(this.dialogObject);
     }
     checkForUpdates() {
+        this.dialogObject?.setText("Checking for updates...");
+        this.dialogObject?.setActive(true);
         this.updateService.checkForUpdates().then((requiresUpdate) => {
             if (requiresUpdate) {
                 return this.updateService.applyUpdate();
@@ -62,8 +63,7 @@ export class MainScreen extends BaseGameScreen {
         });
     }
     registerUser() {
-        this.progressBarObject?.setText("Registering to the server...");
-        this.progressBarObject?.setProgress(0.2);
+        this.dialogObject?.setText("Registering to the server...");
         this.registrationService.registerUser()
             .then(() => {
             this.downloadConfiguration();
@@ -74,8 +74,7 @@ export class MainScreen extends BaseGameScreen {
         });
     }
     downloadConfiguration() {
-        this.progressBarObject?.setText("Downloading server configuration...");
-        this.progressBarObject?.setProgress(0.4);
+        this.dialogObject?.setText("Downloading server configuration...");
         this.configurationService.downloadFromServer()
             .then(() => {
             this.connectToServer();
@@ -86,19 +85,19 @@ export class MainScreen extends BaseGameScreen {
         });
     }
     connectToServer() {
-        this.progressBarObject?.setText("Connecting to the server...");
-        this.progressBarObject?.setProgress(0.6);
+        this.dialogObject?.setText("Connecting to the server...");
         this.gameServerService.connectToServer();
     }
     downloadServerMessage() {
-        this.progressBarObject?.setText("Downloading server message...");
-        this.progressBarObject?.setProgress(0.8);
-        alert("Server message goes here");
-        this.transitionToWorldScreen();
+        this.dialogObject?.setActive(true);
+        this.dialogObject?.setText("Downloading server message...");
+        setTimeout(() => {
+            alert("Server message goes here");
+            this.transitionToWorldScreen();
+        }, 100);
     }
     transitionToWorldScreen() {
-        this.progressBarObject?.setText("Loading world screen...");
-        this.progressBarObject?.setProgress(1);
+        this.dialogObject?.setActive(false);
         const worldScreen = new WorldScreen(this.gameLoop);
         worldScreen.loadObjects();
         this.screenManagerService.fadeOutAndIn(worldScreen, 1, 2);

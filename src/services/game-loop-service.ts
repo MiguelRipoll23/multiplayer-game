@@ -1,6 +1,6 @@
 import { GameFrame } from "../models/game-frame.js";
 import { GameState } from "../models/game-state.js";
-import { LoadingScreen } from "../screens/loading-screen.js";
+import { MainScreen } from "../screens/main-screen.js";
 import { ScreenManagerService } from "./screen-manager-service.js";
 
 export class GameLoopService {
@@ -70,7 +70,7 @@ export class GameLoopService {
   }
 
   private setInitialScreen() {
-    const loadingScreen = new LoadingScreen(this);
+    const loadingScreen = new MainScreen(this);
     loadingScreen.loadObjects();
 
     this.screenManager.crossfade(loadingScreen, 1);

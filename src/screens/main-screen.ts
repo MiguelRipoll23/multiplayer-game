@@ -5,6 +5,7 @@ import { DialogObject } from "../objects/dialog-object.js";
 import { ConfigurationService } from "../services/configuration-service.js";
 import { GameLoopService } from "../services/game-loop-service.js";
 import { GameServerService } from "../services/game-server-service.js";
+import { MatchmakingService } from "../services/matchmaking-service.js";
 import { RegistrationService } from "../services/registration-service.js";
 import { ScreenManagerService } from "../services/screen-manager-service.js";
 import { VersionService } from "../services/version-service.js";
@@ -20,6 +21,7 @@ export class MainScreen extends BaseGameScreen {
   private updateService: VersionService;
   private registrationService: RegistrationService;
   private configurationService: ConfigurationService;
+  private matchmakingService: MatchmakingService;
   private gameServerService: GameServerService;
 
   private dialogObject: DialogObject | null = null;
@@ -35,6 +37,7 @@ export class MainScreen extends BaseGameScreen {
     this.registrationService = new RegistrationService(this.gameServer);
     this.configurationService = new ConfigurationService(this.gameServer);
     this.gameServerService = new GameServerService(this);
+    this.matchmakingService = new MatchmakingService();
   }
 
   public override loadObjects(): void {
@@ -74,7 +77,8 @@ export class MainScreen extends BaseGameScreen {
         return this.updateService.applyUpdate();
       }
 
-      this.registerUser();
+      this.dialogObject?.setActive(false);
+      setTimeout(() => this.registerUser(), 200);
     }).catch((error) => {
       console.error(error);
       alert("An error occurred while checking for updates");
@@ -82,8 +86,6 @@ export class MainScreen extends BaseGameScreen {
   }
 
   private registerUser(): void {
-    this.dialogObject?.setText("Registering to the server...");
-
     this.registrationService.registerUser()
       .then(() => {
         this.downloadConfiguration();
@@ -117,11 +119,16 @@ export class MainScreen extends BaseGameScreen {
     this.dialogObject?.setActive(true);
     this.dialogObject?.setText("Downloading server message...");
 
-    setTimeout(() => {
-      alert("Server message goes here");
-
-      this.transitionToWorldScreen();
-    }, 100);
+    this.matchmakingService.getServerMessage().then((message) => {
+      this.dialogObject?.setActive(false);
+      setTimeout(() => {
+        alert(message);
+        this.transitionToWorldScreen();
+      }, 200);
+    }).catch((error) => {
+      console.error(error);
+      alert("An error occurred while downloading server message");
+    });
   }
 
   private transitionToWorldScreen(): void {

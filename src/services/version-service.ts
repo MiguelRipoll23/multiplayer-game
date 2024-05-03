@@ -7,7 +7,7 @@ import { VersionResponse } from "./interfaces/version-response.js";
 
 export class VersionService {
   public async checkForUpdates(): Promise<boolean> {
-    const response = await this.getVersionData();
+    const response = await this.getVersionResponse();
     console.log("Version response", response);
 
     return false;
@@ -19,7 +19,7 @@ export class VersionService {
     );
   }
 
-  private async getVersionData(): Promise<VersionResponse> {
+  private async getVersionResponse(): Promise<VersionResponse> {
     return fetch(API_HTTP_PROTOCOL + API_SERVER + VERSION_ENDPOINT).then(
       (response) => response.json(),
     );

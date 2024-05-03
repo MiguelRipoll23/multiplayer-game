@@ -9,3 +9,4 @@ export const VERSION_ENDPOINT = "/public/version";
 export const REGISTER_ENDPOINT = "/public/register";
 export const CONFIGURATION_ENDPOINT = "/authenticated/configuration.json";
 export const WEBSOCKET_ENDPOINT = "/authenticated/websocket";
+export const MESSAGE_ENDPOINT = "/message.json";

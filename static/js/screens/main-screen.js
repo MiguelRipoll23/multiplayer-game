@@ -1,21 +1,18 @@
 import { LoadingBackgroundObject } from "../objects/backgrounds/loading-background-object.js";
 import { DialogObject } from "../objects/dialog-object.js";
-import { ConfigurationService } from "../services/configuration-service.js";
-import { GameServerService } from "../services/game-server-service.js";
-import { MatchmakingService } from "../services/matchmaking-service.js";
-import { RegistrationService } from "../services/registration-service.js";
-import { VersionService } from "../services/version-service.js";
+import { CryptoService } from "../services/crypto-service.js";
+import { WebSocketService } from "../services/websocket-service.js";
+import { ApiService } from "../services/api-service.js";
 import { BaseGameScreen } from "./base/base-game-screen.js";
 import { WorldScreen } from "./world-screen.js";
+import { GameRegistration } from "../models/game-registration.js";
 export class MainScreen extends BaseGameScreen {
     gameLoop;
     gameState;
     gameServer;
     screenManagerService;
-    updateService;
-    registrationService;
-    configurationService;
-    matchmakingService;
+    apiService;
+    cryptoService;
     gameServerService;
     dialogObject = null;
     constructor(gameLoop) {
@@ -24,11 +21,9 @@ export class MainScreen extends BaseGameScreen {
         this.gameState = gameLoop.getGameState();
         this.gameServer = gameLoop.getGameState().getGameServer();
         this.screenManagerService = gameLoop.getScreenManager();
-        this.updateService = new VersionService();
-        this.registrationService = new RegistrationService(this.gameServer);
-        this.configurationService = new ConfigurationService(this.gameServer);
-        this.gameServerService = new GameServerService(this);
-        this.matchmakingService = new MatchmakingService();
+        this.apiService = new ApiService(this.gameServer);
+        this.cryptoService = new CryptoService(this.gameServer);
+        this.gameServerService = new WebSocketService(this);
     }
     loadObjects() {
         this.createLoadingBackgroundObject();
@@ -55,20 +50,24 @@ export class MainScreen extends BaseGameScreen {
     checkForUpdates() {
         this.dialogObject?.setText("Checking for updates...");
         this.dialogObject?.setActive(true);
-        this.updateService.checkForUpdates().then((requiresUpdate) => {
+        this.apiService.checkForUpdates().then((requiresUpdate) => {
             if (requiresUpdate) {
-                return this.updateService.applyUpdate();
+                return alert("An update is required to play the game");
             }
-            this.dialogObject?.setActive(false);
-            setTimeout(() => this.registerUser(), 200);
+            this.registerUser();
         }).catch((error) => {
             console.error(error);
             alert("An error occurred while checking for updates");
         });
     }
     registerUser() {
-        this.registrationService.registerUser()
-            .then(() => {
+        const name = prompt("Please enter your player handle", "player1");
+        if (name === null) {
+            return this.registerUser();
+        }
+        this.apiService.registerUser(name)
+            .then((registrationResponse) => {
+            this.gameServer.setGameRegistration(new GameRegistration(registrationResponse));
             this.downloadConfiguration();
         })
             .catch((error) => {
@@ -78,14 +77,21 @@ export class MainScreen extends BaseGameScreen {
     }
     downloadConfiguration() {
         this.dialogObject?.setText("Downloading server configuration...");
-        this.configurationService.downloadFromServer()
-            .then(() => {
-            this.connectToServer();
+        this.apiService.getConfiguration()
+            .then(async (configurationResponse) => {
+            await this.applyConfiguration(configurationResponse);
         })
             .catch((error) => {
             console.error(error);
             alert("An error occurred while downloading server configuration");
         });
+    }
+    async applyConfiguration(configurationResponse) {
+        const decryptedResponse = await this.cryptoService.decryptResponse(configurationResponse);
+        const configuration = JSON.parse(decryptedResponse);
+        this.gameServer.setConfiguration(configuration);
+        console.log("Configuration response", configuration);
+        this.connectToServer();
     }
     connectToServer() {
         this.dialogObject?.setText("Connecting to the server...");
@@ -94,12 +100,10 @@ export class MainScreen extends BaseGameScreen {
     downloadServerMessage() {
         this.dialogObject?.setActive(true);
         this.dialogObject?.setText("Downloading server message...");
-        this.matchmakingService.getServerMessage().then((message) => {
+        this.apiService.getServerMessage().then((message) => {
             this.dialogObject?.setActive(false);
-            setTimeout(() => {
-                alert(message);
-                this.transitionToWorldScreen();
-            }, 200);
+            alert(message);
+            this.transitionToWorldScreen();
         }).catch((error) => {
             console.error(error);
             alert("An error occurred while downloading server message");

@@ -2,6 +2,8 @@ import { GameRegistration } from "./game-registration.js";
 
 export class GameServer {
   private gameRegistration: GameRegistration | null = null;
+  private configuration: Object | null = null;
+
   private connected: boolean = false;
 
   getGameRegistration(): GameRegistration | null {
@@ -10,6 +12,14 @@ export class GameServer {
 
   setGameRegistration(gameRegistration: GameRegistration): void {
     this.gameRegistration = gameRegistration;
+  }
+
+  getConfiguration(): Object | null {
+    return this.configuration;
+  }
+
+  setConfiguration(configuration: Object): void {
+    this.configuration = configuration;
   }
 
   isConnected(): boolean {

@@ -1,5 +1,4 @@
 import {
-  API_HOSTNAME,
   API_SERVER,
   API_WS_PROTOCOL,
   WEBSOCKET_ENDPOINT,
@@ -7,7 +6,7 @@ import {
 import { GameState } from "../models/game-state.js";
 import { MainScreen } from "../screens/main-screen.js";
 
-export class GameServerService {
+export class WebSocketService {
   private gameState: GameState;
 
   private webSocket: WebSocket | null = null;

@@ -1,7 +1,7 @@
 import { GameServer } from "../models/game-server.js";
 import { GameState } from "../models/game-state.js";
 import { MainBackgroundObject } from "../objects/backgrounds/main-background-object.js";
-import { DialogObject } from "../objects/dialog-object.js";
+import { MessageObject } from "../objects/message-object.js";
 import { CryptoService } from "../services/crypto-service.js";
 import { GameLoopService } from "../services/game-loop-service.js";
 import { WebSocketService } from "../services/websocket-service.js";
@@ -22,7 +22,7 @@ export class MainScreen extends BaseGameScreen {
   private cryptoService: CryptoService;
   private gameServerService: WebSocketService;
 
-  private dialogObject: DialogObject | null = null;
+  private messageObject: MessageObject | null = null;
 
   constructor(private readonly gameLoop: GameLoopService) {
     super(gameLoop);
@@ -38,7 +38,7 @@ export class MainScreen extends BaseGameScreen {
 
   public override loadObjects(): void {
     this.createLoadingBackgroundObject();
-    this.createdialogObject();
+    this.createMessageObject();
     super.loadObjects();
   }
 
@@ -59,14 +59,14 @@ export class MainScreen extends BaseGameScreen {
     this.sceneObjects.push(loadingBackground);
   }
 
-  private createdialogObject(): void {
-    this.dialogObject = new DialogObject(this.canvas);
-    this.uiObjects.push(this.dialogObject);
+  private createMessageObject(): void {
+    this.messageObject = new MessageObject(this.canvas);
+    this.uiObjects.push(this.messageObject);
   }
 
   private checkForUpdates(): void {
-    this.dialogObject?.setText("Checking for updates...");
-    this.dialogObject?.setActive(true);
+    this.messageObject?.setText("Checking for updates...");
+    this.messageObject?.setActive(true);
 
     this.apiService.checkForUpdates().then((requiresUpdate) => {
       if (requiresUpdate) {
@@ -102,7 +102,7 @@ export class MainScreen extends BaseGameScreen {
   }
 
   private downloadConfiguration(): void {
-    this.dialogObject?.setText("Downloading server configuration...");
+    this.messageObject?.setText("Downloading server configuration...");
 
     this.apiService.getConfiguration()
       .then(async (configurationResponse: ArrayBuffer) => {
@@ -130,16 +130,16 @@ export class MainScreen extends BaseGameScreen {
   }
 
   private connectToServer(): void {
-    this.dialogObject?.setText("Connecting to the server...");
+    this.messageObject?.setText("Connecting to the server...");
     this.gameServerService.connectToServer();
   }
 
   private downloadServerMessage(): void {
-    this.dialogObject?.setActive(true);
-    this.dialogObject?.setText("Downloading server message...");
+    this.messageObject?.setActive(true);
+    this.messageObject?.setText("Downloading server message...");
 
     this.apiService.getServerMessage().then((message) => {
-      this.dialogObject?.setActive(false);
+      this.messageObject?.setActive(false);
       alert(message);
       this.transitionToWorldScreen();
     }).catch((error) => {
@@ -149,7 +149,7 @@ export class MainScreen extends BaseGameScreen {
   }
 
   private transitionToWorldScreen(): void {
-    this.dialogObject?.setActive(false);
+    this.messageObject?.setActive(false);
 
     const worldScreen = new WorldScreen(this.gameLoop);
     worldScreen.loadObjects();

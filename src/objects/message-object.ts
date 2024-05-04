@@ -1,6 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 
-export class DialogObject extends BaseGameObject {
+export class MessageObject extends BaseGameObject {
   private readonly FILL_COLOR = "rgba(0, 0, 0, 0.8)";
   private readonly DEFAULT_HEIGHT = 100;
   private readonly DEFAULT_WIDTH = 340;

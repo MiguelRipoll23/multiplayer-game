@@ -1,6 +1,6 @@
 import { GameServer } from "../models/game-server.js";
 import { GameState } from "../models/game-state.js";
-import { LoadingBackgroundObject } from "../objects/backgrounds/loading-background-object.js";
+import { MainBackgroundObject } from "../objects/backgrounds/main-background-object.js";
 import { DialogObject } from "../objects/dialog-object.js";
 import { CryptoService } from "../services/crypto-service.js";
 import { GameLoopService } from "../services/game-loop-service.js";
@@ -55,7 +55,7 @@ export class MainScreen extends BaseGameScreen {
   }
 
   private createLoadingBackgroundObject() {
-    const loadingBackground = new LoadingBackgroundObject(this.canvas);
+    const loadingBackground = new MainBackgroundObject(this.canvas);
     this.sceneObjects.push(loadingBackground);
   }
 

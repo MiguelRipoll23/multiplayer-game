@@ -31,7 +31,7 @@ export class MainScreen extends BaseGameScreen {
     this.gameServer = gameLoop.getGameState().getGameServer();
     this.screenManagerService = gameLoop.getScreenManager();
 
-    this.apiService = new ApiService(this.gameServer);
+    this.apiService = new ApiService();
     this.cryptoService = new CryptoService(this.gameServer);
     this.gameServerService = new WebSocketService(this);
   }
@@ -138,9 +138,9 @@ export class MainScreen extends BaseGameScreen {
     this.messageObject?.setActive(true);
     this.messageObject?.setText("Downloading server message...");
 
-    this.apiService.getServerMessage().then((message) => {
+    this.apiService.getMessage().then((message) => {
       this.messageObject?.setActive(false);
-      alert(message);
+      alert(message.content);
       this.transitionToWorldScreen();
     }).catch((error) => {
       console.error(error);

@@ -13,34 +13,25 @@ import { RegistrationResponse } from "./interfaces/registration-response.js";
 import { VersionResponse } from "./interfaces/version-response.js";
 
 export class ApiService {
-  private gameServer: GameServer;
-
-  constructor(gameServer: GameServer) {
-    this.gameServer = gameServer;
-  }
+  private authenticationToken: string | null = null;
 
   public async checkForUpdates(): Promise<boolean> {
-    const response: VersionResponse = await fetch(
+    const response = await fetch(
       API_HTTP_PROTOCOL + API_SERVER + VERSION_ENDPOINT,
-    ).then(
-      (response) => response.json(),
     );
+
+    if (response.ok === false) {
+      throw new Error("Failed to fetch version");
+    }
+
+    const versionResponse: VersionResponse = await response.json();
+    console.log("Version response", versionResponse);
 
     return false;
   }
 
-  public async getServerMessage(): Promise<string> {
-    const response: MessageResponse = await fetch(
-      API_HTTP_PROTOCOL + API_HOSTNAME + MESSAGE_ENDPOINT,
-    ).then(
-      (response) => response.json(),
-    );
-
-    return response.content;
-  }
-
   public async registerUser(name: string): Promise<RegistrationResponse> {
-    const registrationResponse = await fetch(
+    const response = await fetch(
       API_HTTP_PROTOCOL + API_SERVER + REGISTER_ENDPOINT,
       {
         method: "POST",
@@ -53,31 +44,60 @@ export class ApiService {
       },
     );
 
-    return registrationResponse.json();
+    if (response.ok === false) {
+      throw new Error("Failed to register user");
+    }
+
+    const registrationResponse: RegistrationResponse = await response.json();
+    console.log("Registration response", registrationResponse);
+
+    this.authenticationToken = registrationResponse.authentication_token;
+
+    return registrationResponse;
   }
 
   public async getConfiguration(): Promise<ArrayBuffer> {
-    const gameRegistration = this.gameServer.getGameRegistration();
-
-    if (gameRegistration === null) {
-      throw new Error("Game registration not found");
-    }
-
-    const authenticationToken = gameRegistration.getAuthenticationToken();
-
-    if (authenticationToken === null) {
+    if (this.authenticationToken === null) {
       throw new Error("Authentication token not found");
     }
 
     const response = await fetch(
-      API_HTTP_PROTOCOL + API_HOSTNAME + CONFIGURATION_ENDPOINT,
+      API_HTTP_PROTOCOL + API_SERVER + CONFIGURATION_ENDPOINT,
       {
         headers: {
-          "Authorization": authenticationToken,
+          "Authorization": this.authenticationToken,
         },
       },
     );
 
+    if (response.ok === false) {
+      throw new Error("Failed to fetch configuration");
+    }
+
     return response.arrayBuffer();
+  }
+
+  public async getMessage(): Promise<MessageResponse> {
+    if (this.authenticationToken === null) {
+      throw new Error("Authentication token not found");
+    }
+
+    const response = await fetch(
+      API_HTTP_PROTOCOL + API_SERVER + MESSAGE_ENDPOINT,
+      {
+        headers: {
+          "Authorization": this.authenticationToken,
+        },
+      },
+    );
+
+    if (response.ok === false) {
+      throw new Error("Failed to fetch message");
+    }
+
+    const messageResponse: MessageResponse = await response.json();
+    console.log("Message response", messageResponse);
+
+    return messageResponse;
   }
 }

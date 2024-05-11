@@ -6,7 +6,7 @@ import {
   MESSAGE_ENDPOINT,
   REGISTER_ENDPOINT,
   VERSION_ENDPOINT,
-} from "../constants/api.js";
+} from "../constants/api-constants.js";
 import { GameServer } from "../models/game-server.js";
 import { MessageResponse } from "./interfaces/message-response.js";
 import { RegistrationResponse } from "./interfaces/registration-response.js";

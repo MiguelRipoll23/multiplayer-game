@@ -1,4 +1,4 @@
-import { API_SERVER, API_WS_PROTOCOL, WEBSOCKET_ENDPOINT, } from "../constants/api.js";
+import { API_SERVER, API_WS_PROTOCOL, WEBSOCKET_ENDPOINT, } from "../constants/api-constants.js";
 export class WebSocketService {
     gameState;
     webSocket = null;

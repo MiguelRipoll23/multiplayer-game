@@ -5,13 +5,17 @@ import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
 import { ScoreboardObject } from "../objects/scoreboard-object.js";
 import { BaseCollidingGameScreen } from "./base/base-colliding-game-screen.js";
+import { getConfigurationKey } from "../utils/configuration-utils.js";
+import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
 export class WorldScreen extends BaseCollidingGameScreen {
+    gameState;
     scoreboardObject = null;
     ballObject = null;
     orangeGoalObject = null;
     blueGoalObject = null;
     constructor(gameLoop) {
         super(gameLoop);
+        this.gameState = gameLoop.getGameState();
     }
     loadObjects() {
         this.createBackgroundObject();
@@ -29,8 +33,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
         });
     }
     createScoreboardObject() {
+        const onlineDurationSeconds = getConfigurationKey(SCOREBOARD_SECONDS_DURATION, this.gameState);
+        const durationSeconds = onlineDurationSeconds || 60 * 5;
         this.scoreboardObject = new ScoreboardObject(this.canvas);
-        this.scoreboardObject.startCountdown(60 * 5);
+        this.scoreboardObject.startCountdown(durationSeconds);
         this.sceneObjects.push(this.scoreboardObject);
     }
     createBallObject() {
@@ -66,7 +72,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
     detectScores() {
         if (this.ballObject === null ||
-            this.ballObject.isInactive()) {
+            this.ballObject?.isInactive()) {
             return;
         }
         const hasOrangeTeamScored = this.orangeGoalObject?.getCollidingObjects()

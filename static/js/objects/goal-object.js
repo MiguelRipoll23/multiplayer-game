@@ -1,4 +1,4 @@
-import { BLUE_TEAM_TRANSPARENCY_COLOR, ORANGE_TEAM_TRANSPARENCY_COLOR, } from "../constants/colors.js";
+import { BLUE_TEAM_TRANSPARENCY_COLOR, ORANGE_TEAM_TRANSPARENCY_COLOR, } from "../constants/colors-constants.js";
 import { HitboxObject } from "./hitbox-object.js";
 import { BaseStaticCollidableGameObject } from "./base/base-static-collidable-game-object.js";
 export class GoalObject extends BaseStaticCollidableGameObject {

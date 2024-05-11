@@ -4,19 +4,23 @@ import { WorldBackgroundObject } from "../objects/backgrounds/world-background-o
 import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
 import { ScoreboardObject } from "../objects/scoreboard-object.js";
-import { StatusObject } from "../objects/status-object.js";
 import { BaseCollidingGameScreen } from "./base/base-colliding-game-screen.js";
 import { GameLoopService } from "../services/game-loop-service.js";
+import { GameState } from "../models/game-state.js";
+import { getConfigurationKey } from "../utils/configuration-utils.js";
+import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
-  private scoreboardObject: ScoreboardObject | null = null;
+  private gameState: GameState;
 
+  private scoreboardObject: ScoreboardObject | null = null;
   private ballObject: BallObject | null = null;
   private orangeGoalObject: GoalObject | null = null;
   private blueGoalObject: GoalObject | null = null;
 
   constructor(gameLoop: GameLoopService) {
     super(gameLoop);
+    this.gameState = gameLoop.getGameState();
   }
 
   public override loadObjects(): void {
@@ -39,8 +43,17 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private createScoreboardObject() {
+    const onlineDurationSeconds: number | null = getConfigurationKey<
+      number | null
+    >(
+      SCOREBOARD_SECONDS_DURATION,
+      this.gameState,
+    );
+
+    const durationSeconds = onlineDurationSeconds || 60 * 5;
+
     this.scoreboardObject = new ScoreboardObject(this.canvas);
-    this.scoreboardObject.startCountdown(60 * 5);
+    this.scoreboardObject.startCountdown(durationSeconds);
     this.sceneObjects.push(this.scoreboardObject);
   }
 
@@ -89,7 +102,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private detectScores() {
     if (
       this.ballObject === null ||
-      this.ballObject.isInactive()
+      this.ballObject?.isInactive()
     ) {
       return;
     }

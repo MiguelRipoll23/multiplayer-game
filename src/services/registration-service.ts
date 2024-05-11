@@ -2,7 +2,7 @@ import {
   API_HTTP_PROTOCOL,
   API_SERVER,
   REGISTER_ENDPOINT,
-} from "../constants/api.js";
+} from "../constants/api-constants.js";
 import { GameRegistration } from "../models/game-registration.js";
 import { GameServer } from "../models/game-server.js";
 import { RegistrationResponse } from "./interfaces/registration-response.js";

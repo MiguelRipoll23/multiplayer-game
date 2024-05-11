@@ -1,4 +1,4 @@
-import { API_HTTP_PROTOCOL, API_SERVER, CONFIGURATION_ENDPOINT, MESSAGE_ENDPOINT, REGISTER_ENDPOINT, VERSION_ENDPOINT, } from "../constants/api.js";
+import { API_HTTP_PROTOCOL, API_SERVER, CONFIGURATION_ENDPOINT, MESSAGE_ENDPOINT, REGISTER_ENDPOINT, VERSION_ENDPOINT, } from "../constants/api-constants.js";
 export class ApiService {
     authenticationToken = null;
     async checkForUpdates() {

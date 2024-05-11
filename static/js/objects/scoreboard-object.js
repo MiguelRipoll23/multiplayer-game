@@ -1,4 +1,4 @@
-import { BLUE_TEAM_COLOR, ORANGE_TEAM_COLOR } from "../constants/colors.js";
+import { BLUE_TEAM_COLOR, ORANGE_TEAM_COLOR, } from "../constants/colors-constants.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 export class ScoreboardObject extends BaseGameObject {
     canvas;

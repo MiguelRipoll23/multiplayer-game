@@ -2,7 +2,7 @@ import {
   API_SERVER,
   API_WS_PROTOCOL,
   WEBSOCKET_ENDPOINT,
-} from "../constants/api.js";
+} from "../constants/api-constants.js";
 import { GameState } from "../models/game-state.js";
 import { MainScreen } from "../screens/main-screen.js";
 

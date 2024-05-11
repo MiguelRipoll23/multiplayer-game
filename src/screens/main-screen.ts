@@ -20,7 +20,7 @@ export class MainScreen extends BaseGameScreen {
 
   private apiService: ApiService;
   private cryptoService: CryptoService;
-  private gameServerService: WebSocketService;
+  private webSocketService: WebSocketService;
 
   private messageObject: MessageObject | null = null;
 
@@ -33,7 +33,7 @@ export class MainScreen extends BaseGameScreen {
 
     this.apiService = new ApiService();
     this.cryptoService = new CryptoService(this.gameServer);
-    this.gameServerService = new WebSocketService(this);
+    this.webSocketService = new WebSocketService(this);
   }
 
   public override loadObjects(): void {
@@ -131,7 +131,7 @@ export class MainScreen extends BaseGameScreen {
 
   private connectToServer(): void {
     this.messageObject?.setText("Connecting to the server...");
-    this.gameServerService.connectToServer();
+    this.webSocketService.connectToServer();
   }
 
   private downloadServerMessage(): void {

@@ -1,5 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class HitboxObject extends BaseGameObject {
+    DEBUG_MODE = false;
     x;
     y;
     width;
@@ -37,7 +38,10 @@ export class HitboxObject extends BaseGameObject {
         this.colliding = colliding;
     }
     render(context) {
-        context.save(); // Save the current context state
+        if (this.DEBUG_MODE === false) {
+            return;
+        }
+        context.save();
         context.strokeStyle = "rgba(148, 0, 211, 0.2)";
         context.strokeRect(this.x, this.y, this.width, this.height);
         if (this.colliding) {
@@ -45,6 +49,6 @@ export class HitboxObject extends BaseGameObject {
             context.fillStyle = "rgba(148, 0, 211, 0.5)"; // Adjust alpha value for transparency
             context.fillRect(this.x, this.y, this.width, this.height);
         }
-        context.restore(); // Restore the context state
+        context.restore();
     }
 }

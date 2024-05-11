@@ -25,7 +25,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.createPlayerAndLocalCarObjects();
     this.createBallObject();
     this.createGoalObjects();
-    this.createStatusObject();
 
     super.loadObjects();
   }
@@ -80,13 +79,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.sceneObjects.push(playerObject);
 
     return playerObject;
-  }
-
-  private createStatusObject() {
-    const statusObject = new StatusObject(this.canvas);
-    statusObject.setText("Waiting for players");
-    statusObject.setActive(true);
-    this.uiObjects.push(statusObject);
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {

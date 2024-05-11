@@ -13,7 +13,7 @@ export class MainScreen extends BaseGameScreen {
     screenManagerService;
     apiService;
     cryptoService;
-    gameServerService;
+    webSocketService;
     messageObject = null;
     constructor(gameLoop) {
         super(gameLoop);
@@ -23,7 +23,7 @@ export class MainScreen extends BaseGameScreen {
         this.screenManagerService = gameLoop.getScreenManager();
         this.apiService = new ApiService();
         this.cryptoService = new CryptoService(this.gameServer);
-        this.gameServerService = new WebSocketService(this);
+        this.webSocketService = new WebSocketService(this);
     }
     loadObjects() {
         this.createLoadingBackgroundObject();
@@ -37,7 +37,7 @@ export class MainScreen extends BaseGameScreen {
         this.checkForUpdates();
     }
     hasConnectedToServer() {
-        this.downloadServerMessage();
+        this.downloadMessage();
     }
     createLoadingBackgroundObject() {
         const loadingBackground = new MainBackgroundObject(this.canvas);
@@ -61,7 +61,7 @@ export class MainScreen extends BaseGameScreen {
         });
     }
     registerUser() {
-        const name = prompt("Please enter your player handle", "player1");
+        const name = prompt("Please enter your player handle:", "player1");
         if (name === null) {
             return this.registerUser();
         }
@@ -76,14 +76,14 @@ export class MainScreen extends BaseGameScreen {
         });
     }
     downloadConfiguration() {
-        this.messageObject?.setText("Downloading server configuration...");
+        this.messageObject?.setText("Downloading configuration...");
         this.apiService.getConfiguration()
             .then(async (configurationResponse) => {
             await this.applyConfiguration(configurationResponse);
         })
             .catch((error) => {
             console.error(error);
-            alert("An error occurred while downloading server configuration");
+            alert("An error occurred while downloading configuration");
         });
     }
     async applyConfiguration(configurationResponse) {
@@ -95,18 +95,18 @@ export class MainScreen extends BaseGameScreen {
     }
     connectToServer() {
         this.messageObject?.setText("Connecting to the server...");
-        this.gameServerService.connectToServer();
+        this.webSocketService.connectToServer();
     }
-    downloadServerMessage() {
+    downloadMessage() {
         this.messageObject?.setActive(true);
-        this.messageObject?.setText("Downloading server message...");
+        this.messageObject?.setText("Downloading message...");
         this.apiService.getMessage().then((message) => {
             this.messageObject?.setActive(false);
             alert(message.content);
             this.transitionToWorldScreen();
         }).catch((error) => {
             console.error(error);
-            alert("An error occurred while downloading server message");
+            alert("An error occurred while downloading message");
         });
     }
     transitionToWorldScreen() {

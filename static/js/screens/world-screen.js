@@ -4,7 +4,6 @@ import { WorldBackgroundObject } from "../objects/backgrounds/world-background-o
 import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
 import { ScoreboardObject } from "../objects/scoreboard-object.js";
-import { StatusObject } from "../objects/status-object.js";
 import { BaseCollidingGameScreen } from "./base/base-colliding-game-screen.js";
 export class WorldScreen extends BaseCollidingGameScreen {
     scoreboardObject = null;
@@ -20,7 +19,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.createPlayerAndLocalCarObjects();
         this.createBallObject();
         this.createGoalObjects();
-        this.createStatusObject();
         super.loadObjects();
     }
     createBackgroundObject() {
@@ -61,12 +59,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
         const playerObject = new PlayerObject("player1");
         this.sceneObjects.push(playerObject);
         return playerObject;
-    }
-    createStatusObject() {
-        const statusObject = new StatusObject(this.canvas);
-        statusObject.setText("Waiting for players");
-        statusObject.setActive(true);
-        this.uiObjects.push(statusObject);
     }
     update(deltaTimeStamp) {
         super.update(deltaTimeStamp);

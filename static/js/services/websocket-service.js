@@ -20,22 +20,20 @@ export class WebSocketService {
         this.addEventListeners(this.webSocket);
     }
     addEventListeners(webSocket) {
-        const gameServer = this.gameState.getGameServer();
-        const isConnected = gameServer.isConnected();
         webSocket.addEventListener("open", (event) => {
             console.log("Connected to server");
-            gameServer.setConnected(true);
+            this.gameState.getGameServer().setConnected(true);
             this.informLoadingScreen();
         });
         webSocket.addEventListener("close", (event) => {
             console.log("Connection closed", event);
-            if (isConnected) {
+            if (this.gameState.getGameServer().isConnected()) {
                 alert("Connection to server was lost");
             }
             else {
                 alert("Failed to connect to server");
             }
-            gameServer.setConnected(false);
+            this.gameState.getGameServer().setConnected(false);
         });
         webSocket.addEventListener("error", (event) => {
             console.error("WebSocket error", event);

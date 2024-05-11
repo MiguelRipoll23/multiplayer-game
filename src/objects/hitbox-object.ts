@@ -1,6 +1,8 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 
 export class HitboxObject extends BaseGameObject {
+  private DEBUG_MODE: boolean = false;
+
   private x: number;
   private y: number;
   private width: number;
@@ -48,7 +50,11 @@ export class HitboxObject extends BaseGameObject {
   }
 
   public render(context: CanvasRenderingContext2D): void {
-    context.save(); // Save the current context state
+    if (this.DEBUG_MODE === false) {
+      return;
+    }
+
+    context.save();
 
     context.strokeStyle = "rgba(148, 0, 211, 0.2)";
     context.strokeRect(this.x, this.y, this.width, this.height);
@@ -59,6 +65,6 @@ export class HitboxObject extends BaseGameObject {
       context.fillRect(this.x, this.y, this.width, this.height);
     }
 
-    context.restore(); // Restore the context state
+    context.restore();
   }
 }

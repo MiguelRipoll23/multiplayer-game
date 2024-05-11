@@ -12,9 +12,7 @@ export class WebSocketService {
   private webSocket: WebSocket | null = null;
   private loadingScreen: MainScreen | null = null;
 
-  constructor(
-    loadingScreen: MainScreen,
-  ) {
+  constructor(loadingScreen: MainScreen) {
     this.loadingScreen = loadingScreen;
     this.gameState = loadingScreen.getGameState();
   }

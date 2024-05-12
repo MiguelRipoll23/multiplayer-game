@@ -109,7 +109,7 @@ export class ScoreboardObject extends BaseGameObject {
       context,
       score.toString(),
       x + this.SQUARE_SIZE / 2,
-      this.y + 2 + this.SQUARE_SIZE / 2,
+      this.y + 10 + this.SQUARE_SIZE / 2,
     );
   }
 
@@ -125,7 +125,7 @@ export class ScoreboardObject extends BaseGameObject {
     this.roundedRect(context, x, y, width, height, this.CORNER_RADIUS);
     context.fill();
     context.textAlign = "center";
-    this.renderText(context, text, x + width / 2, y + 2 + height / 2);
+    this.renderText(context, text, x + width / 2, y + 10 + height / 2);
   }
 
   private roundedRect(

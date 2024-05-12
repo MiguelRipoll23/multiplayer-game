@@ -45,7 +45,7 @@ export class NotificationObject extends BaseGameObject {
     context.globalAlpha = this.opacity;
 
     // Draw red borders
-    context.fillStyle = "red";
+    context.fillStyle = "rgba(255, 0, 0, 0.85)";
     context.fillRect(this.x, this.y, this.canvas.width, 1); // Top border
     context.fillRect(
       this.x,
@@ -55,7 +55,7 @@ export class NotificationObject extends BaseGameObject {
     ); // Bottom border
 
     // Draw black rectangle
-    context.fillStyle = "#000";
+    context.fillStyle = "rgba(0, 0, 0, 0.85)";
     context.fillRect(
       this.x,
       this.y + 1,

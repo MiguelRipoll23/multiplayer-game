@@ -1,4 +1,4 @@
-import { API_HTTP_PROTOCOL, API_SERVER, CONFIGURATION_ENDPOINT, MESSAGE_ENDPOINT, REGISTER_ENDPOINT, VERSION_ENDPOINT, } from "../constants/api-constants.js";
+import { API_HTTP_PROTOCOL, API_SERVER, CONFIGURATION_ENDPOINT, NEWS_ENDPOINT as NEWS_ENDPOINT, REGISTER_ENDPOINT, VERSION_ENDPOINT, } from "../constants/api-constants.js";
 export class ApiService {
     authenticationToken = null;
     async checkForUpdates() {
@@ -42,20 +42,20 @@ export class ApiService {
         }
         return response.arrayBuffer();
     }
-    async getMessage() {
+    async getNews() {
         if (this.authenticationToken === null) {
             throw new Error("Authentication token not found");
         }
-        const response = await fetch(API_HTTP_PROTOCOL + API_SERVER + MESSAGE_ENDPOINT, {
+        const response = await fetch(API_HTTP_PROTOCOL + API_SERVER + NEWS_ENDPOINT, {
             headers: {
                 "Authorization": this.authenticationToken,
             },
         });
         if (response.ok === false) {
-            throw new Error("Failed to fetch message");
+            throw new Error("Failed to fetch news");
         }
-        const messageResponse = await response.json();
-        console.log("Message response", messageResponse);
-        return messageResponse;
+        const newsResponse = await response.json();
+        console.log("News response", newsResponse);
+        return newsResponse;
     }
 }

@@ -8,4 +8,4 @@ export const VERSION_ENDPOINT = "/version";
 export const REGISTER_ENDPOINT = "/register";
 export const CONFIGURATION_ENDPOINT = "/configuration";
 export const WEBSOCKET_ENDPOINT = "/websocket";
-export const MESSAGE_ENDPOINT = "/message";
+export const NEWS_ENDPOINT = "/news";

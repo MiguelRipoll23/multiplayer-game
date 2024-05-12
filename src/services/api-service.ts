@@ -3,12 +3,12 @@ import {
   API_HTTP_PROTOCOL,
   API_SERVER,
   CONFIGURATION_ENDPOINT,
-  MESSAGE_ENDPOINT,
+  NEWS_ENDPOINT as NEWS_ENDPOINT,
   REGISTER_ENDPOINT,
   VERSION_ENDPOINT,
 } from "../constants/api-constants.js";
 import { GameServer } from "../models/game-server.js";
-import { MessageResponse } from "./interfaces/message-response.js";
+import { NewsResponse } from "./interfaces/message-response.js";
 import { RegistrationResponse } from "./interfaces/registration-response.js";
 import { VersionResponse } from "./interfaces/version-response.js";
 
@@ -77,13 +77,13 @@ export class ApiService {
     return response.arrayBuffer();
   }
 
-  public async getMessage(): Promise<MessageResponse> {
+  public async getNews(): Promise<NewsResponse[]> {
     if (this.authenticationToken === null) {
       throw new Error("Authentication token not found");
     }
 
     const response = await fetch(
-      API_HTTP_PROTOCOL + API_SERVER + MESSAGE_ENDPOINT,
+      API_HTTP_PROTOCOL + API_SERVER + NEWS_ENDPOINT,
       {
         headers: {
           "Authorization": this.authenticationToken,
@@ -92,12 +92,12 @@ export class ApiService {
     );
 
     if (response.ok === false) {
-      throw new Error("Failed to fetch message");
+      throw new Error("Failed to fetch news");
     }
 
-    const messageResponse: MessageResponse = await response.json();
-    console.log("Message response", messageResponse);
+    const newsResponse: NewsResponse[] = await response.json();
+    console.log("News response", newsResponse);
 
-    return messageResponse;
+    return newsResponse;
   }
 }

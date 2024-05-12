@@ -1,13 +1,15 @@
+import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
 import { GameFrame } from "../models/game-frame.js";
 import { GameState } from "../models/game-state.js";
+import { NotificationObject } from "../objects/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
-import { ScreenManagerService } from "./screen-manager-service.js";
+import { TransitionService } from "./transition-service.js";
 export class GameLoopService {
     canvas;
     context;
     gameState;
     gameFrame;
-    screenManager;
+    transitionService;
     previousTimeStamp = 0;
     deltaTimeStamp = 0;
     isRunning = false;
@@ -16,10 +18,11 @@ export class GameLoopService {
         this.context = this.canvas.getContext("2d");
         this.gameState = new GameState();
         this.gameFrame = new GameFrame();
-        this.screenManager = new ScreenManagerService(this);
+        this.transitionService = new TransitionService(this);
         this.previousTimeStamp = performance.now();
         this.setCanvasSize();
-        this.addResizeEventListener();
+        this.addEventListeners();
+        this.loadNotificationObject();
     }
     getCanvas() {
         return this.canvas;
@@ -27,11 +30,11 @@ export class GameLoopService {
     getGameState() {
         return this.gameState;
     }
-    getScreenManager() {
-        return this.screenManager;
-    }
     getGameFrame() {
         return this.gameFrame;
+    }
+    getTransitionService() {
+        return this.transitionService;
     }
     start() {
         this.isRunning = true;
@@ -45,16 +48,23 @@ export class GameLoopService {
         this.canvas.width = document.body.clientWidth;
         this.canvas.height = document.body.clientHeight;
     }
-    addResizeEventListener() {
+    addEventListeners() {
         window.addEventListener("resize", () => {
             this.canvas.width = document.body.clientWidth;
             this.canvas.height = document.body.clientHeight;
         });
+        window.addEventListener(NOTIFICATION_EVENT_NAME, (event) => {
+            this.gameFrame.getNotificationObject()?.show(event.detail.text);
+        });
+    }
+    loadNotificationObject() {
+        const notificationObject = new NotificationObject(this.canvas);
+        this.gameFrame.setNotificationObject(notificationObject);
     }
     setInitialScreen() {
-        const loadingScreen = new MainScreen(this);
-        loadingScreen.loadObjects();
-        this.screenManager.crossfade(loadingScreen, 1);
+        const mainScreen = new MainScreen(this);
+        mainScreen.loadObjects();
+        this.transitionService.crossfade(mainScreen, 1);
     }
     loop(timeStamp) {
         this.deltaTimeStamp = Math.min(timeStamp - this.previousTimeStamp, 100);
@@ -66,13 +76,15 @@ export class GameLoopService {
         }
     }
     update(deltaTimeStamp) {
-        this.screenManager.update(deltaTimeStamp);
+        this.transitionService.update(deltaTimeStamp);
         this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
         this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
+        this.gameFrame.getNotificationObject()?.update(deltaTimeStamp);
     }
     render() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.gameFrame.getCurrentScreen()?.render(this.context);
         this.gameFrame.getNextScreen()?.render(this.context);
+        this.gameFrame.getNotificationObject()?.render(this.context);
     }
 }

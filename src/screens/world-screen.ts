@@ -9,6 +9,7 @@ import { GameLoopService } from "../services/game-loop-service.js";
 import { GameState } from "../models/game-state.js";
 import { getConfigurationKey } from "../utils/configuration-utils.js";
 import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
+import { NotificationObject } from "../objects/notification-object.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;

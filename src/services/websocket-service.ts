@@ -3,6 +3,8 @@ import {
   API_WS_PROTOCOL,
   WEBSOCKET_ENDPOINT,
 } from "../constants/api-constants.js";
+import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
+import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
 import { GameState } from "../models/game-state.js";
 import { MainScreen } from "../screens/main-screen.js";
 
@@ -60,12 +62,34 @@ export class WebSocketService {
     });
 
     webSocket.addEventListener("message", (event) => {
-      // TODO
+      this.handleMessage(new Uint8Array(event.data));
     });
   }
 
   private informLoadingScreen(): void {
     this.loadingScreen?.hasConnectedToServer();
     this.loadingScreen = null;
+  }
+
+  private handleMessage(data: Uint8Array) {
+    console.log("Received message from server", data);
+
+    const id = data[0];
+    const payload = data.slice(1);
+
+    switch (id) {
+      case NOTIFICATION_ID: {
+        this.handleNotification(payload);
+        break;
+      }
+    }
+  }
+
+  private handleNotification(payload: Uint8Array) {
+    const text = new TextDecoder("utf-8").decode(payload);
+
+    dispatchEvent(
+      new CustomEvent(NOTIFICATION_EVENT_NAME, { detail: { text } }),
+    );
   }
 }

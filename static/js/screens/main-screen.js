@@ -10,7 +10,7 @@ export class MainScreen extends BaseGameScreen {
     gameLoop;
     gameState;
     gameServer;
-    screenManagerService;
+    transitionService;
     apiService;
     cryptoService;
     webSocketService;
@@ -20,7 +20,7 @@ export class MainScreen extends BaseGameScreen {
         this.gameLoop = gameLoop;
         this.gameState = gameLoop.getGameState();
         this.gameServer = gameLoop.getGameState().getGameServer();
-        this.screenManagerService = gameLoop.getScreenManager();
+        this.transitionService = gameLoop.getTransitionService();
         this.apiService = new ApiService();
         this.cryptoService = new CryptoService(this.gameServer);
         this.webSocketService = new WebSocketService(this);
@@ -37,7 +37,7 @@ export class MainScreen extends BaseGameScreen {
         this.checkForUpdates();
     }
     hasConnectedToServer() {
-        this.downloadMessage();
+        this.transitionToWorldScreen();
     }
     createLoadingBackgroundObject() {
         const loadingBackground = new MainBackgroundObject(this.canvas);
@@ -97,22 +97,10 @@ export class MainScreen extends BaseGameScreen {
         this.messageObject?.setText("Connecting to the server...");
         this.webSocketService.connectToServer();
     }
-    downloadMessage() {
-        this.messageObject?.setActive(true);
-        this.messageObject?.setText("Downloading message...");
-        this.apiService.getMessage().then((message) => {
-            this.messageObject?.setActive(false);
-            alert(message.content);
-            this.transitionToWorldScreen();
-        }).catch((error) => {
-            console.error(error);
-            alert("An error occurred while downloading message");
-        });
-    }
     transitionToWorldScreen() {
         this.messageObject?.setActive(false);
         const worldScreen = new WorldScreen(this.gameLoop);
         worldScreen.loadObjects();
-        this.screenManagerService.fadeOutAndIn(worldScreen, 1, 2);
+        this.transitionService.fadeOutAndIn(worldScreen, 1, 2);
     }
 }

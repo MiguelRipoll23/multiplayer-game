@@ -2,7 +2,7 @@ import { GameFrame } from "../models/game-frame.js";
 import { GameScreen } from "../screens/interfaces/game-screen.js";
 import { GameLoopService } from "./game-loop-service.js";
 
-export class ScreenManagerService {
+export class TransitionService {
   private gameFrame: GameFrame;
   private elapsedTransitionMilliseconds: number = 0;
 

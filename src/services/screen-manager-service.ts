@@ -9,8 +9,9 @@ export class ScreenManagerService implements ScreenManager {
 
   private transitionService: TransitionService;
 
-  constructor() {
+  constructor(screen: GameScreen) {
     this.transitionService = new TransitionService(this);
+    this.stack.push(screen);
   }
 
   public getTransitionService(): TransitionService {
@@ -40,11 +41,14 @@ export class ScreenManagerService implements ScreenManager {
   }
 
   public setNextScreen(nextScreen: GameScreen | null): void {
-    if (nextScreen !== null) {
-      this.stack.push(nextScreen);
+    this.nextScreen = nextScreen;
+    this.nextScreen?.setScreenManagerService(this);
+
+    if (nextScreen === null) {
+      return;
     }
 
-    this.nextScreen = nextScreen;
+    this.handleStack(nextScreen);
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -57,5 +61,17 @@ export class ScreenManagerService implements ScreenManager {
   public render(context: CanvasRenderingContext2D): void {
     this.currentScreen?.render(context);
     this.nextScreen?.render(context);
+  }
+
+  private handleStack(nextScreen: GameScreen): void {
+    if (this.stack.includes(nextScreen)) {
+      // back to previous screen
+      this.stack.pop();
+    } else {
+      // new screen
+      this.stack.push(nextScreen);
+    }
+
+    console.log("Screens stack", this.stack);
   }
 }

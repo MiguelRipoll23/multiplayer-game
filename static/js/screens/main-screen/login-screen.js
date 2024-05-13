@@ -33,6 +33,7 @@ export class LoginScreen extends BaseGameScreen {
         this.checkForUpdates();
     }
     hasConnectedToServer() {
+        this.messageObject?.hide();
         this.transitionToMatchmakingScreen();
     }
     createMessageObject() {
@@ -40,12 +41,12 @@ export class LoginScreen extends BaseGameScreen {
         this.uiObjects.push(this.messageObject);
     }
     checkForUpdates() {
-        this.messageObject?.setText("Checking for updates...");
-        this.messageObject?.setActive(true);
+        this.messageObject?.show("Checking for updates...");
         this.apiService.checkForUpdates().then((requiresUpdate) => {
             if (requiresUpdate) {
                 return alert("An update is required to play the game");
             }
+            this.messageObject?.hide();
             this.registerUser();
         }).catch((error) => {
             console.error(error);
@@ -68,7 +69,7 @@ export class LoginScreen extends BaseGameScreen {
         });
     }
     downloadConfiguration() {
-        this.messageObject?.setText("Downloading configuration...");
+        this.messageObject?.show("Downloading configuration...");
         this.apiService.getConfiguration()
             .then(async (configurationResponse) => {
             await this.applyConfiguration(configurationResponse);
@@ -86,11 +87,10 @@ export class LoginScreen extends BaseGameScreen {
         this.connectToServer();
     }
     connectToServer() {
-        this.messageObject?.setText("Connecting to the server...");
+        this.messageObject?.show("Connecting to the server...");
         this.webSocketService.connectToServer();
     }
     transitionToMatchmakingScreen() {
-        this.messageObject?.setActive(false);
         const matchmakingScreen = new MatchmakingScreen(this.gameLoop);
         matchmakingScreen.loadObjects();
         this.screenManagerService?.getTransitionService().crossfade(matchmakingScreen, 1);

@@ -34,7 +34,7 @@ export class ProgressBarObject extends BaseGameObject {
         this.roundedRect(context, this.rectX, this.rectY, this.rectWidth, this.RECT_HEIGHT, this.RECT_CORNER_RADIUS);
         const text = this.text;
         context.fillStyle = "white";
-        context.font = "14px Arial";
+        context.font = "14px system-ui";
         context.textAlign = "left";
         context.fillText(text, this.textX, this.textY);
         context.fillStyle = "rgba(66, 135, 245, 0.5)";

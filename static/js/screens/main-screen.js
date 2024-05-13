@@ -10,7 +10,7 @@ export class MainScreen extends BaseGameScreen {
         this.gameLoop = gameLoop;
         this.loginScreen = new LoginScreen(this.gameLoop);
         this.loginScreen.setOpacity(1);
-        this.screenManagerService = new ScreenManagerService();
+        this.screenManagerService = new ScreenManagerService(this.loginScreen);
         this.screenManagerService.setCurrentScreen(this.loginScreen);
         this.loginScreen.setScreenManagerService(this.screenManagerService);
     }

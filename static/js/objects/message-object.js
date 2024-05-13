@@ -4,43 +4,69 @@ export class MessageObject extends BaseGameObject {
     FILL_COLOR = "rgba(0, 0, 0, 0.8)";
     DEFAULT_HEIGHT = 100;
     DEFAULT_WIDTH = 340;
+    TRANSITION_MILLISECONDS = 400;
     x = 0;
     y = 0;
     textX = 0;
     textY = 0;
+    targetX = 0;
     width = this.DEFAULT_WIDTH;
     height = this.DEFAULT_HEIGHT;
-    active = false;
     text = "Unknown";
     elapsedMilliseconds = 0;
     opacity = 0;
+    fadeIn = false;
+    fadeOut = false;
     constructor(canvas) {
         super();
         this.canvas = canvas;
         this.setPosition();
     }
-    setPosition() {
-        this.x = this.canvas.width / 2 - (this.width / 2);
-        this.y = this.canvas.height / 2 - (this.height / 2);
-        this.textX = this.x + this.width / 2;
-        this.textY = this.y + this.height / 2 + 5;
+    show(value) {
+        this.text = value;
+        this.setPosition();
+        this.elapsedMilliseconds = 0;
+        this.fadeIn = true;
+    }
+    hide() {
+        if (this.opacity === 0) {
+            console.warn("MessageObject is already hidden");
+            return;
+        }
+        this.elapsedMilliseconds = 0;
+        this.fadeOut = true;
     }
     update(deltaTimeStamp) {
-        if (!this.active)
-            return;
-        if (this.opacity < 1) {
+        if (this.fadeIn || this.fadeOut) {
             this.elapsedMilliseconds += deltaTimeStamp;
-            if (this.elapsedMilliseconds < 150) {
-                this.opacity = this.elapsedMilliseconds / 150;
+        }
+        if (this.fadeIn) {
+            if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
+                this.opacity = this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
+                this.x += (this.targetX - this.x) * 0.1;
             }
             else {
+                this.x = this.targetX;
                 this.opacity = 1;
+                this.fadeIn = false;
             }
+            this.textX = this.x + this.width / 2;
+        }
+        else if (this.fadeOut) {
+            if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
+                this.opacity = 1 -
+                    this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
+                this.x += (this.targetX + 25) / this.x * 0.1;
+            }
+            else {
+                this.x = this.targetX + 25;
+                this.opacity = 0;
+                this.fadeOut = false;
+            }
+            this.textX = this.x + this.width / 2;
         }
     }
     render(context) {
-        if (!this.active)
-            return;
         context.globalAlpha = this.opacity;
         // Draw rounded rectangle
         context.fillStyle = this.FILL_COLOR; // Use fill color constant
@@ -52,16 +78,6 @@ export class MessageObject extends BaseGameObject {
         context.fillText(this.text, this.textX, this.textY);
         context.globalAlpha = this.opacity;
     }
-    // Setter for the active property
-    setActive(value) {
-        this.active = value;
-    }
-    // Setter for the text property
-    setText(value) {
-        this.text = value;
-        this.elapsedMilliseconds = 0;
-        this.active = true;
-    }
     // Function to draw rounded rectangle
     roundRect(ctx, x, y, width, height, radius) {
         ctx.beginPath();
@@ -72,5 +88,12 @@ export class MessageObject extends BaseGameObject {
         ctx.arcTo(x, y, x + width, y, radius);
         ctx.closePath();
         ctx.fill();
+    }
+    setPosition() {
+        this.x = this.canvas.width / 2 - (this.width / 2) - 25;
+        this.y = this.canvas.height / 2 - (this.height / 2);
+        this.targetX = this.canvas.width / 2 - (this.width / 2);
+        this.textX = this.x + this.width / 2 - 25;
+        this.textY = this.y + this.height / 2 + 5;
     }
 }

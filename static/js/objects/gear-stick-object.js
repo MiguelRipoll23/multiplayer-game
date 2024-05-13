@@ -48,7 +48,7 @@ export class GearStickObject extends BaseGameObject {
     drawGearLetter(context) {
         // Draw the current gear letter inside the circle
         context.fillStyle = "white"; // Set text color to white
-        context.font = `bold ${this.FONT_SIZE}px Arial`; // Set font size dynamically
+        context.font = `bold ${this.FONT_SIZE}px system-ui`; // Set font size dynamically
         context.textAlign = "center";
         context.fillText(this.currentGear, this.x + this.SIZE / 2, this.y + this.SIZE / 2 + 12);
     }

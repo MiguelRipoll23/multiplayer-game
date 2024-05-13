@@ -1,7 +1,5 @@
-import { GameFrame } from "../models/game-frame.js";
 import { GameScreen } from "../screens/interfaces/game-screen.js";
 import { ScreenManager } from "../screens/interfaces/screen-manager.js";
-import { GameLoopService } from "./game-loop-service.js";
 
 export class TransitionService {
   private screenManager: ScreenManager;
@@ -44,10 +42,11 @@ export class TransitionService {
       this.resetTransitionState();
     }
 
+    this.screenManager.setNextScreen(nextScreen);
+
     this.fadeOutDurationMilliseconds = fadeOutDurationSeconds * 1000;
     this.fadeInDurationMilliseconds = fadeInDurationSeconds * 1000;
     this.isFadingOutAndIn = true;
-    this.screenManager.setNextScreen(nextScreen);
   }
 
   public crossfade(
@@ -61,9 +60,10 @@ export class TransitionService {
       this.resetTransitionState();
     }
 
+    this.screenManager.setNextScreen(nextScreen);
+
     this.crossfadeDurationMilliseconds = crossfadeDurationSeconds * 1000;
     this.isCrossfading = true;
-    this.screenManager.setNextScreen(nextScreen);
   }
 
   private handleFadingOutAndIn(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -82,31 +82,29 @@ export class TransitionService {
   }
 
   private fadeOutCurrentScreen(currentScreen: GameScreen): void {
-    const fadeOutProgress = Math.min(
+    const fadeOutOpacity = Math.min(
       1,
       this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds,
     );
 
-    if (fadeOutProgress === 1) {
+    if (fadeOutOpacity === 1) {
       // Fade out complete
       this.elapsedTransitionMilliseconds = 0;
     }
 
-    currentScreen.setOpacity(1 - fadeOutProgress);
+    currentScreen.setOpacity(1 - fadeOutOpacity);
   }
 
   private fadeInNextScreen(nextScreen: GameScreen): void {
-    const fadeInProgress = Math.min(
+    const fadeInOpacity = Math.min(
       1,
       this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds,
     );
 
-    nextScreen.setOpacity(fadeInProgress);
+    nextScreen.setOpacity(fadeInOpacity);
 
-    if (fadeInProgress === 1) {
-      // Fade in complete
+    if (fadeInOpacity === 1) {
       this.updateCurrentAndNextScreen(nextScreen);
-      this.isFadingOutAndIn = false;
     }
   }
 
@@ -117,16 +115,15 @@ export class TransitionService {
 
     this.elapsedTransitionMilliseconds += deltaTimeStamp;
 
-    const crossfadeProgress = Math.min(
+    const crossfadeOpacity = Math.min(
       1,
       this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds,
     );
 
-    nextScreen.setOpacity(crossfadeProgress);
+    nextScreen.setOpacity(crossfadeOpacity);
 
-    if (crossfadeProgress === 1) {
+    if (crossfadeOpacity === 1) {
       this.updateCurrentAndNextScreen(nextScreen);
-      this.isCrossfading = false;
     }
   }
 
@@ -134,14 +131,14 @@ export class TransitionService {
     this.isFadingOutAndIn = false;
     this.isCrossfading = false;
     this.elapsedTransitionMilliseconds = 0;
-
-    console.log("Previous transition stopped");
   }
 
   private updateCurrentAndNextScreen(nextScreen: GameScreen): void {
-    this.elapsedTransitionMilliseconds = 0;
+    this.resetTransitionState();
+
     this.screenManager.setCurrentScreen(nextScreen);
-    this.screenManager.getCurrentScreen()?.hasTransitionFinished();
     this.screenManager.setNextScreen(null);
+
+    this.screenManager.getCurrentScreen()?.hasTransitionFinished();
   }
 }

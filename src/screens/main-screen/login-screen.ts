@@ -1,12 +1,10 @@
 import { GameServer } from "../../models/game-server.js";
 import { GameState } from "../../models/game-state.js";
-import { MainBackgroundObject } from "../../objects/backgrounds/main-background-object.js";
 import { MessageObject } from "../../objects/message-object.js";
 import { CryptoService } from "../../services/crypto-service.js";
 import { GameLoopService } from "../../services/game-loop-service.js";
 import { WebSocketService } from "../../services/websocket-service.js";
 import { ApiService } from "../../services/api-service.js";
-import { TransitionService } from "../../services/transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { RegistrationResponse } from "../../services/interfaces/registration-response.js";
 import { GameRegistration } from "../../models/game-registration.js";
@@ -46,6 +44,7 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   public hasConnectedToServer(): void {
+    this.messageObject?.hide();
     this.transitionToMatchmakingScreen();
   }
 
@@ -55,14 +54,14 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private checkForUpdates(): void {
-    this.messageObject?.setText("Checking for updates...");
-    this.messageObject?.setActive(true);
+    this.messageObject?.show("Checking for updates...");
 
     this.apiService.checkForUpdates().then((requiresUpdate) => {
       if (requiresUpdate) {
         return alert("An update is required to play the game");
       }
 
+      this.messageObject?.hide();
       this.registerUser();
     }).catch((error) => {
       console.error(error);
@@ -92,7 +91,7 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private downloadConfiguration(): void {
-    this.messageObject?.setText("Downloading configuration...");
+    this.messageObject?.show("Downloading configuration...");
 
     this.apiService.getConfiguration()
       .then(async (configurationResponse: ArrayBuffer) => {
@@ -120,13 +119,11 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private connectToServer(): void {
-    this.messageObject?.setText("Connecting to the server...");
+    this.messageObject?.show("Connecting to the server...");
     this.webSocketService.connectToServer();
   }
 
   private transitionToMatchmakingScreen(): void {
-    this.messageObject?.setActive(false);
-
     const matchmakingScreen = new MatchmakingScreen(this.gameLoop);
     matchmakingScreen.loadObjects();
 

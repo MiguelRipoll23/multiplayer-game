@@ -65,7 +65,7 @@ export class NotificationObject extends BaseGameObject {
 
     // Draw text
     context.fillStyle = "#FFF";
-    context.font = "20px Arial";
+    context.font = "20px system-ui";
     context.fillText(
       this.text,
       this.textX,

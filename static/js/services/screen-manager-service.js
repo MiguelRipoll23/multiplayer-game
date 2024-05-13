@@ -4,8 +4,9 @@ export class ScreenManagerService {
     currentScreen = null;
     nextScreen = null;
     transitionService;
-    constructor() {
+    constructor(screen) {
         this.transitionService = new TransitionService(this);
+        this.stack.push(screen);
     }
     getTransitionService() {
         return this.transitionService;
@@ -27,10 +28,12 @@ export class ScreenManagerService {
         this.currentScreen = currentScreen;
     }
     setNextScreen(nextScreen) {
-        if (nextScreen !== null) {
-            this.stack.push(nextScreen);
-        }
         this.nextScreen = nextScreen;
+        this.nextScreen?.setScreenManagerService(this);
+        if (nextScreen === null) {
+            return;
+        }
+        this.handleStack(nextScreen);
     }
     update(deltaTimeStamp) {
         this.transitionService.update(deltaTimeStamp);
@@ -40,5 +43,16 @@ export class ScreenManagerService {
     render(context) {
         this.currentScreen?.render(context);
         this.nextScreen?.render(context);
+    }
+    handleStack(nextScreen) {
+        if (this.stack.includes(nextScreen)) {
+            // back to previous screen
+            this.stack.pop();
+        }
+        else {
+            // new screen
+            this.stack.push(nextScreen);
+        }
+        console.log("Screens stack", this.stack);
     }
 }

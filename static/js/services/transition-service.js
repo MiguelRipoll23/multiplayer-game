@@ -28,10 +28,10 @@ export class TransitionService {
         if (this.isTransitionActive()) {
             this.resetTransitionState();
         }
+        this.screenManager.setNextScreen(nextScreen);
         this.fadeOutDurationMilliseconds = fadeOutDurationSeconds * 1000;
         this.fadeInDurationMilliseconds = fadeInDurationSeconds * 1000;
         this.isFadingOutAndIn = true;
-        this.screenManager.setNextScreen(nextScreen);
     }
     crossfade(nextScreen, crossfadeDurationSeconds) {
         console.log("Crossfading to", nextScreen.constructor.name);
@@ -39,9 +39,9 @@ export class TransitionService {
         if (this.isTransitionActive()) {
             this.resetTransitionState();
         }
+        this.screenManager.setNextScreen(nextScreen);
         this.crossfadeDurationMilliseconds = crossfadeDurationSeconds * 1000;
         this.isCrossfading = true;
-        this.screenManager.setNextScreen(nextScreen);
     }
     handleFadingOutAndIn(deltaTimeStamp) {
         this.elapsedTransitionMilliseconds += deltaTimeStamp;
@@ -57,20 +57,18 @@ export class TransitionService {
         }
     }
     fadeOutCurrentScreen(currentScreen) {
-        const fadeOutProgress = Math.min(1, this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds);
-        if (fadeOutProgress === 1) {
+        const fadeOutOpacity = Math.min(1, this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds);
+        if (fadeOutOpacity === 1) {
             // Fade out complete
             this.elapsedTransitionMilliseconds = 0;
         }
-        currentScreen.setOpacity(1 - fadeOutProgress);
+        currentScreen.setOpacity(1 - fadeOutOpacity);
     }
     fadeInNextScreen(nextScreen) {
-        const fadeInProgress = Math.min(1, this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds);
-        nextScreen.setOpacity(fadeInProgress);
-        if (fadeInProgress === 1) {
-            // Fade in complete
+        const fadeInOpacity = Math.min(1, this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds);
+        nextScreen.setOpacity(fadeInOpacity);
+        if (fadeInOpacity === 1) {
             this.updateCurrentAndNextScreen(nextScreen);
-            this.isFadingOutAndIn = false;
         }
     }
     handleCrossfading(deltaTimeStamp) {
@@ -78,23 +76,21 @@ export class TransitionService {
         if (!nextScreen || !nextScreen.hasLoaded())
             return;
         this.elapsedTransitionMilliseconds += deltaTimeStamp;
-        const crossfadeProgress = Math.min(1, this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds);
-        nextScreen.setOpacity(crossfadeProgress);
-        if (crossfadeProgress === 1) {
+        const crossfadeOpacity = Math.min(1, this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds);
+        nextScreen.setOpacity(crossfadeOpacity);
+        if (crossfadeOpacity === 1) {
             this.updateCurrentAndNextScreen(nextScreen);
-            this.isCrossfading = false;
         }
     }
     resetTransitionState() {
         this.isFadingOutAndIn = false;
         this.isCrossfading = false;
         this.elapsedTransitionMilliseconds = 0;
-        console.log("Previous transition stopped");
     }
     updateCurrentAndNextScreen(nextScreen) {
-        this.elapsedTransitionMilliseconds = 0;
+        this.resetTransitionState();
         this.screenManager.setCurrentScreen(nextScreen);
-        this.screenManager.getCurrentScreen()?.hasTransitionFinished();
         this.screenManager.setNextScreen(null);
+        this.screenManager.getCurrentScreen()?.hasTransitionFinished();
     }
 }

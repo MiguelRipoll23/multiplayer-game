@@ -44,7 +44,7 @@ export class NotificationObject extends BaseGameObject {
         context.fillRect(this.x, this.y + 1, this.canvas.width, this.DEFAULT_HEIGHT - 2); // Main rectangle
         // Draw text
         context.fillStyle = "#FFF";
-        context.font = "20px Arial";
+        context.font = "20px system-ui";
         context.fillText(this.text, this.textX, this.y + this.DEFAULT_HEIGHT / 2 + 6);
         context.globalAlpha = 1;
     }

@@ -2,16 +2,16 @@ import { GameServer } from "../../models/game-server.js";
 import { GameState } from "../../models/game-state.js";
 import { MessageObject } from "../../objects/message-object.js";
 import { CryptoService } from "../../services/crypto-service.js";
-import { GameLoopService } from "../../services/game-loop-service.js";
 import { WebSocketService } from "../../services/websocket-service.js";
 import { ApiService } from "../../services/api-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { RegistrationResponse } from "../../services/interfaces/registration-response.js";
 import { GameRegistration } from "../../models/game-registration.js";
-import { MatchmakingScreen } from "./matchmaking-screen.js";
+import { TitleObject } from "../../objects/title-object.js";
+import { MainMenuScreen } from "./main-menu-screen.js";
+import { GameController } from "../../models/game-controller.js";
 
 export class LoginScreen extends BaseGameScreen {
-  private gameState: GameState;
   private gameServer: GameServer;
   private apiService: ApiService;
   private cryptoService: CryptoService;
@@ -19,24 +19,22 @@ export class LoginScreen extends BaseGameScreen {
 
   private messageObject: MessageObject | null = null;
 
-  constructor(private readonly gameLoop: GameLoopService) {
-    super(gameLoop);
+  constructor(private readonly gameController: GameController) {
+    super(gameController);
 
-    this.gameState = gameLoop.getGameState();
-    this.gameServer = gameLoop.getGameState().getGameServer();
+    this.gameServer = gameController.getGameState().getGameServer();
 
-    this.apiService = new ApiService();
-    this.cryptoService = new CryptoService(this.gameServer);
-    this.webSocketService = new WebSocketService(this);
+    this.apiService = gameController.getApiService();
+    this.cryptoService = gameController.getCryptoService();
+    this.webSocketService = gameController.getWebSocketService();
+
+    this.webSocketService.setLoginScreen(this);
   }
 
   public override loadObjects(): void {
-    this.createMessageObject();
+    this.loadTitleObject();
+    this.loadMessageObject();
     super.loadObjects();
-  }
-
-  public getGameState(): GameState {
-    return this.gameState;
   }
 
   public hasTransitionFinished(): void {
@@ -48,7 +46,13 @@ export class LoginScreen extends BaseGameScreen {
     this.transitionToMatchmakingScreen();
   }
 
-  private createMessageObject(): void {
+  private loadTitleObject(): void {
+    const titleObject = new TitleObject(this.canvas);
+    titleObject.setText("LOGIN");
+    this.uiObjects.push(titleObject);
+  }
+
+  private loadMessageObject(): void {
     this.messageObject = new MessageObject(this.canvas);
     this.uiObjects.push(this.messageObject);
   }
@@ -124,12 +128,12 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private transitionToMatchmakingScreen(): void {
-    const matchmakingScreen = new MatchmakingScreen(this.gameLoop);
-    matchmakingScreen.loadObjects();
+    const mainMenuScreen = new MainMenuScreen(this.gameController);
+    mainMenuScreen.loadObjects();
 
     this.screenManagerService?.getTransitionService().crossfade(
-      matchmakingScreen,
-      1,
+      mainMenuScreen,
+      0.2,
     );
   }
 }

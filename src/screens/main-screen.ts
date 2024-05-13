@@ -3,14 +3,15 @@ import { BaseGameScreen } from "./base/base-game-screen.js";
 import { ScreenManagerService } from "../services/screen-manager-service.js";
 import { LoginScreen } from "./main-screen/login-screen.js";
 import { MainBackgroundObject } from "../objects/backgrounds/main-background-object.js";
+import { GameController } from "../models/game-controller.js";
 
 export class MainScreen extends BaseGameScreen {
   private loginScreen: LoginScreen;
 
-  constructor(private readonly gameLoop: GameLoopService) {
-    super(gameLoop);
+  constructor(private readonly gameController: GameController) {
+    super(gameController);
 
-    this.loginScreen = new LoginScreen(this.gameLoop);
+    this.loginScreen = new LoginScreen(this.gameController);
     this.loginScreen.setOpacity(1);
 
     this.screenManagerService = new ScreenManagerService(this.loginScreen);

@@ -2,11 +2,11 @@ import { BaseGameScreen } from "./base-game-screen.js";
 import { BaseStaticCollidableGameObject as BaseStaticCollidableGameObject } from "../../objects/base/base-static-collidable-game-object.js";
 import { BaseDynamicCollidableGameObject } from "../../objects/base/base-dynamic-collidable-game-object.js";
 import { HitboxObject } from "../../objects/hitbox-object.js";
-import { GameLoopService } from "../../services/game-loop-service.js";
+import { GameController } from "../../models/game-controller.js";
 
 export class BaseCollidingGameScreen extends BaseGameScreen {
-  constructor(gameLoop: GameLoopService) {
-    super(gameLoop);
+  constructor(gameController: GameController) {
+    super(gameController);
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {

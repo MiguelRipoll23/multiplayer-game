@@ -13,9 +13,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     ballObject = null;
     orangeGoalObject = null;
     blueGoalObject = null;
-    constructor(gameLoop) {
-        super(gameLoop);
-        this.gameState = gameLoop.getGameState();
+    constructor(gameController) {
+        super(gameController);
+        this.gameState = gameController.getGameState();
     }
     loadObjects() {
         this.createBackgroundObject();

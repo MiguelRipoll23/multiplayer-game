@@ -5,9 +5,11 @@ export class WebSocketService {
     gameState;
     webSocket = null;
     loginScreen = null;
-    constructor(loadingScreen) {
-        this.loginScreen = loadingScreen;
-        this.gameState = loadingScreen.getGameState();
+    constructor(gameController) {
+        this.gameState = gameController.getGameState();
+    }
+    setLoginScreen(loginScreen) {
+        this.loginScreen = loginScreen;
     }
     connectToServer() {
         const gameServer = this.gameState.getGameServer();

@@ -1,25 +1,22 @@
 import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
-import { GameFrame } from "../models/game-frame.js";
-import { GameState } from "../models/game-state.js";
+import { GameController } from "../models/game-controller.js";
 import { NotificationObject } from "../objects/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
-import { TransitionService } from "./transition-service.js";
 export class GameLoopService {
     canvas;
     context;
-    gameState;
+    gameController;
     gameFrame;
     transitionService;
+    isRunning = false;
     previousTimeStamp = 0;
     deltaTimeStamp = 0;
-    isRunning = false;
     constructor(canvas) {
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
-        this.gameState = new GameState();
-        this.gameFrame = new GameFrame();
-        this.transitionService = new TransitionService(this.gameFrame);
-        this.previousTimeStamp = performance.now();
+        this.gameController = new GameController(this.canvas);
+        this.gameFrame = this.gameController.getGameFrame();
+        this.transitionService = this.gameController.getTransitionService();
         this.setCanvasSize();
         this.addEventListeners();
         this.loadNotificationObject();
@@ -27,17 +24,12 @@ export class GameLoopService {
     getCanvas() {
         return this.canvas;
     }
-    getGameState() {
-        return this.gameState;
-    }
-    getGameFrame() {
-        return this.gameFrame;
-    }
-    getTransitionService() {
-        return this.transitionService;
+    getGameController() {
+        return this.gameController;
     }
     start() {
         this.isRunning = true;
+        this.previousTimeStamp = performance.now();
         this.setInitialScreen();
         requestAnimationFrame(this.loop.bind(this));
     }
@@ -62,9 +54,9 @@ export class GameLoopService {
         this.gameFrame.setNotificationObject(notificationObject);
     }
     setInitialScreen() {
-        const mainScreen = new MainScreen(this);
+        const mainScreen = new MainScreen(this.gameController);
         mainScreen.loadObjects();
-        this.transitionService.crossfade(mainScreen, 1);
+        this.gameController.getTransitionService().crossfade(mainScreen, 1);
     }
     loop(timeStamp) {
         this.deltaTimeStamp = Math.min(timeStamp - this.previousTimeStamp, 100);

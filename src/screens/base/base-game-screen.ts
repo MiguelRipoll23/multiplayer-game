@@ -1,5 +1,5 @@
+import { GameController } from "../../models/game-controller.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
-import { GameLoopService } from "../../services/game-loop-service.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
 import { GameScreen } from "../interfaces/game-screen.js";
 
@@ -13,10 +13,10 @@ export class BaseGameScreen implements GameScreen {
 
   private objectsLoadingPending: boolean = true;
 
-  constructor(gameLoop: GameLoopService) {
+  constructor(gameController: GameController) {
     console.log(`${this.constructor.name} created`);
 
-    this.canvas = gameLoop.getCanvas();
+    this.canvas = gameController.getCanvas();
     this.sceneObjects = [];
     this.uiObjects = [];
   }

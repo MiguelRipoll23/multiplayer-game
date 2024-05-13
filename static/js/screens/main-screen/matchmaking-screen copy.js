@@ -3,13 +3,13 @@ import { TitleObject } from "../../objects/title-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";
 export class MatchmakingScreen extends BaseGameScreen {
-    gameController;
+    gameLoop;
     transitionService;
     progressBarObject = null;
-    constructor(gameController) {
-        super(gameController);
-        this.gameController = gameController;
-        this.transitionService = gameController.getTransitionService();
+    constructor(gameLoop) {
+        super(gameLoop);
+        this.gameLoop = gameLoop;
+        this.transitionService = gameLoop.getTransitionService();
     }
     loadObjects() {
         this.loadTitleObject();
@@ -19,7 +19,7 @@ export class MatchmakingScreen extends BaseGameScreen {
     hasTransitionFinished() {
         this.progressBarObject?.setText("Loading world screen...");
         this.progressBarObject?.setProgress(0.5);
-        const worldScreen = new WorldScreen(this.gameController);
+        const worldScreen = new WorldScreen(this.gameLoop);
         worldScreen.loadObjects();
         this.progressBarObject?.setProgress(1);
         this.transitionService.fadeOutAndIn(worldScreen, 1, 1);
@@ -33,5 +33,11 @@ export class MatchmakingScreen extends BaseGameScreen {
         this.progressBarObject = new ProgressBarObject(this.canvas);
         this.progressBarObject?.setText("Finding sesions...");
         this.uiObjects.push(this.progressBarObject);
+    }
+    update(deltaTimeStamp) {
+        super.update(deltaTimeStamp);
+    }
+    render(context) {
+        super.render(context);
     }
 }

@@ -1,33 +1,28 @@
 import { MessageObject } from "../../objects/message-object.js";
-import { CryptoService } from "../../services/crypto-service.js";
-import { WebSocketService } from "../../services/websocket-service.js";
-import { ApiService } from "../../services/api-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { GameRegistration } from "../../models/game-registration.js";
-import { MatchmakingScreen } from "./matchmaking-screen.js";
+import { TitleObject } from "../../objects/title-object.js";
+import { MainMenuScreen } from "./main-menu-screen.js";
 export class LoginScreen extends BaseGameScreen {
-    gameLoop;
-    gameState;
+    gameController;
     gameServer;
     apiService;
     cryptoService;
     webSocketService;
     messageObject = null;
-    constructor(gameLoop) {
-        super(gameLoop);
-        this.gameLoop = gameLoop;
-        this.gameState = gameLoop.getGameState();
-        this.gameServer = gameLoop.getGameState().getGameServer();
-        this.apiService = new ApiService();
-        this.cryptoService = new CryptoService(this.gameServer);
-        this.webSocketService = new WebSocketService(this);
+    constructor(gameController) {
+        super(gameController);
+        this.gameController = gameController;
+        this.gameServer = gameController.getGameState().getGameServer();
+        this.apiService = gameController.getApiService();
+        this.cryptoService = gameController.getCryptoService();
+        this.webSocketService = gameController.getWebSocketService();
+        this.webSocketService.setLoginScreen(this);
     }
     loadObjects() {
-        this.createMessageObject();
+        this.loadTitleObject();
+        this.loadMessageObject();
         super.loadObjects();
-    }
-    getGameState() {
-        return this.gameState;
     }
     hasTransitionFinished() {
         this.checkForUpdates();
@@ -36,7 +31,12 @@ export class LoginScreen extends BaseGameScreen {
         this.messageObject?.hide();
         this.transitionToMatchmakingScreen();
     }
-    createMessageObject() {
+    loadTitleObject() {
+        const titleObject = new TitleObject(this.canvas);
+        titleObject.setText("LOGIN");
+        this.uiObjects.push(titleObject);
+    }
+    loadMessageObject() {
         this.messageObject = new MessageObject(this.canvas);
         this.uiObjects.push(this.messageObject);
     }
@@ -91,8 +91,8 @@ export class LoginScreen extends BaseGameScreen {
         this.webSocketService.connectToServer();
     }
     transitionToMatchmakingScreen() {
-        const matchmakingScreen = new MatchmakingScreen(this.gameLoop);
-        matchmakingScreen.loadObjects();
-        this.screenManagerService?.getTransitionService().crossfade(matchmakingScreen, 1);
+        const mainMenuScreen = new MainMenuScreen(this.gameController);
+        mainMenuScreen.loadObjects();
+        this.screenManagerService?.getTransitionService().crossfade(mainMenuScreen, 0.2);
     }
 }

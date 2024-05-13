@@ -1,6 +1,6 @@
 import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
+import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
-import { GameState } from "../models/game-state.js";
 import { NotificationObject } from "../objects/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
 import { TransitionService } from "./transition-service.js";
@@ -9,24 +9,21 @@ export class GameLoopService {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
 
-  private gameState: GameState;
+  private gameController: GameController;
   private gameFrame: GameFrame;
   private transitionService: TransitionService;
 
+  private isRunning: boolean = false;
   private previousTimeStamp: DOMHighResTimeStamp = 0;
   private deltaTimeStamp: DOMHighResTimeStamp = 0;
-
-  private isRunning: boolean = false;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 
-    this.gameState = new GameState();
-    this.gameFrame = new GameFrame();
-    this.transitionService = new TransitionService(this.gameFrame);
-
-    this.previousTimeStamp = performance.now();
+    this.gameController = new GameController(this.canvas);
+    this.gameFrame = this.gameController.getGameFrame();
+    this.transitionService = this.gameController.getTransitionService();
 
     this.setCanvasSize();
     this.addEventListeners();
@@ -37,20 +34,13 @@ export class GameLoopService {
     return this.canvas;
   }
 
-  public getGameState(): GameState {
-    return this.gameState;
-  }
-
-  public getGameFrame(): GameFrame {
-    return this.gameFrame;
-  }
-
-  public getTransitionService(): TransitionService {
-    return this.transitionService;
+  public getGameController(): GameController {
+    return this.gameController;
   }
 
   public start(): void {
     this.isRunning = true;
+    this.previousTimeStamp = performance.now();
     this.setInitialScreen();
 
     requestAnimationFrame(this.loop.bind(this));
@@ -80,14 +70,17 @@ export class GameLoopService {
 
   private loadNotificationObject(): void {
     const notificationObject = new NotificationObject(this.canvas);
-    this.gameFrame.setNotificationObject(notificationObject);
+
+    this.gameFrame.setNotificationObject(
+      notificationObject,
+    );
   }
 
   private setInitialScreen() {
-    const mainScreen = new MainScreen(this);
+    const mainScreen = new MainScreen(this.gameController);
     mainScreen.loadObjects();
 
-    this.transitionService.crossfade(mainScreen, 1);
+    this.gameController.getTransitionService().crossfade(mainScreen, 1);
   }
 
   private loop(timeStamp: DOMHighResTimeStamp): void {

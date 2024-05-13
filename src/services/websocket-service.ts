@@ -8,6 +8,7 @@ import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
 import { GameState } from "../models/game-state.js";
 import { LoginScreen } from "../screens/main-screen/login-screen.js";
 import { MainScreen } from "../screens/main-screen.js";
+import { GameController } from "../models/game-controller.js";
 
 export class WebSocketService {
   private gameState: GameState;
@@ -15,9 +16,12 @@ export class WebSocketService {
   private webSocket: WebSocket | null = null;
   private loginScreen: LoginScreen | null = null;
 
-  constructor(loadingScreen: LoginScreen) {
-    this.loginScreen = loadingScreen;
-    this.gameState = loadingScreen.getGameState();
+  constructor(gameController: GameController) {
+    this.gameState = gameController.getGameState();
+  }
+
+  public setLoginScreen(loginScreen: LoginScreen): void {
+    this.loginScreen = loginScreen;
   }
 
   public connectToServer(): void {

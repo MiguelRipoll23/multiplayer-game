@@ -5,9 +5,9 @@ export class BaseGameScreen {
     sceneObjects;
     uiObjects;
     objectsLoadingPending = true;
-    constructor(gameLoop) {
+    constructor(gameController) {
         console.log(`${this.constructor.name} created`);
-        this.canvas = gameLoop.getCanvas();
+        this.canvas = gameController.getCanvas();
         this.sceneObjects = [];
         this.uiObjects = [];
     }

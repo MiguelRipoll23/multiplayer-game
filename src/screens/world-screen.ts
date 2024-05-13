@@ -5,11 +5,10 @@ import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
 import { ScoreboardObject } from "../objects/scoreboard-object.js";
 import { BaseCollidingGameScreen } from "./base/base-colliding-game-screen.js";
-import { GameLoopService } from "../services/game-loop-service.js";
 import { GameState } from "../models/game-state.js";
 import { getConfigurationKey } from "../utils/configuration-utils.js";
 import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
-import { NotificationObject } from "../objects/notification-object.js";
+import { GameController } from "../models/game-controller.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -19,9 +18,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private orangeGoalObject: GoalObject | null = null;
   private blueGoalObject: GoalObject | null = null;
 
-  constructor(gameLoop: GameLoopService) {
-    super(gameLoop);
-    this.gameState = gameLoop.getGameState();
+  constructor(gameController: GameController) {
+    super(gameController);
+    this.gameState = gameController.getGameState();
   }
 
   public override loadObjects(): void {

@@ -1,6 +1,6 @@
+import { GameController } from "../../models/game-controller.js";
 import { ProgressBarObject } from "../../objects/progress-bar-object.js";
 import { TitleObject } from "../../objects/title-object.js";
-import { GameLoopService } from "../../services/game-loop-service.js";
 import { TransitionService } from "../../services/transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";
@@ -9,9 +9,9 @@ export class MatchmakingScreen extends BaseGameScreen {
   private transitionService: TransitionService;
   private progressBarObject: ProgressBarObject | null = null;
 
-  constructor(private readonly gameLoop: GameLoopService) {
-    super(gameLoop);
-    this.transitionService = gameLoop.getTransitionService();
+  constructor(private readonly gameController: GameController) {
+    super(gameController);
+    this.transitionService = gameController.getTransitionService();
   }
 
   public override loadObjects(): void {
@@ -25,7 +25,7 @@ export class MatchmakingScreen extends BaseGameScreen {
     this.progressBarObject?.setText("Loading world screen...");
     this.progressBarObject?.setProgress(0.5);
 
-    const worldScreen = new WorldScreen(this.gameLoop);
+    const worldScreen = new WorldScreen(this.gameController);
     worldScreen.loadObjects();
 
     this.progressBarObject?.setProgress(1);
@@ -34,7 +34,7 @@ export class MatchmakingScreen extends BaseGameScreen {
 
   private loadTitleObject(): void {
     const titleObject = new TitleObject(this.canvas);
-    titleObject.setText("// MATCHMAKING");
+    titleObject.setText("MATCHMAKING");
     this.uiObjects.push(titleObject);
   }
 
@@ -42,13 +42,5 @@ export class MatchmakingScreen extends BaseGameScreen {
     this.progressBarObject = new ProgressBarObject(this.canvas);
     this.progressBarObject?.setText("Finding sesions...");
     this.uiObjects.push(this.progressBarObject);
-  }
-
-  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    super.update(deltaTimeStamp);
-  }
-
-  public override render(context: CanvasRenderingContext2D): void {
-    super.render(context);
   }
 }

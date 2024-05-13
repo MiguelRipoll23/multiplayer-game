@@ -1,145 +1,48 @@
-import { GameServer } from "../models/game-server.js";
-import { GameState } from "../models/game-state.js";
-import { MainBackgroundObject } from "../objects/backgrounds/main-background-object.js";
-import { MessageObject } from "../objects/message-object.js";
-import { CryptoService } from "../services/crypto-service.js";
 import { GameLoopService } from "../services/game-loop-service.js";
-import { WebSocketService } from "../services/websocket-service.js";
-import { ApiService } from "../services/api-service.js";
-import { TransitionService } from "../services/transition-service.js";
 import { BaseGameScreen } from "./base/base-game-screen.js";
-import { WorldScreen } from "./world-screen.js";
-import { RegistrationResponse } from "../services/interfaces/registration-response.js";
-import { GameRegistration } from "../models/game-registration.js";
+import { ScreenManagerService } from "../services/screen-manager-service.js";
+import { LoginScreen } from "./main-screen/login-screen.js";
+import { MainBackgroundObject } from "../objects/backgrounds/main-background-object.js";
 
 export class MainScreen extends BaseGameScreen {
-  private gameState: GameState;
-  private gameServer: GameServer;
-
-  private transitionService: TransitionService;
-
-  private apiService: ApiService;
-  private cryptoService: CryptoService;
-  private webSocketService: WebSocketService;
-
-  private messageObject: MessageObject | null = null;
+  private loginScreen: LoginScreen;
 
   constructor(private readonly gameLoop: GameLoopService) {
     super(gameLoop);
 
-    this.gameState = gameLoop.getGameState();
-    this.gameServer = gameLoop.getGameState().getGameServer();
-    this.transitionService = gameLoop.getTransitionService();
+    this.loginScreen = new LoginScreen(this.gameLoop);
+    this.loginScreen.setOpacity(1);
 
-    this.apiService = new ApiService();
-    this.cryptoService = new CryptoService(this.gameServer);
-    this.webSocketService = new WebSocketService(this);
+    this.screenManagerService = new ScreenManagerService();
+    this.screenManagerService.setCurrentScreen(this.loginScreen);
+    this.loginScreen.setScreenManagerService(this.screenManagerService);
   }
 
   public override loadObjects(): void {
-    this.createLoadingBackgroundObject();
-    this.createMessageObject();
+    this.createMainBrackgroundObject();
+    this.loginScreen.loadObjects();
     super.loadObjects();
   }
 
-  public getGameState(): GameState {
-    return this.gameState;
-  }
-
   public hasTransitionFinished(): void {
-    this.checkForUpdates();
+    this.loginScreen.hasTransitionFinished();
   }
 
-  public hasConnectedToServer(): void {
-    this.transitionToWorldScreen();
+  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    super.update(deltaTimeStamp);
+
+    this.screenManagerService?.getCurrentScreen()?.setOpacity(this.opacity);
+    this.screenManagerService?.update(deltaTimeStamp);
   }
 
-  private createLoadingBackgroundObject() {
-    const loadingBackground = new MainBackgroundObject(this.canvas);
-    this.sceneObjects.push(loadingBackground);
+  public override render(context: CanvasRenderingContext2D): void {
+    super.render(context);
+
+    this.screenManagerService?.render(context);
   }
 
-  private createMessageObject(): void {
-    this.messageObject = new MessageObject(this.canvas);
-    this.uiObjects.push(this.messageObject);
-  }
-
-  private checkForUpdates(): void {
-    this.messageObject?.setText("Checking for updates...");
-    this.messageObject?.setActive(true);
-
-    this.apiService.checkForUpdates().then((requiresUpdate) => {
-      if (requiresUpdate) {
-        return alert("An update is required to play the game");
-      }
-
-      this.registerUser();
-    }).catch((error) => {
-      console.error(error);
-      alert("An error occurred while checking for updates");
-    });
-  }
-
-  private registerUser(): void {
-    const name = prompt("Please enter your player handle:", "player1");
-
-    if (name === null) {
-      return this.registerUser();
-    }
-
-    this.apiService.registerUser(name)
-      .then((registrationResponse: RegistrationResponse) => {
-        this.gameServer.setGameRegistration(
-          new GameRegistration(registrationResponse),
-        );
-
-        this.downloadConfiguration();
-      })
-      .catch((error) => {
-        console.error(error);
-        alert("An error occurred while registering to the server");
-      });
-  }
-
-  private downloadConfiguration(): void {
-    this.messageObject?.setText("Downloading configuration...");
-
-    this.apiService.getConfiguration()
-      .then(async (configurationResponse: ArrayBuffer) => {
-        await this.applyConfiguration(configurationResponse);
-      })
-      .catch((error) => {
-        console.error(error);
-        alert("An error occurred while downloading configuration");
-      });
-  }
-
-  private async applyConfiguration(
-    configurationResponse: ArrayBuffer,
-  ): Promise<void> {
-    const decryptedResponse = await this.cryptoService.decryptResponse(
-      configurationResponse,
-    );
-
-    const configuration = JSON.parse(decryptedResponse);
-    this.gameServer.setConfiguration(configuration);
-
-    console.log("Configuration response", configuration);
-
-    this.connectToServer();
-  }
-
-  private connectToServer(): void {
-    this.messageObject?.setText("Connecting to the server...");
-    this.webSocketService.connectToServer();
-  }
-
-  private transitionToWorldScreen(): void {
-    this.messageObject?.setActive(false);
-
-    const worldScreen = new WorldScreen(this.gameLoop);
-    worldScreen.loadObjects();
-
-    this.transitionService.fadeOutAndIn(worldScreen, 1, 2);
+  private createMainBrackgroundObject() {
+    const mainBackgroundObject = new MainBackgroundObject(this.canvas);
+    this.sceneObjects.push(mainBackgroundObject);
   }
 }

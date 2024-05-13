@@ -6,16 +6,17 @@ import {
 import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
 import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
 import { GameState } from "../models/game-state.js";
+import { LoginScreen } from "../screens/main-screen/login-screen.js";
 import { MainScreen } from "../screens/main-screen.js";
 
 export class WebSocketService {
   private gameState: GameState;
 
   private webSocket: WebSocket | null = null;
-  private loadingScreen: MainScreen | null = null;
+  private loginScreen: LoginScreen | null = null;
 
-  constructor(loadingScreen: MainScreen) {
-    this.loadingScreen = loadingScreen;
+  constructor(loadingScreen: LoginScreen) {
+    this.loginScreen = loadingScreen;
     this.gameState = loadingScreen.getGameState();
   }
 
@@ -67,8 +68,8 @@ export class WebSocketService {
   }
 
   private informLoadingScreen(): void {
-    this.loadingScreen?.hasConnectedToServer();
-    this.loadingScreen = null;
+    this.loginScreen?.hasConnectedToServer();
+    this.loginScreen = null;
   }
 
   private handleMessage(data: Uint8Array) {

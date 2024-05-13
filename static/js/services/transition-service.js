@@ -1,5 +1,5 @@
 export class TransitionService {
-    gameFrame;
+    screenManager;
     elapsedTransitionMilliseconds = 0;
     // Transition state flags
     isFadingOutAndIn = false;
@@ -8,8 +8,8 @@ export class TransitionService {
     fadeInDurationMilliseconds = 0;
     fadeOutDurationMilliseconds = 0;
     crossfadeDurationMilliseconds = 0;
-    constructor(gameLoop) {
-        this.gameFrame = gameLoop.getGameFrame();
+    constructor(screenManager) {
+        this.screenManager = screenManager;
     }
     update(deltaTimeStamp) {
         if (this.isFadingOutAndIn) {
@@ -31,7 +31,7 @@ export class TransitionService {
         this.fadeOutDurationMilliseconds = fadeOutDurationSeconds * 1000;
         this.fadeInDurationMilliseconds = fadeInDurationSeconds * 1000;
         this.isFadingOutAndIn = true;
-        this.gameFrame.setNextScreen(nextScreen);
+        this.screenManager.setNextScreen(nextScreen);
     }
     crossfade(nextScreen, crossfadeDurationSeconds) {
         console.log("Crossfading to", nextScreen.constructor.name);
@@ -41,12 +41,12 @@ export class TransitionService {
         }
         this.crossfadeDurationMilliseconds = crossfadeDurationSeconds * 1000;
         this.isCrossfading = true;
-        this.gameFrame.setNextScreen(nextScreen);
+        this.screenManager.setNextScreen(nextScreen);
     }
     handleFadingOutAndIn(deltaTimeStamp) {
         this.elapsedTransitionMilliseconds += deltaTimeStamp;
-        const currentScreen = this.gameFrame.getCurrentScreen();
-        const nextScreen = this.gameFrame.getNextScreen();
+        const currentScreen = this.screenManager.getCurrentScreen();
+        const nextScreen = this.screenManager.getNextScreen();
         if (!currentScreen || !nextScreen)
             return;
         if (currentScreen?.getOpacity() > 0) {
@@ -74,7 +74,7 @@ export class TransitionService {
         }
     }
     handleCrossfading(deltaTimeStamp) {
-        const nextScreen = this.gameFrame.getNextScreen();
+        const nextScreen = this.screenManager.getNextScreen();
         if (!nextScreen || !nextScreen.hasLoaded())
             return;
         this.elapsedTransitionMilliseconds += deltaTimeStamp;
@@ -93,8 +93,8 @@ export class TransitionService {
     }
     updateCurrentAndNextScreen(nextScreen) {
         this.elapsedTransitionMilliseconds = 0;
-        this.gameFrame.setCurrentScreen(nextScreen);
-        this.gameFrame.getCurrentScreen()?.hasTransitionFinished();
-        this.gameFrame.setNextScreen(null);
+        this.screenManager.setCurrentScreen(nextScreen);
+        this.screenManager.getCurrentScreen()?.hasTransitionFinished();
+        this.screenManager.setNextScreen(null);
     }
 }

@@ -18,7 +18,7 @@ export class GameLoopService {
         this.context = this.canvas.getContext("2d");
         this.gameState = new GameState();
         this.gameFrame = new GameFrame();
-        this.transitionService = new TransitionService(this);
+        this.transitionService = new TransitionService(this.gameFrame);
         this.previousTimeStamp = performance.now();
         this.setCanvasSize();
         this.addEventListeners();

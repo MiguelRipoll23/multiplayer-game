@@ -1,10 +1,11 @@
-import { GameState } from "../../models/game-state.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { GameLoopService } from "../../services/game-loop-service.js";
+import { ScreenManagerService } from "../../services/screen-manager-service.js";
 import { GameScreen } from "../interfaces/game-screen.js";
 
 export class BaseGameScreen implements GameScreen {
   protected canvas: HTMLCanvasElement;
+  protected screenManagerService: ScreenManagerService | null = null;
 
   protected opacity: number = 0;
   protected sceneObjects: GameObject[];
@@ -18,6 +19,16 @@ export class BaseGameScreen implements GameScreen {
     this.canvas = gameLoop.getCanvas();
     this.sceneObjects = [];
     this.uiObjects = [];
+  }
+
+  public isActive(): boolean {
+    return this.opacity > 0;
+  }
+
+  public setScreenManagerService(
+    screenManagerService: ScreenManagerService,
+  ): void {
+    this.screenManagerService = screenManagerService;
   }
 
   public loadObjects(): void {

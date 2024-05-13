@@ -4,9 +4,9 @@ import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
 export class WebSocketService {
     gameState;
     webSocket = null;
-    loadingScreen = null;
+    loginScreen = null;
     constructor(loadingScreen) {
-        this.loadingScreen = loadingScreen;
+        this.loginScreen = loadingScreen;
         this.gameState = loadingScreen.getGameState();
     }
     connectToServer() {
@@ -45,8 +45,8 @@ export class WebSocketService {
         });
     }
     informLoadingScreen() {
-        this.loadingScreen?.hasConnectedToServer();
-        this.loadingScreen = null;
+        this.loginScreen?.hasConnectedToServer();
+        this.loginScreen = null;
     }
     handleMessage(data) {
         console.log("Received message from server", data);

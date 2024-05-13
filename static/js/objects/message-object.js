@@ -58,8 +58,9 @@ export class MessageObject extends BaseGameObject {
     }
     // Setter for the text property
     setText(value) {
-        this.elapsedMilliseconds = 0;
         this.text = value;
+        this.elapsedMilliseconds = 0;
+        this.active = true;
     }
     // Function to draw rounded rectangle
     roundRect(ctx, x, y, width, height, radius) {

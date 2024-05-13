@@ -6,12 +6,8 @@ export class GearStickObject extends BaseGameObject {
   private readonly FONT_SIZE: number = 36; // Adjust font size as needed
   private readonly Y_OFFSET: number = 25;
 
-  private x: number = 30;
   private y: number = 0;
-  private radius: number = this.SIZE / 2;
-
-  private textX = 0;
-  private textY = 0;
+  private x: number = 30;
 
   private active: boolean = false;
   private currentGear = "F";
@@ -19,11 +15,8 @@ export class GearStickObject extends BaseGameObject {
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
 
-    this.x = this.x + this.SIZE / 2;
+    // Position the gear stick 50px from the bottom
     this.y = this.canvas.height - (this.SIZE + this.Y_OFFSET);
-
-    this.textX = this.x;
-    this.textY = this.y + this.radius / 2;
 
     this.addTouchEventListeners();
     this.addKeyboardEventListeners();
@@ -55,9 +48,9 @@ export class GearStickObject extends BaseGameObject {
     context.fillStyle = this.FILL_COLOR;
     context.beginPath();
     context.arc(
-      this.x, // x-coordinate of the center
-      this.y, // y-coordinate of the center
-      this.radius, // radius
+      this.x + this.SIZE / 2, // x-coordinate of the center
+      this.y + this.SIZE / 2, // y-coordinate of the center
+      this.SIZE / 2, // radius
       0, // start angle
       Math.PI * 2, // end angle
     );
@@ -72,8 +65,8 @@ export class GearStickObject extends BaseGameObject {
     context.textAlign = "center";
     context.fillText(
       this.currentGear,
-      this.textX,
-      this.textY,
+      this.x + this.SIZE / 2,
+      this.y + this.SIZE / 2 + 12,
     );
   }
 

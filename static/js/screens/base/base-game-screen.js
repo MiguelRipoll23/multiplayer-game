@@ -1,5 +1,6 @@
 export class BaseGameScreen {
     canvas;
+    screenManagerService = null;
     opacity = 0;
     sceneObjects;
     uiObjects;
@@ -9,6 +10,12 @@ export class BaseGameScreen {
         this.canvas = gameLoop.getCanvas();
         this.sceneObjects = [];
         this.uiObjects = [];
+    }
+    isActive() {
+        return this.opacity > 0;
+    }
+    setScreenManagerService(screenManagerService) {
+        this.screenManagerService = screenManagerService;
     }
     loadObjects() {
         this.sceneObjects.forEach((object) => object.load());

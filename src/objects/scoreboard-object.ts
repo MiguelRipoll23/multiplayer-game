@@ -124,7 +124,6 @@ export class ScoreboardObject extends BaseGameObject {
     context.fillStyle = this.TIME_BOX_FILL_COLOR;
     this.roundedRect(context, x, y, width, height, this.CORNER_RADIUS);
     context.fill();
-    context.textAlign = "center";
     this.renderText(context, text, x + width / 2, y + 10 + height / 2);
   }
 
@@ -151,6 +150,7 @@ export class ScoreboardObject extends BaseGameObject {
     x: number,
     y: number,
   ) {
+    context.textAlign = "center";
     context.fillStyle = this.TEXT_COLOR;
     context.font = `${this.FONT_SIZE} ${this.FONT_FAMILY}`;
     context.fillText(text, x, y);

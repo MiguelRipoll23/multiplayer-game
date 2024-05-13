@@ -1,9 +1,10 @@
 import { GameFrame } from "../models/game-frame.js";
 import { GameScreen } from "../screens/interfaces/game-screen.js";
+import { ScreenManager } from "../screens/interfaces/screen-manager.js";
 import { GameLoopService } from "./game-loop-service.js";
 
 export class TransitionService {
-  private gameFrame: GameFrame;
+  private screenManager: ScreenManager;
   private elapsedTransitionMilliseconds: number = 0;
 
   // Transition state flags
@@ -15,8 +16,8 @@ export class TransitionService {
   private fadeOutDurationMilliseconds: number = 0;
   private crossfadeDurationMilliseconds: number = 0;
 
-  constructor(gameLoop: GameLoopService) {
-    this.gameFrame = gameLoop.getGameFrame();
+  constructor(screenManager: ScreenManager) {
+    this.screenManager = screenManager;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -46,7 +47,7 @@ export class TransitionService {
     this.fadeOutDurationMilliseconds = fadeOutDurationSeconds * 1000;
     this.fadeInDurationMilliseconds = fadeInDurationSeconds * 1000;
     this.isFadingOutAndIn = true;
-    this.gameFrame.setNextScreen(nextScreen);
+    this.screenManager.setNextScreen(nextScreen);
   }
 
   public crossfade(
@@ -62,14 +63,14 @@ export class TransitionService {
 
     this.crossfadeDurationMilliseconds = crossfadeDurationSeconds * 1000;
     this.isCrossfading = true;
-    this.gameFrame.setNextScreen(nextScreen);
+    this.screenManager.setNextScreen(nextScreen);
   }
 
   private handleFadingOutAndIn(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.elapsedTransitionMilliseconds += deltaTimeStamp;
 
-    const currentScreen = this.gameFrame.getCurrentScreen();
-    const nextScreen = this.gameFrame.getNextScreen();
+    const currentScreen = this.screenManager.getCurrentScreen();
+    const nextScreen = this.screenManager.getNextScreen();
 
     if (!currentScreen || !nextScreen) return;
 
@@ -110,7 +111,7 @@ export class TransitionService {
   }
 
   private handleCrossfading(deltaTimeStamp: DOMHighResTimeStamp): void {
-    const nextScreen = this.gameFrame.getNextScreen();
+    const nextScreen = this.screenManager.getNextScreen();
 
     if (!nextScreen || !nextScreen.hasLoaded()) return;
 
@@ -139,8 +140,8 @@ export class TransitionService {
 
   private updateCurrentAndNextScreen(nextScreen: GameScreen): void {
     this.elapsedTransitionMilliseconds = 0;
-    this.gameFrame.setCurrentScreen(nextScreen);
-    this.gameFrame.getCurrentScreen()?.hasTransitionFinished();
-    this.gameFrame.setNextScreen(null);
+    this.screenManager.setCurrentScreen(nextScreen);
+    this.screenManager.getCurrentScreen()?.hasTransitionFinished();
+    this.screenManager.setNextScreen(null);
   }
 }

@@ -24,7 +24,7 @@ export class GameLoopService {
 
     this.gameState = new GameState();
     this.gameFrame = new GameFrame();
-    this.transitionService = new TransitionService(this);
+    this.transitionService = new TransitionService(this.gameFrame);
 
     this.previousTimeStamp = performance.now();
 

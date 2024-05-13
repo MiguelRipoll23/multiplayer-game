@@ -1,8 +1,8 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 
 export class TitleObject extends BaseGameObject {
-  private x: number = 75;
-  private y: number = 75;
+  private x: number = 30;
+  private y: number = 55;
 
   private text: string = "Unknown";
 

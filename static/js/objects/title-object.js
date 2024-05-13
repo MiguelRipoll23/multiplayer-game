@@ -1,8 +1,8 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class TitleObject extends BaseGameObject {
     canvas;
-    x = 75;
-    y = 75;
+    x = 30;
+    y = 55;
     text = "Unknown";
     constructor(canvas) {
         super();

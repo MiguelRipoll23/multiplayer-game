@@ -9,7 +9,7 @@ export class MainBackgroundObject extends BaseGameObject {
   }
 
   public render(context: CanvasRenderingContext2D) {
-    context.fillStyle = "rgb(66, 182, 245)";
+    context.fillStyle = "#90CAF9";
     context.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }

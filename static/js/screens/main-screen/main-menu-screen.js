@@ -29,13 +29,11 @@ export class MainMenuScreen extends BaseGameScreen {
         this.uiObjects.push(this.messageObject);
     }
     loadNews() {
-        this.messageObject?.show("Downloading news...");
         this.apiService.getNews().then((news) => {
-            this.messageObject?.hide();
             this.transitionToMatchmakingScreen();
         }).catch((error) => {
             console.error(error);
-            alert("Error downloading news");
+            this.messageObject?.show("Failed to download news");
         });
     }
     transitionToMatchmakingScreen() {

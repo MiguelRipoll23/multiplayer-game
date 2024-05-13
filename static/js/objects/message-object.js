@@ -5,6 +5,7 @@ export class MessageObject extends BaseGameObject {
     DEFAULT_HEIGHT = 100;
     DEFAULT_WIDTH = 340;
     TRANSITION_MILLISECONDS = 400;
+    X_OFFSET = 25;
     x = 0;
     y = 0;
     textX = 0;
@@ -25,7 +26,7 @@ export class MessageObject extends BaseGameObject {
     show(value) {
         this.text = value;
         this.setPosition();
-        this.elapsedMilliseconds = 0;
+        this.updateElapsedMilliseconds();
         this.fadeIn = true;
     }
     hide() {
@@ -33,67 +34,90 @@ export class MessageObject extends BaseGameObject {
             console.warn("MessageObject is already hidden");
             return;
         }
-        this.elapsedMilliseconds = 0;
+        this.updateElapsedMilliseconds();
         this.fadeOut = true;
     }
     update(deltaTimeStamp) {
         if (this.fadeIn || this.fadeOut) {
             this.elapsedMilliseconds += deltaTimeStamp;
         }
-        if (this.fadeIn) {
-            if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
-                this.opacity = this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
-                this.x += (this.targetX - this.x) * 0.1;
-            }
-            else {
-                this.x = this.targetX;
-                this.opacity = 1;
-                this.fadeIn = false;
-            }
-            this.textX = this.x + this.width / 2;
-        }
-        else if (this.fadeOut) {
-            if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
-                this.opacity = 1 -
-                    this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
-                this.x += (this.targetX + 25) / this.x * 0.1;
-            }
-            else {
-                this.x = this.targetX + 25;
-                this.opacity = 0;
-                this.fadeOut = false;
-            }
-            this.textX = this.x + this.width / 2;
+        if (this.fadeIn || this.fadeOut) {
+            this.updateOpacityAndPosition();
         }
     }
     render(context) {
         context.globalAlpha = this.opacity;
-        // Draw rounded rectangle
-        context.fillStyle = this.FILL_COLOR; // Use fill color constant
-        this.roundRect(context, this.x, this.y, this.width, this.height, 6);
-        // Draw text
+        this.drawRoundedRectangle(context);
+        this.drawText(context);
+        context.globalAlpha = this.opacity;
+    }
+    updateElapsedMilliseconds() {
+        if (this.elapsedMilliseconds === 0) {
+            return;
+        }
+        if (this.elapsedMilliseconds >= this.TRANSITION_MILLISECONDS) {
+            this.elapsedMilliseconds = 0;
+        }
+        else {
+            this.elapsedMilliseconds = this.TRANSITION_MILLISECONDS -
+                this.elapsedMilliseconds;
+        }
+    }
+    updateOpacityAndPosition() {
+        if (this.fadeIn) {
+            this.fadeInTransition();
+        }
+        else if (this.fadeOut) {
+            this.fadeOutTransition();
+        }
+    }
+    fadeInTransition() {
+        if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
+            this.opacity = this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
+            this.x += (this.targetX - this.x) * 0.1;
+        }
+        else {
+            this.x = this.targetX;
+            this.opacity = 1;
+            this.fadeIn = false;
+        }
+        this.textX = this.x + this.width / 2;
+    }
+    fadeOutTransition() {
+        if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
+            this.opacity = 1 -
+                this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
+            this.x += (this.targetX + this.X_OFFSET - this.x) * 0.1;
+        }
+        else {
+            this.x = this.targetX + this.X_OFFSET;
+            this.opacity = 0;
+            this.fadeOut = false;
+        }
+        this.textX = this.x + this.width / 2;
+    }
+    drawRoundedRectangle(context) {
+        context.fillStyle = this.FILL_COLOR;
+        context.beginPath();
+        context.moveTo(this.x + 6, this.y);
+        context.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + this.height, 6);
+        context.arcTo(this.x + this.width, this.y + this.height, this.x, this.y + this.height, 6);
+        context.arcTo(this.x, this.y + this.height, this.x, this.y, 6);
+        context.arcTo(this.x, this.y, this.x + this.width, this.y, 6);
+        context.closePath();
+        context.fill();
+    }
+    drawText(context) {
         context.font = "16px Arial";
         context.fillStyle = "WHITE";
         context.textAlign = "center";
         context.fillText(this.text, this.textX, this.textY);
-        context.globalAlpha = this.opacity;
-    }
-    // Function to draw rounded rectangle
-    roundRect(ctx, x, y, width, height, radius) {
-        ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.arcTo(x + width, y, x + width, y + height, radius);
-        ctx.arcTo(x + width, y + height, x, y + height, radius);
-        ctx.arcTo(x, y + height, x, y, radius);
-        ctx.arcTo(x, y, x + width, y, radius);
-        ctx.closePath();
-        ctx.fill();
     }
     setPosition() {
-        this.x = this.canvas.width / 2 - (this.width / 2) - 25;
+        this.x = this.canvas.width / 2 - (this.width / 2) - this.X_OFFSET;
         this.y = this.canvas.height / 2 - (this.height / 2);
         this.targetX = this.canvas.width / 2 - (this.width / 2);
-        this.textX = this.x + this.width / 2 - 25;
+        this.textX = this.x + this.width / 2;
         this.textY = this.y + this.height / 2 + 5;
     }
 }

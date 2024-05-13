@@ -5,23 +5,20 @@ export class MessageObject extends BaseGameObject {
   private readonly DEFAULT_HEIGHT = 100;
   private readonly DEFAULT_WIDTH = 340;
   private readonly TRANSITION_MILLISECONDS = 400;
+  private readonly X_OFFSET = 25;
 
   private x = 0;
   private y = 0;
   private textX = 0;
   private textY = 0;
-
   private targetX = 0;
-
   private width = this.DEFAULT_WIDTH;
   private height = this.DEFAULT_HEIGHT;
   private text = "Unknown";
-
-  private elapsedMilliseconds: number = 0;
-  private opacity: number = 0;
-
-  private fadeIn: boolean = false;
-  private fadeOut: boolean = false;
+  private elapsedMilliseconds = 0;
+  private opacity = 0;
+  private fadeIn = false;
+  private fadeOut = false;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
@@ -30,10 +27,8 @@ export class MessageObject extends BaseGameObject {
 
   public show(value: string): void {
     this.text = value;
-
     this.setPosition();
-
-    this.elapsedMilliseconds = 0;
+    this.updateElapsedMilliseconds();
     this.fadeIn = true;
   }
 
@@ -43,7 +38,7 @@ export class MessageObject extends BaseGameObject {
       return;
     }
 
-    this.elapsedMilliseconds = 0;
+    this.updateElapsedMilliseconds();
     this.fadeOut = true;
   }
 
@@ -52,86 +47,100 @@ export class MessageObject extends BaseGameObject {
       this.elapsedMilliseconds += deltaTimeStamp;
     }
 
-    if (this.fadeIn) {
-      if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
-        this.opacity = this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
-        this.x += (this.targetX - this.x) * 0.1;
-      } else {
-        this.x = this.targetX;
-        this.opacity = 1;
-        this.fadeIn = false;
-      }
-
-      this.textX = this.x + this.width / 2;
-    } else if (this.fadeOut) {
-      if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
-        this.opacity = 1 -
-          this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
-
-        this.x += (this.targetX + 25) / this.x * 0.1;
-      } else {
-        this.x = this.targetX + 25;
-        this.opacity = 0;
-        this.fadeOut = false;
-      }
-
-      this.textX = this.x + this.width / 2;
+    if (this.fadeIn || this.fadeOut) {
+      this.updateOpacityAndPosition();
     }
   }
 
   public render(context: CanvasRenderingContext2D): void {
     context.globalAlpha = this.opacity;
-
-    // Draw rounded rectangle
-    context.fillStyle = this.FILL_COLOR; // Use fill color constant
-    this.roundRect(
-      context,
-      this.x,
-      this.y,
-      this.width,
-      this.height,
-      6,
-    );
-
-    // Draw text
-    context.font = "16px Arial";
-    context.fillStyle = "WHITE";
-    context.textAlign = "center";
-    context.fillText(
-      this.text,
-      this.textX,
-      this.textY,
-    );
-
+    this.drawRoundedRectangle(context);
+    this.drawText(context);
     context.globalAlpha = this.opacity;
   }
 
-  // Function to draw rounded rectangle
-  private roundRect(
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    radius: number,
-  ) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.arcTo(x + width, y, x + width, y + height, radius);
-    ctx.arcTo(x + width, y + height, x, y + height, radius);
-    ctx.arcTo(x, y + height, x, y, radius);
-    ctx.arcTo(x, y, x + width, y, radius);
-    ctx.closePath();
-    ctx.fill();
+  private updateElapsedMilliseconds(): void {
+    if (this.elapsedMilliseconds === 0) {
+      return;
+    }
+
+    if (this.elapsedMilliseconds >= this.TRANSITION_MILLISECONDS) {
+      this.elapsedMilliseconds = 0;
+    } else {
+      this.elapsedMilliseconds = this.TRANSITION_MILLISECONDS -
+        this.elapsedMilliseconds;
+    }
+  }
+
+  private updateOpacityAndPosition(): void {
+    if (this.fadeIn) {
+      this.fadeInTransition();
+    } else if (this.fadeOut) {
+      this.fadeOutTransition();
+    }
+  }
+
+  private fadeInTransition(): void {
+    if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
+      this.opacity = this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
+      this.x += (this.targetX - this.x) * 0.1;
+    } else {
+      this.x = this.targetX;
+      this.opacity = 1;
+      this.fadeIn = false;
+    }
+    this.textX = this.x + this.width / 2;
+  }
+
+  private fadeOutTransition(): void {
+    if (this.elapsedMilliseconds < this.TRANSITION_MILLISECONDS) {
+      this.opacity = 1 -
+        this.elapsedMilliseconds / this.TRANSITION_MILLISECONDS;
+      this.x += (this.targetX + this.X_OFFSET - this.x) * 0.1;
+    } else {
+      this.x = this.targetX + this.X_OFFSET;
+      this.opacity = 0;
+      this.fadeOut = false;
+    }
+    this.textX = this.x + this.width / 2;
+  }
+
+  private drawRoundedRectangle(context: CanvasRenderingContext2D): void {
+    context.fillStyle = this.FILL_COLOR;
+    context.beginPath();
+    context.moveTo(this.x + 6, this.y);
+    context.arcTo(
+      this.x + this.width,
+      this.y,
+      this.x + this.width,
+      this.y + this.height,
+      6,
+    );
+    context.arcTo(
+      this.x + this.width,
+      this.y + this.height,
+      this.x,
+      this.y + this.height,
+      6,
+    );
+    context.arcTo(this.x, this.y + this.height, this.x, this.y, 6);
+    context.arcTo(this.x, this.y, this.x + this.width, this.y, 6);
+    context.closePath();
+    context.fill();
+  }
+
+  private drawText(context: CanvasRenderingContext2D): void {
+    context.font = "16px Arial";
+    context.fillStyle = "WHITE";
+    context.textAlign = "center";
+    context.fillText(this.text, this.textX, this.textY);
   }
 
   private setPosition(): void {
-    this.x = this.canvas.width / 2 - (this.width / 2) - 25;
+    this.x = this.canvas.width / 2 - (this.width / 2) - this.X_OFFSET;
     this.y = this.canvas.height / 2 - (this.height / 2);
-
     this.targetX = this.canvas.width / 2 - (this.width / 2);
-
-    this.textX = this.x + this.width / 2 - 25;
+    this.textX = this.x + this.width / 2;
     this.textY = this.y + this.height / 2 + 5;
   }
 }

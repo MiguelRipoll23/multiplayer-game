@@ -18,6 +18,7 @@ export class MatchmakingScreen extends BaseGameScreen {
     }
     hasTransitionFinished() {
         this.progressBarObject?.setText("Loading world screen...");
+        this.progressBarObject?.setProgress(0.5);
         const worldScreen = new WorldScreen(this.gameLoop);
         worldScreen.loadObjects();
         this.progressBarObject?.setProgress(1);

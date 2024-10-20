@@ -1,4 +1,4 @@
-import { PressableBaseGameObject } from "./base/pressable-game-object.js";
+import { PressableBaseGameObject } from "../base/pressable-game-object.js";
 export class MenuOptionObject extends PressableBaseGameObject {
     index;
     textX = 0;
@@ -21,11 +21,8 @@ export class MenuOptionObject extends PressableBaseGameObject {
         this.y = y;
         this.calculateTextPosition();
     }
-    isPressed() {
-        return this.pressed;
-    }
-    reset() {
-        this.pressed = false;
+    handleMouseUp(event) {
+        super.handleMouseUp(event);
     }
     render(context) {
         // Draw rectangle with gradient
@@ -37,13 +34,14 @@ export class MenuOptionObject extends PressableBaseGameObject {
         context.textAlign = "center";
         // Draw the text
         context.fillText(this.text, this.textX, this.textY);
-    }
-    calculateTextPosition() {
-        this.textX = this.x + this.width / 2 + 8;
-        this.textY = this.y + this.height / 2 + 8;
+        super.render(context);
     }
     setSize(canvas) {
         this.width = canvas.width - 70;
         this.height = 120;
+    }
+    calculateTextPosition() {
+        this.textX = this.x + this.width / 2 + 8;
+        this.textY = this.y + this.height / 2 + 8;
     }
 }

@@ -1,5 +1,5 @@
 import { BaseStaticCollidableGameObject } from "../base/base-static-collidable-game-object.js";
-import { HitboxObject } from "../hitbox-object.js";
+import { HitboxObject } from "../common/hitbox-object.js";
 import { GameObject } from "../interfaces/game-object.js";
 
 export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
@@ -57,7 +57,7 @@ export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
       this.fieldX,
       this.fieldY,
       this.fieldWidth,
-      this.fieldHeight
+      this.fieldHeight,
     );
 
     // Draw boundary lines
@@ -67,7 +67,7 @@ export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
       this.fieldX,
       this.fieldY,
       this.fieldWidth,
-      this.fieldHeight
+      this.fieldHeight,
     );
 
     // Draw midfield line
@@ -96,13 +96,13 @@ export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
         this.fieldX,
         this.canvas.height - this.fieldY,
         this.fieldWidth,
-        1
+        1,
       ),
       new HitboxObject(
         this.canvas.width - this.fieldX,
         this.fieldY,
         1,
-        this.fieldHeight
+        this.fieldHeight,
       ),
       new HitboxObject(this.fieldX, this.fieldY, 1, this.fieldHeight),
     ]);

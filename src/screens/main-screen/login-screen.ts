@@ -1,13 +1,13 @@
 import { GameServer } from "../../models/game-server.js";
 import { GameState } from "../../models/game-state.js";
-import { MessageObject } from "../../objects/message-object.js";
+import { MessageObject } from "../../objects/common/message-object.js";
 import { CryptoService } from "../../services/crypto-service.js";
 import { WebSocketService } from "../../services/websocket-service.js";
 import { ApiService } from "../../services/api-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { RegistrationResponse } from "../../services/interfaces/registration-response.js";
 import { GameRegistration } from "../../models/game-registration.js";
-import { TitleObject } from "../../objects/title-object.js";
+import { TitleObject } from "../../objects/common/title-object.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
 

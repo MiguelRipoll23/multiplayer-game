@@ -1,5 +1,5 @@
 import { BaseStaticCollidableGameObject } from "../base/base-static-collidable-game-object.js";
-import { HitboxObject } from "../hitbox-object.js";
+import { HitboxObject } from "../common/hitbox-object.js";
 export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
     BACKGROUND_COLOR = "#00a000";
     BOUNDARY_COOLOR = "#ffffff";

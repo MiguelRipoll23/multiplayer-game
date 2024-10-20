@@ -1,4 +1,5 @@
 import { GameController } from "../../models/game-controller.js";
+import { PressableBaseGameObject } from "../../objects/base/pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
 import { GameScreen } from "../interfaces/game-screen.js";
@@ -11,6 +12,8 @@ export class BaseGameScreen implements GameScreen {
   protected sceneObjects: GameObject[];
   protected uiObjects: GameObject[];
 
+  protected pressableGameObject: PressableBaseGameObject | null = null;
+
   private objectsLoadingPending: boolean = true;
 
   constructor(gameController: GameController) {
@@ -19,6 +22,8 @@ export class BaseGameScreen implements GameScreen {
     this.canvas = gameController.getCanvas();
     this.sceneObjects = [];
     this.uiObjects = [];
+
+    this.addPointerEventListeners();
   }
 
   public isActive(): boolean {
@@ -80,6 +85,43 @@ export class BaseGameScreen implements GameScreen {
       this.objectsLoadingPending = false;
       console.log(`${this.constructor.name} loaded`);
     }
+  }
+
+  private addPointerEventListeners(): void {
+    console.log(`${this.constructor.name} added pointer event listeners`);
+
+    this.canvas.addEventListener("touchend", (event) => {
+      if (this.opacity < 1) {
+        return;
+      }
+
+      console.log(`${this.constructor.name} touchend event`);
+
+      this.uiObjects
+        .filter((object) => object instanceof PressableBaseGameObject)
+        .filter((object) => object.isActive())
+        .forEach((object) => object.handleTouchEnd(event));
+    });
+
+    this.canvas.addEventListener("mouseup", (event) => {
+      if (this.opacity < 1) {
+        return;
+      }
+
+      console.log(`${this.constructor.name} mouseup event`);
+
+      this.uiObjects
+        .filter((object) => object instanceof PressableBaseGameObject)
+        .filter((object) => object.isActive())
+        .reverse()
+        .forEach((object) => {
+          object.handleMouseUp(event);
+
+          if (object.isPressed()) {
+            return;
+          }
+        });
+    });
   }
 
   private updateObjects(

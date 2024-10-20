@@ -1,7 +1,7 @@
 import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
-import { NotificationObject } from "../objects/notification-object.js";
+import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
 import { TransitionService } from "./transition-service.js";
 

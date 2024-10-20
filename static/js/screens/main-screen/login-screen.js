@@ -1,7 +1,7 @@
-import { MessageObject } from "../../objects/message-object.js";
+import { MessageObject } from "../../objects/common/message-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { GameRegistration } from "../../models/game-registration.js";
-import { TitleObject } from "../../objects/title-object.js";
+import { TitleObject } from "../../objects/common/title-object.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 export class LoginScreen extends BaseGameScreen {
     gameController;

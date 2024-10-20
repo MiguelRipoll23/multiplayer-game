@@ -1,4 +1,4 @@
-import { HitboxObject } from "./hitbox-object.js";
+import { HitboxObject } from "./common/hitbox-object.js";
 import { PlayerObject } from "./player-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-dynamic-collidable-game-object.js";
 

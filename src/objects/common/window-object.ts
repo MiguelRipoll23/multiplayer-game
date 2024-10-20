@@ -1,4 +1,4 @@
-import { BaseGameObject } from "./base/base-game-object.js";
+import { BaseGameObject } from "../base/base-game-object.js";
 
 export class WindowObject extends BaseGameObject {
   private readonly TITLE_BAR_HEIGHT: number = 40;
@@ -15,16 +15,15 @@ export class WindowObject extends BaseGameObject {
   private titleBarTextX: number = 0;
   private titleBarTextY: number = 0;
 
-  private newsTitleTextX: number = 0;
-  private newsTitleTextY: number = 0;
+  private titleTextX: number = 0;
+  private titleTextY: number = 0;
 
   private contentTextX: number = 0;
   private contentTextY: number = 0;
   private contentTextMaxWidth: number = 0;
 
-  private index: number = 0;
-  private title: string = "Title";
-  private content: string = "Content goes here";
+  protected title: string = "Title";
+  protected content: string = "Content goes here";
 
   private hidden: boolean = false;
 
@@ -42,23 +41,16 @@ export class WindowObject extends BaseGameObject {
     this.y = (this.canvas.height - this.height) / 2;
   }
 
-  public show(index: number, title: string, content: string): void {
-    this.index = index;
+  public show(title: string, content: string): void {
     this.title = title;
     this.content = content;
     this.globalAlpha = 1;
     this.hidden = false;
-    this.addEventListeners();
-  }
-
-  public getIndex(): number {
-    return this.index;
   }
 
   public hide(): void {
     this.globalAlpha = 0;
     this.hidden = true;
-    this.removeEventListeners();
   }
 
   public isHidden(): boolean {
@@ -84,13 +76,13 @@ export class WindowObject extends BaseGameObject {
     context.textAlign = "left";
     context.fillText("NEWS", this.titleBarTextX, this.titleBarTextY);
 
-    // News Title
+    // Title
     context.fillStyle = "#FFFFFF";
     context.font = "20px system-ui";
     context.textAlign = "left";
-    context.fillText(this.title, this.newsTitleTextX, this.newsTitleTextY);
+    context.fillText(this.title, this.titleTextX, this.titleTextY);
 
-    // News Content
+    // Content
     context.fillStyle = "#FFFFFF";
     context.font = "16px system-ui";
     context.textAlign = "left";
@@ -117,28 +109,12 @@ export class WindowObject extends BaseGameObject {
     this.titleBarTextX = this.x + 15;
     this.titleBarTextY = this.y + 28;
 
-    this.newsTitleTextX = this.x + 14;
-    this.newsTitleTextY = this.y + 68;
+    this.titleTextX = this.x + 14;
+    this.titleTextY = this.y + 68;
 
     this.contentTextX = this.x + 14;
     this.contentTextY = this.y + this.TITLE_BAR_HEIGHT + 62;
     this.contentTextMaxWidth = this.width - 20;
-  }
-
-  private addEventListeners(): void {
-    this.canvas.addEventListener("click", this.handleClick.bind(this));
-  }
-
-  private removeEventListeners(): void {
-    this.canvas.removeEventListener("click", this.handleClick.bind(this));
-  }
-
-  private handleClick(event: MouseEvent): void {
-    if (this.hidden) {
-      return;
-    }
-
-    this.hide();
   }
 
   private wrapText(

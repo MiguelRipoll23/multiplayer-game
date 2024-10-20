@@ -1,7 +1,7 @@
-import { MenuOptionObject } from "../../objects/menu-option-object.js";
-import { MessageObject } from "../../objects/message-object.js";
-import { TitleObject } from "../../objects/title-object.js";
-import { WindowObject } from "../../objects/window-object.js";
+import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
+import { MessageObject } from "../../objects/common/message-object.js";
+import { TitleObject } from "../../objects/common/title-object.js";
+import { NewsObject } from "../../objects/news-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { MatchmakingScreen } from "./matchmaking-screen.js";
 export class MainMenuScreen extends BaseGameScreen {
@@ -10,7 +10,7 @@ export class MainMenuScreen extends BaseGameScreen {
     apiService;
     newsResponse = null;
     messageObject = null;
-    newsWindowObject = null;
+    newsObject = null;
     constructor(gameController) {
         super(gameController);
         this.gameController = gameController;
@@ -19,12 +19,13 @@ export class MainMenuScreen extends BaseGameScreen {
     loadObjects() {
         this.loadTitleObject();
         this.loadMenuOptionObjects();
-        this.loadNewsWindowObject();
+        this.loadNewsObject();
         this.loadMessageObject();
         super.loadObjects();
     }
     hasTransitionFinished() {
-        this.loadNews();
+        this.enableMenuOptions();
+        this.downloadNews();
     }
     update(deltaTimeStamp) {
         this.handleMenuOptionObjects();
@@ -53,12 +54,17 @@ export class MainMenuScreen extends BaseGameScreen {
         this.messageObject = new MessageObject(this.canvas);
         this.uiObjects.push(this.messageObject);
     }
-    loadNewsWindowObject() {
-        this.newsWindowObject = new WindowObject(this.canvas);
-        this.newsWindowObject.load();
-        this.uiObjects.push(this.newsWindowObject);
+    loadNewsObject() {
+        this.newsObject = new NewsObject(this.canvas);
+        this.newsObject.load();
+        this.uiObjects.push(this.newsObject);
     }
-    loadNews() {
+    enableMenuOptions() {
+        this.uiObjects
+            .filter((object) => object instanceof MenuOptionObject)
+            .forEach((object) => object.setActive(true));
+    }
+    downloadNews() {
         this.apiService.getNews().then((news) => {
             this.showPosts(news);
         }).catch((error) => {
@@ -75,30 +81,25 @@ export class MainMenuScreen extends BaseGameScreen {
             return;
         }
         if (index === this.newsResponse.length) {
-            this.enableMenuOptionObjects();
-            return;
+            return this.newsObject?.setActive(false);
         }
         const item = this.newsResponse[index];
-        this.newsWindowObject?.show(index, item.title, item.content);
+        console.log(`Showing news post ${index}: ${item.title}`);
+        this.newsObject?.openPost(index, item.title, item.content);
     }
     handleNewsWindowObject() {
-        if (this.newsWindowObject?.isHidden()) {
-            const index = this.newsWindowObject.getIndex() + 1;
+        if (this.newsObject?.isHidden()) {
+            const index = this.newsObject.getIndex() + 1;
             this.showPost(index);
         }
-    }
-    enableMenuOptionObjects() {
-        this.uiObjects.forEach((uiObject) => {
-            if (uiObject instanceof MenuOptionObject) {
-                uiObject.setActive(true);
-            }
-        });
+        if (this.newsObject?.isPressed()) {
+            this.newsObject.close();
+        }
     }
     handleMenuOptionObjects() {
         this.uiObjects.forEach((uiObject) => {
             if (uiObject instanceof MenuOptionObject && uiObject.isPressed()) {
                 this.handleMenuOption(uiObject);
-                uiObject.reset();
             }
         });
     }

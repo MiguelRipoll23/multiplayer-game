@@ -1,6 +1,6 @@
 import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
 import { GameController } from "../models/game-controller.js";
-import { NotificationObject } from "../objects/notification-object.js";
+import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
 export class GameLoopService {
     canvas;

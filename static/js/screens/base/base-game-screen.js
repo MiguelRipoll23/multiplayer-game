@@ -1,15 +1,18 @@
+import { PressableBaseGameObject } from "../../objects/base/pressable-game-object.js";
 export class BaseGameScreen {
     canvas;
     screenManagerService = null;
     opacity = 0;
     sceneObjects;
     uiObjects;
+    pressableGameObject = null;
     objectsLoadingPending = true;
     constructor(gameController) {
         console.log(`${this.constructor.name} created`);
         this.canvas = gameController.getCanvas();
         this.sceneObjects = [];
         this.uiObjects = [];
+        this.addPointerEventListeners();
     }
     isActive() {
         return this.opacity > 0;
@@ -53,6 +56,35 @@ export class BaseGameScreen {
             this.objectsLoadingPending = false;
             console.log(`${this.constructor.name} loaded`);
         }
+    }
+    addPointerEventListeners() {
+        console.log(`${this.constructor.name} added pointer event listeners`);
+        this.canvas.addEventListener("touchend", (event) => {
+            if (this.opacity < 1) {
+                return;
+            }
+            console.log(`${this.constructor.name} touchend event`);
+            this.uiObjects
+                .filter((object) => object instanceof PressableBaseGameObject)
+                .filter((object) => object.isActive())
+                .forEach((object) => object.handleTouchEnd(event));
+        });
+        this.canvas.addEventListener("mouseup", (event) => {
+            if (this.opacity < 1) {
+                return;
+            }
+            console.log(`${this.constructor.name} mouseup event`);
+            this.uiObjects
+                .filter((object) => object instanceof PressableBaseGameObject)
+                .filter((object) => object.isActive())
+                .reverse()
+                .forEach((object) => {
+                object.handleMouseUp(event);
+                if (object.isPressed()) {
+                    return;
+                }
+            });
+        });
     }
     updateObjects(objects, deltaTimeStamp) {
         objects.forEach((object) => {

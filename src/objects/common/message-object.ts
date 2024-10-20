@@ -1,4 +1,4 @@
-import { BaseGameObject } from "./base/base-game-object.js";
+import { BaseGameObject } from "../base/base-game-object.js";
 
 export class MessageObject extends BaseGameObject {
   private readonly FILL_COLOR = "rgba(0, 0, 0, 0.8)";

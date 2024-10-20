@@ -1,4 +1,4 @@
-import { HitboxObject } from "./hitbox-object.js";
+import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-dynamic-collidable-game-object.js";
 export class BallObject extends BaseDynamicCollidableGameObject {
     MASS = 1;

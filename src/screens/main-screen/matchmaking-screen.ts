@@ -1,6 +1,6 @@
 import { GameController } from "../../models/game-controller.js";
 import { ProgressBarObject } from "../../objects/progress-bar-object.js";
-import { TitleObject } from "../../objects/title-object.js";
+import { TitleObject } from "../../objects/common/title-object.js";
 import { TransitionService } from "../../services/transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";

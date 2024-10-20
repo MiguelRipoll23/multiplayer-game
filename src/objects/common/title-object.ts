@@ -1,4 +1,4 @@
-import { BaseGameObject } from "./base/base-game-object.js";
+import { BaseGameObject } from "../base/base-game-object.js";
 
 export class TitleObject extends BaseGameObject {
   private x: number = 30;

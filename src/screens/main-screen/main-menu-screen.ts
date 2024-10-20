@@ -1,8 +1,9 @@
 import { GameController } from "../../models/game-controller.js";
-import { MenuOptionObject } from "../../objects/menu-option-object.js";
-import { MessageObject } from "../../objects/message-object.js";
-import { TitleObject } from "../../objects/title-object.js";
-import { WindowObject } from "../../objects/window-object.js";
+import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
+import { MessageObject } from "../../objects/common/message-object.js";
+import { TitleObject } from "../../objects/common/title-object.js";
+import { WindowObject } from "../../objects/common/window-object.js";
+import { NewsObject } from "../../objects/news-object.js";
 import { ApiService } from "../../services/api-service.js";
 import { NewsResponse } from "../../services/interfaces/news-response.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
@@ -16,7 +17,7 @@ export class MainMenuScreen extends BaseGameScreen {
   private newsResponse: NewsResponse[] | null = null;
 
   private messageObject: MessageObject | null = null;
-  private newsWindowObject: WindowObject | null = null;
+  private newsObject: NewsObject | null = null;
 
   constructor(private readonly gameController: GameController) {
     super(gameController);
@@ -26,14 +27,15 @@ export class MainMenuScreen extends BaseGameScreen {
   public override loadObjects(): void {
     this.loadTitleObject();
     this.loadMenuOptionObjects();
-    this.loadNewsWindowObject();
+    this.loadNewsObject();
     this.loadMessageObject();
 
     super.loadObjects();
   }
 
   public hasTransitionFinished(): void {
-    this.loadNews();
+    this.enableMenuOptions();
+    this.downloadNews();
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -73,14 +75,20 @@ export class MainMenuScreen extends BaseGameScreen {
     this.uiObjects.push(this.messageObject);
   }
 
-  private loadNewsWindowObject(): void {
-    this.newsWindowObject = new WindowObject(this.canvas);
-    this.newsWindowObject.load();
+  private loadNewsObject(): void {
+    this.newsObject = new NewsObject(this.canvas);
+    this.newsObject.load();
 
-    this.uiObjects.push(this.newsWindowObject);
+    this.uiObjects.push(this.newsObject);
   }
 
-  private loadNews(): void {
+  private enableMenuOptions(): void {
+    this.uiObjects
+      .filter((object) => object instanceof MenuOptionObject)
+      .forEach((object) => object.setActive(true));
+  }
+
+  private downloadNews(): void {
     this.apiService.getNews().then((news) => {
       this.showPosts(news);
     }).catch((error) => {
@@ -100,34 +108,30 @@ export class MainMenuScreen extends BaseGameScreen {
     }
 
     if (index === this.newsResponse.length) {
-      this.enableMenuOptionObjects();
-      return;
+      return this.newsObject?.setActive(false);
     }
 
     const item = this.newsResponse[index];
-    this.newsWindowObject?.show(index, item.title, item.content);
+    console.log(`Showing news post ${index}: ${item.title}`);
+
+    this.newsObject?.openPost(index, item.title, item.content);
   }
 
   private handleNewsWindowObject() {
-    if (this.newsWindowObject?.isHidden()) {
-      const index = this.newsWindowObject.getIndex() + 1;
+    if (this.newsObject?.isHidden()) {
+      const index = this.newsObject.getIndex() + 1;
       this.showPost(index);
     }
-  }
 
-  private enableMenuOptionObjects(): void {
-    this.uiObjects.forEach((uiObject) => {
-      if (uiObject instanceof MenuOptionObject) {
-        uiObject.setActive(true);
-      }
-    });
+    if (this.newsObject?.isPressed()) {
+      this.newsObject.close();
+    }
   }
 
   private handleMenuOptionObjects(): void {
     this.uiObjects.forEach((uiObject) => {
       if (uiObject instanceof MenuOptionObject && uiObject.isPressed()) {
         this.handleMenuOption(uiObject);
-        uiObject.reset();
       }
     });
   }

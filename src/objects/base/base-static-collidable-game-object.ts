@@ -1,4 +1,4 @@
-import { HitboxObject } from "../hitbox-object.js";
+import { HitboxObject } from "../common/hitbox-object.js";
 import { GameObject } from "../interfaces/game-object.js";
 import { BaseGameObject } from "./base-game-object.js";
 

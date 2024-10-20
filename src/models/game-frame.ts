@@ -1,4 +1,4 @@
-import { NotificationObject } from "../objects/notification-object.js";
+import { NotificationObject } from "../objects/common/notification-object.js";
 import { GameScreen } from "../screens/interfaces/game-screen.js";
 import { ScreenManager } from "../screens/interfaces/screen-manager.js";
 

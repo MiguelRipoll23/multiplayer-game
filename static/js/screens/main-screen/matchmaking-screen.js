@@ -1,5 +1,5 @@
 import { ProgressBarObject } from "../../objects/progress-bar-object.js";
-import { TitleObject } from "../../objects/title-object.js";
+import { TitleObject } from "../../objects/common/title-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";
 export class MatchmakingScreen extends BaseGameScreen {

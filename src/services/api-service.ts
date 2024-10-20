@@ -8,7 +8,7 @@ import {
   VERSION_ENDPOINT,
 } from "../constants/api-constants.js";
 import { GameServer } from "../models/game-server.js";
-import { NewsResponse } from "./interfaces/message-response.js";
+import { NewsResponse } from "./interfaces/news-response.js";
 import { RegistrationResponse } from "./interfaces/registration-response.js";
 import { VersionResponse } from "./interfaces/version-response.js";
 

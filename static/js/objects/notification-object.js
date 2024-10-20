@@ -8,9 +8,6 @@ export class NotificationObject extends BaseGameObject {
     context;
     active = false;
     opacity = 0;
-    fadingIn = false;
-    fadingOut = false;
-    elapsedTransitionMilliseconds = 0;
     x = 0;
     y = 0;
     textX = 0;
@@ -25,10 +22,6 @@ export class NotificationObject extends BaseGameObject {
         this.textX = this.canvas.width;
     }
     update(deltaTimeStamp) {
-        if (this.fadingIn || this.fadingOut) {
-            this.elapsedTransitionMilliseconds += deltaTimeStamp;
-            this.updateOpacity();
-        }
         if (this.active) {
             this.updateTextPosition();
         }
@@ -55,33 +48,8 @@ export class NotificationObject extends BaseGameObject {
     reset() {
         this.opacity = 0;
         this.completedTimes = 0;
-        this.elapsedTransitionMilliseconds = 0;
-        this.fadingIn = true;
-        this.fadingOut = false;
         this.textX = this.canvas.width + this.context.measureText(this.text).width;
         this.active = true;
-    }
-    updateOpacity() {
-        if (this.fadingIn) {
-            this.handleFadingIn();
-        }
-        else if (this.fadingOut) {
-            this.handleFadingOut();
-        }
-    }
-    handleFadingIn() {
-        this.opacity = Math.min(1, this.elapsedTransitionMilliseconds / this.TRANSITION_MILLISECONDS);
-        if (this.opacity === 1) {
-            this.fadingIn = false;
-            this.elapsedTransitionMilliseconds = 0;
-        }
-    }
-    handleFadingOut() {
-        this.opacity = Math.max(0, 1 - this.elapsedTransitionMilliseconds / this.TRANSITION_MILLISECONDS);
-        if (this.opacity === 0) {
-            this.fadingOut = false;
-            this.active = false;
-        }
     }
     updateTextPosition() {
         if (this.opacity < 1) {
@@ -94,7 +62,7 @@ export class NotificationObject extends BaseGameObject {
             this.completedTimes++;
             this.textX = this.canvas.width + textWidth;
             if (this.completedTimes === 2) {
-                this.fadingOut = true;
+                this.opacity = 0;
             }
         }
     }

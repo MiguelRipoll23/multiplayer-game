@@ -10,9 +10,6 @@ export class NotificationObject extends BaseGameObject {
   private active: boolean = false;
 
   private opacity = 0;
-  private fadingIn = false;
-  private fadingOut = false;
-  private elapsedTransitionMilliseconds = 0;
 
   private x = 0;
   private y = 0;
@@ -31,11 +28,6 @@ export class NotificationObject extends BaseGameObject {
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    if (this.fadingIn || this.fadingOut) {
-      this.elapsedTransitionMilliseconds += deltaTimeStamp;
-      this.updateOpacity();
-    }
-
     if (this.active) {
       this.updateTextPosition();
     }
@@ -83,44 +75,8 @@ export class NotificationObject extends BaseGameObject {
   private reset(): void {
     this.opacity = 0;
     this.completedTimes = 0;
-    this.elapsedTransitionMilliseconds = 0;
-    this.fadingIn = true;
-    this.fadingOut = false;
     this.textX = this.canvas.width + this.context.measureText(this.text).width;
-
     this.active = true;
-  }
-
-  private updateOpacity(): void {
-    if (this.fadingIn) {
-      this.handleFadingIn();
-    } else if (this.fadingOut) {
-      this.handleFadingOut();
-    }
-  }
-
-  private handleFadingIn(): void {
-    this.opacity = Math.min(
-      1,
-      this.elapsedTransitionMilliseconds / this.TRANSITION_MILLISECONDS,
-    );
-
-    if (this.opacity === 1) {
-      this.fadingIn = false;
-      this.elapsedTransitionMilliseconds = 0;
-    }
-  }
-
-  private handleFadingOut(): void {
-    this.opacity = Math.max(
-      0,
-      1 - this.elapsedTransitionMilliseconds / this.TRANSITION_MILLISECONDS,
-    );
-
-    if (this.opacity === 0) {
-      this.fadingOut = false;
-      this.active = false;
-    }
   }
 
   private updateTextPosition(): void {
@@ -138,7 +94,7 @@ export class NotificationObject extends BaseGameObject {
       this.textX = this.canvas.width + textWidth;
 
       if (this.completedTimes === 2) {
-        this.fadingOut = true;
+        this.opacity = 0;
       }
     }
   }

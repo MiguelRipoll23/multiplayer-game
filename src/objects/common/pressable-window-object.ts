@@ -61,10 +61,10 @@ export class PressableWindowObject extends PressableBaseGameObject {
     context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
 
     // Window Title
-    context.fillStyle = "#FFFFFF";
+    context.fillStyle = "#000000";
     context.font = "20px system-ui";
     context.textAlign = "left";
-    context.fillText("STICKY NOTE", this.titleBarTextX, this.titleBarTextY);
+    context.fillText("INFORMATION", this.titleBarTextX, this.titleBarTextY);
 
     // Title
     context.fillStyle = "#000000";
@@ -148,7 +148,7 @@ export class PressableWindowObject extends PressableBaseGameObject {
   }
 
   private renderBackdrop(context: CanvasRenderingContext2D): void {
-    context.fillStyle = "rgba(0, 0, 0, 0.5)";
+    context.fillStyle = "rgba(0, 0, 0, 0.8)";
     context.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }

@@ -1,30 +1,27 @@
 import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { MessageObject } from "../../objects/common/message-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
-import { NewsObject } from "../../objects/news-object.js";
+import { NewsWindowObject } from "../../objects/news-window-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { MatchmakingScreen } from "./matchmaking-screen.js";
 export class MainMenuScreen extends BaseGameScreen {
-    gameController;
     MENU_OPTIONS_TEXT = ["Automatch", "Scoreboard", "Settings"];
     apiService;
     newsResponse = null;
     messageObject = null;
-    newsObject = null;
+    newsWindowObject = null;
     constructor(gameController) {
         super(gameController);
-        this.gameController = gameController;
         this.apiService = gameController.getApiService();
     }
     loadObjects() {
         this.loadTitleObject();
         this.loadMenuOptionObjects();
-        this.loadNewsObject();
+        this.loadNewsWindowObject();
         this.loadMessageObject();
         super.loadObjects();
     }
     hasTransitionFinished() {
-        this.enableMenuOptions();
         this.downloadNews();
     }
     update(deltaTimeStamp) {
@@ -54,15 +51,10 @@ export class MainMenuScreen extends BaseGameScreen {
         this.messageObject = new MessageObject(this.canvas);
         this.uiObjects.push(this.messageObject);
     }
-    loadNewsObject() {
-        this.newsObject = new NewsObject(this.canvas);
-        this.newsObject.load();
-        this.uiObjects.push(this.newsObject);
-    }
-    enableMenuOptions() {
-        this.uiObjects
-            .filter((object) => object instanceof MenuOptionObject)
-            .forEach((object) => object.setActive(true));
+    loadNewsWindowObject() {
+        this.newsWindowObject = new NewsWindowObject(this.canvas);
+        this.newsWindowObject.load();
+        this.uiObjects.push(this.newsWindowObject);
     }
     downloadNews() {
         this.apiService.getNews().then((news) => {
@@ -81,19 +73,17 @@ export class MainMenuScreen extends BaseGameScreen {
             return;
         }
         if (index === this.newsResponse.length) {
-            return this.newsObject?.setActive(false);
+            return this.newsWindowObject?.setActive(false);
         }
         const item = this.newsResponse[index];
-        console.log(`Showing news post ${index}: ${item.title}`);
-        this.newsObject?.openPost(index, item.title, item.content);
+        console.log("Opening news post", item);
+        this.newsWindowObject?.openPost(index, item.title, item.content);
     }
     handleNewsWindowObject() {
-        if (this.newsObject?.isHidden()) {
-            const index = this.newsObject.getIndex() + 1;
+        if (this.newsWindowObject?.isActive() &&
+            this.newsWindowObject?.isHidden()) {
+            const index = this.newsWindowObject.getIndex() + 1;
             this.showPost(index);
-        }
-        if (this.newsObject?.isPressed()) {
-            this.newsObject.close();
         }
     }
     handleMenuOptionObjects() {

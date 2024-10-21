@@ -3,12 +3,10 @@ import { TitleObject } from "../../objects/common/title-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";
 export class MatchmakingScreen extends BaseGameScreen {
-    gameController;
     transitionService;
     progressBarObject = null;
     constructor(gameController) {
         super(gameController);
-        this.gameController = gameController;
         this.transitionService = gameController.getTransitionService();
     }
     loadObjects() {

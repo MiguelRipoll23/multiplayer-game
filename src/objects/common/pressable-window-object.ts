@@ -24,6 +24,7 @@ export class PressableWindowObject extends PressableBaseGameObject {
   constructor(canvas: HTMLCanvasElement) {
     super(canvas);
 
+    this.setInitialState();
     this.setSize();
     this.setCenterPosition();
     this.calculatePositions();
@@ -90,6 +91,12 @@ export class PressableWindowObject extends PressableBaseGameObject {
     }
 
     context.globalAlpha = 1; // Reset global alpha
+
+    super.render(context);
+  }
+
+  private setInitialState(): void {
+    this.active = false;
   }
 
   private setSize(): void {

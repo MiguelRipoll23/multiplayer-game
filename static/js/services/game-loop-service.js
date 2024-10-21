@@ -5,8 +5,10 @@ import { MainScreen } from "../screens/main-screen.js";
 export class GameLoopService {
     canvas;
     context;
+    debug = true;
     gameController;
     gameFrame;
+    gamePointer;
     transitionService;
     isRunning = false;
     previousTimeStamp = 0;
@@ -14,9 +16,11 @@ export class GameLoopService {
     constructor(canvas) {
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
-        this.gameController = new GameController(this.canvas);
-        this.gameFrame = this.gameController.getGameFrame();
-        this.transitionService = this.gameController.getTransitionService();
+        if (this.debug) {
+            console.info("%cDebug mode on", "color: #b6ff35; font-size: 20px; font-weight: bold");
+        }
+        this.setModels();
+        this.setServices();
         this.setCanvasSize();
         this.addEventListeners();
         this.loadNotificationObject();
@@ -36,15 +40,55 @@ export class GameLoopService {
     stop() {
         this.isRunning = false;
     }
+    setModels() {
+        this.gameController = new GameController(this.canvas, this.debug);
+        this.gameFrame = this.gameController.getGameFrame();
+        this.gamePointer = this.gameController.getGamePointer();
+    }
+    setServices() {
+        this.transitionService = this.gameController.getTransitionService();
+    }
     setCanvasSize() {
         this.canvas.width = document.body.clientWidth;
         this.canvas.height = document.body.clientHeight;
     }
     addEventListeners() {
+        this.addWindowEventListeners();
+        this.addTouchEventListeners();
+        this.addMouseEventListeners();
+        this.addCustomEventListeners();
+    }
+    addWindowEventListeners() {
         window.addEventListener("resize", () => {
             this.canvas.width = document.body.clientWidth;
             this.canvas.height = document.body.clientHeight;
         });
+    }
+    addTouchEventListeners() {
+        window.addEventListener("touchstart", (event) => {
+            this.gamePointer.setX(event.touches[0].clientX);
+            this.gamePointer.setY(event.touches[0].clientY);
+            this.gamePointer.setPressed(true);
+        });
+        window.addEventListener("touchend", (event) => {
+            this.gamePointer.setX(event.touches[0].clientX);
+            this.gamePointer.setY(event.touches[0].clientY);
+            this.gamePointer.setPressed(false);
+        });
+    }
+    addMouseEventListeners() {
+        window.addEventListener("mousedown", (event) => {
+            this.gamePointer.setX(event.clientX);
+            this.gamePointer.setY(event.clientY);
+            this.gamePointer.setPressed(true);
+        });
+        window.addEventListener("mouseup", (event) => {
+            this.gamePointer.setX(event.clientX);
+            this.gamePointer.setY(event.clientY);
+            this.gamePointer.setPressed(false);
+        });
+    }
+    addCustomEventListeners() {
         window.addEventListener(NOTIFICATION_EVENT_NAME, (event) => {
             this.gameFrame.getNotificationObject()?.show(event.detail.text);
         });

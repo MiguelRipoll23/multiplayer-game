@@ -1,6 +1,5 @@
 import { BaseGameObject } from "../base/base-game-object.js";
 export class HitboxObject extends BaseGameObject {
-    DEBUG_MODE = false;
     x;
     y;
     width;
@@ -38,7 +37,7 @@ export class HitboxObject extends BaseGameObject {
         this.colliding = colliding;
     }
     render(context) {
-        if (this.DEBUG_MODE === false) {
+        if (this.debug === false) {
             return;
         }
         context.save();

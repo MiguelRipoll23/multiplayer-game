@@ -1,6 +1,7 @@
 import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
+import { GamePointer } from "../models/game-pointer.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
 import { TransitionService } from "./transition-service.js";
@@ -8,10 +9,13 @@ import { TransitionService } from "./transition-service.js";
 export class GameLoopService {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
+  private debug: boolean = true;
 
-  private gameController: GameController;
-  private gameFrame: GameFrame;
-  private transitionService: TransitionService;
+  private gameController!: GameController;
+  private gameFrame!: GameFrame;
+  private gamePointer!: GamePointer;
+
+  private transitionService!: TransitionService;
 
   private isRunning: boolean = false;
   private previousTimeStamp: DOMHighResTimeStamp = 0;
@@ -21,10 +25,15 @@ export class GameLoopService {
     this.canvas = canvas;
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 
-    this.gameController = new GameController(this.canvas);
-    this.gameFrame = this.gameController.getGameFrame();
-    this.transitionService = this.gameController.getTransitionService();
+    if (this.debug) {
+      console.info(
+        "%cDebug mode on",
+        "color: #b6ff35; font-size: 20px; font-weight: bold",
+      );
+    }
 
+    this.setModels();
+    this.setServices();
     this.setCanvasSize();
     this.addEventListeners();
     this.loadNotificationObject();
@@ -50,17 +59,64 @@ export class GameLoopService {
     this.isRunning = false;
   }
 
+  private setModels(): void {
+    this.gameController = new GameController(this.canvas, this.debug);
+    this.gameFrame = this.gameController.getGameFrame();
+    this.gamePointer = this.gameController.getGamePointer();
+  }
+
+  private setServices(): void {
+    this.transitionService = this.gameController.getTransitionService();
+  }
+
   private setCanvasSize(): void {
     this.canvas.width = document.body.clientWidth;
     this.canvas.height = document.body.clientHeight;
   }
 
   private addEventListeners(): void {
+    this.addWindowEventListeners();
+    this.addTouchEventListeners();
+    this.addMouseEventListeners();
+    this.addCustomEventListeners();
+  }
+
+  private addWindowEventListeners(): void {
     window.addEventListener("resize", () => {
       this.canvas.width = document.body.clientWidth;
       this.canvas.height = document.body.clientHeight;
     });
+  }
 
+  private addTouchEventListeners(): void {
+    window.addEventListener("touchstart", (event) => {
+      this.gamePointer.setX(event.touches[0].clientX);
+      this.gamePointer.setY(event.touches[0].clientY);
+      this.gamePointer.setPressed(true);
+    });
+
+    window.addEventListener("touchend", (event) => {
+      this.gamePointer.setX(event.touches[0].clientX);
+      this.gamePointer.setY(event.touches[0].clientY);
+      this.gamePointer.setPressed(false);
+    });
+  }
+
+  private addMouseEventListeners(): void {
+    window.addEventListener("mousedown", (event) => {
+      this.gamePointer.setX(event.clientX);
+      this.gamePointer.setY(event.clientY);
+      this.gamePointer.setPressed(true);
+    });
+
+    window.addEventListener("mouseup", (event) => {
+      this.gamePointer.setX(event.clientX);
+      this.gamePointer.setY(event.clientY);
+      this.gamePointer.setPressed(false);
+    });
+  }
+
+  private addCustomEventListeners(): void {
     window.addEventListener(NOTIFICATION_EVENT_NAME, (event) => {
       this.gameFrame.getNotificationObject()?.show(
         (event as CustomEvent<any>).detail.text,

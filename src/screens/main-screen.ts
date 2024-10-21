@@ -8,7 +8,7 @@ import { GameController } from "../models/game-controller.js";
 export class MainScreen extends BaseGameScreen {
   private loginScreen: LoginScreen;
 
-  constructor(private readonly gameController: GameController) {
+  constructor(gameController: GameController) {
     super(gameController);
 
     this.loginScreen = new LoginScreen(this.gameController);
@@ -30,7 +30,7 @@ export class MainScreen extends BaseGameScreen {
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    super.update(deltaTimeStamp);
+    //super.update(deltaTimeStamp);
 
     this.screenManagerService?.getCurrentScreen()?.setOpacity(this.opacity);
     this.screenManagerService?.update(deltaTimeStamp);

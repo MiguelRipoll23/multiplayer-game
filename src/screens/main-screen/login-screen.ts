@@ -19,7 +19,7 @@ export class LoginScreen extends BaseGameScreen {
 
   private messageObject: MessageObject | null = null;
 
-  constructor(private readonly gameController: GameController) {
+  constructor(gameController: GameController) {
     super(gameController);
 
     this.gameServer = gameController.getGameState().getGameServer();
@@ -117,7 +117,7 @@ export class LoginScreen extends BaseGameScreen {
     const configuration = JSON.parse(decryptedResponse);
     this.gameServer.setConfiguration(configuration);
 
-    console.log("Configuration response", configuration);
+    console.log("Configuration response (decrypted)", configuration);
 
     this.connectToServer();
   }

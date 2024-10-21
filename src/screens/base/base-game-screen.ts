@@ -1,4 +1,5 @@
 import { GameController } from "../../models/game-controller.js";
+import { GamePointer } from "../../models/game-pointer.js";
 import { PressableBaseGameObject } from "../../objects/base/pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
@@ -9,21 +10,22 @@ export class BaseGameScreen implements GameScreen {
   protected screenManagerService: ScreenManagerService | null = null;
 
   protected opacity: number = 0;
+
   protected sceneObjects: GameObject[];
   protected uiObjects: GameObject[];
 
-  protected pressableGameObject: PressableBaseGameObject | null = null;
+  private gamePointer!: GamePointer;
 
   private objectsLoadingPending: boolean = true;
 
-  constructor(gameController: GameController) {
+  constructor(protected gameController: GameController) {
     console.log(`${this.constructor.name} created`);
 
     this.canvas = gameController.getCanvas();
+    this.gamePointer = gameController.getGamePointer();
+
     this.sceneObjects = [];
     this.uiObjects = [];
-
-    this.addPointerEventListeners();
   }
 
   public isActive(): boolean {
@@ -37,8 +39,11 @@ export class BaseGameScreen implements GameScreen {
   }
 
   public loadObjects(): void {
+    this.setDebugToChildObjects();
+
     this.sceneObjects.forEach((object) => object.load());
     this.uiObjects.forEach((object) => object.load());
+
     this.objectsLoadingPending = false;
   }
 
@@ -57,6 +62,10 @@ export class BaseGameScreen implements GameScreen {
 
     this.updateObjects(this.sceneObjects, deltaTimeStamp);
     this.updateObjects(this.uiObjects, deltaTimeStamp);
+
+    if (this.gamePointer.isPressed()) {
+      this.handlePointerPressEvent();
+    }
   }
 
   public render(context: CanvasRenderingContext2D): void {
@@ -87,41 +96,31 @@ export class BaseGameScreen implements GameScreen {
     }
   }
 
-  private addPointerEventListeners(): void {
-    console.log(`${this.constructor.name} added pointer event listeners`);
+  private setDebugToChildObjects(): void {
+    const debug = this.gameController.isDebugging();
 
-    this.canvas.addEventListener("touchend", (event) => {
-      if (this.opacity < 1) {
-        return;
+    this.sceneObjects.forEach((object) => object.setDebug(debug));
+    this.uiObjects.forEach((object) => object.setDebug(debug));
+  }
+
+  private handlePointerPressEvent(): void {
+    const pressableObjects = this.uiObjects
+      .filter((object): object is PressableBaseGameObject =>
+        object instanceof PressableBaseGameObject
+      )
+      .filter((object) => object.isActive())
+      .reverse();
+
+    for (const pressableObject of pressableObjects) {
+      pressableObject.handlePointerEvent(this.gamePointer);
+
+      if (pressableObject.isPressed()) {
+        console.log(pressableObject.constructor.name + " pressed");
+        break;
       }
+    }
 
-      console.log(`${this.constructor.name} touchend event`);
-
-      this.uiObjects
-        .filter((object) => object instanceof PressableBaseGameObject)
-        .filter((object) => object.isActive())
-        .forEach((object) => object.handleTouchEnd(event));
-    });
-
-    this.canvas.addEventListener("mouseup", (event) => {
-      if (this.opacity < 1) {
-        return;
-      }
-
-      console.log(`${this.constructor.name} mouseup event`);
-
-      this.uiObjects
-        .filter((object) => object instanceof PressableBaseGameObject)
-        .filter((object) => object.isActive())
-        .reverse()
-        .forEach((object) => {
-          object.handleMouseUp(event);
-
-          if (object.isPressed()) {
-            return;
-          }
-        });
-    });
+    this.gamePointer.setPressed(false);
   }
 
   private updateObjects(

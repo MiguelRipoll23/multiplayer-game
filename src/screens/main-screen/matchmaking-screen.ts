@@ -9,7 +9,7 @@ export class MatchmakingScreen extends BaseGameScreen {
   private transitionService: TransitionService;
   private progressBarObject: ProgressBarObject | null = null;
 
-  constructor(private readonly gameController: GameController) {
+  constructor(gameController: GameController) {
     super(gameController);
     this.transitionService = gameController.getTransitionService();
   }

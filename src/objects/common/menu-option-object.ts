@@ -3,6 +3,8 @@ import { PressableBaseGameObject } from "../base/pressable-game-object.js";
 export class MenuOptionObject extends PressableBaseGameObject {
   private index: number;
 
+  private radius = 15;
+
   private textX = 0;
   private textY = 0;
 
@@ -34,14 +36,37 @@ export class MenuOptionObject extends PressableBaseGameObject {
     this.calculateTextPosition();
   }
 
-  public handleMouseUp(event: MouseEvent): void {
-    super.handleMouseUp(event);
-  }
-
   public override render(context: CanvasRenderingContext2D): void {
-    // Draw rectangle with gradient
+    // Draw rounded rectangle with gradient
     context.fillStyle = "black"; // Black color for the rectangle
-    context.fillRect(this.x, this.y, this.width, this.height);
+
+    context.beginPath();
+    context.moveTo(this.x + this.radius, this.y);
+    context.lineTo(this.x + this.width - this.radius, this.y);
+    context.quadraticCurveTo(
+      this.x + this.width,
+      this.y,
+      this.x + this.width,
+      this.y + this.radius,
+    );
+    context.lineTo(this.x + this.width, this.y + this.height - this.radius);
+    context.quadraticCurveTo(
+      this.x + this.width,
+      this.y + this.height,
+      this.x + this.width - this.radius,
+      this.y + this.height,
+    );
+    context.lineTo(this.x + this.radius, this.y + this.height);
+    context.quadraticCurveTo(
+      this.x,
+      this.y + this.height,
+      this.x,
+      this.y + this.height - this.radius,
+    );
+    context.lineTo(this.x, this.y + this.radius);
+    context.quadraticCurveTo(this.x, this.y, this.x + this.radius, this.y);
+    context.closePath();
+    context.fill();
 
     // Set text properties
     context.fillStyle = "#FFFFFF"; // White color for the text

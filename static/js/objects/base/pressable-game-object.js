@@ -12,6 +12,12 @@ export class PressableBaseGameObject extends BaseGameObject {
         this.canvas = canvas;
     }
     setActive(active) {
+        if (active) {
+            console.log(this.constructor.name + " activated");
+        }
+        else {
+            console.log(this.constructor.name + " deactivated");
+        }
         this.active = active;
     }
     isActive() {
@@ -20,21 +26,9 @@ export class PressableBaseGameObject extends BaseGameObject {
     isPressed() {
         return this.pressed;
     }
-    resetPressedState() {
-        this.pressed = false;
-    }
-    handleTouchEnd(event) {
-        const touch = event.changedTouches[0];
-        const pointerX = touch.clientX - this.canvas.getBoundingClientRect().left;
-        const pointerY = touch.clientY - this.canvas.getBoundingClientRect().top;
-        this.handlePointerEvent(pointerX, pointerY);
-    }
-    handleMouseUp(event) {
-        const pointerX = event.clientX - this.canvas.getBoundingClientRect().left;
-        const pointerY = event.clientY - this.canvas.getBoundingClientRect().top;
-        this.handlePointerEvent(pointerX, pointerY);
-    }
-    handlePointerEvent(pointerX, pointerY) {
+    handlePointerEvent(gamePointer) {
+        const pointerX = gamePointer.getX();
+        const pointerY = gamePointer.getY();
         if (pointerX >= this.x &&
             pointerX <= this.x + this.width &&
             pointerY >= this.y &&
@@ -47,8 +41,8 @@ export class PressableBaseGameObject extends BaseGameObject {
         super.update(deltaTimeStamp);
     }
     render(context) {
-        if (this.active) {
-            context.strokeStyle = "red";
+        if (this.debug && this.active) {
+            context.strokeStyle = "rgba(148, 0, 211, 0.8)";
             context.beginPath();
             context.rect(this.x, this.y, this.width, this.height);
             context.stroke();

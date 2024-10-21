@@ -1,8 +1,6 @@
 import { BaseGameObject } from "../base/base-game-object.js";
 
 export class HitboxObject extends BaseGameObject {
-  private DEBUG_MODE: boolean = false;
-
   private x: number;
   private y: number;
   private width: number;
@@ -50,7 +48,7 @@ export class HitboxObject extends BaseGameObject {
   }
 
   public render(context: CanvasRenderingContext2D): void {
-    if (this.DEBUG_MODE === false) {
+    if (this.debug === false) {
       return;
     }
 

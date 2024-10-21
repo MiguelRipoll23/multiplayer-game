@@ -4,7 +4,6 @@ import { GameRegistration } from "../../models/game-registration.js";
 import { TitleObject } from "../../objects/common/title-object.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 export class LoginScreen extends BaseGameScreen {
-    gameController;
     gameServer;
     apiService;
     cryptoService;
@@ -12,7 +11,6 @@ export class LoginScreen extends BaseGameScreen {
     messageObject = null;
     constructor(gameController) {
         super(gameController);
-        this.gameController = gameController;
         this.gameServer = gameController.getGameState().getGameServer();
         this.apiService = gameController.getApiService();
         this.cryptoService = gameController.getCryptoService();
@@ -83,7 +81,7 @@ export class LoginScreen extends BaseGameScreen {
         const decryptedResponse = await this.cryptoService.decryptResponse(configurationResponse);
         const configuration = JSON.parse(decryptedResponse);
         this.gameServer.setConfiguration(configuration);
-        console.log("Configuration response", configuration);
+        console.log("Configuration response (decrypted)", configuration);
         this.connectToServer();
     }
     connectToServer() {

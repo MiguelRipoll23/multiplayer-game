@@ -1,5 +1,6 @@
 export class BaseGameObject {
     loaded = false;
+    debug = false;
     constructor() {
         console.log(`${this.constructor.name} created`);
     }
@@ -9,6 +10,9 @@ export class BaseGameObject {
     }
     hasLoaded() {
         return this.loaded;
+    }
+    setDebug(debug) {
+        this.debug = debug;
     }
     update(deltaTimeStamp) { }
     render(context) { }

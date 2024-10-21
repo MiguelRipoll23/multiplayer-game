@@ -11,6 +11,10 @@ export class BaseStaticCollidableGameObject extends BaseGameObject {
         this.hitboxObjects = [];
         this.collidingObjects = [];
     }
+    load() {
+        this.getHitboxObjects().forEach((object) => object.setDebug(this.debug));
+        super.load();
+    }
     isCrossable() {
         return this.crossable;
     }

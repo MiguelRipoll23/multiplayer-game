@@ -1,3 +1,4 @@
+import { GamePointer } from "../../models/game-pointer.js";
 import { BaseGameObject } from "./base-game-object.js";
 
 export class PressableBaseGameObject extends BaseGameObject {
@@ -18,6 +19,12 @@ export class PressableBaseGameObject extends BaseGameObject {
   }
 
   public setActive(active: boolean): void {
+    if (active) {
+      console.log(this.constructor.name + " activated");
+    } else {
+      console.log(this.constructor.name + " deactivated");
+    }
+
     this.active = active;
   }
 
@@ -29,26 +36,10 @@ export class PressableBaseGameObject extends BaseGameObject {
     return this.pressed;
   }
 
-  public resetPressedState(): void {
-    this.pressed = false;
-  }
+  public handlePointerEvent(gamePointer: GamePointer): void {
+    const pointerX = gamePointer.getX();
+    const pointerY = gamePointer.getY();
 
-  public handleTouchEnd(event: TouchEvent): void {
-    const touch = event.changedTouches[0];
-    const pointerX = touch.clientX - this.canvas.getBoundingClientRect().left;
-    const pointerY = touch.clientY - this.canvas.getBoundingClientRect().top;
-
-    this.handlePointerEvent(pointerX, pointerY);
-  }
-
-  public handleMouseUp(event: MouseEvent): void {
-    const pointerX = event.clientX - this.canvas.getBoundingClientRect().left;
-    const pointerY = event.clientY - this.canvas.getBoundingClientRect().top;
-
-    this.handlePointerEvent(pointerX, pointerY);
-  }
-
-  private handlePointerEvent(pointerX: number, pointerY: number): void {
     if (
       pointerX >= this.x &&
       pointerX <= this.x + this.width &&
@@ -65,8 +56,8 @@ export class PressableBaseGameObject extends BaseGameObject {
   }
 
   public override render(context: CanvasRenderingContext2D): void {
-    if (this.active) {
-      context.strokeStyle = "red";
+    if (this.debug && this.active) {
+      context.strokeStyle = "rgba(148, 0, 211, 0.8)";
       context.beginPath();
       context.rect(this.x, this.y, this.width, this.height);
       context.stroke();

@@ -1,18 +1,17 @@
 import { BaseGameObject } from "../base/base-game-object.js";
 
 export class HitboxObject extends BaseGameObject {
-  private x: number;
-  private y: number;
-  private width: number;
-  private height: number;
+  private x: number = 0;
+  private y: number = 0;
+  private width: number = 0;
+  private height: number = 0;
   private colliding: boolean = false;
 
   constructor(x: number, y: number, width: number, height: number) {
     super();
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
+
+    this.setPosition(x, y);
+    this.setSize(width, height);
   }
 
   public setX(x: number): void {
@@ -64,5 +63,15 @@ export class HitboxObject extends BaseGameObject {
     }
 
     context.restore();
+  }
+
+  private setPosition(x: number, y: number): void {
+    this.x = x;
+    this.y = y;
+  }
+
+  private setSize(width: number, height: number): void {
+    this.width = width;
+    this.height = height;
   }
 }

@@ -10,11 +10,7 @@ export class LoginScreen extends BaseGameScreen {
     messageObject = null;
     constructor(gameController) {
         super(gameController);
-        this.gameServer = gameController.getGameState().getGameServer();
-        this.apiService = gameController.getApiService();
-        this.cryptoService = gameController.getCryptoService();
-        this.webSocketService = gameController.getWebSocketService();
-        this.webSocketService.setLoginScreen(this);
+        this.setProperties(gameController);
     }
     loadObjects() {
         this.loadMessageObject();
@@ -26,6 +22,13 @@ export class LoginScreen extends BaseGameScreen {
     hasConnectedToServer() {
         this.messageObject?.hide();
         this.transitionToMatchmakingScreen();
+    }
+    setProperties(gameController) {
+        this.gameServer = gameController.getGameState().getGameServer();
+        this.apiService = gameController.getApiService();
+        this.cryptoService = gameController.getCryptoService();
+        this.webSocketService = gameController.getWebSocketService();
+        this.webSocketService.setLoginScreen(this);
     }
     loadMessageObject() {
         this.messageObject = new MessageObject(this.canvas);

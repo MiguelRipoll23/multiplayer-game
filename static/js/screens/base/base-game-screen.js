@@ -1,11 +1,11 @@
-import { PressableBaseGameObject } from "../../objects/base/pressable-game-object.js";
+import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 export class BaseGameScreen {
     gameController;
     canvas;
     screenManagerService = null;
     opacity = 0;
-    sceneObjects;
-    uiObjects;
+    sceneObjects = [];
+    uiObjects = [];
     gamePointer;
     objectsLoadingPending = true;
     constructor(gameController) {
@@ -13,8 +13,6 @@ export class BaseGameScreen {
         console.log(`${this.constructor.name} created`);
         this.canvas = gameController.getCanvas();
         this.gamePointer = gameController.getGamePointer();
-        this.sceneObjects = [];
-        this.uiObjects = [];
     }
     isActive() {
         return this.opacity > 0;
@@ -70,7 +68,7 @@ export class BaseGameScreen {
     }
     handlePointerPressEvent() {
         const pressableObjects = this.uiObjects
-            .filter((object) => object instanceof PressableBaseGameObject)
+            .filter((object) => object instanceof BasePressableGameObject)
             .filter((object) => object.isActive())
             .reverse();
         for (const pressableObject of pressableObjects) {

@@ -3,29 +3,23 @@ import { BaseDynamicCollidableGameObject } from "./base/base-dynamic-collidable-
 
 export class BallObject extends BaseDynamicCollidableGameObject {
   private readonly MASS: number = 1;
-  private readonly RADIUS: number = 20; // Define the radius
+  private readonly RADIUS: number = 20;
   private readonly FRICTION: number = 0.01;
-  private readonly BALL_COLOR_LIGHT: string = "#ffffff"; // Light color
-  private readonly BALL_COLOR_DARK: string = "#cccccc"; // Dark color
   private readonly INACTIVE_DURATION_MILLISECONDS: number = 5_000;
-
-  private readonly canvas: HTMLCanvasElement;
-  private readonly centerX: number;
-  private readonly centerY: number;
   private radius: number = this.RADIUS;
 
   private inactive: boolean = false;
   private elapsedInactiveMilliseconds: number = 0;
 
-  constructor(x: number, y: number, canvas: HTMLCanvasElement) {
+  constructor(
+    x: number,
+    y: number,
+    private readonly canvas: HTMLCanvasElement,
+  ) {
     super();
     this.x = x;
     this.y = y;
-    this.canvas = canvas;
-
     this.mass = this.MASS;
-    this.centerX = this.canvas.width / 2;
-    this.centerY = this.canvas.height / 2;
   }
 
   public override load(): void {
@@ -71,8 +65,8 @@ export class BallObject extends BaseDynamicCollidableGameObject {
 
   public setCenterPosition(): void {
     // Set position to the center of the canvas accounting for the radius
-    this.x = this.centerX;
-    this.y = this.centerY;
+    this.x = this.canvas.width / 2;
+    this.y = this.canvas.height / 2;
   }
 
   public isInactive(): boolean {

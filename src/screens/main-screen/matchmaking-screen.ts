@@ -10,7 +10,6 @@ export class MatchmakingScreen extends BaseGameScreen {
 
   constructor(gameController: GameController) {
     super(gameController);
-
     this.transitionService = gameController.getTransitionService();
   }
 

@@ -5,10 +5,6 @@ export class PlayerObject extends BaseGameObject {
         super();
         this.name = name;
     }
-    update(deltaTimeStamp) {
-        // TODO
-    }
-    render(context) {
-        // TODO
-    }
+    update(deltaTimeStamp) { }
+    render(context) { }
 }

@@ -1,8 +1,8 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class JoystickObject extends BaseGameObject {
+    canvas;
     RADIUS = 40;
     MAX_DISTANCE = 30;
-    canvas;
     active = false;
     controlX = 0;
     controlY = 0;

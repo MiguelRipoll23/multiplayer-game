@@ -7,13 +7,13 @@ export class ProgressBarObject extends BaseGameObject {
   private readonly RECT_MARGIN: number = 25;
   private readonly PROGRESS_BAR_HEIGHT: number = 3;
 
-  private readonly rectX: number;
-  private readonly rectY: number; // corrected spelling
-  private readonly rectWidth: number;
-  private readonly textX: number;
-  private readonly textY: number;
+  private rectX: number = 0;
+  private rectY: number = 0;
+  private rectWidth: number = 0;
+  private textX: number = 0;
+  private textY: number = 0;
 
-  private progressBarY: number = 0; // corrected spelling
+  private progressBarY: number = 0;
   private progressBarWidth: number = 0;
 
   private text: string = "Loading...";
@@ -21,13 +21,7 @@ export class ProgressBarObject extends BaseGameObject {
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
-    this.rectX = canvas.width * 0.05;
-    this.rectY = canvas.height - this.RECT_HEIGHT - this.RECT_MARGIN;
-    this.rectWidth = this.canvas.width - 2 * this.rectX;
-    this.textX = this.rectX + 15; // adjusted text X position
-    this.textY = this.rectY + 25;
-    this.progressBarY = this.rectY + this.RECT_HEIGHT -
-      this.PROGRESS_BAR_HEIGHT;
+    this.setProperties(canvas);
   }
 
   public update() {
@@ -68,6 +62,16 @@ export class ProgressBarObject extends BaseGameObject {
       this.progressBarWidth,
       this.PROGRESS_BAR_HEIGHT,
     );
+  }
+
+  private setProperties(canvas: HTMLCanvasElement): void {
+    this.rectX = canvas.width * 0.05;
+    this.rectY = canvas.height - this.RECT_HEIGHT - this.RECT_MARGIN;
+    this.rectWidth = this.canvas.width - 2 * this.rectX;
+    this.textX = this.rectX + 15; // adjusted text X position
+    this.textY = this.rectY + 25;
+    this.progressBarY = this.rectY + this.RECT_HEIGHT -
+      this.PROGRESS_BAR_HEIGHT;
   }
 
   private roundedRect(

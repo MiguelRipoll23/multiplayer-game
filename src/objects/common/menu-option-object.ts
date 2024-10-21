@@ -1,24 +1,22 @@
 import { ORANGE_TEAM_COLOR } from "../../constants/colors-constants.js";
-import { PressableBaseGameObject } from "../base/pressable-game-object.js";
+import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 
-export class MenuOptionObject extends PressableBaseGameObject {
-  private index: number;
+export class MenuOptionObject extends BasePressableGameObject {
+  private index: number = 0;
+  private content: string = "Unknown";
 
   private radius = 15;
-
   private textX = 0;
   private textY = 0;
-
-  private text: string;
 
   constructor(
     canvas: HTMLCanvasElement,
     index: number,
-    text: string,
+    content: string,
   ) {
-    super(canvas);
+    super();
     this.index = index;
-    this.text = text.toUpperCase();
+    this.content = content.toUpperCase();
     this.setSize(canvas);
   }
 
@@ -74,7 +72,7 @@ export class MenuOptionObject extends PressableBaseGameObject {
     context.textAlign = "center";
 
     // Draw the text
-    context.fillText(this.text, this.textX, this.textY);
+    context.fillText(this.content, this.textX, this.textY);
 
     super.render(context);
   }

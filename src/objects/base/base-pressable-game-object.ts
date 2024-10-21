@@ -1,9 +1,7 @@
 import { GamePointer } from "../../models/game-pointer.js";
 import { BaseGameObject } from "./base-game-object.js";
 
-export class PressableBaseGameObject extends BaseGameObject {
-  protected canvas: HTMLCanvasElement;
-
+export class BasePressableGameObject extends BaseGameObject {
   protected x = 0;
   protected y = 0;
 
@@ -13,9 +11,8 @@ export class PressableBaseGameObject extends BaseGameObject {
   protected active = true;
   protected pressed = false;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor() {
     super();
-    this.canvas = canvas;
   }
 
   public setActive(active: boolean): void {

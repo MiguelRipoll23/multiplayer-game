@@ -1,5 +1,4 @@
 import { HitboxObject } from "../common/hitbox-object.js";
-import { GameObject } from "../interfaces/game-object.js";
 import { BaseGameObject } from "./base-game-object.js";
 
 export class BaseStaticCollidableGameObject extends BaseGameObject {

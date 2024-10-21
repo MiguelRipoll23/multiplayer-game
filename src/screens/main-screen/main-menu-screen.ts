@@ -2,7 +2,7 @@ import { GameController } from "../../models/game-controller.js";
 import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { MessageObject } from "../../objects/common/message-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
-import { NewsWindowObject } from "../../objects/news-window-object.js";
+import { ServerMessageWindow } from "../../objects/server-message-window-object.js";
 import { ApiService } from "../../services/api-service.js";
 import { NewsResponse } from "../../services/interfaces/news-response.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
@@ -16,7 +16,7 @@ export class MainMenuScreen extends BaseGameScreen {
   private newsResponse: NewsResponse[] | null = null;
 
   private messageObject: MessageObject | null = null;
-  private newsWindowObject: NewsWindowObject | null = null;
+  private newsWindowObject: ServerMessageWindow | null = null;
 
   constructor(gameController: GameController) {
     super(gameController);
@@ -48,7 +48,7 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private loadTitleObject(): void {
-    const titleObject = new TitleObject(this.canvas);
+    const titleObject = new TitleObject();
     titleObject.setText("MAIN MENU");
     this.uiObjects.push(titleObject);
   }
@@ -74,7 +74,7 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private loadNewsWindowObject(): void {
-    this.newsWindowObject = new NewsWindowObject(this.canvas);
+    this.newsWindowObject = new ServerMessageWindow(this.canvas);
     this.newsWindowObject.load();
 
     this.uiObjects.push(this.newsWindowObject);

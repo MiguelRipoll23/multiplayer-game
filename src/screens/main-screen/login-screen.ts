@@ -11,23 +11,16 @@ import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
 
 export class LoginScreen extends BaseGameScreen {
-  private gameServer: GameServer;
-  private apiService: ApiService;
-  private cryptoService: CryptoService;
-  private webSocketService: WebSocketService;
+  private gameServer!: GameServer;
+  private apiService!: ApiService;
+  private cryptoService!: CryptoService;
+  private webSocketService!: WebSocketService;
 
   private messageObject: MessageObject | null = null;
 
   constructor(gameController: GameController) {
     super(gameController);
-
-    this.gameServer = gameController.getGameState().getGameServer();
-
-    this.apiService = gameController.getApiService();
-    this.cryptoService = gameController.getCryptoService();
-    this.webSocketService = gameController.getWebSocketService();
-
-    this.webSocketService.setLoginScreen(this);
+    this.setProperties(gameController);
   }
 
   public override loadObjects(): void {
@@ -43,6 +36,14 @@ export class LoginScreen extends BaseGameScreen {
   public hasConnectedToServer(): void {
     this.messageObject?.hide();
     this.transitionToMatchmakingScreen();
+  }
+
+  private setProperties(gameController: GameController): void {
+    this.gameServer = gameController.getGameState().getGameServer();
+    this.apiService = gameController.getApiService();
+    this.cryptoService = gameController.getCryptoService();
+    this.webSocketService = gameController.getWebSocketService();
+    this.webSocketService.setLoginScreen(this);
   }
 
   private loadMessageObject(): void {

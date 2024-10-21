@@ -29,7 +29,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.createPlayerAndLocalCarObjects();
     this.createBallObject();
     this.createGoalObjects();
-
     super.loadObjects();
   }
 

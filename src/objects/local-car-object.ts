@@ -8,9 +8,8 @@ export class LocalCarObject extends CarObject {
 
   constructor(x: number, y: number, angle: number, canvas: HTMLCanvasElement) {
     super(x, y, angle, false, canvas);
-
-    this.joystickObject = new JoystickObject(this.canvas);
-    this.gearStickObject = new GearStickObject(this.canvas);
+    this.joystickObject = new JoystickObject(canvas);
+    this.gearStickObject = new GearStickObject(canvas);
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -48,8 +47,7 @@ export class LocalCarObject extends CarObject {
       }
     }
 
-    this.angle +=
-      this.HANDLING *
+    this.angle += this.HANDLING *
       (this.speed / this.TOP_SPEED) *
       this.joystickObject.getControlX();
   }

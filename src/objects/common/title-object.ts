@@ -6,7 +6,7 @@ export class TitleObject extends BaseGameObject {
 
   private text: string = "Unknown";
 
-  constructor(private readonly canvas: HTMLCanvasElement) {
+  constructor() {
     super();
   }
 

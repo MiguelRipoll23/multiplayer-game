@@ -1,10 +1,10 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-dynamic-collidable-game-object.js";
 export class CarObject extends BaseDynamicCollidableGameObject {
+    canvas;
     TOP_SPEED = 4;
     ACCELERATION = 0.4;
     HANDLING = 6;
-    canvas;
     angle;
     speed = 0;
     playerObject = null;
@@ -19,11 +19,11 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     carImage = null;
     constructor(x, y, angle, orangeTeam, canvas) {
         super();
+        this.canvas = canvas;
         this.x = x;
         this.y = y;
         this.angle = angle;
         this.orangeTeam = orangeTeam;
-        this.canvas = canvas;
         this.mass = this.MASS;
     }
     load() {

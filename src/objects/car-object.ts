@@ -7,7 +7,6 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   protected readonly ACCELERATION: number = 0.4;
   protected readonly HANDLING: number = 6;
 
-  protected readonly canvas: HTMLCanvasElement;
   protected angle: number;
   protected speed: number = 0;
   protected playerObject: PlayerObject | null = null;
@@ -30,16 +29,13 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     y: number,
     angle: number,
     orangeTeam: boolean,
-    canvas: HTMLCanvasElement,
+    private readonly canvas: HTMLCanvasElement,
   ) {
     super();
-
     this.x = x;
     this.y = y;
     this.angle = angle;
     this.orangeTeam = orangeTeam;
-    this.canvas = canvas;
-
     this.mass = this.MASS;
   }
 

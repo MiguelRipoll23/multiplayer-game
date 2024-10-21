@@ -4,7 +4,6 @@ export class NotificationObject extends BaseGameObject {
   private readonly DEFAULT_HEIGHT = 35;
   private readonly MARGIN = 20;
   private readonly TEXT_SPEED = 2;
-  private readonly TRANSITION_MILLISECONDS = 250;
 
   private context: CanvasRenderingContext2D;
   private active: boolean = false;
@@ -12,7 +11,7 @@ export class NotificationObject extends BaseGameObject {
   private opacity = 0;
 
   private x = 0;
-  private y = 0;
+  private y = this.MARGIN;
   private textX = 0;
 
   private completedTimes = 0;
@@ -21,9 +20,7 @@ export class NotificationObject extends BaseGameObject {
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
-    this.x = 0;
-    this.y = this.MARGIN;
-    this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
+    this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
     this.textX = this.canvas.width;
   }
 

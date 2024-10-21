@@ -1,26 +1,20 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-dynamic-collidable-game-object.js";
 export class BallObject extends BaseDynamicCollidableGameObject {
-    MASS = 1;
-    RADIUS = 20; // Define the radius
-    FRICTION = 0.01;
-    BALL_COLOR_LIGHT = "#ffffff"; // Light color
-    BALL_COLOR_DARK = "#cccccc"; // Dark color
-    INACTIVE_DURATION_MILLISECONDS = 5_000;
     canvas;
-    centerX;
-    centerY;
+    MASS = 1;
+    RADIUS = 20;
+    FRICTION = 0.01;
+    INACTIVE_DURATION_MILLISECONDS = 5_000;
     radius = this.RADIUS;
     inactive = false;
     elapsedInactiveMilliseconds = 0;
     constructor(x, y, canvas) {
         super();
+        this.canvas = canvas;
         this.x = x;
         this.y = y;
-        this.canvas = canvas;
         this.mass = this.MASS;
-        this.centerX = this.canvas.width / 2;
-        this.centerY = this.canvas.height / 2;
     }
     load() {
         this.createHitbox();
@@ -51,8 +45,8 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     }
     setCenterPosition() {
         // Set position to the center of the canvas accounting for the radius
-        this.x = this.centerX;
-        this.y = this.centerY;
+        this.x = this.canvas.width / 2;
+        this.y = this.canvas.height / 2;
     }
     isInactive() {
         return this.inactive;

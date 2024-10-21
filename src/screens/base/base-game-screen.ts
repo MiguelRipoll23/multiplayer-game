@@ -1,6 +1,6 @@
 import { GameController } from "../../models/game-controller.js";
 import { GamePointer } from "../../models/game-pointer.js";
-import { PressableBaseGameObject } from "../../objects/base/pressable-game-object.js";
+import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
 import { GameScreen } from "../interfaces/game-screen.js";
@@ -11,8 +11,8 @@ export class BaseGameScreen implements GameScreen {
 
   protected opacity: number = 0;
 
-  protected sceneObjects: GameObject[];
-  protected uiObjects: GameObject[];
+  protected sceneObjects: GameObject[] = [];
+  protected uiObjects: GameObject[] = [];
 
   private gamePointer!: GamePointer;
 
@@ -20,12 +20,8 @@ export class BaseGameScreen implements GameScreen {
 
   constructor(protected gameController: GameController) {
     console.log(`${this.constructor.name} created`);
-
     this.canvas = gameController.getCanvas();
     this.gamePointer = gameController.getGamePointer();
-
-    this.sceneObjects = [];
-    this.uiObjects = [];
   }
 
   public isActive(): boolean {
@@ -105,8 +101,8 @@ export class BaseGameScreen implements GameScreen {
 
   private handlePointerPressEvent(): void {
     const pressableObjects = this.uiObjects
-      .filter((object): object is PressableBaseGameObject =>
-        object instanceof PressableBaseGameObject
+      .filter((object): object is BasePressableGameObject =>
+        object instanceof BasePressableGameObject
       )
       .filter((object) => object.isActive())
       .reverse();

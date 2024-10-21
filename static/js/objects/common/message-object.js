@@ -29,7 +29,6 @@ export class MessageObject extends BaseGameObject {
         }
         this.opacity = 0;
     }
-    update(deltaTimeStamp) { }
     render(context) {
         context.globalAlpha = this.opacity;
         this.drawRoundedRectangle(context);

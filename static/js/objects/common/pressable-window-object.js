@@ -1,5 +1,6 @@
-import { PressableBaseGameObject } from "../base/pressable-game-object.js";
-export class PressableWindowObject extends PressableBaseGameObject {
+import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
+export class PressableWindowObject extends BasePressableGameObject {
+    canvas;
     TITLE_BAR_HEIGHT = 40;
     TEXT_LINE_HEIGHT = 20;
     globalAlpha = 0;
@@ -14,7 +15,8 @@ export class PressableWindowObject extends PressableBaseGameObject {
     content = "Content goes here";
     hidden = false;
     constructor(canvas) {
-        super(canvas);
+        super();
+        this.canvas = canvas;
         this.setInitialState();
         this.setSize();
         this.setCenterPosition();

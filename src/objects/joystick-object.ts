@@ -5,8 +5,6 @@ export class JoystickObject extends BaseGameObject {
   private readonly RADIUS: number = 40;
   private readonly MAX_DISTANCE: number = 30;
 
-  private readonly canvas: HTMLCanvasElement;
-
   private active: boolean = false;
   private controlX: number = 0;
   private controlY: number = 0;
@@ -20,11 +18,8 @@ export class JoystickObject extends BaseGameObject {
 
   private pressedKeys: Set<string> = new Set();
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(private readonly canvas: HTMLCanvasElement) {
     super();
-
-    this.canvas = canvas;
-
     this.addTouchEventListeners();
     this.addKeyboardEventListeners();
   }

@@ -6,25 +6,19 @@ export class ProgressBarObject extends BaseGameObject {
     RECT_CORNER_RADIUS = 6;
     RECT_MARGIN = 25;
     PROGRESS_BAR_HEIGHT = 3;
-    rectX;
-    rectY; // corrected spelling
-    rectWidth;
-    textX;
-    textY;
-    progressBarY = 0; // corrected spelling
+    rectX = 0;
+    rectY = 0;
+    rectWidth = 0;
+    textX = 0;
+    textY = 0;
+    progressBarY = 0;
     progressBarWidth = 0;
     text = "Loading...";
     currentProgress = 0.0;
     constructor(canvas) {
         super();
         this.canvas = canvas;
-        this.rectX = canvas.width * 0.05;
-        this.rectY = canvas.height - this.RECT_HEIGHT - this.RECT_MARGIN;
-        this.rectWidth = this.canvas.width - 2 * this.rectX;
-        this.textX = this.rectX + 15; // adjusted text X position
-        this.textY = this.rectY + 25;
-        this.progressBarY = this.rectY + this.RECT_HEIGHT -
-            this.PROGRESS_BAR_HEIGHT;
+        this.setProperties(canvas);
     }
     update() {
         this.progressBarWidth = (this.canvas.width - 2 * this.rectX) *
@@ -42,6 +36,15 @@ export class ProgressBarObject extends BaseGameObject {
         context.fillRect(this.rectX, this.progressBarY, this.rectWidth, this.PROGRESS_BAR_HEIGHT);
         context.fillStyle = ORANGE_TEAM_COLOR;
         context.fillRect(this.rectX, this.progressBarY, this.progressBarWidth, this.PROGRESS_BAR_HEIGHT);
+    }
+    setProperties(canvas) {
+        this.rectX = canvas.width * 0.05;
+        this.rectY = canvas.height - this.RECT_HEIGHT - this.RECT_MARGIN;
+        this.rectWidth = this.canvas.width - 2 * this.rectX;
+        this.textX = this.rectX + 15; // adjusted text X position
+        this.textY = this.rectY + 25;
+        this.progressBarY = this.rectY + this.RECT_HEIGHT -
+            this.PROGRESS_BAR_HEIGHT;
     }
     roundedRect(ctx, x, y, width, height, radius) {
         ctx.beginPath();

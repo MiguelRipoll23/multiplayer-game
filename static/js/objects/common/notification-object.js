@@ -4,21 +4,18 @@ export class NotificationObject extends BaseGameObject {
     DEFAULT_HEIGHT = 35;
     MARGIN = 20;
     TEXT_SPEED = 2;
-    TRANSITION_MILLISECONDS = 250;
     context;
     active = false;
     opacity = 0;
     x = 0;
-    y = 0;
+    y = this.MARGIN;
     textX = 0;
     completedTimes = 0;
     text = "Whoops! Something went wrong!";
     constructor(canvas) {
         super();
         this.canvas = canvas;
-        this.x = 0;
-        this.y = this.MARGIN;
-        this.context = canvas.getContext("2d");
+        this.context = this.canvas.getContext("2d");
         this.textX = this.canvas.width;
     }
     update(deltaTimeStamp) {

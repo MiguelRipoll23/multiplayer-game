@@ -1,7 +1,7 @@
 import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { MessageObject } from "../../objects/common/message-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
-import { NewsWindowObject } from "../../objects/news-window-object.js";
+import { ServerMessageWindow } from "../../objects/server-message-window-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { MatchmakingScreen } from "./matchmaking-screen.js";
 export class MainMenuScreen extends BaseGameScreen {
@@ -33,7 +33,7 @@ export class MainMenuScreen extends BaseGameScreen {
         super.render(context);
     }
     loadTitleObject() {
-        const titleObject = new TitleObject(this.canvas);
+        const titleObject = new TitleObject();
         titleObject.setText("MAIN MENU");
         this.uiObjects.push(titleObject);
     }
@@ -52,7 +52,7 @@ export class MainMenuScreen extends BaseGameScreen {
         this.uiObjects.push(this.messageObject);
     }
     loadNewsWindowObject() {
-        this.newsWindowObject = new NewsWindowObject(this.canvas);
+        this.newsWindowObject = new ServerMessageWindow(this.canvas);
         this.newsWindowObject.load();
         this.uiObjects.push(this.newsWindowObject);
     }

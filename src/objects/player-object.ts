@@ -5,15 +5,10 @@ export class PlayerObject extends BaseGameObject {
 
   constructor(name: string) {
     super();
-
     this.name = name;
   }
 
-  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    // TODO
-  }
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {}
 
-  public render(context: CanvasRenderingContext2D): void {
-    // TODO
-  }
+  public render(context: CanvasRenderingContext2D): void {}
 }

@@ -12,7 +12,6 @@ export class GearStickObject extends BaseGameObject {
     constructor(canvas) {
         super();
         this.canvas = canvas;
-        // Position the gear stick 50px from the bottom
         this.y = this.canvas.height - (this.SIZE + this.Y_OFFSET);
         this.addTouchEventListeners();
         this.addKeyboardEventListeners();

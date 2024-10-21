@@ -1,6 +1,6 @@
 import { PressableWindowObject } from "./common/pressable-window-object.js";
 
-export class NewsWindowObject extends PressableWindowObject {
+export class ServerMessageWindow extends PressableWindowObject {
   private index: number = 0;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -19,7 +19,7 @@ export class NewsWindowObject extends PressableWindowObject {
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     if (this.isPressed()) {
       this.close();
-      console.log("Closed news post window with index:", this.index);
+      console.log("Closed server message window with index:", this.index);
     }
 
     super.update(deltaTimeStamp);

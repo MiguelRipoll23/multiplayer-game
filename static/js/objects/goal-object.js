@@ -7,24 +7,13 @@ export class GoalObject extends BaseStaticCollidableGameObject {
     BORDER_SIZE = 2; // Border size
     BORDER_COLOR = "#fff";
     Y_OFFSET = 13;
-    fillColor;
-    orangeTeam;
+    fillColor = BLUE_TEAM_TRANSPARENCY_COLOR;
+    orangeTeam = false;
     constructor(orangeTeam, canvas) {
         super();
         this.orangeTeam = orangeTeam;
         this.crossable = true;
-        if (orangeTeam) {
-            // Position goal at the top of the canvas
-            this.y = this.Y_OFFSET;
-            this.fillColor = ORANGE_TEAM_TRANSPARENCY_COLOR;
-        }
-        else {
-            // Position goal at the bottom of the canvas
-            this.y = canvas.height - this.HEIGHT - this.Y_OFFSET;
-            this.fillColor = BLUE_TEAM_TRANSPARENCY_COLOR;
-        }
-        // Calculate x position to center the goal horizontally
-        this.x = (canvas.width - this.WIDTH) / 2;
+        this.setPositionAndFillColor(canvas, orangeTeam);
     }
     load() {
         this.createHitbox();
@@ -72,6 +61,20 @@ export class GoalObject extends BaseStaticCollidableGameObject {
         }
         // Hitbox
         super.render(context);
+    }
+    setPositionAndFillColor(canvas, orangeTeam) {
+        if (orangeTeam) {
+            // Position goal at the top of the canvas
+            this.y = this.Y_OFFSET;
+            this.fillColor = ORANGE_TEAM_TRANSPARENCY_COLOR;
+        }
+        else {
+            // Position goal at the bottom of the canvas
+            this.y = canvas.height - this.HEIGHT - this.Y_OFFSET;
+            this.fillColor = BLUE_TEAM_TRANSPARENCY_COLOR;
+        }
+        // Calculate x position to center the goal horizontally
+        this.x = (canvas.width - this.WIDTH) / 2;
     }
     createHitbox() {
         const y = this.orangeTeam ? this.y + 1 : this.y + this.HEIGHT / 2;

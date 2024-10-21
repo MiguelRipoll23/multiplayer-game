@@ -6,11 +6,7 @@ export class MainScreen extends BaseGameScreen {
     loginScreen;
     constructor(gameController) {
         super(gameController);
-        this.loginScreen = new LoginScreen(this.gameController);
-        this.loginScreen.setOpacity(1);
-        this.screenManagerService = new ScreenManagerService(this.loginScreen);
-        this.screenManagerService.setCurrentScreen(this.loginScreen);
-        this.loginScreen.setScreenManagerService(this.screenManagerService);
+        this.createLoginScreen();
     }
     loadObjects() {
         this.createMainBrackgroundObject();
@@ -28,6 +24,13 @@ export class MainScreen extends BaseGameScreen {
     render(context) {
         super.render(context);
         this.screenManagerService?.render(context);
+    }
+    createLoginScreen() {
+        this.loginScreen = new LoginScreen(this.gameController);
+        this.loginScreen.setOpacity(1);
+        this.screenManagerService = new ScreenManagerService(this.loginScreen);
+        this.screenManagerService.setCurrentScreen(this.loginScreen);
+        this.loginScreen.setScreenManagerService(this.screenManagerService);
     }
     createMainBrackgroundObject() {
         const mainBackgroundObject = new MainBackgroundObject(this.canvas);

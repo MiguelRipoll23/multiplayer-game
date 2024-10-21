@@ -1,3 +1,4 @@
+import { ORANGE_TEAM_COLOR } from "../../constants/colors-constants.js";
 import { PressableBaseGameObject } from "../base/pressable-game-object.js";
 
 export class MenuOptionObject extends PressableBaseGameObject {
@@ -37,8 +38,7 @@ export class MenuOptionObject extends PressableBaseGameObject {
   }
 
   public override render(context: CanvasRenderingContext2D): void {
-    // Draw rounded rectangle with gradient
-    context.fillStyle = "black"; // Black color for the rectangle
+    context.fillStyle = ORANGE_TEAM_COLOR;
 
     context.beginPath();
     context.moveTo(this.x + this.radius, this.y);
@@ -80,7 +80,7 @@ export class MenuOptionObject extends PressableBaseGameObject {
   }
 
   private setSize(canvas: HTMLCanvasElement): void {
-    this.width = canvas.width - 70;
+    this.width = canvas.width - 60;
     this.height = 120;
   }
 

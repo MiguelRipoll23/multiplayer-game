@@ -1,3 +1,4 @@
+import { ORANGE_TEAM_COLOR } from "../constants/colors-constants.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 
 export class ProgressBarObject extends BaseGameObject {
@@ -60,7 +61,7 @@ export class ProgressBarObject extends BaseGameObject {
       this.PROGRESS_BAR_HEIGHT,
     );
 
-    context.fillStyle = "#2196F3";
+    context.fillStyle = ORANGE_TEAM_COLOR;
     context.fillRect(
       this.rectX,
       this.progressBarY,

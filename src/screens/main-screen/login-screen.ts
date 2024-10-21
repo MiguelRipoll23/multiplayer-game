@@ -7,7 +7,6 @@ import { ApiService } from "../../services/api-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { RegistrationResponse } from "../../services/interfaces/registration-response.js";
 import { GameRegistration } from "../../models/game-registration.js";
-import { TitleObject } from "../../objects/common/title-object.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
 
@@ -32,8 +31,8 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   public override loadObjects(): void {
-    this.loadTitleObject();
     this.loadMessageObject();
+
     super.loadObjects();
   }
 
@@ -44,12 +43,6 @@ export class LoginScreen extends BaseGameScreen {
   public hasConnectedToServer(): void {
     this.messageObject?.hide();
     this.transitionToMatchmakingScreen();
-  }
-
-  private loadTitleObject(): void {
-    const titleObject = new TitleObject(this.canvas);
-    titleObject.setText("LOGIN");
-    this.uiObjects.push(titleObject);
   }
 
   private loadMessageObject(): void {
@@ -74,7 +67,7 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private registerUser(): void {
-    const name = prompt("Please enter your player handle:", "player1");
+    const name = prompt("Player name:", "player1");
 
     if (name === null) {
       return this.registerUser();

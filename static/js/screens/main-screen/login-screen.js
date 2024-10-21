@@ -1,7 +1,6 @@
 import { MessageObject } from "../../objects/common/message-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { GameRegistration } from "../../models/game-registration.js";
-import { TitleObject } from "../../objects/common/title-object.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 export class LoginScreen extends BaseGameScreen {
     gameServer;
@@ -18,7 +17,6 @@ export class LoginScreen extends BaseGameScreen {
         this.webSocketService.setLoginScreen(this);
     }
     loadObjects() {
-        this.loadTitleObject();
         this.loadMessageObject();
         super.loadObjects();
     }
@@ -28,11 +26,6 @@ export class LoginScreen extends BaseGameScreen {
     hasConnectedToServer() {
         this.messageObject?.hide();
         this.transitionToMatchmakingScreen();
-    }
-    loadTitleObject() {
-        const titleObject = new TitleObject(this.canvas);
-        titleObject.setText("LOGIN");
-        this.uiObjects.push(titleObject);
     }
     loadMessageObject() {
         this.messageObject = new MessageObject(this.canvas);
@@ -52,7 +45,7 @@ export class LoginScreen extends BaseGameScreen {
         });
     }
     registerUser() {
-        const name = prompt("Please enter your player handle:", "player1");
+        const name = prompt("Player name:", "player1");
         if (name === null) {
             return this.registerUser();
         }

@@ -50,28 +50,30 @@ export class PressableWindowObject extends PressableBaseGameObject {
   public render(context: CanvasRenderingContext2D): void {
     context.globalAlpha = this.globalAlpha;
 
+    this.renderBackdrop(context);
+
     // Background
-    context.fillStyle = "rgba(0, 0, 0, 1)";
+    context.fillStyle = "rgb(255, 255, 255, 1)";
     context.fillRect(this.x, this.y, this.width, this.height);
 
     // Title Bar
-    context.fillStyle = "#333333"; // Title bar background color
+    context.fillStyle = "#FFEA00"; // Title bar background color
     context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
 
     // Window Title
     context.fillStyle = "#FFFFFF";
     context.font = "20px system-ui";
     context.textAlign = "left";
-    context.fillText("NEWS", this.titleBarTextX, this.titleBarTextY);
+    context.fillText("STICKY NOTE", this.titleBarTextX, this.titleBarTextY);
 
     // Title
-    context.fillStyle = "#FFFFFF";
+    context.fillStyle = "#000000";
     context.font = "20px system-ui";
     context.textAlign = "left";
     context.fillText(this.title, this.titleTextX, this.titleTextY);
 
     // Content
-    context.fillStyle = "#FFFFFF";
+    context.fillStyle = "#000000";
     context.font = "16px system-ui";
     context.textAlign = "left";
 
@@ -101,7 +103,7 @@ export class PressableWindowObject extends PressableBaseGameObject {
 
   private setSize(): void {
     this.width = this.canvas.width * 0.9;
-    this.height = 350;
+    this.height = 300;
   }
 
   private setCenterPosition(): void {
@@ -143,5 +145,10 @@ export class PressableWindowObject extends PressableBaseGameObject {
     lines.push(currentLine);
 
     return lines;
+  }
+
+  private renderBackdrop(context: CanvasRenderingContext2D): void {
+    context.fillStyle = "rgba(0, 0, 0, 0.5)";
+    context.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }

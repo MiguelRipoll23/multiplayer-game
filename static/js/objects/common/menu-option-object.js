@@ -1,3 +1,4 @@
+import { ORANGE_TEAM_COLOR } from "../../constants/colors-constants.js";
 import { PressableBaseGameObject } from "../base/pressable-game-object.js";
 export class MenuOptionObject extends PressableBaseGameObject {
     index;
@@ -23,8 +24,7 @@ export class MenuOptionObject extends PressableBaseGameObject {
         this.calculateTextPosition();
     }
     render(context) {
-        // Draw rounded rectangle with gradient
-        context.fillStyle = "black"; // Black color for the rectangle
+        context.fillStyle = ORANGE_TEAM_COLOR;
         context.beginPath();
         context.moveTo(this.x + this.radius, this.y);
         context.lineTo(this.x + this.width - this.radius, this.y);
@@ -46,7 +46,7 @@ export class MenuOptionObject extends PressableBaseGameObject {
         super.render(context);
     }
     setSize(canvas) {
-        this.width = canvas.width - 70;
+        this.width = canvas.width - 60;
         this.height = 120;
     }
     calculateTextPosition() {

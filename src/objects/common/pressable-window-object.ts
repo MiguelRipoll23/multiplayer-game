@@ -53,27 +53,27 @@ export class PressableWindowObject extends PressableBaseGameObject {
     this.renderBackdrop(context);
 
     // Background
-    context.fillStyle = "rgb(255, 255, 255, 1)";
+    context.fillStyle = "rgb(0, 0, 0, 1)";
     context.fillRect(this.x, this.y, this.width, this.height);
 
     // Title Bar
-    context.fillStyle = "#FFEA00"; // Title bar background color
+    context.fillStyle = "#333333"; // Title bar background color
     context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
 
     // Window Title
-    context.fillStyle = "#000000";
+    context.fillStyle = "#FFFFFF";
     context.font = "20px system-ui";
     context.textAlign = "left";
-    context.fillText("INFORMATION", this.titleBarTextX, this.titleBarTextY);
+    context.fillText("SERVER MESSAGE", this.titleBarTextX, this.titleBarTextY);
 
     // Title
-    context.fillStyle = "#000000";
+    context.fillStyle = "#FFFFFF";
     context.font = "20px system-ui";
     context.textAlign = "left";
     context.fillText(this.title, this.titleTextX, this.titleTextY);
 
     // Content
-    context.fillStyle = "#000000";
+    context.fillStyle = "#FFFFFF";
     context.font = "16px system-ui";
     context.textAlign = "left";
 

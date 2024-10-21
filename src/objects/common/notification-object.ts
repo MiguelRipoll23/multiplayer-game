@@ -17,7 +17,7 @@ export class NotificationObject extends BaseGameObject {
 
   private completedTimes = 0;
 
-  private text = "This is a in-game notification!";
+  private text = "Whoops! Something went wrong!";
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
@@ -73,7 +73,7 @@ export class NotificationObject extends BaseGameObject {
   }
 
   private reset(): void {
-    this.opacity = 0;
+    this.opacity = 1;
     this.completedTimes = 0;
     this.textX = this.canvas.width + this.context.measureText(this.text).width;
     this.active = true;

@@ -118,6 +118,7 @@ export class GameLoopService {
 
   private addCustomEventListeners(): void {
     window.addEventListener(NOTIFICATION_EVENT_NAME, (event) => {
+      console.log("Notification event received:", event);
       this.gameFrame.getNotificationObject()?.show(
         (event as CustomEvent<any>).detail.text,
       );

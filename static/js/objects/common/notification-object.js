@@ -12,7 +12,7 @@ export class NotificationObject extends BaseGameObject {
     y = 0;
     textX = 0;
     completedTimes = 0;
-    text = "This is a in-game notification!";
+    text = "Whoops! Something went wrong!";
     constructor(canvas) {
         super();
         this.canvas = canvas;
@@ -46,7 +46,7 @@ export class NotificationObject extends BaseGameObject {
         this.reset();
     }
     reset() {
-        this.opacity = 0;
+        this.opacity = 1;
         this.completedTimes = 0;
         this.textX = this.canvas.width + this.context.measureText(this.text).width;
         this.active = true;

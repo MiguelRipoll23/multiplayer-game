@@ -17,11 +17,12 @@ export class MainScreen extends BaseGameScreen {
         this.loginScreen.hasTransitionFinished();
     }
     update(deltaTimeStamp) {
-        //super.update(deltaTimeStamp);
+        // No need to super.update() because the screenManagerService will handle the update
         this.screenManagerService?.getCurrentScreen()?.setOpacity(this.opacity);
         this.screenManagerService?.update(deltaTimeStamp);
     }
     render(context) {
+        // Must render the base screen first
         super.render(context);
         this.screenManagerService?.render(context);
     }

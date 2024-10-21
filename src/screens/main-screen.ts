@@ -24,13 +24,14 @@ export class MainScreen extends BaseGameScreen {
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    //super.update(deltaTimeStamp);
+    // No need to super.update() because the screenManagerService will handle the update
 
     this.screenManagerService?.getCurrentScreen()?.setOpacity(this.opacity);
     this.screenManagerService?.update(deltaTimeStamp);
   }
 
   public override render(context: CanvasRenderingContext2D): void {
+    // Must render the base screen first
     super.render(context);
 
     this.screenManagerService?.render(context);

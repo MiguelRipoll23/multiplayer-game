@@ -1,9 +1,15 @@
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
+import { BackdropObject } from "./backdrop-object.js";
 export class CloseableWindowObject extends BasePressableGameObject {
     canvas;
     TITLE_BAR_HEIGHT = 40;
     TEXT_LINE_HEIGHT = 20;
+    backdropObject;
     globalAlpha = 0;
+    windowX = 0;
+    windowY = 0;
+    windowWidth = 0;
+    windowHeight = 0;
     titleBarTextX = 0;
     titleBarTextY = 0;
     titleTextX = 0;
@@ -17,10 +23,15 @@ export class CloseableWindowObject extends BasePressableGameObject {
     constructor(canvas) {
         super();
         this.canvas = canvas;
+        this.backdropObject = new BackdropObject(this.canvas);
         this.setInitialState();
         this.setSize();
         this.setCenterPosition();
         this.calculatePositions();
+    }
+    load() {
+        this.backdropObject.load();
+        super.load();
     }
     open(title, content) {
         this.title = title;
@@ -30,21 +41,30 @@ export class CloseableWindowObject extends BasePressableGameObject {
         this.active = true;
     }
     close() {
+        if (this.hidden) {
+            return console.warn("CloseableWindowObject is already closed");
+        }
         this.hidden = true;
         this.globalAlpha = 0;
     }
     isHidden() {
         return this.hidden;
     }
+    update(deltaTimeStamp) {
+        if (this.pressed) {
+            this.close();
+        }
+        super.update(deltaTimeStamp);
+    }
     render(context) {
         context.globalAlpha = this.globalAlpha;
-        this.renderBackdrop(context);
+        this.backdropObject.render(context);
         // Background
         context.fillStyle = "rgb(0, 0, 0, 1)";
-        context.fillRect(this.x, this.y, this.width, this.height);
+        context.fillRect(this.windowX, this.windowY, this.windowWidth, this.windowHeight);
         // Title Bar
         context.fillStyle = "#333333"; // Title bar background color
-        context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
+        context.fillRect(this.windowX, this.windowY, this.windowWidth, this.TITLE_BAR_HEIGHT);
         // Window Title
         context.fillStyle = "#FFFFFF";
         context.font = "20px system-ui";
@@ -71,21 +91,23 @@ export class CloseableWindowObject extends BasePressableGameObject {
         this.active = false;
     }
     setSize() {
-        this.width = this.canvas.width * 0.9;
-        this.height = 300;
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
+        this.windowWidth = this.canvas.width * 0.9;
+        this.windowHeight = 300;
     }
     setCenterPosition() {
-        this.x = (this.canvas.width - this.width) / 2;
-        this.y = (this.canvas.height - this.height) / 2;
+        this.windowX = (this.canvas.width - this.windowWidth) / 2;
+        this.windowY = (this.canvas.height - this.windowHeight) / 2;
     }
     calculatePositions() {
-        this.titleBarTextX = this.x + 15;
-        this.titleBarTextY = this.y + 28;
-        this.titleTextX = this.x + 14;
-        this.titleTextY = this.y + 68;
-        this.contentTextX = this.x + 14;
-        this.contentTextY = this.y + this.TITLE_BAR_HEIGHT + 62;
-        this.contentTextMaxWidth = this.width - 20;
+        this.titleBarTextX = this.windowX + 15;
+        this.titleBarTextY = this.windowY + 28;
+        this.titleTextX = this.windowX + 14;
+        this.titleTextY = this.windowY + 68;
+        this.contentTextX = this.windowX + 14;
+        this.contentTextY = this.windowY + this.TITLE_BAR_HEIGHT + 62;
+        this.contentTextMaxWidth = this.windowWidth - 20;
     }
     wrapText(context, text, maxWidth) {
         const words = text.split(" ");
@@ -104,9 +126,5 @@ export class CloseableWindowObject extends BasePressableGameObject {
         }
         lines.push(currentLine);
         return lines;
-    }
-    renderBackdrop(context) {
-        context.fillStyle = "rgba(0, 0, 0, 0.8)";
-        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }

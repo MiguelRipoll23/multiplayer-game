@@ -21,23 +21,25 @@ export class CloseableMessageObject extends BasePressableGameObject {
         this.opacity = 1;
         this.active = true;
     }
-    hide() {
+    close() {
         if (this.opacity === 0) {
-            console.warn("CloseableMessageObject is already hidden");
-            return;
+            return console.warn("CloseableMessageObject is already closed");
         }
         this.active = false;
         this.opacity = 0;
     }
-    handlePointerEvent(gamePointer) {
-        this.hide();
-        super.handlePointerEvent(gamePointer);
+    update(deltaTimeStamp) {
+        if (this.pressed) {
+            this.close();
+        }
+        super.update(deltaTimeStamp);
     }
     render(context) {
         context.globalAlpha = this.opacity;
         this.drawRoundedRectangle(context);
         this.drawText(context);
         context.globalAlpha = this.opacity;
+        super.render(context);
     }
     setSize() {
         this.width = this.DEFAULT_WIDTH;

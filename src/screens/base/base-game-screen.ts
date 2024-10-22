@@ -111,7 +111,6 @@ export class BaseGameScreen implements GameScreen {
       pressableObject.handlePointerEvent(this.gamePointer);
 
       if (pressableObject.isPressed()) {
-        console.log(pressableObject.constructor.name + " pressed");
         break;
       }
     }

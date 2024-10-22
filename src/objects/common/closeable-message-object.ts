@@ -1,4 +1,3 @@
-import { GamePointer } from "../../models/game-pointer.js";
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 
 export class CloseableMessageObject extends BasePressableGameObject {
@@ -27,20 +26,21 @@ export class CloseableMessageObject extends BasePressableGameObject {
     this.active = true;
   }
 
-  public hide(): void {
+  public close(): void {
     if (this.opacity === 0) {
-      console.warn("CloseableMessageObject is already hidden");
-      return;
+      return console.warn("CloseableMessageObject is already closed");
     }
 
     this.active = false;
     this.opacity = 0;
   }
 
-  public override handlePointerEvent(gamePointer: GamePointer): void {
-    this.hide();
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    if (this.pressed) {
+      this.close();
+    }
 
-    super.handlePointerEvent(gamePointer);
+    super.update(deltaTimeStamp);
   }
 
   public render(context: CanvasRenderingContext2D): void {
@@ -48,6 +48,8 @@ export class CloseableMessageObject extends BasePressableGameObject {
     this.drawRoundedRectangle(context);
     this.drawText(context);
     context.globalAlpha = this.opacity;
+
+    super.render(context);
   }
 
   private setSize(): void {

@@ -74,7 +74,6 @@ export class BaseGameScreen {
         for (const pressableObject of pressableObjects) {
             pressableObject.handlePointerEvent(this.gamePointer);
             if (pressableObject.isPressed()) {
-                console.log(pressableObject.constructor.name + " pressed");
                 break;
             }
         }

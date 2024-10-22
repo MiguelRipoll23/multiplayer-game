@@ -44,6 +44,7 @@ export class BasePressableGameObject extends BaseGameObject {
       pointerY <= this.y + this.height
     ) {
       this.pressed = true;
+      console.log(this.constructor.name + " pressed");
     }
   }
 

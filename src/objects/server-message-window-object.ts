@@ -15,13 +15,4 @@ export class ServerMessageWindowObject extends CloseableWindowObject {
     this.index = index;
     super.open(title, content);
   }
-
-  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    if (this.isPressed()) {
-      this.close();
-      console.log("Closed server message window with index:", this.index);
-    }
-
-    super.update(deltaTimeStamp);
-  }
 }

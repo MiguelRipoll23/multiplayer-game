@@ -1,10 +1,19 @@
+import { GamePointer } from "../../models/game-pointer.js";
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
+import { BackdropObject } from "./backdrop-object.js";
 
 export class CloseableWindowObject extends BasePressableGameObject {
   private readonly TITLE_BAR_HEIGHT: number = 40;
   private readonly TEXT_LINE_HEIGHT: number = 20;
 
+  private readonly backdropObject: BackdropObject;
+
   private globalAlpha: number = 0;
+
+  private windowX: number = 0;
+  private windowY: number = 0;
+  private windowWidth: number = 0;
+  private windowHeight: number = 0;
 
   private titleBarTextX: number = 0;
   private titleBarTextY: number = 0;
@@ -24,10 +33,17 @@ export class CloseableWindowObject extends BasePressableGameObject {
   constructor(private canvas: HTMLCanvasElement) {
     super();
 
+    this.backdropObject = new BackdropObject(this.canvas);
+
     this.setInitialState();
     this.setSize();
     this.setCenterPosition();
     this.calculatePositions();
+  }
+
+  public override load(): void {
+    this.backdropObject.load();
+    super.load();
   }
 
   public open(title: string, content: string): void {
@@ -39,6 +55,10 @@ export class CloseableWindowObject extends BasePressableGameObject {
   }
 
   public close(): void {
+    if (this.hidden) {
+      return console.warn("CloseableWindowObject is already closed");
+    }
+
     this.hidden = true;
     this.globalAlpha = 0;
   }
@@ -47,18 +67,36 @@ export class CloseableWindowObject extends BasePressableGameObject {
     return this.hidden;
   }
 
-  public render(context: CanvasRenderingContext2D): void {
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    if (this.pressed) {
+      this.close();
+    }
+
+    super.update(deltaTimeStamp);
+  }
+
+  public override render(context: CanvasRenderingContext2D): void {
     context.globalAlpha = this.globalAlpha;
 
-    this.renderBackdrop(context);
+    this.backdropObject.render(context);
 
     // Background
     context.fillStyle = "rgb(0, 0, 0, 1)";
-    context.fillRect(this.x, this.y, this.width, this.height);
+    context.fillRect(
+      this.windowX,
+      this.windowY,
+      this.windowWidth,
+      this.windowHeight,
+    );
 
     // Title Bar
     context.fillStyle = "#333333"; // Title bar background color
-    context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
+    context.fillRect(
+      this.windowX,
+      this.windowY,
+      this.windowWidth,
+      this.TITLE_BAR_HEIGHT,
+    );
 
     // Window Title
     context.fillStyle = "#FFFFFF";
@@ -102,25 +140,27 @@ export class CloseableWindowObject extends BasePressableGameObject {
   }
 
   private setSize(): void {
-    this.width = this.canvas.width * 0.9;
-    this.height = 300;
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
+    this.windowWidth = this.canvas.width * 0.9;
+    this.windowHeight = 300;
   }
 
   private setCenterPosition(): void {
-    this.x = (this.canvas.width - this.width) / 2;
-    this.y = (this.canvas.height - this.height) / 2;
+    this.windowX = (this.canvas.width - this.windowWidth) / 2;
+    this.windowY = (this.canvas.height - this.windowHeight) / 2;
   }
 
   private calculatePositions(): void {
-    this.titleBarTextX = this.x + 15;
-    this.titleBarTextY = this.y + 28;
+    this.titleBarTextX = this.windowX + 15;
+    this.titleBarTextY = this.windowY + 28;
 
-    this.titleTextX = this.x + 14;
-    this.titleTextY = this.y + 68;
+    this.titleTextX = this.windowX + 14;
+    this.titleTextY = this.windowY + 68;
 
-    this.contentTextX = this.x + 14;
-    this.contentTextY = this.y + this.TITLE_BAR_HEIGHT + 62;
-    this.contentTextMaxWidth = this.width - 20;
+    this.contentTextX = this.windowX + 14;
+    this.contentTextY = this.windowY + this.TITLE_BAR_HEIGHT + 62;
+    this.contentTextMaxWidth = this.windowWidth - 20;
   }
 
   private wrapText(
@@ -145,10 +185,5 @@ export class CloseableWindowObject extends BasePressableGameObject {
     lines.push(currentLine);
 
     return lines;
-  }
-
-  private renderBackdrop(context: CanvasRenderingContext2D): void {
-    context.fillStyle = "rgba(0, 0, 0, 0.8)";
-    context.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }

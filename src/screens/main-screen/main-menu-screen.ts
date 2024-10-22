@@ -140,15 +140,13 @@ export class MainMenuScreen extends BaseGameScreen {
         break;
 
       case 1:
-        alert("Not implemented");
-        break;
+        return this.closeableMessageObject?.show("Not implemented");
 
       case 2:
-        alert("Not implemented");
-        break;
+        return this.closeableMessageObject?.show("Not implemented");
 
       default:
-        alert("Invalid menu option index");
+        return this.closeableMessageObject?.show("Invalid menu option");
     }
   }
 

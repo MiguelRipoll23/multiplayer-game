@@ -5,7 +5,7 @@ import { MainScreen } from "../screens/main-screen.js";
 export class GameLoopService {
     canvas;
     context;
-    debug = false;
+    debug = true;
     gameController;
     gameFrame;
     gamePointer;
@@ -39,6 +39,8 @@ export class GameLoopService {
         this.isRunning = false;
     }
     logDebugInfo() {
+        if (this.debug === false)
+            return;
         console.info("%cDebug mode on", "color: #b6ff35; font-size: 20px; font-weight: bold");
     }
     setCanvasSize() {

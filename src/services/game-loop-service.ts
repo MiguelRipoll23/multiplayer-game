@@ -7,7 +7,7 @@ import { MainScreen } from "../screens/main-screen.js";
 
 export class GameLoopService {
   private context: CanvasRenderingContext2D;
-  private debug: boolean = false;
+  private debug: boolean = true;
 
   private gameController: GameController;
   private gameFrame: GameFrame;
@@ -50,6 +50,8 @@ export class GameLoopService {
   }
 
   private logDebugInfo(): void {
+    if (this.debug === false) return;
+
     console.info(
       "%cDebug mode on",
       "color: #b6ff35; font-size: 20px; font-weight: bold",

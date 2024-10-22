@@ -26,7 +26,7 @@ export class MainMenuScreen extends BaseGameScreen {
     }
     update(deltaTimeStamp) {
         this.handleMenuOptionObjects();
-        this.handleserverMessageWindowObject();
+        this.handleServerMessageWindowObject();
         super.update(deltaTimeStamp);
     }
     render(context) {
@@ -57,18 +57,18 @@ export class MainMenuScreen extends BaseGameScreen {
         this.uiObjects.push(this.serverMessageWindowObject);
     }
     downloadServerMessages() {
-        this.apiService.getMessages().then((message) => {
-            this.showMessages(message);
+        this.apiService.getMessages().then((messages) => {
+            this.showMessages(messages);
         }).catch((error) => {
             console.error(error);
             this.messageObject?.show("Failed to download server messages");
         });
     }
-    showMessages(message) {
-        this.messagesResponse = message;
-        this.showPost(0);
+    showMessages(messages) {
+        this.messagesResponse = messages;
+        this.showMessage(0);
     }
-    showPost(index) {
+    showMessage(index) {
         if (this.messagesResponse === null) {
             return;
         }
@@ -76,14 +76,14 @@ export class MainMenuScreen extends BaseGameScreen {
             return this.serverMessageWindowObject?.setActive(false);
         }
         const item = this.messagesResponse[index];
-        console.log("Opening message post", item);
+        console.log("Opening server message message", item);
         this.serverMessageWindowObject?.openMessage(index, item.title, item.content);
     }
-    handleserverMessageWindowObject() {
+    handleServerMessageWindowObject() {
         if (this.serverMessageWindowObject?.isActive() &&
             this.serverMessageWindowObject?.isHidden()) {
             const index = this.serverMessageWindowObject.getIndex() + 1;
-            this.showPost(index);
+            this.showMessage(index);
         }
     }
     handleMenuOptionObjects() {

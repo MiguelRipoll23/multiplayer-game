@@ -2,17 +2,18 @@ import { GameState } from "../models/game-state.js";
 
 export function getConfigurationKey<T>(
   key: string,
+  defaultValue: T,
   gameState: GameState,
-): T | null {
+): T {
   const configuration: { [key: string]: any } | null = gameState.getGameServer()
     .getConfiguration();
 
   if (configuration === null) {
-    return null;
+    return defaultValue;
   }
 
   if ((key in configuration) === false) {
-    return null;
+    return defaultValue;
   }
 
   return configuration[key];

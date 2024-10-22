@@ -33,8 +33,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
         });
     }
     createScoreboardObject() {
-        const onlineDurationSeconds = getConfigurationKey(SCOREBOARD_SECONDS_DURATION, this.gameState);
-        const durationSeconds = onlineDurationSeconds || 60 * 5;
+        const durationSeconds = getConfigurationKey(SCOREBOARD_SECONDS_DURATION, 60 * 5, this.gameState);
         this.scoreboardObject = new ScoreboardObject(this.canvas);
         this.scoreboardObject.startCountdown(durationSeconds);
         this.sceneObjects.push(this.scoreboardObject);

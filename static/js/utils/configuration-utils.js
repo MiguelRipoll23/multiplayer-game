@@ -1,11 +1,11 @@
-export function getConfigurationKey(key, gameState) {
+export function getConfigurationKey(key, defaultValue, gameState) {
     const configuration = gameState.getGameServer()
         .getConfiguration();
     if (configuration === null) {
-        return null;
+        return defaultValue;
     }
     if ((key in configuration) === false) {
-        return null;
+        return defaultValue;
     }
     return configuration[key];
 }

@@ -42,14 +42,11 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private createScoreboardObject() {
-    const onlineDurationSeconds: number | null = getConfigurationKey<
-      number | null
-    >(
+    const durationSeconds: number | null = getConfigurationKey<number>(
       SCOREBOARD_SECONDS_DURATION,
+      60 * 5,
       this.gameState,
     );
-
-    const durationSeconds = onlineDurationSeconds || 60 * 5;
 
     this.scoreboardObject = new ScoreboardObject(this.canvas);
     this.scoreboardObject.startCountdown(durationSeconds);

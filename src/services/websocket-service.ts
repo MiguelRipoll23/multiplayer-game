@@ -1,6 +1,7 @@
 import {
-  API_SERVER,
+  API_BASE_URL,
   API_WS_PROTOCOL,
+  WEBSOCKET_BASE_URL,
   WEBSOCKET_ENDPOINT,
 } from "../constants/api-constants.js";
 import {
@@ -30,7 +31,7 @@ export class WebSocketService {
     const authenticationToken = gameRegistration.getAuthenticationToken();
 
     this.webSocket = new WebSocket(
-      API_WS_PROTOCOL + API_SERVER + WEBSOCKET_ENDPOINT +
+      WEBSOCKET_BASE_URL + WEBSOCKET_ENDPOINT +
         `?access_token=${authenticationToken}`,
     );
 

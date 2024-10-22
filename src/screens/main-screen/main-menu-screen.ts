@@ -2,9 +2,9 @@ import { GameController } from "../../models/game-controller.js";
 import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { MessageObject } from "../../objects/common/message-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
-import { ServerMessageWindow } from "../../objects/server-message-window-object.js";
+import { ServerMessageWindowObject } from "../../objects/server-message-window-object.js";
 import { ApiService } from "../../services/api-service.js";
-import { NewsResponse } from "../../services/interfaces/news-response.js";
+import { MessagesResponse } from "../../services/interfaces/messages-response.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { MatchmakingScreen } from "./matchmaking-screen.js";
 
@@ -13,10 +13,10 @@ export class MainMenuScreen extends BaseGameScreen {
 
   private apiService: ApiService;
 
-  private newsResponse: NewsResponse[] | null = null;
+  private messagesResponse: MessagesResponse[] | null = null;
 
   private messageObject: MessageObject | null = null;
-  private newsWindowObject: ServerMessageWindow | null = null;
+  private serverMessageWindowObject: ServerMessageWindowObject | null = null;
 
   constructor(gameController: GameController) {
     super(gameController);
@@ -26,19 +26,19 @@ export class MainMenuScreen extends BaseGameScreen {
   public override loadObjects(): void {
     this.loadTitleObject();
     this.loadMenuOptionObjects();
-    this.loadNewsWindowObject();
+    this.loadServerMessageWindow();
     this.loadMessageObject();
 
     super.loadObjects();
   }
 
   public hasTransitionFinished(): void {
-    this.downloadNews();
+    this.downloadServerMessages();
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.handleMenuOptionObjects();
-    this.handleNewsWindowObject();
+    this.handleserverMessageWindowObject();
 
     super.update(deltaTimeStamp);
   }
@@ -73,48 +73,52 @@ export class MainMenuScreen extends BaseGameScreen {
     this.uiObjects.push(this.messageObject);
   }
 
-  private loadNewsWindowObject(): void {
-    this.newsWindowObject = new ServerMessageWindow(this.canvas);
-    this.newsWindowObject.load();
+  private loadServerMessageWindow(): void {
+    this.serverMessageWindowObject = new ServerMessageWindowObject(this.canvas);
+    this.serverMessageWindowObject.load();
 
-    this.uiObjects.push(this.newsWindowObject);
+    this.uiObjects.push(this.serverMessageWindowObject);
   }
 
-  private downloadNews(): void {
-    this.apiService.getMessages().then((news) => {
-      this.showPosts(news);
+  private downloadServerMessages(): void {
+    this.apiService.getMessages().then((message) => {
+      this.showMessages(message);
     }).catch((error) => {
       console.error(error);
-      this.messageObject?.show("Failed to download news");
+      this.messageObject?.show("Failed to download server messages");
     });
   }
 
-  private showPosts(news: NewsResponse[]): void {
-    this.newsResponse = news;
+  private showMessages(message: MessagesResponse[]): void {
+    this.messagesResponse = message;
     this.showPost(0);
   }
 
   private showPost(index: number): void {
-    if (this.newsResponse === null) {
+    if (this.messagesResponse === null) {
       return;
     }
 
-    if (index === this.newsResponse.length) {
-      return this.newsWindowObject?.setActive(false);
+    if (index === this.messagesResponse.length) {
+      return this.serverMessageWindowObject?.setActive(false);
     }
 
-    const item = this.newsResponse[index];
-    console.log("Opening news post", item);
+    const item = this.messagesResponse[index];
+    console.log("Opening message post", item);
 
-    this.newsWindowObject?.openMessage(index, item.title, item.content);
+    this.serverMessageWindowObject?.openMessage(
+      index,
+      item.title,
+      item.content,
+    );
   }
 
-  private handleNewsWindowObject() {
+  private handleserverMessageWindowObject() {
     if (
-      this.newsWindowObject?.isActive() &&
-      this.newsWindowObject?.isHidden()
+      this.serverMessageWindowObject?.isActive() &&
+      this.serverMessageWindowObject?.isHidden()
     ) {
-      const index = this.newsWindowObject.getIndex() + 1;
+      const index = this.serverMessageWindowObject.getIndex() + 1;
       this.showPost(index);
     }
   }

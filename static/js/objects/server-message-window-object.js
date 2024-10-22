@@ -1,5 +1,5 @@
 import { PressableWindowObject } from "./common/pressable-window-object.js";
-export class ServerMessageWindow extends PressableWindowObject {
+export class ServerMessageWindowObject extends PressableWindowObject {
     index = 0;
     constructor(canvas) {
         super(canvas);

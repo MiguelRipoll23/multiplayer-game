@@ -1,15 +1,15 @@
 import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { MessageObject } from "../../objects/common/message-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
-import { ServerMessageWindow } from "../../objects/server-message-window-object.js";
+import { ServerMessageWindowObject } from "../../objects/server-message-window-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { MatchmakingScreen } from "./matchmaking-screen.js";
 export class MainMenuScreen extends BaseGameScreen {
     MENU_OPTIONS_TEXT = ["Automatch", "Scoreboard", "Settings"];
     apiService;
-    newsResponse = null;
+    messagesResponse = null;
     messageObject = null;
-    newsWindowObject = null;
+    serverMessageWindowObject = null;
     constructor(gameController) {
         super(gameController);
         this.apiService = gameController.getApiService();
@@ -17,16 +17,16 @@ export class MainMenuScreen extends BaseGameScreen {
     loadObjects() {
         this.loadTitleObject();
         this.loadMenuOptionObjects();
-        this.loadNewsWindowObject();
+        this.loadServerMessageWindow();
         this.loadMessageObject();
         super.loadObjects();
     }
     hasTransitionFinished() {
-        this.downloadNews();
+        this.downloadServerMessages();
     }
     update(deltaTimeStamp) {
         this.handleMenuOptionObjects();
-        this.handleNewsWindowObject();
+        this.handleserverMessageWindowObject();
         super.update(deltaTimeStamp);
     }
     render(context) {
@@ -51,38 +51,38 @@ export class MainMenuScreen extends BaseGameScreen {
         this.messageObject = new MessageObject(this.canvas);
         this.uiObjects.push(this.messageObject);
     }
-    loadNewsWindowObject() {
-        this.newsWindowObject = new ServerMessageWindow(this.canvas);
-        this.newsWindowObject.load();
-        this.uiObjects.push(this.newsWindowObject);
+    loadServerMessageWindow() {
+        this.serverMessageWindowObject = new ServerMessageWindowObject(this.canvas);
+        this.serverMessageWindowObject.load();
+        this.uiObjects.push(this.serverMessageWindowObject);
     }
-    downloadNews() {
-        this.apiService.getMessages().then((news) => {
-            this.showPosts(news);
+    downloadServerMessages() {
+        this.apiService.getMessages().then((message) => {
+            this.showMessages(message);
         }).catch((error) => {
             console.error(error);
-            this.messageObject?.show("Failed to download news");
+            this.messageObject?.show("Failed to download server messages");
         });
     }
-    showPosts(news) {
-        this.newsResponse = news;
+    showMessages(message) {
+        this.messagesResponse = message;
         this.showPost(0);
     }
     showPost(index) {
-        if (this.newsResponse === null) {
+        if (this.messagesResponse === null) {
             return;
         }
-        if (index === this.newsResponse.length) {
-            return this.newsWindowObject?.setActive(false);
+        if (index === this.messagesResponse.length) {
+            return this.serverMessageWindowObject?.setActive(false);
         }
-        const item = this.newsResponse[index];
-        console.log("Opening news post", item);
-        this.newsWindowObject?.openMessage(index, item.title, item.content);
+        const item = this.messagesResponse[index];
+        console.log("Opening message post", item);
+        this.serverMessageWindowObject?.openMessage(index, item.title, item.content);
     }
-    handleNewsWindowObject() {
-        if (this.newsWindowObject?.isActive() &&
-            this.newsWindowObject?.isHidden()) {
-            const index = this.newsWindowObject.getIndex() + 1;
+    handleserverMessageWindowObject() {
+        if (this.serverMessageWindowObject?.isActive() &&
+            this.serverMessageWindowObject?.isHidden()) {
+            const index = this.serverMessageWindowObject.getIndex() + 1;
             this.showPost(index);
         }
     }

@@ -55,7 +55,7 @@ export class WindowObject extends BaseGameObject {
         context.fillStyle = "#FFFFFF";
         context.font = "20px system-ui";
         context.textAlign = "left";
-        context.fillText("NEWS", this.titleBarTextX, this.titleBarTextY);
+        context.fillText("Window", this.titleBarTextX, this.titleBarTextY);
         // Title
         context.fillStyle = "#FFFFFF";
         context.font = "20px system-ui";

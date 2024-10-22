@@ -1,8 +1,8 @@
-import { API_HTTP_PROTOCOL, API_SERVER, CONFIGURATION_ENDPOINT, NEWS_ENDPOINT as NEWS_ENDPOINT, REGISTER_ENDPOINT, VERSION_ENDPOINT, } from "../constants/api-constants.js";
+import { API_BASE_URL, CONFIGURATION_ENDPOINT, MESSAGES_ENDPOINT, REGISTER_ENDPOINT, VERSION_ENDPOINT, } from "../constants/api-constants.js";
 export class ApiService {
     authenticationToken = null;
     async checkForUpdates() {
-        const response = await fetch(API_HTTP_PROTOCOL + API_SERVER + VERSION_ENDPOINT);
+        const response = await fetch(API_BASE_URL + VERSION_ENDPOINT);
         if (response.ok === false) {
             throw new Error("Failed to fetch version");
         }
@@ -11,7 +11,7 @@ export class ApiService {
         return false;
     }
     async registerUser(name) {
-        const response = await fetch(API_HTTP_PROTOCOL + API_SERVER + REGISTER_ENDPOINT, {
+        const response = await fetch(API_BASE_URL + REGISTER_ENDPOINT, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -32,7 +32,7 @@ export class ApiService {
         if (this.authenticationToken === null) {
             throw new Error("Authentication token not found");
         }
-        const response = await fetch(API_HTTP_PROTOCOL + API_SERVER + CONFIGURATION_ENDPOINT, {
+        const response = await fetch(API_BASE_URL + CONFIGURATION_ENDPOINT, {
             headers: {
                 "Authorization": this.authenticationToken,
             },
@@ -46,7 +46,7 @@ export class ApiService {
         if (this.authenticationToken === null) {
             throw new Error("Authentication token not found");
         }
-        const response = await fetch(API_HTTP_PROTOCOL + API_SERVER + NEWS_ENDPOINT, {
+        const response = await fetch(API_BASE_URL + MESSAGES_ENDPOINT, {
             headers: {
                 "Authorization": this.authenticationToken,
             },

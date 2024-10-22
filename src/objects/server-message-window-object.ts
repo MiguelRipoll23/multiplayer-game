@@ -1,6 +1,6 @@
-import { PressableWindowObject } from "./common/pressable-window-object.js";
+import { CloseableWindowObject } from "./common/closeable-window-object.js";
 
-export class ServerMessageWindowObject extends PressableWindowObject {
+export class ServerMessageWindowObject extends CloseableWindowObject {
   private index: number = 0;
 
   constructor(canvas: HTMLCanvasElement) {

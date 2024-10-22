@@ -1,39 +1,47 @@
-import { BaseGameObject } from "../base/base-game-object.js";
-export class MessageObject extends BaseGameObject {
+import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
+export class CloseableMessageObject extends BasePressableGameObject {
     canvas;
     FILL_COLOR = "rgba(0, 0, 0, 0.8)";
     DEFAULT_HEIGHT = 100;
     DEFAULT_WIDTH = 340;
-    x = 0;
-    y = 0;
+    opacity = 0;
     textX = 0;
     textY = 0;
-    opacity = 0;
-    width = this.DEFAULT_WIDTH;
-    height = this.DEFAULT_HEIGHT;
     content = "Unknown";
     constructor(canvas) {
         super();
         this.canvas = canvas;
+        this.active = false;
+        this.setSize();
         this.setPosition();
     }
     show(value) {
         this.content = value;
         this.setPosition();
         this.opacity = 1;
+        this.active = true;
     }
     hide() {
         if (this.opacity === 0) {
-            console.warn("MessageObject is already hidden");
+            console.warn("CloseableMessageObject is already hidden");
             return;
         }
+        this.active = false;
         this.opacity = 0;
+    }
+    handlePointerEvent(gamePointer) {
+        this.hide();
+        super.handlePointerEvent(gamePointer);
     }
     render(context) {
         context.globalAlpha = this.opacity;
         this.drawRoundedRectangle(context);
         this.drawText(context);
         context.globalAlpha = this.opacity;
+    }
+    setSize() {
+        this.width = this.DEFAULT_WIDTH;
+        this.height = this.DEFAULT_HEIGHT;
     }
     drawRoundedRectangle(context) {
         context.fillStyle = this.FILL_COLOR;

@@ -1,24 +1,22 @@
-import { BaseGameObject } from "../base/base-game-object.js";
+import { GamePointer } from "../../models/game-pointer.js";
+import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 
-export class MessageObject extends BaseGameObject {
+export class CloseableMessageObject extends BasePressableGameObject {
   private readonly FILL_COLOR = "rgba(0, 0, 0, 0.8)";
   private readonly DEFAULT_HEIGHT = 100;
   private readonly DEFAULT_WIDTH = 340;
 
-  private x = 0;
-  private y = 0;
+  private opacity = 0;
 
   private textX = 0;
   private textY = 0;
 
-  private opacity = 0;
-
-  private width = this.DEFAULT_WIDTH;
-  private height = this.DEFAULT_HEIGHT;
   private content = "Unknown";
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
+    this.active = false;
+    this.setSize();
     this.setPosition();
   }
 
@@ -26,15 +24,23 @@ export class MessageObject extends BaseGameObject {
     this.content = value;
     this.setPosition();
     this.opacity = 1;
+    this.active = true;
   }
 
   public hide(): void {
     if (this.opacity === 0) {
-      console.warn("MessageObject is already hidden");
+      console.warn("CloseableMessageObject is already hidden");
       return;
     }
 
+    this.active = false;
     this.opacity = 0;
+  }
+
+  public override handlePointerEvent(gamePointer: GamePointer): void {
+    this.hide();
+
+    super.handlePointerEvent(gamePointer);
   }
 
   public render(context: CanvasRenderingContext2D): void {
@@ -42,6 +48,11 @@ export class MessageObject extends BaseGameObject {
     this.drawRoundedRectangle(context);
     this.drawText(context);
     context.globalAlpha = this.opacity;
+  }
+
+  private setSize(): void {
+    this.width = this.DEFAULT_WIDTH;
+    this.height = this.DEFAULT_HEIGHT;
   }
 
   private drawRoundedRectangle(context: CanvasRenderingContext2D): void {

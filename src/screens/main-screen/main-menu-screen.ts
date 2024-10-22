@@ -1,6 +1,6 @@
 import { GameController } from "../../models/game-controller.js";
+import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
-import { MessageObject } from "../../objects/common/message-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
 import { ServerMessageWindowObject } from "../../objects/server-message-window-object.js";
 import { ApiService } from "../../services/api-service.js";
@@ -14,9 +14,9 @@ export class MainMenuScreen extends BaseGameScreen {
   private apiService: ApiService;
 
   private messagesResponse: MessagesResponse[] | null = null;
-
-  private messageObject: MessageObject | null = null;
   private serverMessageWindowObject: ServerMessageWindowObject | null = null;
+
+  private closeableMessageObject: CloseableMessageObject | null = null;
 
   constructor(gameController: GameController) {
     super(gameController);
@@ -27,7 +27,7 @@ export class MainMenuScreen extends BaseGameScreen {
     this.loadTitleObject();
     this.loadMenuOptionObjects();
     this.loadServerMessageWindow();
-    this.loadMessageObject();
+    this.loadCloseableMessageObject();
 
     super.loadObjects();
   }
@@ -68,9 +68,9 @@ export class MainMenuScreen extends BaseGameScreen {
     }
   }
 
-  private loadMessageObject(): void {
-    this.messageObject = new MessageObject(this.canvas);
-    this.uiObjects.push(this.messageObject);
+  private loadCloseableMessageObject(): void {
+    this.closeableMessageObject = new CloseableMessageObject(this.canvas);
+    this.uiObjects.push(this.closeableMessageObject);
   }
 
   private loadServerMessageWindow(): void {
@@ -85,7 +85,7 @@ export class MainMenuScreen extends BaseGameScreen {
       this.showMessages(messages);
     }).catch((error) => {
       console.error(error);
-      this.messageObject?.show("Failed to download server messages");
+      this.closeableMessageObject?.show("Failed to download server messages");
     });
   }
 

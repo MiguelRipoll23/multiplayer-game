@@ -1,5 +1,5 @@
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
-export class ClosableWindowObject extends BasePressableGameObject {
+export class CloseableWindowObject extends BasePressableGameObject {
     canvas;
     TITLE_BAR_HEIGHT = 40;
     TEXT_LINE_HEIGHT = 20;

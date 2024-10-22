@@ -1,6 +1,6 @@
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 
-export class PressableWindowObject extends BasePressableGameObject {
+export class CloseableWindowObject extends BasePressableGameObject {
   private readonly TITLE_BAR_HEIGHT: number = 40;
   private readonly TEXT_LINE_HEIGHT: number = 20;
 

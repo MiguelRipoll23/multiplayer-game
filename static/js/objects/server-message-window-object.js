@@ -1,5 +1,5 @@
-import { PressableWindowObject } from "./common/pressable-window-object.js";
-export class ServerMessageWindowObject extends PressableWindowObject {
+import { CloseableWindowObject } from "./common/closeable-window-object.js";
+export class ServerMessageWindowObject extends CloseableWindowObject {
     index = 0;
     constructor(canvas) {
         super(canvas);

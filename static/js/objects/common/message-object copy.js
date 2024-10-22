@@ -11,14 +11,14 @@ export class MessageObject extends BaseGameObject {
     opacity = 0;
     width = this.DEFAULT_WIDTH;
     height = this.DEFAULT_HEIGHT;
-    content = "Unknown";
+    text = "Unknown";
     constructor(canvas) {
         super();
         this.canvas = canvas;
         this.setPosition();
     }
     show(value) {
-        this.content = value;
+        this.text = value;
         this.setPosition();
         this.opacity = 1;
     }
@@ -50,7 +50,7 @@ export class MessageObject extends BaseGameObject {
         context.font = "16px Arial";
         context.fillStyle = "WHITE";
         context.textAlign = "center";
-        context.fillText(this.content, this.textX, this.textY);
+        context.fillText(this.text, this.textX, this.textY);
     }
     setPosition() {
         this.x = this.canvas.width / 2 - (this.width / 2);

@@ -1,5 +1,5 @@
+import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
-import { MessageObject } from "../../objects/common/message-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
 import { ServerMessageWindowObject } from "../../objects/server-message-window-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
@@ -8,8 +8,8 @@ export class MainMenuScreen extends BaseGameScreen {
     MENU_OPTIONS_TEXT = ["Automatch", "Scoreboard", "Settings"];
     apiService;
     messagesResponse = null;
-    messageObject = null;
     serverMessageWindowObject = null;
+    closeableMessageObject = null;
     constructor(gameController) {
         super(gameController);
         this.apiService = gameController.getApiService();
@@ -18,7 +18,7 @@ export class MainMenuScreen extends BaseGameScreen {
         this.loadTitleObject();
         this.loadMenuOptionObjects();
         this.loadServerMessageWindow();
-        this.loadMessageObject();
+        this.loadCloseableMessageObject();
         super.loadObjects();
     }
     hasTransitionFinished() {
@@ -47,9 +47,9 @@ export class MainMenuScreen extends BaseGameScreen {
             y += menuOptionObject.getHeight() + 25;
         }
     }
-    loadMessageObject() {
-        this.messageObject = new MessageObject(this.canvas);
-        this.uiObjects.push(this.messageObject);
+    loadCloseableMessageObject() {
+        this.closeableMessageObject = new CloseableMessageObject(this.canvas);
+        this.uiObjects.push(this.closeableMessageObject);
     }
     loadServerMessageWindow() {
         this.serverMessageWindowObject = new ServerMessageWindowObject(this.canvas);
@@ -61,7 +61,7 @@ export class MainMenuScreen extends BaseGameScreen {
             this.showMessages(messages);
         }).catch((error) => {
             console.error(error);
-            this.messageObject?.show("Failed to download server messages");
+            this.closeableMessageObject?.show("Failed to download server messages");
         });
     }
     showMessages(messages) {

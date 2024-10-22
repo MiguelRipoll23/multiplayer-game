@@ -1,5 +1,4 @@
 import { GameServer } from "../../models/game-server.js";
-import { GameState } from "../../models/game-state.js";
 import { MessageObject } from "../../objects/common/message-object.js";
 import { CryptoService } from "../../services/crypto-service.js";
 import { WebSocketService } from "../../services/websocket-service.js";
@@ -9,18 +8,25 @@ import { RegistrationResponse } from "../../services/interfaces/registration-res
 import { GameRegistration } from "../../models/game-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
+import { SERVER_CONNECTED_EVENT } from "../../constants/events-contants.js";
 
 export class LoginScreen extends BaseGameScreen {
-  private gameServer!: GameServer;
-  private apiService!: ApiService;
-  private cryptoService!: CryptoService;
-  private webSocketService!: WebSocketService;
+  private gameServer: GameServer;
+  private apiService: ApiService;
+  private cryptoService: CryptoService;
+  private webSocketService: WebSocketService;
 
   private messageObject: MessageObject | null = null;
 
   constructor(gameController: GameController) {
     super(gameController);
-    this.setProperties(gameController);
+
+    this.gameServer = gameController.getGameState().getGameServer();
+    this.apiService = gameController.getApiService();
+    this.cryptoService = gameController.getCryptoService();
+    this.webSocketService = gameController.getWebSocketService();
+
+    this.addCustomEventListeners();
   }
 
   public override loadObjects(): void {
@@ -38,12 +44,10 @@ export class LoginScreen extends BaseGameScreen {
     this.transitionToMatchmakingScreen();
   }
 
-  private setProperties(gameController: GameController): void {
-    this.gameServer = gameController.getGameState().getGameServer();
-    this.apiService = gameController.getApiService();
-    this.cryptoService = gameController.getCryptoService();
-    this.webSocketService = gameController.getWebSocketService();
-    this.webSocketService.setLoginScreen(this);
+  private addCustomEventListeners(): void {
+    window.addEventListener(SERVER_CONNECTED_EVENT, () => {
+      this.hasConnectedToServer();
+    });
   }
 
   private loadMessageObject(): void {

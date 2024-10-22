@@ -1,39 +1,29 @@
-import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
+import { SERVER_NOTIFICATION_EVENT } from "../constants/events-contants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
 import { GamePointer } from "../models/game-pointer.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
-import { TransitionService } from "./transition-service.js";
 
 export class GameLoopService {
-  private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private debug: boolean = false;
 
-  private gameController!: GameController;
-  private gameFrame!: GameFrame;
-  private gamePointer!: GamePointer;
-
-  private transitionService!: TransitionService;
+  private gameController: GameController;
+  private gameFrame: GameFrame;
+  private gamePointer: GamePointer;
 
   private isRunning: boolean = false;
   private previousTimeStamp: DOMHighResTimeStamp = 0;
   private deltaTimeStamp: DOMHighResTimeStamp = 0;
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+  constructor(private readonly canvas: HTMLCanvasElement) {
+    this.logDebugInfo();
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+    this.gameController = new GameController(this.canvas, this.debug);
+    this.gameFrame = this.gameController.getGameFrame();
+    this.gamePointer = this.gameController.getGamePointer();
 
-    if (this.debug) {
-      console.info(
-        "%cDebug mode on",
-        "color: #b6ff35; font-size: 20px; font-weight: bold",
-      );
-    }
-
-    this.setModels();
-    this.setServices();
     this.setCanvasSize();
     this.addEventListeners();
     this.loadNotificationObject();
@@ -59,14 +49,11 @@ export class GameLoopService {
     this.isRunning = false;
   }
 
-  private setModels(): void {
-    this.gameController = new GameController(this.canvas, this.debug);
-    this.gameFrame = this.gameController.getGameFrame();
-    this.gamePointer = this.gameController.getGamePointer();
-  }
-
-  private setServices(): void {
-    this.transitionService = this.gameController.getTransitionService();
+  private logDebugInfo(): void {
+    console.info(
+      "%cDebug mode on",
+      "color: #b6ff35; font-size: 20px; font-weight: bold",
+    );
   }
 
   private setCanvasSize(): void {
@@ -117,7 +104,7 @@ export class GameLoopService {
   }
 
   private addCustomEventListeners(): void {
-    window.addEventListener(NOTIFICATION_EVENT_NAME, (event) => {
+    window.addEventListener(SERVER_NOTIFICATION_EVENT, (event) => {
       console.log("Notification event received:", event);
       this.gameFrame.getNotificationObject()?.show(
         (event as CustomEvent<any>).detail.text,
@@ -153,7 +140,7 @@ export class GameLoopService {
   }
 
   private update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    this.transitionService.update(deltaTimeStamp);
+    this.gameController.getTransitionService().update(deltaTimeStamp);
 
     this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
     this.gameFrame.getNextScreen()?.update(deltaTimeStamp);

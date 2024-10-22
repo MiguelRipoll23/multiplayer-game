@@ -2,6 +2,7 @@ import { MessageObject } from "../../objects/common/message-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { GameRegistration } from "../../models/game-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
+import { SERVER_CONNECTED_EVENT } from "../../constants/events-contants.js";
 export class LoginScreen extends BaseGameScreen {
     gameServer;
     apiService;
@@ -10,7 +11,11 @@ export class LoginScreen extends BaseGameScreen {
     messageObject = null;
     constructor(gameController) {
         super(gameController);
-        this.setProperties(gameController);
+        this.gameServer = gameController.getGameState().getGameServer();
+        this.apiService = gameController.getApiService();
+        this.cryptoService = gameController.getCryptoService();
+        this.webSocketService = gameController.getWebSocketService();
+        this.addCustomEventListeners();
     }
     loadObjects() {
         this.loadMessageObject();
@@ -23,12 +28,10 @@ export class LoginScreen extends BaseGameScreen {
         this.messageObject?.hide();
         this.transitionToMatchmakingScreen();
     }
-    setProperties(gameController) {
-        this.gameServer = gameController.getGameState().getGameServer();
-        this.apiService = gameController.getApiService();
-        this.cryptoService = gameController.getCryptoService();
-        this.webSocketService = gameController.getWebSocketService();
-        this.webSocketService.setLoginScreen(this);
+    addCustomEventListeners() {
+        window.addEventListener(SERVER_CONNECTED_EVENT, () => {
+            this.hasConnectedToServer();
+        });
     }
     loadMessageObject() {
         this.messageObject = new MessageObject(this.canvas);

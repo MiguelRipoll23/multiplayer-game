@@ -14,7 +14,7 @@ export class BaseGameScreen implements GameScreen {
   protected sceneObjects: GameObject[] = [];
   protected uiObjects: GameObject[] = [];
 
-  private gamePointer!: GamePointer;
+  private gamePointer: GamePointer;
 
   private objectsLoadingPending: boolean = true;
 

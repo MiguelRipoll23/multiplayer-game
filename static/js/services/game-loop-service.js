@@ -1,4 +1,4 @@
-import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
+import { SERVER_NOTIFICATION_EVENT } from "../constants/events-contants.js";
 import { GameController } from "../models/game-controller.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
@@ -9,18 +9,16 @@ export class GameLoopService {
     gameController;
     gameFrame;
     gamePointer;
-    transitionService;
     isRunning = false;
     previousTimeStamp = 0;
     deltaTimeStamp = 0;
     constructor(canvas) {
         this.canvas = canvas;
+        this.logDebugInfo();
         this.context = this.canvas.getContext("2d");
-        if (this.debug) {
-            console.info("%cDebug mode on", "color: #b6ff35; font-size: 20px; font-weight: bold");
-        }
-        this.setModels();
-        this.setServices();
+        this.gameController = new GameController(this.canvas, this.debug);
+        this.gameFrame = this.gameController.getGameFrame();
+        this.gamePointer = this.gameController.getGamePointer();
         this.setCanvasSize();
         this.addEventListeners();
         this.loadNotificationObject();
@@ -40,13 +38,8 @@ export class GameLoopService {
     stop() {
         this.isRunning = false;
     }
-    setModels() {
-        this.gameController = new GameController(this.canvas, this.debug);
-        this.gameFrame = this.gameController.getGameFrame();
-        this.gamePointer = this.gameController.getGamePointer();
-    }
-    setServices() {
-        this.transitionService = this.gameController.getTransitionService();
+    logDebugInfo() {
+        console.info("%cDebug mode on", "color: #b6ff35; font-size: 20px; font-weight: bold");
     }
     setCanvasSize() {
         this.canvas.width = document.body.clientWidth;
@@ -89,7 +82,7 @@ export class GameLoopService {
         });
     }
     addCustomEventListeners() {
-        window.addEventListener(NOTIFICATION_EVENT_NAME, (event) => {
+        window.addEventListener(SERVER_NOTIFICATION_EVENT, (event) => {
             console.log("Notification event received:", event);
             this.gameFrame.getNotificationObject()?.show(event.detail.text);
         });
@@ -113,7 +106,7 @@ export class GameLoopService {
         }
     }
     update(deltaTimeStamp) {
-        this.transitionService.update(deltaTimeStamp);
+        this.gameController.getTransitionService().update(deltaTimeStamp);
         this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
         this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
         this.gameFrame.getNotificationObject()?.update(deltaTimeStamp);

@@ -6,7 +6,8 @@ export class MainScreen extends BaseGameScreen {
     loginScreen;
     constructor(gameController) {
         super(gameController);
-        this.createLoginScreen();
+        this.loginScreen = new LoginScreen(this.gameController);
+        this.updateLoginScreen();
     }
     loadObjects() {
         this.createMainBrackgroundObject();
@@ -26,8 +27,8 @@ export class MainScreen extends BaseGameScreen {
         super.render(context);
         this.screenManagerService?.render(context);
     }
-    createLoginScreen() {
-        this.loginScreen = new LoginScreen(this.gameController);
+    updateLoginScreen() {
+        // Set the login screen to be fully visible
         this.loginScreen.setOpacity(1);
         this.screenManagerService = new ScreenManagerService(this.loginScreen);
         this.screenManagerService.setCurrentScreen(this.loginScreen);

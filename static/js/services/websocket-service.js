@@ -1,15 +1,11 @@
 import { API_SERVER, API_WS_PROTOCOL, WEBSOCKET_ENDPOINT, } from "../constants/api-constants.js";
-import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
+import { SERVER_CONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, } from "../constants/events-contants.js";
 import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
 export class WebSocketService {
     gameState;
     webSocket = null;
-    loginScreen = null;
     constructor(gameController) {
         this.gameState = gameController.getGameState();
-    }
-    setLoginScreen(loginScreen) {
-        this.loginScreen = loginScreen;
     }
     connectToServer() {
         const gameServer = this.gameState.getGameServer();
@@ -27,7 +23,7 @@ export class WebSocketService {
         webSocket.addEventListener("open", (event) => {
             console.log("Connected to server");
             this.gameState.getGameServer().setConnected(true);
-            this.informLoadingScreen();
+            dispatchEvent(new CustomEvent(SERVER_CONNECTED_EVENT));
         });
         webSocket.addEventListener("close", (event) => {
             console.log("Connection closed", event);
@@ -46,10 +42,6 @@ export class WebSocketService {
             this.handleMessage(new Uint8Array(event.data));
         });
     }
-    informLoadingScreen() {
-        this.loginScreen?.hasConnectedToServer();
-        this.loginScreen = null;
-    }
     handleMessage(data) {
         console.log("Received message from server", data);
         const id = data[0];
@@ -63,6 +55,6 @@ export class WebSocketService {
     }
     handleNotification(payload) {
         const text = new TextDecoder("utf-8").decode(payload);
-        dispatchEvent(new CustomEvent(NOTIFICATION_EVENT_NAME, { detail: { text } }));
+        dispatchEvent(new CustomEvent(SERVER_NOTIFICATION_EVENT, { detail: { text } }));
     }
 }

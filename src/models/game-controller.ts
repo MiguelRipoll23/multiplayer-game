@@ -7,23 +7,27 @@ import { GamePointer } from "./game-pointer.js";
 import { GameState } from "./game-state.js";
 
 export class GameController {
-  private gameState!: GameState;
-  private gameFrame!: GameFrame;
-  private gamePointer!: GamePointer;
+  private gameState: GameState;
+  private gameFrame: GameFrame;
+  private gamePointer: GamePointer;
 
-  private transitionService!: TransitionService;
-  private apiService!: ApiService;
-  private cryptoService!: CryptoService;
-  private webSocketService!: WebSocketService;
+  private readonly transitionService: TransitionService;
+  private readonly apiService: ApiService;
+  private readonly cryptoService: CryptoService;
+  private readonly webSocketService: WebSocketService;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
     private debug = false,
   ) {
-    this.canvas = canvas;
+    this.gameState = new GameState();
+    this.gameFrame = new GameFrame();
+    this.gamePointer = new GamePointer();
 
-    this.createModels();
-    this.createServices();
+    this.transitionService = new TransitionService(this.gameFrame);
+    this.apiService = new ApiService();
+    this.cryptoService = new CryptoService(this.gameState.getGameServer());
+    this.webSocketService = new WebSocketService(this);
   }
 
   public getCanvas(): HTMLCanvasElement {
@@ -60,18 +64,5 @@ export class GameController {
 
   public getWebSocketService(): WebSocketService {
     return this.webSocketService;
-  }
-
-  private createModels(): void {
-    this.gameState = new GameState();
-    this.gameFrame = new GameFrame();
-    this.gamePointer = new GamePointer();
-  }
-
-  private createServices(): void {
-    this.transitionService = new TransitionService(this.gameFrame);
-    this.apiService = new ApiService();
-    this.cryptoService = new CryptoService(this.gameState.getGameServer());
-    this.webSocketService = new WebSocketService(this);
   }
 }

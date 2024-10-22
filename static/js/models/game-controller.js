@@ -18,9 +18,13 @@ export class GameController {
     constructor(canvas, debug = false) {
         this.canvas = canvas;
         this.debug = debug;
-        this.canvas = canvas;
-        this.createModels();
-        this.createServices();
+        this.gameState = new GameState();
+        this.gameFrame = new GameFrame();
+        this.gamePointer = new GamePointer();
+        this.transitionService = new TransitionService(this.gameFrame);
+        this.apiService = new ApiService();
+        this.cryptoService = new CryptoService(this.gameState.getGameServer());
+        this.webSocketService = new WebSocketService(this);
     }
     getCanvas() {
         return this.canvas;
@@ -48,16 +52,5 @@ export class GameController {
     }
     getWebSocketService() {
         return this.webSocketService;
-    }
-    createModels() {
-        this.gameState = new GameState();
-        this.gameFrame = new GameFrame();
-        this.gamePointer = new GamePointer();
-    }
-    createServices() {
-        this.transitionService = new TransitionService(this.gameFrame);
-        this.apiService = new ApiService();
-        this.cryptoService = new CryptoService(this.gameState.getGameServer());
-        this.webSocketService = new WebSocketService(this);
     }
 }

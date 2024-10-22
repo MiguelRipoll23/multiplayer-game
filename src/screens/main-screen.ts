@@ -6,11 +6,13 @@ import { MainBackgroundObject } from "../objects/backgrounds/main-background-obj
 import { GameController } from "../models/game-controller.js";
 
 export class MainScreen extends BaseGameScreen {
-  private loginScreen!: LoginScreen;
+  private loginScreen: LoginScreen;
 
   constructor(gameController: GameController) {
     super(gameController);
-    this.createLoginScreen();
+
+    this.loginScreen = new LoginScreen(this.gameController);
+    this.updateLoginScreen();
   }
 
   public override loadObjects(): void {
@@ -37,8 +39,8 @@ export class MainScreen extends BaseGameScreen {
     this.screenManagerService?.render(context);
   }
 
-  private createLoginScreen(): void {
-    this.loginScreen = new LoginScreen(this.gameController);
+  private updateLoginScreen(): void {
+    // Set the login screen to be fully visible
     this.loginScreen.setOpacity(1);
 
     this.screenManagerService = new ScreenManagerService(this.loginScreen);

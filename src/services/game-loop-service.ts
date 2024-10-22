@@ -77,35 +77,52 @@ export class GameLoopService {
 
   private addTouchEventListeners(): void {
     window.addEventListener("touchstart", (event) => {
-      this.gamePointer.setX(event.touches[0].clientX);
-      this.gamePointer.setY(event.touches[0].clientY);
-      this.gamePointer.setPressed(true);
+      const touch = event.touches[0];
+      if (!touch) return;
+
+      this.updateGamePointerWithTouch(touch, true);
     });
 
     window.addEventListener("touchend", (event) => {
-      this.gamePointer.setX(event.touches[0].clientX);
-      this.gamePointer.setY(event.touches[0].clientY);
-      this.gamePointer.setPressed(false);
+      const touch = event.touches[0];
+      if (!touch) return;
+
+      this.updateGamePointerWithTouch(touch, false);
     });
+  }
+
+  private updateGamePointerWithTouch(touch: Touch, pressed: boolean): void {
+    const rect = this.canvas.getBoundingClientRect();
+    const touchX = touch.clientX - rect.left;
+    const touchY = touch.clientY - rect.top;
+
+    this.gamePointer.setX(touchX);
+    this.gamePointer.setY(touchY);
+    this.gamePointer.setPressed(pressed);
   }
 
   private addMouseEventListeners(): void {
     window.addEventListener("mousedown", (event) => {
-      this.gamePointer.setX(event.clientX);
-      this.gamePointer.setY(event.clientY);
-      this.gamePointer.setPressed(true);
+      this.updateGamePointerWithMouse(event, true);
     });
 
     window.addEventListener("mouseup", (event) => {
-      this.gamePointer.setX(event.clientX);
-      this.gamePointer.setY(event.clientY);
-      this.gamePointer.setPressed(false);
+      this.updateGamePointerWithMouse(event, false);
     });
+  }
+
+  private updateGamePointerWithMouse(
+    event: MouseEvent,
+    pressed: boolean,
+  ): void {
+    this.gamePointer.setX(event.clientX);
+    this.gamePointer.setY(event.clientY);
+    this.gamePointer.setPressed(pressed);
   }
 
   private addCustomEventListeners(): void {
     window.addEventListener(SERVER_NOTIFICATION_EVENT, (event) => {
-      console.log("Notification event received:", event);
+      console.log(`Event ${SERVER_NOTIFICATION_EVENT} handled`, event);
       this.gameFrame.getNotificationObject()?.show(
         (event as CustomEvent<any>).detail.text,
       );

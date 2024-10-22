@@ -1,2 +1,2 @@
-export const SERVER_CONNECTED_EVENT = "SERVER_CONNECTED";
-export const SERVER_NOTIFICATION_EVENT = "SERVER_NOTIFICATION";
+export const SERVER_CONNECTED_EVENT = "ServerConnected";
+export const SERVER_NOTIFICATION_EVENT = "ServerNotification";

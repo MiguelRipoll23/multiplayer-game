@@ -30,6 +30,7 @@ export class LoginScreen extends BaseGameScreen {
     }
     addCustomEventListeners() {
         window.addEventListener(SERVER_CONNECTED_EVENT, () => {
+            console.log(`Event ${SERVER_CONNECTED_EVENT} handled`);
             this.hasConnectedToServer();
         });
     }

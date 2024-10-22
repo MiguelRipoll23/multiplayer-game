@@ -42,7 +42,7 @@ export class ApiService {
         }
         return response.arrayBuffer();
     }
-    async getNews() {
+    async getMessages() {
         if (this.authenticationToken === null) {
             throw new Error("Authentication token not found");
         }
@@ -52,10 +52,10 @@ export class ApiService {
             },
         });
         if (response.ok === false) {
-            throw new Error("Failed to fetch news");
+            throw new Error("Failed to fetch messages");
         }
-        const newsResponse = await response.json();
-        console.log("News response", newsResponse);
-        return newsResponse;
+        const messagesResponse = await response.json();
+        console.log("Messages response", messagesResponse);
+        return messagesResponse;
     }
 }

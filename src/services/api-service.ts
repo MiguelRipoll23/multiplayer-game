@@ -7,8 +7,7 @@ import {
   REGISTER_ENDPOINT,
   VERSION_ENDPOINT,
 } from "../constants/api-constants.js";
-import { GameServer } from "../models/game-server.js";
-import { NewsResponse } from "./interfaces/news-response.js";
+import { NewsResponse as MessagesResponse } from "./interfaces/news-response.js";
 import { RegistrationResponse } from "./interfaces/registration-response.js";
 import { VersionResponse } from "./interfaces/version-response.js";
 
@@ -77,7 +76,7 @@ export class ApiService {
     return response.arrayBuffer();
   }
 
-  public async getNews(): Promise<NewsResponse[]> {
+  public async getMessages(): Promise<MessagesResponse[]> {
     if (this.authenticationToken === null) {
       throw new Error("Authentication token not found");
     }
@@ -92,12 +91,12 @@ export class ApiService {
     );
 
     if (response.ok === false) {
-      throw new Error("Failed to fetch news");
+      throw new Error("Failed to fetch messages");
     }
 
-    const newsResponse: NewsResponse[] = await response.json();
-    console.log("News response", newsResponse);
+    const messagesResponse: MessagesResponse[] = await response.json();
+    console.log("Messages response", messagesResponse);
 
-    return newsResponse;
+    return messagesResponse;
   }
 }

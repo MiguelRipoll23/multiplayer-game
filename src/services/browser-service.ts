@@ -1,15 +1,12 @@
 export class BrowserService {
-  private canvas: HTMLCanvasElement;
-
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+  constructor(private readonly canvas: HTMLCanvasElement) {
     this.addEventListeners();
   }
 
   private addEventListeners() {
     this.canvas.addEventListener(
       "fullscreenchange",
-      this.removeEventListeners.bind(this)
+      this.removeEventListeners.bind(this),
     );
 
     this.canvas?.addEventListener("click", this.requestFullScreen.bind(this));
@@ -25,7 +22,7 @@ export class BrowserService {
     this.canvas.removeEventListener("click", this.requestFullScreen);
     this.canvas.removeEventListener(
       "fullscreenchange",
-      this.removeEventListeners
+      this.removeEventListeners,
     );
   };
 }

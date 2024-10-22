@@ -7,7 +7,7 @@ export class ServerMessageWindow extends PressableWindowObject {
     getIndex() {
         return this.index;
     }
-    openPost(index, title, content) {
+    openMessage(index, title, content) {
         this.index = index;
         super.open(title, content);
     }

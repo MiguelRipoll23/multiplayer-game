@@ -15,7 +15,7 @@ export class GameController {
     apiService;
     cryptoService;
     webSocketService;
-    constructor(canvas, debug) {
+    constructor(canvas, debug = false) {
         this.canvas = canvas;
         this.debug = debug;
         this.canvas = canvas;

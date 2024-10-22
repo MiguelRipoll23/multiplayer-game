@@ -7,7 +7,6 @@ import { NOTIFICATION_EVENT_NAME } from "../constants/events-contants.js";
 import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
 import { GameState } from "../models/game-state.js";
 import { LoginScreen } from "../screens/main-screen/login-screen.js";
-import { MainScreen } from "../screens/main-screen.js";
 import { GameController } from "../models/game-controller.js";
 
 export class WebSocketService {

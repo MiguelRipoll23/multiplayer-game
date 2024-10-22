@@ -81,7 +81,7 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private downloadNews(): void {
-    this.apiService.getNews().then((news) => {
+    this.apiService.getMessages().then((news) => {
       this.showPosts(news);
     }).catch((error) => {
       console.error(error);
@@ -106,7 +106,7 @@ export class MainMenuScreen extends BaseGameScreen {
     const item = this.newsResponse[index];
     console.log("Opening news post", item);
 
-    this.newsWindowObject?.openPost(index, item.title, item.content);
+    this.newsWindowObject?.openMessage(index, item.title, item.content);
   }
 
   private handleNewsWindowObject() {

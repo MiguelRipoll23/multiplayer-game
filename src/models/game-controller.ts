@@ -16,7 +16,10 @@ export class GameController {
   private cryptoService!: CryptoService;
   private webSocketService!: WebSocketService;
 
-  constructor(private canvas: HTMLCanvasElement, private debug: boolean) {
+  constructor(
+    private readonly canvas: HTMLCanvasElement,
+    private debug = false,
+  ) {
     this.canvas = canvas;
 
     this.createModels();

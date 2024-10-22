@@ -6,7 +6,6 @@ export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
   private readonly BACKGROUND_COLOR: string = "#00a000";
   private readonly BOUNDARY_COOLOR: string = "#ffffff";
 
-  private readonly canvas: HTMLCanvasElement;
   private fieldWidth: number = 0;
   private fieldHeight: number = 0;
   private fieldX: number = 0;
@@ -17,9 +16,8 @@ export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
 
   private collisionObjects: GameObject[];
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(private readonly canvas: HTMLCanvasElement) {
     super();
-    this.canvas = canvas;
     this.collisionObjects = [];
     this.calculateFieldDimensions();
     this.calculateCenter();

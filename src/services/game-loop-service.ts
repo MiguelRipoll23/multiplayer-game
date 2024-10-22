@@ -4,6 +4,7 @@ import { GameFrame } from "../models/game-frame.js";
 import { GamePointer } from "../models/game-pointer.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
+import { AnimationService } from "../services/animation-service.js";
 
 export class GameLoopService {
   private context: CanvasRenderingContext2D;
@@ -12,6 +13,7 @@ export class GameLoopService {
   private gameController: GameController;
   private gameFrame: GameFrame;
   private gamePointer: GamePointer;
+  private animationService: AnimationService;
 
   private isRunning: boolean = false;
   private previousTimeStamp: DOMHighResTimeStamp = 0;
@@ -23,6 +25,7 @@ export class GameLoopService {
     this.gameController = new GameController(this.canvas, this.debug);
     this.gameFrame = this.gameController.getGameFrame();
     this.gamePointer = this.gameController.getGamePointer();
+    this.animationService = new AnimationService();
 
     this.setCanvasSize();
     this.addEventListeners();
@@ -158,6 +161,7 @@ export class GameLoopService {
 
   private update(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.gameController.getTransitionService().update(deltaTimeStamp);
+    this.animationService.update(deltaTimeStamp);
 
     this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
     this.gameFrame.getNextScreen()?.update(deltaTimeStamp);

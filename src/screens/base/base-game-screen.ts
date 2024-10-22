@@ -4,6 +4,7 @@ import { BasePressableGameObject } from "../../objects/base/base-pressable-game-
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
 import { GameScreen } from "../interfaces/game-screen.js";
+import { AnimationService } from "../../services/animation-service.js";
 
 export class BaseGameScreen implements GameScreen {
   protected canvas: HTMLCanvasElement;
@@ -15,6 +16,7 @@ export class BaseGameScreen implements GameScreen {
   protected uiObjects: GameObject[] = [];
 
   private gamePointer: GamePointer;
+  private animationService: AnimationService;
 
   private objectsLoadingPending: boolean = true;
 
@@ -22,6 +24,7 @@ export class BaseGameScreen implements GameScreen {
     console.log(`${this.constructor.name} created`);
     this.canvas = gameController.getCanvas();
     this.gamePointer = gameController.getGamePointer();
+    this.animationService = new AnimationService();
   }
 
   public isActive(): boolean {
@@ -58,6 +61,8 @@ export class BaseGameScreen implements GameScreen {
 
     this.updateObjects(this.sceneObjects, deltaTimeStamp);
     this.updateObjects(this.uiObjects, deltaTimeStamp);
+
+    this.animationService.update(deltaTimeStamp);
 
     if (this.gamePointer.isPressed()) {
       this.handlePointerPressEvent();

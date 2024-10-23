@@ -5,6 +5,10 @@ export class CloseableMessageObject extends BasePressableGameObject {
     DEFAULT_HEIGHT = 100;
     DEFAULT_WIDTH = 340;
     opacity = 0;
+    messageX = 0;
+    messageY = 0;
+    messageWidth = this.DEFAULT_WIDTH;
+    messageHeight = this.DEFAULT_HEIGHT;
     textX = 0;
     textY = 0;
     content = "Unknown";
@@ -42,17 +46,17 @@ export class CloseableMessageObject extends BasePressableGameObject {
         super.render(context);
     }
     setSize() {
-        this.width = this.DEFAULT_WIDTH;
-        this.height = this.DEFAULT_HEIGHT;
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
     }
     drawRoundedRectangle(context) {
         context.fillStyle = this.FILL_COLOR;
         context.beginPath();
-        context.moveTo(this.x + 6, this.y);
-        context.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + this.height, 6);
-        context.arcTo(this.x + this.width, this.y + this.height, this.x, this.y + this.height, 6);
-        context.arcTo(this.x, this.y + this.height, this.x, this.y, 6);
-        context.arcTo(this.x, this.y, this.x + this.width, this.y, 6);
+        context.moveTo(this.messageX + 6, this.messageY);
+        context.arcTo(this.messageX + this.messageWidth, this.messageY, this.messageX + this.messageWidth, this.messageY + this.messageHeight, 6);
+        context.arcTo(this.messageX + this.messageWidth, this.messageY + this.messageHeight, this.messageX, this.messageY + this.messageHeight, 6);
+        context.arcTo(this.messageX, this.messageY + this.messageHeight, this.messageX, this.messageY, 6);
+        context.arcTo(this.messageX, this.messageY, this.messageX + this.messageWidth, this.messageY, 6);
         context.closePath();
         context.fill();
     }
@@ -63,9 +67,9 @@ export class CloseableMessageObject extends BasePressableGameObject {
         context.fillText(this.content, this.textX, this.textY);
     }
     setPosition() {
-        this.x = this.canvas.width / 2 - (this.width / 2);
-        this.y = this.canvas.height / 2 - (this.height / 2);
-        this.textX = this.x + this.width / 2;
-        this.textY = this.y + this.height / 2 + 5;
+        this.messageX = this.canvas.width / 2 - (this.messageWidth / 2);
+        this.messageY = this.canvas.height / 2 - (this.messageHeight / 2);
+        this.textX = this.messageX + this.messageWidth / 2;
+        this.textY = this.messageY + this.messageHeight / 2 + 5;
     }
 }

@@ -2,10 +2,17 @@ import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 
 export class CloseableMessageObject extends BasePressableGameObject {
   private readonly FILL_COLOR = "rgba(0, 0, 0, 0.8)";
+
   private readonly DEFAULT_HEIGHT = 100;
   private readonly DEFAULT_WIDTH = 340;
 
   private opacity = 0;
+
+  private messageX = 0;
+  private messageY = 0;
+
+  private messageWidth = this.DEFAULT_WIDTH;
+  private messageHeight = this.DEFAULT_HEIGHT;
 
   private textX = 0;
   private textY = 0;
@@ -53,30 +60,42 @@ export class CloseableMessageObject extends BasePressableGameObject {
   }
 
   private setSize(): void {
-    this.width = this.DEFAULT_WIDTH;
-    this.height = this.DEFAULT_HEIGHT;
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
   }
 
   private drawRoundedRectangle(context: CanvasRenderingContext2D): void {
     context.fillStyle = this.FILL_COLOR;
     context.beginPath();
-    context.moveTo(this.x + 6, this.y);
+    context.moveTo(this.messageX + 6, this.messageY);
     context.arcTo(
-      this.x + this.width,
-      this.y,
-      this.x + this.width,
-      this.y + this.height,
+      this.messageX + this.messageWidth,
+      this.messageY,
+      this.messageX + this.messageWidth,
+      this.messageY + this.messageHeight,
       6,
     );
     context.arcTo(
-      this.x + this.width,
-      this.y + this.height,
-      this.x,
-      this.y + this.height,
+      this.messageX + this.messageWidth,
+      this.messageY + this.messageHeight,
+      this.messageX,
+      this.messageY + this.messageHeight,
       6,
     );
-    context.arcTo(this.x, this.y + this.height, this.x, this.y, 6);
-    context.arcTo(this.x, this.y, this.x + this.width, this.y, 6);
+    context.arcTo(
+      this.messageX,
+      this.messageY + this.messageHeight,
+      this.messageX,
+      this.messageY,
+      6,
+    );
+    context.arcTo(
+      this.messageX,
+      this.messageY,
+      this.messageX + this.messageWidth,
+      this.messageY,
+      6,
+    );
     context.closePath();
     context.fill();
   }
@@ -89,9 +108,9 @@ export class CloseableMessageObject extends BasePressableGameObject {
   }
 
   private setPosition(): void {
-    this.x = this.canvas.width / 2 - (this.width / 2);
-    this.y = this.canvas.height / 2 - (this.height / 2);
-    this.textX = this.x + this.width / 2;
-    this.textY = this.y + this.height / 2 + 5;
+    this.messageX = this.canvas.width / 2 - (this.messageWidth / 2);
+    this.messageY = this.canvas.height / 2 - (this.messageHeight / 2);
+    this.textX = this.messageX + this.messageWidth / 2;
+    this.textY = this.messageY + this.messageHeight / 2 + 5;
   }
 }

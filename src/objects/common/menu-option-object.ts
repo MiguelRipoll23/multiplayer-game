@@ -21,7 +21,7 @@ export class MenuOptionObject extends BasePressableGameObject {
   ) {
     super();
     this.index = index;
-    this.content = content.toUpperCase();
+    this.content = content;
     this.setSize(canvas);
 
     // Generate and store irregularity values (these are only generated once)

@@ -9,7 +9,7 @@ import { BaseGameScreen } from "../base/base-game-screen.js";
 import { MatchmakingScreen } from "./matchmaking-screen.js";
 
 export class MainMenuScreen extends BaseGameScreen {
-  private MENU_OPTIONS_TEXT: string[] = ["Automatch", "Scoreboard", "Settings"];
+  private MENU_OPTIONS_TEXT: string[] = ["Join game", "Scoreboard", "Settings"];
 
   private apiService: ApiService;
 

@@ -5,7 +5,7 @@ import { ServerMessageWindowObject } from "../../objects/server-message-window-o
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { MatchmakingScreen } from "./matchmaking-screen.js";
 export class MainMenuScreen extends BaseGameScreen {
-    MENU_OPTIONS_TEXT = ["Automatch", "Scoreboard", "Settings"];
+    MENU_OPTIONS_TEXT = ["Join game", "Scoreboard", "Settings"];
     apiService;
     messagesResponse = null;
     serverMessageWindowObject = null;

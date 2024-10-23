@@ -7,7 +7,7 @@ import { MainScreen } from "../screens/main-screen.js";
 
 export class GameLoopService {
   private context: CanvasRenderingContext2D;
-  private debug: boolean = true;
+  private debug: boolean = false;
 
   private gameController: GameController;
   private gameFrame: GameFrame;
@@ -104,6 +104,10 @@ export class GameLoopService {
   }
 
   private addMouseEventListeners(): void {
+    window.addEventListener("mousemove", (event) => {
+      this.updateGamePointerWithMouse(event, false);
+    });
+
     window.addEventListener("mousedown", (event) => {
       this.updateGamePointerWithMouse(event, true);
     });
@@ -117,6 +121,7 @@ export class GameLoopService {
     event: MouseEvent,
     pressed: boolean,
   ): void {
+    this.gamePointer.setMouse(true);
     this.gamePointer.setX(event.clientX);
     this.gamePointer.setY(event.clientY);
     this.gamePointer.setPressed(pressed);

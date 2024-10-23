@@ -59,8 +59,8 @@ export class BaseGameScreen implements GameScreen {
     this.updateObjects(this.sceneObjects, deltaTimeStamp);
     this.updateObjects(this.uiObjects, deltaTimeStamp);
 
-    if (this.gamePointer.isPressed()) {
-      this.handlePointerPressEvent();
+    if (this.gamePointer.isPressed() || this.gamePointer.isMouse()) {
+      this.handlePointerEvent();
     }
   }
 
@@ -99,7 +99,7 @@ export class BaseGameScreen implements GameScreen {
     this.uiObjects.forEach((object) => object.setDebug(debug));
   }
 
-  private handlePointerPressEvent(): void {
+  private handlePointerEvent(): void {
     const pressableObjects = this.uiObjects
       .filter((object): object is BasePressableGameObject =>
         object instanceof BasePressableGameObject
@@ -110,7 +110,7 @@ export class BaseGameScreen implements GameScreen {
     for (const pressableObject of pressableObjects) {
       pressableObject.handlePointerEvent(this.gamePointer);
 
-      if (pressableObject.isPressed()) {
+      if (pressableObject.isHovering()) {
         break;
       }
     }

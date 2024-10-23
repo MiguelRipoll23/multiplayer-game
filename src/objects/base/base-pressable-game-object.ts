@@ -9,6 +9,8 @@ export class BasePressableGameObject extends BaseGameObject {
   protected height = 0;
 
   protected active = true;
+
+  protected hovering = false;
   protected pressed = false;
 
   constructor() {
@@ -29,6 +31,10 @@ export class BasePressableGameObject extends BaseGameObject {
     return this.active;
   }
 
+  public isHovering(): boolean {
+    return this.hovering;
+  }
+
   public isPressed(): boolean {
     return this.pressed;
   }
@@ -38,11 +44,16 @@ export class BasePressableGameObject extends BaseGameObject {
     const pointerY = gamePointer.getY();
 
     if (
-      pointerX >= this.x &&
-      pointerX <= this.x + this.width &&
-      pointerY >= this.y &&
-      pointerY <= this.y + this.height
+      pointerX < this.x || pointerX > this.x + this.width ||
+      pointerY < this.y || pointerY > this.y + this.height
     ) {
+      this.hovering = false;
+      return;
+    }
+
+    this.hovering = true;
+
+    if (gamePointer.isPressed()) {
       this.pressed = true;
       console.log(this.constructor.name + " pressed");
     }

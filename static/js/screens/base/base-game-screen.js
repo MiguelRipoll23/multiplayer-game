@@ -36,8 +36,8 @@ export class BaseGameScreen {
         this.checkIfScreenHasLoaded();
         this.updateObjects(this.sceneObjects, deltaTimeStamp);
         this.updateObjects(this.uiObjects, deltaTimeStamp);
-        if (this.gamePointer.isPressed()) {
-            this.handlePointerPressEvent();
+        if (this.gamePointer.isPressed() || this.gamePointer.isMouse()) {
+            this.handlePointerEvent();
         }
     }
     render(context) {
@@ -66,14 +66,14 @@ export class BaseGameScreen {
         this.sceneObjects.forEach((object) => object.setDebug(debug));
         this.uiObjects.forEach((object) => object.setDebug(debug));
     }
-    handlePointerPressEvent() {
+    handlePointerEvent() {
         const pressableObjects = this.uiObjects
             .filter((object) => object instanceof BasePressableGameObject)
             .filter((object) => object.isActive())
             .reverse();
         for (const pressableObject of pressableObjects) {
             pressableObject.handlePointerEvent(this.gamePointer);
-            if (pressableObject.isPressed()) {
+            if (pressableObject.isHovering()) {
                 break;
             }
         }

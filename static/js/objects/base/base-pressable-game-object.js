@@ -43,6 +43,7 @@ export class BasePressableGameObject extends BaseGameObject {
         }
     }
     update(deltaTimeStamp) {
+        this.hovering = false;
         this.pressed = false;
         super.update(deltaTimeStamp);
     }

@@ -60,6 +60,7 @@ export class BasePressableGameObject extends BaseGameObject {
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.hovering = false;
     this.pressed = false;
     super.update(deltaTimeStamp);
   }

@@ -69,7 +69,8 @@ export class MainMenuScreen extends BaseGameScreen {
         this.showMessage(0);
     }
     showMessage(index) {
-        if (this.messagesResponse === null) {
+        // TODO: fix loop
+        if (this.messagesResponse === null || this.messagesResponse.length === 0) {
             return;
         }
         if (index === this.messagesResponse.length) {

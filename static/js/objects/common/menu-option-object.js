@@ -34,16 +34,14 @@ export class MenuOptionObject extends BasePressableGameObject {
     setPosition(x, y) {
         this.x = x;
         this.y = y;
+        this.angle = this.index === 0 ? -0.05 : (this.index === 1 ? 0.05 : -0.02);
         this.calculateTextPosition();
     }
     render(context) {
         context.save(); // Save current context state before applying transformations
         // Apply a small rotation to make the buttons look tilted
-        const tiltAngle = this.index === 0
-            ? -0.05
-            : (this.index === 1 ? 0.05 : -0.02); // Different angles for each button
         context.translate(this.x + this.width / 2, this.y + this.height / 2); // Move the origin to the center of the button
-        context.rotate(tiltAngle); // Rotate the canvas slightly
+        context.rotate(this.angle); // Rotate the canvas slightly
         context.translate(-(this.x + this.width / 2), -(this.y + this.height / 2)); // Move the origin back
         // Use the stored irregularity values for each corner and side
         context.beginPath();

@@ -1,10 +1,7 @@
 import { GamePointer } from "../../models/game-pointer.js";
-import { BaseGameObject } from "./base-game-object.js";
+import { BasePositionableGameObject } from "./base-positionable-game-object.js";
 
-export class BasePressableGameObject extends BaseGameObject {
-  protected x = 0;
-  protected y = 0;
-
+export class BasePressableGameObject extends BasePositionableGameObject {
   protected width = 0;
   protected height = 0;
 
@@ -67,11 +64,25 @@ export class BasePressableGameObject extends BaseGameObject {
 
   public override render(context: CanvasRenderingContext2D): void {
     if (this.debug && this.active) {
+      context.save();
+
+      // Translate context to the object's center
+      context.translate(this.x + this.width / 2, this.y + this.height / 2);
+
+      // Apply the rotation
+      context.rotate(this.angle);
+
+      // Set the stroke style for the hitbox
       context.strokeStyle = "rgba(148, 0, 211, 0.8)";
+
+      // Draw the rectangle (centered, so offset by half the width/height)
       context.beginPath();
-      context.rect(this.x, this.y, this.width, this.height);
+      context.rect(-this.width / 2, -this.height / 2, this.width, this.height);
       context.stroke();
       context.closePath();
+
+      // Restore the context
+      context.restore();
     }
   }
 }

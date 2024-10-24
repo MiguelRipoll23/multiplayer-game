@@ -1,7 +1,5 @@
-import { BaseGameObject } from "./base-game-object.js";
-export class BasePressableGameObject extends BaseGameObject {
-    x = 0;
-    y = 0;
+import { BasePositionableGameObject } from "./base-positionable-game-object.js";
+export class BasePressableGameObject extends BasePositionableGameObject {
     width = 0;
     height = 0;
     active = true;
@@ -49,11 +47,20 @@ export class BasePressableGameObject extends BaseGameObject {
     }
     render(context) {
         if (this.debug && this.active) {
+            context.save();
+            // Translate context to the object's center
+            context.translate(this.x + this.width / 2, this.y + this.height / 2);
+            // Apply the rotation
+            context.rotate(this.angle);
+            // Set the stroke style for the hitbox
             context.strokeStyle = "rgba(148, 0, 211, 0.8)";
+            // Draw the rectangle (centered, so offset by half the width/height)
             context.beginPath();
-            context.rect(this.x, this.y, this.width, this.height);
+            context.rect(-this.width / 2, -this.height / 2, this.width, this.height);
             context.stroke();
             context.closePath();
+            // Restore the context
+            context.restore();
         }
     }
 }

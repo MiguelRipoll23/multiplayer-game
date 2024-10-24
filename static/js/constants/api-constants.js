@@ -1,6 +1,6 @@
-export const API_HTTP_PROTOCOL = "https://";
-export const API_WS_PROTOCOL = "wss://";
-export const API_HOSTNAME = "gameserver.deno.dev";
+export const API_HTTP_PROTOCOL = "http://";
+export const API_WS_PROTOCOL = "ws://";
+export const API_HOSTNAME = "localhost:8000";
 export const API_PATH = "/api";
 export const API_VERSION = "/v1";
 export const API_BASE_URL = API_HTTP_PROTOCOL + API_HOSTNAME + API_PATH +

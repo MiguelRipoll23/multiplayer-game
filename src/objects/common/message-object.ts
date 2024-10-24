@@ -1,17 +1,12 @@
-import { BaseGameObject } from "../base/base-game-object.js";
+import { BaseAnimatedGameObject } from "../base/base-animated-object.js";
 
-export class MessageObject extends BaseGameObject {
+export class MessageObject extends BaseAnimatedGameObject {
   private readonly FILL_COLOR = "rgba(0, 0, 0, 0.8)";
   private readonly DEFAULT_HEIGHT = 100;
   private readonly DEFAULT_WIDTH = 340;
 
-  private x = 0;
-  private y = 0;
-
   private textX = 0;
   private textY = 0;
-
-  private opacity = 0;
 
   private width = this.DEFAULT_WIDTH;
   private height = this.DEFAULT_HEIGHT;
@@ -19,13 +14,15 @@ export class MessageObject extends BaseGameObject {
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
-    this.setPosition();
+    this.setInitialValues();
   }
 
   public show(value: string): void {
     this.content = value;
-    this.setPosition();
-    this.opacity = 1;
+
+    if (this.opacity === 0) {
+      this.fadeIn(0.2);
+    }
   }
 
   public hide(): void {
@@ -73,6 +70,11 @@ export class MessageObject extends BaseGameObject {
     context.fillStyle = "WHITE";
     context.textAlign = "center";
     context.fillText(this.content, this.textX, this.textY);
+  }
+
+  private setInitialValues(): void {
+    this.opacity = 0;
+    this.setPosition();
   }
 
   private setPosition(): void {

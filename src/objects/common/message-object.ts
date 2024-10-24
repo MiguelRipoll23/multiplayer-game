@@ -31,7 +31,7 @@ export class MessageObject extends BaseAnimatedGameObject {
       return;
     }
 
-    this.opacity = 0;
+    this.fadeOut(0.2);
   }
 
   public render(context: CanvasRenderingContext2D): void {

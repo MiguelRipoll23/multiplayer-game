@@ -6,8 +6,6 @@ export class CloseableMessageObject extends BasePressableGameObject {
   private readonly DEFAULT_HEIGHT = 100;
   private readonly DEFAULT_WIDTH = 340;
 
-  private opacity = 0;
-
   private messageX = 0;
   private messageY = 0;
 
@@ -22,6 +20,7 @@ export class CloseableMessageObject extends BasePressableGameObject {
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
     this.active = false;
+    this.opacity = 0;
     this.setSize();
     this.setPosition();
   }
@@ -29,7 +28,7 @@ export class CloseableMessageObject extends BasePressableGameObject {
   public show(value: string): void {
     this.content = value;
     this.setPosition();
-    this.opacity = 1;
+    this.fadeIn(0.2);
     this.active = true;
   }
 
@@ -39,7 +38,7 @@ export class CloseableMessageObject extends BasePressableGameObject {
     }
 
     this.active = false;
-    this.opacity = 0;
+    this.fadeOut(0.2);
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {

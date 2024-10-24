@@ -1,7 +1,7 @@
 import { GamePointer } from "../../models/game-pointer.js";
-import { BasePositionableGameObject } from "./base-positionable-game-object.js";
+import { BaseAnimatedGameObject } from "./base-animated-object.js";
 
-export class BasePressableGameObject extends BasePositionableGameObject {
+export class BasePressableGameObject extends BaseAnimatedGameObject {
   protected width = 0;
   protected height = 0;
 

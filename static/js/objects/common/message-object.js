@@ -25,7 +25,7 @@ export class MessageObject extends BaseAnimatedGameObject {
             console.warn("MessageObject is already hidden");
             return;
         }
-        this.opacity = 0;
+        this.fadeOut(0.2);
     }
     render(context) {
         context.globalAlpha = this.opacity;

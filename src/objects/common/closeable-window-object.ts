@@ -7,13 +7,12 @@ export class CloseableWindowObject extends BasePressableGameObject {
 
   private readonly backdropObject: BackdropObject;
 
-  private globalAlpha: number = 0;
-
   private windowX: number = 0;
   private windowY: number = 0;
   private windowWidth: number = 0;
   private windowHeight: number = 0;
 
+  private titleBarText: string = "SERVER MESSAGE";
   private titleBarTextX: number = 0;
   private titleBarTextY: number = 0;
 
@@ -33,9 +32,6 @@ export class CloseableWindowObject extends BasePressableGameObject {
     super();
     this.backdropObject = new BackdropObject(this.canvas);
     this.setInitialState();
-    this.setSize();
-    this.setCenterPosition();
-    this.calculatePositions();
   }
 
   public override load(): void {
@@ -51,15 +47,15 @@ export class CloseableWindowObject extends BasePressableGameObject {
     return this.opened === false;
   }
 
-  public open(title: string, content: string): void {
+  public open(titleBarText: string, title: string, content: string): void {
     if (this.opened === false) {
-      this.backdropObject.fadeIn(0.2);
+      this.fadeIn(0.2);
     }
 
     this.opened = true;
+    this.titleBarText = titleBarText;
     this.title = title;
     this.content = content;
-    this.globalAlpha = 1;
     this.active = true;
   }
 
@@ -68,11 +64,10 @@ export class CloseableWindowObject extends BasePressableGameObject {
       return console.warn("CloseableWindowObject is already closed");
     }
 
-    this.backdropObject.fadeOut(0.2);
+    this.fadeOut(0.2);
 
     this.opened = false;
     this.active = false;
-    this.globalAlpha = 0;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -85,9 +80,9 @@ export class CloseableWindowObject extends BasePressableGameObject {
   }
 
   public override render(context: CanvasRenderingContext2D): void {
-    this.backdropObject.render(context);
+    context.globalAlpha = this.opacity;
 
-    context.globalAlpha = this.globalAlpha;
+    this.backdropObject.render(context);
 
     // Background
     context.fillStyle = "rgb(0, 0, 0, 1)";
@@ -111,7 +106,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
     context.fillStyle = "#FFFFFF";
     context.font = "20px system-ui";
     context.textAlign = "left";
-    context.fillText("SERVER MESSAGE", this.titleBarTextX, this.titleBarTextY);
+    context.fillText(this.titleBarText, this.titleBarTextX, this.titleBarTextY);
 
     // Title
     context.fillStyle = "#FFFFFF";
@@ -145,7 +140,11 @@ export class CloseableWindowObject extends BasePressableGameObject {
   }
 
   private setInitialState(): void {
+    this.opacity = 0;
     this.active = false;
+    this.setSize();
+    this.setCenterPosition();
+    this.calculatePositions();
   }
 
   private setSize(): void {

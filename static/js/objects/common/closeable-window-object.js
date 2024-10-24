@@ -5,11 +5,11 @@ export class CloseableWindowObject extends BasePressableGameObject {
     TITLE_BAR_HEIGHT = 40;
     TEXT_LINE_HEIGHT = 20;
     backdropObject;
-    globalAlpha = 0;
     windowX = 0;
     windowY = 0;
     windowWidth = 0;
     windowHeight = 0;
+    titleBarText = "SERVER MESSAGE";
     titleBarTextX = 0;
     titleBarTextY = 0;
     titleTextX = 0;
@@ -25,9 +25,6 @@ export class CloseableWindowObject extends BasePressableGameObject {
         this.canvas = canvas;
         this.backdropObject = new BackdropObject(this.canvas);
         this.setInitialState();
-        this.setSize();
-        this.setCenterPosition();
-        this.calculatePositions();
     }
     load() {
         this.backdropObject.load();
@@ -39,24 +36,23 @@ export class CloseableWindowObject extends BasePressableGameObject {
     isClosed() {
         return this.opened === false;
     }
-    open(title, content) {
+    open(titleBarText, title, content) {
         if (this.opened === false) {
-            this.backdropObject.fadeIn(0.2);
+            this.fadeIn(0.2);
         }
         this.opened = true;
+        this.titleBarText = titleBarText;
         this.title = title;
         this.content = content;
-        this.globalAlpha = 1;
         this.active = true;
     }
     close() {
         if (this.opened === false) {
             return console.warn("CloseableWindowObject is already closed");
         }
-        this.backdropObject.fadeOut(0.2);
+        this.fadeOut(0.2);
         this.opened = false;
         this.active = false;
-        this.globalAlpha = 0;
     }
     update(deltaTimeStamp) {
         if (this.pressed) {
@@ -66,8 +62,8 @@ export class CloseableWindowObject extends BasePressableGameObject {
         super.update(deltaTimeStamp);
     }
     render(context) {
+        context.globalAlpha = this.opacity;
         this.backdropObject.render(context);
-        context.globalAlpha = this.globalAlpha;
         // Background
         context.fillStyle = "rgb(0, 0, 0, 1)";
         context.fillRect(this.windowX, this.windowY, this.windowWidth, this.windowHeight);
@@ -78,7 +74,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
         context.fillStyle = "#FFFFFF";
         context.font = "20px system-ui";
         context.textAlign = "left";
-        context.fillText("SERVER MESSAGE", this.titleBarTextX, this.titleBarTextY);
+        context.fillText(this.titleBarText, this.titleBarTextX, this.titleBarTextY);
         // Title
         context.fillStyle = "#FFFFFF";
         context.font = "20px system-ui";
@@ -97,7 +93,11 @@ export class CloseableWindowObject extends BasePressableGameObject {
         super.render(context);
     }
     setInitialState() {
+        this.opacity = 0;
         this.active = false;
+        this.setSize();
+        this.setCenterPosition();
+        this.calculatePositions();
     }
     setSize() {
         this.width = this.canvas.width;

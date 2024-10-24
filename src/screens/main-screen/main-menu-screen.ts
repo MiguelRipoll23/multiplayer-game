@@ -90,12 +90,16 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private showMessages(messages: MessagesResponse[]): void {
+    if (messages.length === 0) {
+      return console.log("No server messages to show");
+    }
+
     this.messagesResponse = messages;
     this.showMessage(0);
   }
 
   private showMessage(index: number): void {
-    if (this.messagesResponse === null || this.messagesResponse.length === 0) {
+    if (this.messagesResponse === null) {
       return;
     }
 
@@ -108,20 +112,17 @@ export class MainMenuScreen extends BaseGameScreen {
     }
 
     const item = this.messagesResponse[index];
-    console.log("Opening server message message", item);
+    const length = this.messagesResponse.length;
 
     this.serverMessageWindowObject?.openMessage(
       index,
+      length,
       item.title,
       item.content,
     );
   }
 
   private handleServerMessageWindowObject() {
-    if (this.messagesResponse?.length === 0) {
-      return;
-    }
-
     if (this.serverMessageWindowObject?.getNext()) {
       const index = this.serverMessageWindowObject.getIndex() + 1;
       this.showMessage(index);

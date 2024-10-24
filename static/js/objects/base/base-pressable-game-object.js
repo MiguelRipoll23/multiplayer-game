@@ -1,5 +1,5 @@
-import { BasePositionableGameObject } from "./base-positionable-game-object.js";
-export class BasePressableGameObject extends BasePositionableGameObject {
+import { BaseAnimatedGameObject } from "./base-animated-object.js";
+export class BasePressableGameObject extends BaseAnimatedGameObject {
     width = 0;
     height = 0;
     active = true;

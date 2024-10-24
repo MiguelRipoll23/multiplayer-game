@@ -65,11 +65,14 @@ export class MainMenuScreen extends BaseGameScreen {
         });
     }
     showMessages(messages) {
+        if (messages.length === 0) {
+            return console.log("No server messages to show");
+        }
         this.messagesResponse = messages;
         this.showMessage(0);
     }
     showMessage(index) {
-        if (this.messagesResponse === null || this.messagesResponse.length === 0) {
+        if (this.messagesResponse === null) {
             return;
         }
         if (index === this.messagesResponse.length) {
@@ -79,13 +82,10 @@ export class MainMenuScreen extends BaseGameScreen {
             return;
         }
         const item = this.messagesResponse[index];
-        console.log("Opening server message message", item);
-        this.serverMessageWindowObject?.openMessage(index, item.title, item.content);
+        const length = this.messagesResponse.length;
+        this.serverMessageWindowObject?.openMessage(index, length, item.title, item.content);
     }
     handleServerMessageWindowObject() {
-        if (this.messagesResponse?.length === 0) {
-            return;
-        }
         if (this.serverMessageWindowObject?.getNext()) {
             const index = this.serverMessageWindowObject.getIndex() + 1;
             this.showMessage(index);

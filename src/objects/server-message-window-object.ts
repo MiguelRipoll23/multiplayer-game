@@ -2,7 +2,9 @@ import { CloseableWindowObject } from "./common/closeable-window-object.js";
 
 export class ServerMessageWindowObject extends CloseableWindowObject {
   private index: number = 0;
-  private next: boolean = true;
+  private length: number = 0;
+
+  private next: boolean = false;
 
   constructor(canvas: HTMLCanvasElement) {
     super(canvas);
@@ -16,10 +18,19 @@ export class ServerMessageWindowObject extends CloseableWindowObject {
     return this.next;
   }
 
-  public openMessage(index: number, title: string, content: string): void {
+  public openMessage(
+    index: number,
+    length: number,
+    title: string,
+    content: string,
+  ): void {
     this.index = index;
+    this.length = length;
     this.next = false;
-    super.open(title, content);
+    console.log(`Opening server message message (${index + 1}/${length})`);
+
+    const titleBarText = `SERVER MESSAGE (${index + 1}/${length})`;
+    super.open(titleBarText, title, content);
   }
 
   public override close(): void {
@@ -27,6 +38,7 @@ export class ServerMessageWindowObject extends CloseableWindowObject {
   }
 
   public closeAll(): void {
+    this.next = false;
     super.close();
   }
 }

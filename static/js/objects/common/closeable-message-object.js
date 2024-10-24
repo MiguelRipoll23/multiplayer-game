@@ -4,7 +4,6 @@ export class CloseableMessageObject extends BasePressableGameObject {
     FILL_COLOR = "rgba(0, 0, 0, 0.8)";
     DEFAULT_HEIGHT = 100;
     DEFAULT_WIDTH = 340;
-    opacity = 0;
     messageX = 0;
     messageY = 0;
     messageWidth = this.DEFAULT_WIDTH;
@@ -16,13 +15,14 @@ export class CloseableMessageObject extends BasePressableGameObject {
         super();
         this.canvas = canvas;
         this.active = false;
+        this.opacity = 0;
         this.setSize();
         this.setPosition();
     }
     show(value) {
         this.content = value;
         this.setPosition();
-        this.opacity = 1;
+        this.fadeIn(0.2);
         this.active = true;
     }
     close() {
@@ -30,7 +30,7 @@ export class CloseableMessageObject extends BasePressableGameObject {
             return console.warn("CloseableMessageObject is already closed");
         }
         this.active = false;
-        this.opacity = 0;
+        this.fadeOut(0.2);
     }
     update(deltaTimeStamp) {
         if (this.pressed) {

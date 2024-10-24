@@ -36,9 +36,7 @@ export class BaseGameScreen {
         this.checkIfScreenHasLoaded();
         this.updateObjects(this.sceneObjects, deltaTimeStamp);
         this.updateObjects(this.uiObjects, deltaTimeStamp);
-        if (this.gamePointer.isPressed() || this.gamePointer.isMouse()) {
-            this.handlePointerEvent();
-        }
+        this.handlePointerEvent();
     }
     render(context) {
         context.globalAlpha = this.opacity;

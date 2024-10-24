@@ -1,11 +1,8 @@
 import { HitboxObject } from "../common/hitbox-object.js";
-import { BaseGameObject } from "./base-game-object.js";
+import { BasePositionableGameObject } from "./base-positionable-game-object.js";
 
-export class BaseStaticCollidableGameObject extends BaseGameObject {
+export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
   protected crossable: boolean = false;
-  protected x: number = 0;
-  protected y: number = 0;
-
   protected hitboxObjects: HitboxObject[];
 
   private collidingObjects: BaseStaticCollidableGameObject[];
@@ -30,22 +27,6 @@ export class BaseStaticCollidableGameObject extends BaseGameObject {
     return this.collidingObjects.some((collidingObject) =>
       collidingObject.isCrossable() === false
     );
-  }
-
-  public getX(): number {
-    return this.x;
-  }
-
-  public setX(x: number): void {
-    this.x = x;
-  }
-
-  public getY(): number {
-    return this.y;
-  }
-
-  public setY(y: number): void {
-    this.y = y;
   }
 
   public getHitboxObjects(): HitboxObject[] {

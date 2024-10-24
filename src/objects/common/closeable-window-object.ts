@@ -1,4 +1,3 @@
-import { GamePointer } from "../../models/game-pointer.js";
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 import { BackdropObject } from "./backdrop-object.js";
 
@@ -28,13 +27,11 @@ export class CloseableWindowObject extends BasePressableGameObject {
   protected title: string = "Title";
   protected content: string = "Content goes here";
 
-  private hidden: boolean = false;
+  private opened: boolean = false;
 
   constructor(private canvas: HTMLCanvasElement) {
     super();
-
     this.backdropObject = new BackdropObject(this.canvas);
-
     this.setInitialState();
     this.setSize();
     this.setCenterPosition();
@@ -46,25 +43,34 @@ export class CloseableWindowObject extends BasePressableGameObject {
     super.load();
   }
 
+  public isOpened(): boolean {
+    return this.opened;
+  }
+
+  public isClosed(): boolean {
+    return this.opened === false;
+  }
+
   public open(title: string, content: string): void {
+    this.backdropObject.fadeIn(0.2);
+
+    this.opened = true;
     this.title = title;
     this.content = content;
     this.globalAlpha = 1;
-    this.hidden = false;
     this.active = true;
   }
 
   public close(): void {
-    if (this.hidden) {
+    if (this.opened === false) {
       return console.warn("CloseableWindowObject is already closed");
     }
 
-    this.hidden = true;
-    this.globalAlpha = 0;
-  }
+    this.backdropObject.fadeOut(0.2);
 
-  public isHidden(): boolean {
-    return this.hidden;
+    this.opened = false;
+    this.active = false;
+    this.globalAlpha = 0;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -72,13 +78,14 @@ export class CloseableWindowObject extends BasePressableGameObject {
       this.close();
     }
 
+    this.backdropObject.update(deltaTimeStamp);
     super.update(deltaTimeStamp);
   }
 
   public override render(context: CanvasRenderingContext2D): void {
-    context.globalAlpha = this.globalAlpha;
-
     this.backdropObject.render(context);
+
+    context.globalAlpha = this.globalAlpha;
 
     // Background
     context.fillStyle = "rgb(0, 0, 0, 1)";

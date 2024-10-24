@@ -1,14 +1,7 @@
 export class GamePointer {
-    mouse = false;
     x = 0;
     y = 0;
     pressed = false;
-    isMouse() {
-        return this.mouse;
-    }
-    setMouse(mouse) {
-        this.mouse = mouse;
-    }
     getX() {
         return this.x;
     }

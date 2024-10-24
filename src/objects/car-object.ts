@@ -1,13 +1,12 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { PlayerObject } from "./player-object.js";
-import { BaseDynamicCollidableGameObject } from "./base/base-dynamic-collidable-game-object.js";
+import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
 
 export class CarObject extends BaseDynamicCollidableGameObject {
   protected readonly TOP_SPEED: number = 4;
   protected readonly ACCELERATION: number = 0.4;
   protected readonly HANDLING: number = 6;
 
-  protected angle: number;
   protected speed: number = 0;
   protected playerObject: PlayerObject | null = null;
 

@@ -19,7 +19,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
     contentTextMaxWidth = 0;
     title = "Title";
     content = "Content goes here";
-    hidden = false;
+    opened = false;
     constructor(canvas) {
         super();
         this.canvas = canvas;
@@ -33,32 +33,39 @@ export class CloseableWindowObject extends BasePressableGameObject {
         this.backdropObject.load();
         super.load();
     }
+    isOpened() {
+        return this.opened;
+    }
+    isClosed() {
+        return this.opened === false;
+    }
     open(title, content) {
+        this.backdropObject.fadeIn(0.2);
+        this.opened = true;
         this.title = title;
         this.content = content;
         this.globalAlpha = 1;
-        this.hidden = false;
         this.active = true;
     }
     close() {
-        if (this.hidden) {
+        if (this.opened === false) {
             return console.warn("CloseableWindowObject is already closed");
         }
-        this.hidden = true;
+        this.backdropObject.fadeOut(0.2);
+        this.opened = false;
+        this.active = false;
         this.globalAlpha = 0;
-    }
-    isHidden() {
-        return this.hidden;
     }
     update(deltaTimeStamp) {
         if (this.pressed) {
             this.close();
         }
+        this.backdropObject.update(deltaTimeStamp);
         super.update(deltaTimeStamp);
     }
     render(context) {
-        context.globalAlpha = this.globalAlpha;
         this.backdropObject.render(context);
+        context.globalAlpha = this.globalAlpha;
         // Background
         context.fillStyle = "rgb(0, 0, 0, 1)";
         context.fillRect(this.windowX, this.windowY, this.windowWidth, this.windowHeight);

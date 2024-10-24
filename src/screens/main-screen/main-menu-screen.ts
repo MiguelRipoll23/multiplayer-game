@@ -100,7 +100,7 @@ export class MainMenuScreen extends BaseGameScreen {
     }
 
     if (index === this.messagesResponse.length) {
-      return this.serverMessageWindowObject?.setActive(false);
+      return;
     }
 
     const item = this.messagesResponse[index];
@@ -114,10 +114,7 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private handleServerMessageWindowObject() {
-    if (
-      this.serverMessageWindowObject?.isActive() &&
-      this.serverMessageWindowObject?.isHidden()
-    ) {
+    if (this.serverMessageWindowObject?.isClosed()) {
       const index = this.serverMessageWindowObject.getIndex() + 1;
       this.showMessage(index);
     }

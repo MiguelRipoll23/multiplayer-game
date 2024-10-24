@@ -7,7 +7,7 @@ import { MainScreen } from "../screens/main-screen.js";
 
 export class GameLoopService {
   private context: CanvasRenderingContext2D;
-  private debug: boolean = false;
+  private debug: boolean = true;
 
   private gameController: GameController;
   private gameFrame: GameFrame;
@@ -121,7 +121,6 @@ export class GameLoopService {
     event: MouseEvent,
     pressed: boolean,
   ): void {
-    this.gamePointer.setMouse(true);
     this.gamePointer.setX(event.clientX);
     this.gamePointer.setY(event.clientY);
     this.gamePointer.setPressed(pressed);

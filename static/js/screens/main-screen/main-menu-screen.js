@@ -73,15 +73,14 @@ export class MainMenuScreen extends BaseGameScreen {
             return;
         }
         if (index === this.messagesResponse.length) {
-            return this.serverMessageWindowObject?.setActive(false);
+            return;
         }
         const item = this.messagesResponse[index];
         console.log("Opening server message message", item);
         this.serverMessageWindowObject?.openMessage(index, item.title, item.content);
     }
     handleServerMessageWindowObject() {
-        if (this.serverMessageWindowObject?.isActive() &&
-            this.serverMessageWindowObject?.isHidden()) {
+        if (this.serverMessageWindowObject?.isClosed()) {
             const index = this.serverMessageWindowObject.getIndex() + 1;
             this.showMessage(index);
         }

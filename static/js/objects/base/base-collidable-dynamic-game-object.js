@@ -1,5 +1,5 @@
 import { BaseStaticCollidableGameObject } from "./base-static-collidable-game-object.js";
-export class BaseColldableGameObject extends BaseStaticCollidableGameObject {
+export class BaseDynamicCollidableGameObject extends BaseStaticCollidableGameObject {
     vx = 0;
     vy = 0;
     mass = 0;

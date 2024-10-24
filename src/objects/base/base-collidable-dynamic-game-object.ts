@@ -1,6 +1,7 @@
 import { BaseStaticCollidableGameObject } from "./base-static-collidable-game-object.js";
 
-export class BaseDynamicCollidableGameObject extends BaseStaticCollidableGameObject {
+export class BaseDynamicCollidableGameObject
+  extends BaseStaticCollidableGameObject {
   protected vx: number = 0;
   protected vy: number = 0;
   protected mass: number = 0;

@@ -40,7 +40,9 @@ export class CloseableWindowObject extends BasePressableGameObject {
         return this.opened === false;
     }
     open(title, content) {
-        this.backdropObject.fadeIn(0.2);
+        if (this.opened === false) {
+            this.backdropObject.fadeIn(0.2);
+        }
         this.opened = true;
         this.title = title;
         this.content = content;

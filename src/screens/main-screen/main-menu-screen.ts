@@ -95,12 +95,15 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private showMessage(index: number): void {
-    // TODO: fix loop
     if (this.messagesResponse === null || this.messagesResponse.length === 0) {
       return;
     }
 
     if (index === this.messagesResponse.length) {
+      if (this.serverMessageWindowObject?.isOpened()) {
+        this.serverMessageWindowObject?.closeAll();
+      }
+
       return;
     }
 
@@ -115,7 +118,11 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private handleServerMessageWindowObject() {
-    if (this.serverMessageWindowObject?.isClosed()) {
+    if (this.messagesResponse?.length === 0) {
+      return;
+    }
+
+    if (this.serverMessageWindowObject?.getNext()) {
       const index = this.serverMessageWindowObject.getIndex() + 1;
       this.showMessage(index);
     }

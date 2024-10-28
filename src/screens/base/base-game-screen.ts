@@ -18,6 +18,8 @@ export class BaseGameScreen implements GameScreen {
 
   private objectsLoadingPending: boolean = true;
 
+  private loaded: boolean = false;
+
   constructor(protected gameController: GameController) {
     console.log(`${this.constructor.name} created`);
     this.canvas = gameController.getCanvas();
@@ -40,22 +42,16 @@ export class BaseGameScreen implements GameScreen {
     this.sceneObjects.forEach((object) => object.load());
     this.uiObjects.forEach((object) => object.load());
 
-    this.objectsLoadingPending = false;
+    console.log(`${this.constructor.name} loaded`);
+
+    this.loaded = true;
   }
 
   public hasLoaded(): boolean {
-    if (this.objectsLoadingPending) {
-      return false;
-    }
-
-    return [...this.sceneObjects, ...this.uiObjects].every((object) =>
-      object.hasLoaded()
-    );
+    return this.loaded;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    this.checkIfScreenHasLoaded();
-
     this.updateObjects(this.sceneObjects, deltaTimeStamp);
     this.updateObjects(this.uiObjects, deltaTimeStamp);
 
@@ -81,13 +77,6 @@ export class BaseGameScreen implements GameScreen {
 
   public hasTransitionFinished(): void {
     console.log(`Transition to ${this.constructor.name} finished`);
-  }
-
-  private checkIfScreenHasLoaded(): void {
-    if (this.objectsLoadingPending && this.hasLoaded()) {
-      this.objectsLoadingPending = false;
-      console.log(`${this.constructor.name} loaded`);
-    }
   }
 
   private setDebugToChildObjects(): void {

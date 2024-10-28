@@ -8,6 +8,7 @@ export class BaseGameScreen {
     uiObjects = [];
     gamePointer;
     objectsLoadingPending = true;
+    loaded = false;
     constructor(gameController) {
         this.gameController = gameController;
         console.log(`${this.constructor.name} created`);
@@ -24,16 +25,13 @@ export class BaseGameScreen {
         this.setDebugToChildObjects();
         this.sceneObjects.forEach((object) => object.load());
         this.uiObjects.forEach((object) => object.load());
-        this.objectsLoadingPending = false;
+        console.log(`${this.constructor.name} loaded`);
+        this.loaded = true;
     }
     hasLoaded() {
-        if (this.objectsLoadingPending) {
-            return false;
-        }
-        return [...this.sceneObjects, ...this.uiObjects].every((object) => object.hasLoaded());
+        return this.loaded;
     }
     update(deltaTimeStamp) {
-        this.checkIfScreenHasLoaded();
         this.updateObjects(this.sceneObjects, deltaTimeStamp);
         this.updateObjects(this.uiObjects, deltaTimeStamp);
         this.handlePointerEvent();
@@ -52,12 +50,6 @@ export class BaseGameScreen {
     }
     hasTransitionFinished() {
         console.log(`Transition to ${this.constructor.name} finished`);
-    }
-    checkIfScreenHasLoaded() {
-        if (this.objectsLoadingPending && this.hasLoaded()) {
-            this.objectsLoadingPending = false;
-            console.log(`${this.constructor.name} loaded`);
-        }
     }
     setDebugToChildObjects() {
         const debug = this.gameController.isDebugging();

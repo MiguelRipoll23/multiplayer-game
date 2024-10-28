@@ -5,10 +5,6 @@ export class CloseableWindowObject extends BasePressableGameObject {
     TITLE_BAR_HEIGHT = 40;
     TEXT_LINE_HEIGHT = 20;
     backdropObject;
-    windowX = 0;
-    windowY = 0;
-    windowWidth = 0;
-    windowHeight = 0;
     titleBarText = "SERVER MESSAGE";
     titleBarTextX = 0;
     titleBarTextY = 0;
@@ -21,7 +17,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
     content = "Content goes here";
     opened = false;
     constructor(canvas) {
-        super();
+        super(true);
         this.canvas = canvas;
         this.backdropObject = new BackdropObject(this.canvas);
         this.setInitialState();
@@ -66,10 +62,10 @@ export class CloseableWindowObject extends BasePressableGameObject {
         this.backdropObject.render(context);
         // Background
         context.fillStyle = "rgb(0, 0, 0, 1)";
-        context.fillRect(this.windowX, this.windowY, this.windowWidth, this.windowHeight);
+        context.fillRect(this.x, this.y, this.width, this.height);
         // Title Bar
         context.fillStyle = "#333333"; // Title bar background color
-        context.fillRect(this.windowX, this.windowY, this.windowWidth, this.TITLE_BAR_HEIGHT);
+        context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
         // Window Title
         context.fillStyle = "#FFFFFF";
         context.font = "20px system-ui";
@@ -102,21 +98,21 @@ export class CloseableWindowObject extends BasePressableGameObject {
     setSize() {
         this.width = this.canvas.width;
         this.height = this.canvas.height;
-        this.windowWidth = this.canvas.width * 0.9;
-        this.windowHeight = 300;
+        this.width = this.canvas.width * 0.9;
+        this.height = 300;
     }
     setCenterPosition() {
-        this.windowX = (this.canvas.width - this.windowWidth) / 2;
-        this.windowY = (this.canvas.height - this.windowHeight) / 2;
+        this.x = (this.canvas.width - this.width) / 2;
+        this.y = (this.canvas.height - this.height) / 2;
     }
     calculatePositions() {
-        this.titleBarTextX = this.windowX + 15;
-        this.titleBarTextY = this.windowY + 28;
-        this.titleTextX = this.windowX + 14;
-        this.titleTextY = this.windowY + 68;
-        this.contentTextX = this.windowX + 14;
-        this.contentTextY = this.windowY + this.TITLE_BAR_HEIGHT + 62;
-        this.contentTextMaxWidth = this.windowWidth - 20;
+        this.titleBarTextX = this.x + 15;
+        this.titleBarTextY = this.y + 28;
+        this.titleTextX = this.x + 14;
+        this.titleTextY = this.y + 68;
+        this.contentTextX = this.x + 14;
+        this.contentTextY = this.y + this.TITLE_BAR_HEIGHT + 62;
+        this.contentTextMaxWidth = this.width - 20;
     }
     wrapText(context, text, maxWidth) {
         const words = text.split(" ");

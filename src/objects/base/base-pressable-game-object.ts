@@ -10,7 +10,7 @@ export class BasePressableGameObject extends BaseAnimatedGameObject {
   protected hovering = false;
   protected pressed = false;
 
-  constructor() {
+  constructor(protected stealFocus = false) {
     super();
   }
 
@@ -37,22 +37,15 @@ export class BasePressableGameObject extends BaseAnimatedGameObject {
   }
 
   public handlePointerEvent(gamePointer: GamePointer): void {
-    const pointerX = gamePointer.getX();
-    const pointerY = gamePointer.getY();
+    if (this.stealFocus || this.isPointerWithinBounds(gamePointer)) {
+      this.hovering = true;
 
-    if (
-      pointerX < this.x || pointerX > this.x + this.width ||
-      pointerY < this.y || pointerY > this.y + this.height
-    ) {
-      this.hovering = false;
+      if (gamePointer.isPressed()) {
+        console.log(this.constructor.name + " pressed");
+        this.pressed = true;
+      }
+
       return;
-    }
-
-    this.hovering = true;
-
-    if (gamePointer.isPressed()) {
-      this.pressed = true;
-      console.log(this.constructor.name + " pressed");
     }
   }
 
@@ -66,23 +59,42 @@ export class BasePressableGameObject extends BaseAnimatedGameObject {
     if (this.debug && this.active) {
       context.save();
 
-      // Translate context to the object's center
-      context.translate(this.x + this.width / 2, this.y + this.height / 2);
+      if (this.stealFocus) {
+        this.drawFullScreenRectangle(context);
+      } else {
+        this.drawRotatedRectangle(context);
+      }
 
-      // Apply the rotation
-      context.rotate(this.angle);
-
-      // Set the stroke style for the hitbox
-      context.strokeStyle = "rgba(148, 0, 211, 0.8)";
-
-      // Draw the rectangle (centered, so offset by half the width/height)
-      context.beginPath();
-      context.rect(-this.width / 2, -this.height / 2, this.width, this.height);
-      context.stroke();
-      context.closePath();
-
-      // Restore the context
       context.restore();
     }
+  }
+
+  private isPointerWithinBounds(gamePointer: GamePointer): boolean {
+    const pointerX = gamePointer.getX();
+    const pointerY = gamePointer.getY();
+
+    return (
+      pointerX >= this.x && pointerX <= this.x + this.width &&
+      pointerY >= this.y && pointerY <= this.y + this.height
+    );
+  }
+
+  private drawFullScreenRectangle(context: CanvasRenderingContext2D): void {
+    context.lineWidth = 5; // Set the border width
+    context.strokeStyle = "rgba(148, 0, 211, 0.8)";
+    context.beginPath();
+    context.rect(0, 0, context.canvas.width, context.canvas.height);
+    context.stroke();
+    context.closePath();
+  }
+
+  private drawRotatedRectangle(context: CanvasRenderingContext2D): void {
+    context.translate(this.x + this.width / 2, this.y + this.height / 2);
+    context.rotate(this.angle);
+    context.strokeStyle = "rgba(148, 0, 211, 0.8)";
+    context.beginPath();
+    context.rect(-this.width / 2, -this.height / 2, this.width, this.height);
+    context.stroke();
+    context.closePath();
   }
 }

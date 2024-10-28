@@ -7,11 +7,6 @@ export class CloseableWindowObject extends BasePressableGameObject {
 
   private readonly backdropObject: BackdropObject;
 
-  private windowX: number = 0;
-  private windowY: number = 0;
-  private windowWidth: number = 0;
-  private windowHeight: number = 0;
-
   private titleBarText: string = "SERVER MESSAGE";
   private titleBarTextX: number = 0;
   private titleBarTextY: number = 0;
@@ -29,7 +24,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
   private opened: boolean = false;
 
   constructor(private canvas: HTMLCanvasElement) {
-    super();
+    super(true);
     this.backdropObject = new BackdropObject(this.canvas);
     this.setInitialState();
   }
@@ -87,18 +82,18 @@ export class CloseableWindowObject extends BasePressableGameObject {
     // Background
     context.fillStyle = "rgb(0, 0, 0, 1)";
     context.fillRect(
-      this.windowX,
-      this.windowY,
-      this.windowWidth,
-      this.windowHeight,
+      this.x,
+      this.y,
+      this.width,
+      this.height,
     );
 
     // Title Bar
     context.fillStyle = "#333333"; // Title bar background color
     context.fillRect(
-      this.windowX,
-      this.windowY,
-      this.windowWidth,
+      this.x,
+      this.y,
+      this.width,
       this.TITLE_BAR_HEIGHT,
     );
 
@@ -150,25 +145,25 @@ export class CloseableWindowObject extends BasePressableGameObject {
   private setSize(): void {
     this.width = this.canvas.width;
     this.height = this.canvas.height;
-    this.windowWidth = this.canvas.width * 0.9;
-    this.windowHeight = 300;
+    this.width = this.canvas.width * 0.9;
+    this.height = 300;
   }
 
   private setCenterPosition(): void {
-    this.windowX = (this.canvas.width - this.windowWidth) / 2;
-    this.windowY = (this.canvas.height - this.windowHeight) / 2;
+    this.x = (this.canvas.width - this.width) / 2;
+    this.y = (this.canvas.height - this.height) / 2;
   }
 
   private calculatePositions(): void {
-    this.titleBarTextX = this.windowX + 15;
-    this.titleBarTextY = this.windowY + 28;
+    this.titleBarTextX = this.x + 15;
+    this.titleBarTextY = this.y + 28;
 
-    this.titleTextX = this.windowX + 14;
-    this.titleTextY = this.windowY + 68;
+    this.titleTextX = this.x + 14;
+    this.titleTextY = this.y + 68;
 
-    this.contentTextX = this.windowX + 14;
-    this.contentTextY = this.windowY + this.TITLE_BAR_HEIGHT + 62;
-    this.contentTextMaxWidth = this.windowWidth - 20;
+    this.contentTextX = this.x + 14;
+    this.contentTextY = this.y + this.TITLE_BAR_HEIGHT + 62;
+    this.contentTextMaxWidth = this.width - 20;
   }
 
   private wrapText(

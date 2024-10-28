@@ -9,16 +9,13 @@ export class BaseGameScreen implements GameScreen {
   protected canvas: HTMLCanvasElement;
   protected screenManagerService: ScreenManagerService | null = null;
 
+  protected loaded: boolean = false;
   protected opacity: number = 0;
 
   protected sceneObjects: GameObject[] = [];
   protected uiObjects: GameObject[] = [];
 
   private gamePointer: GamePointer;
-
-  private objectsLoadingPending: boolean = true;
-
-  private loaded: boolean = false;
 
   constructor(protected gameController: GameController) {
     console.log(`${this.constructor.name} created`);

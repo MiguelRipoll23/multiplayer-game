@@ -3,12 +3,11 @@ export class BaseGameScreen {
     gameController;
     canvas;
     screenManagerService = null;
+    loaded = false;
     opacity = 0;
     sceneObjects = [];
     uiObjects = [];
     gamePointer;
-    objectsLoadingPending = true;
-    loaded = false;
     constructor(gameController) {
         this.gameController = gameController;
         console.log(`${this.constructor.name} created`);

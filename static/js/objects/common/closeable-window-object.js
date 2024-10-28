@@ -1,3 +1,4 @@
+import { ORANGE_TEAM_COLOR } from "../../constants/colors-constants.js";
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 import { BackdropObject } from "./backdrop-object.js";
 export class CloseableWindowObject extends BasePressableGameObject {
@@ -60,31 +61,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
     render(context) {
         context.globalAlpha = this.opacity;
         this.backdropObject.render(context);
-        // Background
-        context.fillStyle = "rgb(0, 0, 0, 1)";
-        context.fillRect(this.x, this.y, this.width, this.height);
-        // Title Bar
-        context.fillStyle = "#333333"; // Title bar background color
-        context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
-        // Window Title
-        context.fillStyle = "#FFFFFF";
-        context.font = "20px system-ui";
-        context.textAlign = "left";
-        context.fillText(this.titleBarText, this.titleBarTextX, this.titleBarTextY);
-        // Title
-        context.fillStyle = "#FFFFFF";
-        context.font = "20px system-ui";
-        context.textAlign = "left";
-        context.fillText(this.title, this.titleTextX, this.titleTextY);
-        // Content
-        context.fillStyle = "#FFFFFF";
-        context.font = "16px system-ui";
-        context.textAlign = "left";
-        // Text wrapping
-        const lines = this.wrapText(context, this.content, this.contentTextMaxWidth);
-        for (let i = 0; i < lines.length; i++) {
-            context.fillText(lines[i], this.contentTextX, this.contentTextY + (i * this.TEXT_LINE_HEIGHT));
-        }
+        this.renderWindow(context);
         context.globalAlpha = 1; // Reset global alpha
         super.render(context);
     }
@@ -131,5 +108,39 @@ export class CloseableWindowObject extends BasePressableGameObject {
         }
         lines.push(currentLine);
         return lines;
+    }
+    renderWindow(context) {
+        this.renderBackground(context);
+        this.renderTitleBar(context);
+        this.renderWindowTitle(context);
+        this.renderContent(context);
+    }
+    renderBackground(context) {
+        context.fillStyle = "rgb(255, 255, 255, 0.8)";
+        context.fillRect(this.x, this.y, this.width, this.height);
+    }
+    renderTitleBar(context) {
+        context.fillStyle = ORANGE_TEAM_COLOR;
+        context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
+    }
+    renderWindowTitle(context) {
+        // Render the title bar text
+        context.fillStyle = "#FFFFFF";
+        context.font = "20px system-ui";
+        context.textAlign = "left";
+        context.fillText(this.titleBarText, this.titleBarTextX, this.titleBarTextY);
+        // Render the main window title
+        context.fillStyle = "#000000";
+        context.font = "20px system-ui";
+        context.fillText(this.title, this.titleTextX, this.titleTextY);
+    }
+    renderContent(context) {
+        context.fillStyle = "#000000";
+        context.font = "16px system-ui";
+        context.textAlign = "left";
+        const lines = this.wrapText(context, this.content, this.contentTextMaxWidth);
+        for (let i = 0; i < lines.length; i++) {
+            context.fillText(lines[i], this.contentTextX, this.contentTextY + (i * this.TEXT_LINE_HEIGHT));
+        }
     }
 }

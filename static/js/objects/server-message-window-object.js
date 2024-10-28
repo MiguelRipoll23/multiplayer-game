@@ -1,7 +1,6 @@
 import { CloseableWindowObject } from "./common/closeable-window-object.js";
 export class ServerMessageWindowObject extends CloseableWindowObject {
     index = 0;
-    length = 0;
     next = false;
     constructor(canvas) {
         super(canvas);
@@ -14,11 +13,10 @@ export class ServerMessageWindowObject extends CloseableWindowObject {
     }
     openMessage(index, length, title, content) {
         this.index = index;
-        this.length = length;
         this.next = false;
-        console.log(`Opening server message message (${index + 1}/${length})`);
-        const titleBarText = `SERVER MESSAGE (${index + 1}/${length})`;
-        super.open(titleBarText, title, content);
+        const pages = `${index + 1}/${length}`;
+        console.log(`Opening server message message (${pages})`);
+        super.open(`SERVER MESSAGE (${pages})`, title, content);
     }
     close() {
         this.next = true;

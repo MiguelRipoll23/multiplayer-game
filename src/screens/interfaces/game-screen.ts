@@ -1,5 +1,4 @@
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
-import { ScreenManager } from "./screen-manager.js";
 
 export interface GameScreen {
   isActive(): boolean;

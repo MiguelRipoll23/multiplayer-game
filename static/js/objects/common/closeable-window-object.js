@@ -89,7 +89,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
         this.titleTextY = this.y + 68;
         this.contentTextX = this.x + 14;
         this.contentTextY = this.y + this.TITLE_BAR_HEIGHT + 62;
-        this.contentTextMaxWidth = this.width - 20;
+        this.contentTextMaxWidth = this.width - 25;
     }
     wrapText(context, text, maxWidth) {
         const words = text.split(" ");

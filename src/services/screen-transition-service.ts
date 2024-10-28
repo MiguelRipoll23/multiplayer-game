@@ -1,7 +1,7 @@
 import { GameScreen } from "../screens/interfaces/game-screen.js";
 import { ScreenManager } from "../screens/interfaces/screen-manager.js";
 
-export class TransitionService {
+export class ScreenTransitionService {
   private screenManager: ScreenManager;
   private elapsedTransitionMilliseconds: number = 0;
 

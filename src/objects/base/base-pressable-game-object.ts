@@ -44,8 +44,6 @@ export class BasePressableGameObject extends BaseAnimatedGameObject {
         console.log(this.constructor.name + " pressed");
         this.pressed = true;
       }
-
-      return;
     }
   }
 
@@ -80,7 +78,7 @@ export class BasePressableGameObject extends BaseAnimatedGameObject {
   }
 
   private drawFullScreenRectangle(context: CanvasRenderingContext2D): void {
-    context.lineWidth = 5; // Set the border width
+    context.lineWidth = 8; // Set the border width
     context.strokeStyle = "rgba(148, 0, 211, 0.8)";
     context.beginPath();
     context.rect(0, 0, context.canvas.width, context.canvas.height);

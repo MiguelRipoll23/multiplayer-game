@@ -1,7 +1,7 @@
 import { AnimationType } from "../models/game-animation.js";
 import { BaseAnimatedGameObject } from "../objects/base/base-animated-object.js";
 
-export class AnimationService {
+export class ObjectAnimationService {
   private readonly object: BaseAnimatedGameObject;
 
   private completed: boolean = false;

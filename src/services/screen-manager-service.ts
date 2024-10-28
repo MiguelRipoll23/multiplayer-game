@@ -1,20 +1,20 @@
 import { GameScreen } from "../screens/interfaces/game-screen.js";
 import { ScreenManager } from "../screens/interfaces/screen-manager.js";
-import { TransitionService } from "./transition-service.js";
+import { ScreenTransitionService } from "./screen-transition-service.js";
 
 export class ScreenManagerService implements ScreenManager {
   private stack: GameScreen[] = [];
   private currentScreen: GameScreen | null = null;
   private nextScreen: GameScreen | null = null;
 
-  private transitionService: TransitionService;
+  private transitionService: ScreenTransitionService;
 
   constructor(screen: GameScreen) {
-    this.transitionService = new TransitionService(this);
+    this.transitionService = new ScreenTransitionService(this);
     this.stack.push(screen);
   }
 
-  public getTransitionService(): TransitionService {
+  public getTransitionService(): ScreenTransitionService {
     return this.transitionService;
   }
 

@@ -1,6 +1,6 @@
 import { ApiService } from "../services/api-service.js";
 import { CryptoService } from "../services/crypto-service.js";
-import { TransitionService } from "../services/transition-service.js";
+import { ScreenTransitionService } from "../services/screen-transition-service.js";
 import { WebSocketService } from "../services/websocket-service.js";
 import { GameFrame } from "./game-frame.js";
 import { GamePointer } from "./game-pointer.js";
@@ -11,7 +11,7 @@ export class GameController {
   private gameFrame: GameFrame;
   private gamePointer: GamePointer;
 
-  private readonly transitionService: TransitionService;
+  private readonly transitionService: ScreenTransitionService;
   private readonly apiService: ApiService;
   private readonly cryptoService: CryptoService;
   private readonly webSocketService: WebSocketService;
@@ -24,7 +24,7 @@ export class GameController {
     this.gameFrame = new GameFrame();
     this.gamePointer = new GamePointer();
 
-    this.transitionService = new TransitionService(this.gameFrame);
+    this.transitionService = new ScreenTransitionService(this.gameFrame);
     this.apiService = new ApiService();
     this.cryptoService = new CryptoService(this.gameState.getGameServer());
     this.webSocketService = new WebSocketService(this);
@@ -50,7 +50,7 @@ export class GameController {
     return this.gamePointer;
   }
 
-  public getTransitionService(): TransitionService {
+  public getTransitionService(): ScreenTransitionService {
     return this.transitionService;
   }
 

@@ -116,7 +116,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
 
     this.contentTextX = this.x + 14;
     this.contentTextY = this.y + this.TITLE_BAR_HEIGHT + 62;
-    this.contentTextMaxWidth = this.width - 20;
+    this.contentTextMaxWidth = this.width - 25;
   }
 
   private wrapText(

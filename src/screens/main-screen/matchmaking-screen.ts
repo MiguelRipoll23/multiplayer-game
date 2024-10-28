@@ -1,11 +1,11 @@
 import { GameController } from "../../models/game-controller.js";
 import { ProgressBarObject } from "../../objects/progress-bar-object.js";
-import { TransitionService } from "../../services/transition-service.js";
+import { ScreenTransitionService } from "../../services/screen-transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";
 
 export class MatchmakingScreen extends BaseGameScreen {
-  private transitionService: TransitionService;
+  private transitionService: ScreenTransitionService;
   private progressBarObject: ProgressBarObject | null = null;
 
   constructor(gameController: GameController) {

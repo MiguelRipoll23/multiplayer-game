@@ -1,11 +1,11 @@
-import { TransitionService } from "./transition-service.js";
+import { ScreenTransitionService } from "./screen-transition-service.js";
 export class ScreenManagerService {
     stack = [];
     currentScreen = null;
     nextScreen = null;
     transitionService;
     constructor(screen) {
-        this.transitionService = new TransitionService(this);
+        this.transitionService = new ScreenTransitionService(this);
         this.stack.push(screen);
     }
     getTransitionService() {

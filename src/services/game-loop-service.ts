@@ -82,25 +82,32 @@ export class GameLoopService {
       const touch = event.touches[0];
       if (!touch) return;
 
-      this.updateGamePointerWithTouch(touch, true);
+      this.updateGamePointerWithTouch(touch, false);
     });
 
-    window.addEventListener("touchend", (event) => {
-      const touch = event.touches[0];
-      if (!touch) return;
-
-      this.updateGamePointerWithTouch(touch, false);
+    window.addEventListener("touchend", () => {
+      this.updateGamePointerWithTouch(null, true);
     });
   }
 
-  private updateGamePointerWithTouch(touch: Touch, pressed: boolean): void {
+  private updateGamePointerWithTouch(
+    touch: Touch | null,
+    pressed: boolean,
+  ): void {
+    this.gamePointer.setPressed(pressed);
+
+    if (touch === null) {
+      this.gamePointer.setX(-1);
+      this.gamePointer.setY(-1);
+      return;
+    }
+
     const rect = this.canvas.getBoundingClientRect();
     const touchX = touch.clientX - rect.left;
     const touchY = touch.clientY - rect.top;
 
     this.gamePointer.setX(touchX);
     this.gamePointer.setY(touchY);
-    this.gamePointer.setPressed(pressed);
   }
 
   private addMouseEventListeners(): void {
@@ -108,12 +115,8 @@ export class GameLoopService {
       this.updateGamePointerWithMouse(event, false);
     });
 
-    window.addEventListener("mousedown", (event) => {
-      this.updateGamePointerWithMouse(event, true);
-    });
-
     window.addEventListener("mouseup", (event) => {
-      this.updateGamePointerWithMouse(event, false);
+      this.updateGamePointerWithMouse(event, true);
     });
   }
 

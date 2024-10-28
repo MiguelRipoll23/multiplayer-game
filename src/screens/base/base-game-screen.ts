@@ -94,7 +94,7 @@ export class BaseGameScreen implements GameScreen {
     for (const pressableObject of pressableObjects) {
       pressableObject.handlePointerEvent(this.gamePointer);
 
-      if (pressableObject.isHovering()) {
+      if (pressableObject.isHovering() || pressableObject.isPressed()) {
         break;
       }
     }

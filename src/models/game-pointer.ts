@@ -1,7 +1,10 @@
+export type PointerType = "mouse" | "touch" | "pen";
+
 export class GamePointer {
   private x: number = 0;
   private y: number = 0;
 
+  private type: PointerType = "mouse";
   private pressed: boolean = false;
 
   public getX(): number {
@@ -26,5 +29,19 @@ export class GamePointer {
 
   public setPressed(pressed: boolean): void {
     this.pressed = pressed;
+  }
+
+  public getType(): PointerType {
+    return this.type;
+  }
+
+  public setType(type: PointerType): void {
+    this.type = type;
+  }
+
+  public reset(): void {
+    this.x = -1;
+    this.y = -1;
+    this.pressed = false;
   }
 }

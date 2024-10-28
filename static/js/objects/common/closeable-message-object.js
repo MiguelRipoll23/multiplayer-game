@@ -16,7 +16,6 @@ export class CloseableMessageObject extends BasePressableGameObject {
         this.setPosition();
     }
     show(value) {
-        this.reset();
         this.setPosition();
         this.content = value;
         this.fadeIn(0.2);

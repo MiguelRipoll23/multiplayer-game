@@ -1,7 +1,7 @@
 import { SERVER_NOTIFICATION_EVENT } from "../constants/events-contants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
-import { GamePointer } from "../models/game-pointer.js";
+import { GamePointer, PointerType } from "../models/game-pointer.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
 
@@ -65,8 +65,7 @@ export class GameLoopService {
 
   private addEventListeners(): void {
     this.addWindowEventListeners();
-    this.addTouchEventListeners();
-    this.addMouseEventListeners();
+    this.addPointerEventListeners();
     this.addCustomEventListeners();
   }
 
@@ -77,53 +76,21 @@ export class GameLoopService {
     });
   }
 
-  private addTouchEventListeners(): void {
-    window.addEventListener("touchstart", (event) => {
-      const touch = event.touches[0];
-      if (!touch) return;
-
-      this.updateGamePointerWithTouch(touch, false);
+  private addPointerEventListeners(): void {
+    window.addEventListener("pointermove", (event) => {
+      this.updateGamePointer(event, false);
     });
 
-    window.addEventListener("touchend", () => {
-      this.updateGamePointerWithTouch(null, true);
+    window.addEventListener("pointerup", (event) => {
+      this.updateGamePointer(event, true);
     });
   }
 
-  private updateGamePointerWithTouch(
-    touch: Touch | null,
+  private updateGamePointer(
+    event: PointerEvent,
     pressed: boolean,
   ): void {
-    this.gamePointer.setPressed(pressed);
-
-    if (touch === null) {
-      this.gamePointer.setX(-1);
-      this.gamePointer.setY(-1);
-      return;
-    }
-
-    const rect = this.canvas.getBoundingClientRect();
-    const touchX = touch.clientX - rect.left;
-    const touchY = touch.clientY - rect.top;
-
-    this.gamePointer.setX(touchX);
-    this.gamePointer.setY(touchY);
-  }
-
-  private addMouseEventListeners(): void {
-    window.addEventListener("mousemove", (event) => {
-      this.updateGamePointerWithMouse(event, false);
-    });
-
-    window.addEventListener("mouseup", (event) => {
-      this.updateGamePointerWithMouse(event, true);
-    });
-  }
-
-  private updateGamePointerWithMouse(
-    event: MouseEvent,
-    pressed: boolean,
-  ): void {
+    this.gamePointer.setType(event.pointerType as PointerType);
     this.gamePointer.setX(event.clientX);
     this.gamePointer.setY(event.clientY);
     this.gamePointer.setPressed(pressed);

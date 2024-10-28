@@ -62,7 +62,7 @@ export class BaseGameScreen {
             .reverse();
         for (const pressableObject of pressableObjects) {
             pressableObject.handlePointerEvent(this.gamePointer);
-            if (pressableObject.isHovering()) {
+            if (pressableObject.isHovering() || pressableObject.isPressed()) {
                 break;
             }
         }

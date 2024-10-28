@@ -49,8 +49,7 @@ export class GameLoopService {
     }
     addEventListeners() {
         this.addWindowEventListeners();
-        this.addTouchEventListeners();
-        this.addMouseEventListeners();
+        this.addPointerEventListeners();
         this.addCustomEventListeners();
     }
     addWindowEventListeners() {
@@ -59,39 +58,16 @@ export class GameLoopService {
             this.canvas.height = document.body.clientHeight;
         });
     }
-    addTouchEventListeners() {
-        window.addEventListener("touchstart", (event) => {
-            const touch = event.touches[0];
-            if (!touch)
-                return;
-            this.updateGamePointerWithTouch(touch, false);
+    addPointerEventListeners() {
+        window.addEventListener("pointermove", (event) => {
+            this.updateGamePointer(event, false);
         });
-        window.addEventListener("touchend", () => {
-            this.updateGamePointerWithTouch(null, true);
+        window.addEventListener("pointerup", (event) => {
+            this.updateGamePointer(event, true);
         });
     }
-    updateGamePointerWithTouch(touch, pressed) {
-        this.gamePointer.setPressed(pressed);
-        if (touch === null) {
-            this.gamePointer.setX(-1);
-            this.gamePointer.setY(-1);
-            return;
-        }
-        const rect = this.canvas.getBoundingClientRect();
-        const touchX = touch.clientX - rect.left;
-        const touchY = touch.clientY - rect.top;
-        this.gamePointer.setX(touchX);
-        this.gamePointer.setY(touchY);
-    }
-    addMouseEventListeners() {
-        window.addEventListener("mousemove", (event) => {
-            this.updateGamePointerWithMouse(event, false);
-        });
-        window.addEventListener("mouseup", (event) => {
-            this.updateGamePointerWithMouse(event, true);
-        });
-    }
-    updateGamePointerWithMouse(event, pressed) {
+    updateGamePointer(event, pressed) {
+        this.gamePointer.setType(event.pointerType);
         this.gamePointer.setX(event.clientX);
         this.gamePointer.setY(event.clientY);
         this.gamePointer.setPressed(pressed);

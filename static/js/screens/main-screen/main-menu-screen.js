@@ -7,12 +7,14 @@ import { MatchmakingScreen } from "./matchmaking-screen.js";
 export class MainMenuScreen extends BaseGameScreen {
     MENU_OPTIONS_TEXT = ["Join game", "Scoreboard", "Settings"];
     apiService;
+    transitionService;
     messagesResponse = null;
     serverMessageWindowObject = null;
     closeableMessageObject = null;
     constructor(gameController) {
         super(gameController);
         this.apiService = gameController.getApiService();
+        this.transitionService = gameController.getTransitionService();
     }
     loadObjects() {
         this.loadTitleObject();
@@ -113,8 +115,12 @@ export class MainMenuScreen extends BaseGameScreen {
         }
     }
     transitionToMatchmakingScreen() {
+        this.uiObjects.filter((uiObject) => uiObject instanceof MenuOptionObject)
+            .forEach((uiObject) => {
+            uiObject.setActive(false);
+        });
         const matchmakingScreen = new MatchmakingScreen(this.gameController);
         matchmakingScreen.loadObjects();
-        this.screenManagerService?.getTransitionService().crossfade(matchmakingScreen, 0.2);
+        this.transitionService.crossfade(matchmakingScreen, 0.2);
     }
 }

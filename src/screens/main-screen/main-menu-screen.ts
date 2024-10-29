@@ -5,6 +5,7 @@ import { TitleObject } from "../../objects/common/title-object.js";
 import { ServerMessageWindowObject } from "../../objects/server-message-window-object.js";
 import { ApiService } from "../../services/api-service.js";
 import { MessagesResponse } from "../../services/interfaces/messages-response.js";
+import { ScreenTransitionService } from "../../services/screen-transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { MatchmakingScreen } from "./matchmaking-screen.js";
 
@@ -12,6 +13,7 @@ export class MainMenuScreen extends BaseGameScreen {
   private MENU_OPTIONS_TEXT: string[] = ["Join game", "Scoreboard", "Settings"];
 
   private apiService: ApiService;
+  private transitionService: ScreenTransitionService;
 
   private messagesResponse: MessagesResponse[] | null = null;
   private serverMessageWindowObject: ServerMessageWindowObject | null = null;
@@ -21,6 +23,7 @@ export class MainMenuScreen extends BaseGameScreen {
   constructor(gameController: GameController) {
     super(gameController);
     this.apiService = gameController.getApiService();
+    this.transitionService = gameController.getTransitionService();
   }
 
   public override loadObjects(): void {
@@ -157,12 +160,14 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private transitionToMatchmakingScreen(): void {
+    this.uiObjects.filter((uiObject) => uiObject instanceof MenuOptionObject)
+      .forEach((uiObject) => {
+        uiObject.setActive(false);
+      });
+
     const matchmakingScreen = new MatchmakingScreen(this.gameController);
     matchmakingScreen.loadObjects();
 
-    this.screenManagerService?.getTransitionService().crossfade(
-      matchmakingScreen,
-      0.2,
-    );
+    this.transitionService.crossfade(matchmakingScreen, 0.2);
   }
 }

@@ -35,6 +35,11 @@ export class ScreenTransitionService {
     fadeOutDurationSeconds: number,
     fadeInDurationSeconds: number,
   ): void {
+    if (this.isNextScreenAlreadySet(nextScreen)) {
+      console.warn("Ignoring duplicated transition to the same screen");
+      return;
+    }
+
     console.log("Fading out and in to", nextScreen.constructor.name);
 
     // Check if there is an active transition
@@ -53,6 +58,11 @@ export class ScreenTransitionService {
     nextScreen: GameScreen,
     crossfadeDurationSeconds: number,
   ): void {
+    if (this.isNextScreenAlreadySet(nextScreen)) {
+      console.warn("Ignoring duplicated transition to the same screen");
+      return;
+    }
+
     console.log("Crossfading to", nextScreen.constructor.name);
 
     // Check if there is an active transition
@@ -64,6 +74,12 @@ export class ScreenTransitionService {
 
     this.crossfadeDurationMilliseconds = crossfadeDurationSeconds * 1000;
     this.isCrossfading = true;
+  }
+
+  private isNextScreenAlreadySet(nextScreen: GameScreen): boolean {
+    const currentNextScreen = this.screenManager.getNextScreen();
+
+    return currentNextScreen?.constructor === nextScreen.constructor;
   }
 
   private handleFadingOutAndIn(deltaTimeStamp: DOMHighResTimeStamp): void {

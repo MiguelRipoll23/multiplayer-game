@@ -5,6 +5,8 @@ export class GamePointer {
   private y: number = 0;
 
   private type: PointerType = "mouse";
+
+  private pressing: boolean = false;
   private pressed: boolean = false;
 
   public getX(): number {
@@ -21,6 +23,14 @@ export class GamePointer {
 
   public setY(y: number): void {
     this.y = y;
+  }
+
+  public isPressing(): boolean {
+    return this.pressing;
+  }
+
+  public setPressing(pressing: boolean): void {
+    this.pressing = pressing;
   }
 
   public isPressed(): boolean {
@@ -42,6 +52,7 @@ export class GamePointer {
   public reset(): void {
     this.x = -1;
     this.y = -1;
+    this.pressing = false;
     this.pressed = false;
   }
 }

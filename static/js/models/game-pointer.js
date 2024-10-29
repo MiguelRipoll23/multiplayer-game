@@ -2,6 +2,7 @@ export class GamePointer {
     x = 0;
     y = 0;
     type = "mouse";
+    pressing = false;
     pressed = false;
     getX() {
         return this.x;
@@ -14,6 +15,12 @@ export class GamePointer {
     }
     setY(y) {
         this.y = y;
+    }
+    isPressing() {
+        return this.pressing;
+    }
+    setPressing(pressing) {
+        this.pressing = pressing;
     }
     isPressed() {
         return this.pressed;
@@ -30,6 +37,7 @@ export class GamePointer {
     reset() {
         this.x = -1;
         this.y = -1;
+        this.pressing = false;
         this.pressed = false;
     }
 }

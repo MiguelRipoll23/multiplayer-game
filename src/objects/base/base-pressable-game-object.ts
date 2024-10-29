@@ -38,7 +38,10 @@ export class BasePressableGameObject extends BaseAnimatedGameObject {
 
   public handlePointerEvent(gamePointer: GamePointer): void {
     if (this.stealFocus || this.isPointerWithinBounds(gamePointer)) {
-      if (gamePointer.getType() === "mouse") {
+      const pressing = gamePointer.isPressing();
+      const mouse = gamePointer.getType() === "mouse";
+
+      if (pressing || mouse) {
         this.hovering = true;
       }
 

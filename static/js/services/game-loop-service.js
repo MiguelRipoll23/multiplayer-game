@@ -60,17 +60,21 @@ export class GameLoopService {
     }
     addPointerEventListeners() {
         window.addEventListener("pointermove", (event) => {
-            this.updateGamePointer(event, false);
+            this.gamePointer.setX(event.clientX);
+            this.gamePointer.setY(event.clientY);
+        });
+        window.addEventListener("pointerdown", (event) => {
+            this.gamePointer.setType(event.pointerType);
+            this.gamePointer.setX(event.clientX);
+            this.gamePointer.setY(event.clientY);
+            this.gamePointer.setPressing(true);
         });
         window.addEventListener("pointerup", (event) => {
-            this.updateGamePointer(event, true);
+            this.gamePointer.setX(event.clientX);
+            this.gamePointer.setY(event.clientY);
+            this.gamePointer.setPressing(false);
+            this.gamePointer.setPressed(true);
         });
-    }
-    updateGamePointer(event, pressed) {
-        this.gamePointer.setType(event.pointerType);
-        this.gamePointer.setX(event.clientX);
-        this.gamePointer.setY(event.clientY);
-        this.gamePointer.setPressed(pressed);
     }
     addCustomEventListeners() {
         window.addEventListener(SERVER_NOTIFICATION_EVENT, (event) => {

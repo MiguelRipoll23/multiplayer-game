@@ -1,4 +1,4 @@
-import { SERVER_NOTIFICATION_EVENT } from "../constants/events-contants.js";
+import { SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, } from "../constants/events-contants.js";
 import { GameController } from "../models/game-controller.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
@@ -77,10 +77,26 @@ export class GameLoopService {
         });
     }
     addCustomEventListeners() {
-        window.addEventListener(SERVER_NOTIFICATION_EVENT, (event) => {
-            console.log(`Event ${SERVER_NOTIFICATION_EVENT} handled`, event);
-            this.gameFrame.getNotificationObject()?.show(event.detail.text);
+        window.addEventListener(SERVER_DISCONNECTED_EVENT, (event) => {
+            this.handleServerDisconnectedEvent(event);
         });
+        window.addEventListener(SERVER_NOTIFICATION_EVENT, (event) => {
+            this.handleServerNotificationEvent(event);
+        });
+    }
+    handleServerDisconnectedEvent(event) {
+        console.log(`Event ${SERVER_DISCONNECTED_EVENT} handled`, event);
+        if (event.detail.connectionLost) {
+            alert("Connection to server was lost");
+        }
+        else {
+            alert("Failed to connect to server");
+        }
+        window.location.reload();
+    }
+    handleServerNotificationEvent(event) {
+        console.log(`Event ${SERVER_NOTIFICATION_EVENT} handled`, event);
+        this.gameFrame.getNotificationObject()?.show(event.detail.text);
     }
     loadNotificationObject() {
         const notificationObject = new NotificationObject(this.canvas);

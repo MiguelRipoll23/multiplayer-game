@@ -6,6 +6,7 @@ import {
 } from "../constants/api-constants.js";
 import {
   SERVER_CONNECTED_EVENT,
+  SERVER_DISCONNECTED_EVENT,
   SERVER_NOTIFICATION_EVENT,
 } from "../constants/events-contants.js";
 import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
@@ -40,22 +41,12 @@ export class WebSocketService {
   }
 
   private addEventListeners(webSocket: WebSocket): void {
-    webSocket.addEventListener("open", (event) => {
-      console.log("Connected to server");
-      this.gameState.getGameServer().setConnected(true);
-      dispatchEvent(new CustomEvent(SERVER_CONNECTED_EVENT));
+    webSocket.addEventListener("open", () => {
+      this.handleConnection();
     });
 
     webSocket.addEventListener("close", (event) => {
-      console.log("Connection closed", event);
-
-      if (this.gameState.getGameServer().isConnected()) {
-        alert("Connection to server was lost");
-      } else {
-        alert("Failed to connect to server");
-      }
-
-      this.gameState.getGameServer().setConnected(false);
+      this.handleDisconnection(event);
     });
 
     webSocket.addEventListener("error", (event) => {
@@ -65,6 +56,26 @@ export class WebSocketService {
     webSocket.addEventListener("message", (event) => {
       this.handleMessage(new Uint8Array(event.data));
     });
+  }
+
+  private handleConnection(): void {
+    console.log("Connected to server");
+    this.gameState.getGameServer().setConnected(true);
+    dispatchEvent(new CustomEvent(SERVER_CONNECTED_EVENT));
+  }
+
+  private handleDisconnection(event: CloseEvent): void {
+    console.log("Connection closed", event);
+
+    dispatchEvent(
+      new CustomEvent(SERVER_DISCONNECTED_EVENT, {
+        detail: {
+          connectionLost: this.gameState.getGameServer().isConnected(),
+        },
+      }),
+    );
+
+    this.gameState.getGameServer().setConnected(false);
   }
 
   private handleMessage(data: Uint8Array) {

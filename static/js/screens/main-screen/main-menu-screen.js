@@ -10,7 +10,7 @@ export class MainMenuScreen extends BaseGameScreen {
     transitionService;
     messagesResponse = null;
     serverMessageWindowObject = null;
-    errorCloseableMessageObject = null;
+    closeableMessageObject = null;
     constructor(gameController) {
         super(gameController);
         this.apiService = gameController.getApiService();
@@ -27,7 +27,6 @@ export class MainMenuScreen extends BaseGameScreen {
         this.downloadServerMessages();
     }
     update(deltaTimeStamp) {
-        this.handleErrorMessageObject();
         this.handleMenuOptionObjects();
         this.handleServerMessageWindowObject();
         super.update(deltaTimeStamp);
@@ -51,8 +50,8 @@ export class MainMenuScreen extends BaseGameScreen {
         }
     }
     loadCloseableMessageObject() {
-        this.errorCloseableMessageObject = new CloseableMessageObject(this.canvas);
-        this.uiObjects.push(this.errorCloseableMessageObject);
+        this.closeableMessageObject = new CloseableMessageObject(this.canvas);
+        this.uiObjects.push(this.closeableMessageObject);
     }
     loadServerMessageWindow() {
         this.serverMessageWindowObject = new ServerMessageWindowObject(this.canvas);
@@ -64,7 +63,7 @@ export class MainMenuScreen extends BaseGameScreen {
             this.showMessages(messages);
         }).catch((error) => {
             console.error(error);
-            this.errorCloseableMessageObject?.show("Failed to download server messages");
+            this.closeableMessageObject?.show("Failed to download server messages");
         });
     }
     showMessages(messages) {
@@ -88,12 +87,6 @@ export class MainMenuScreen extends BaseGameScreen {
         const length = this.messagesResponse.length;
         this.serverMessageWindowObject?.openMessage(index, length, item.title, item.content);
     }
-    handleErrorMessageObject() {
-        if (this.errorCloseableMessageObject?.isPressed()) {
-            console.log("Reloading window");
-            window.location.reload();
-        }
-    }
     handleServerMessageWindowObject() {
         if (this.serverMessageWindowObject?.getNext()) {
             const index = this.serverMessageWindowObject.getIndex() + 1;
@@ -114,11 +107,11 @@ export class MainMenuScreen extends BaseGameScreen {
                 this.transitionToMatchmakingScreen();
                 break;
             case 1:
-                return this.errorCloseableMessageObject?.show("Not implemented");
+                return this.closeableMessageObject?.show("Not implemented");
             case 2:
-                return this.errorCloseableMessageObject?.show("Not implemented");
+                return this.closeableMessageObject?.show("Not implemented");
             default:
-                return this.errorCloseableMessageObject?.show("Invalid menu option");
+                return this.closeableMessageObject?.show("Invalid menu option");
         }
     }
     transitionToMatchmakingScreen() {

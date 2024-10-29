@@ -83,7 +83,7 @@ export class BasePressableGameObject extends BaseAnimatedGameObject {
   }
 
   private drawFullScreenRectangle(context: CanvasRenderingContext2D): void {
-    context.lineWidth = 8; // Set the border width
+    context.lineWidth = 6; // Set the border width
     context.strokeStyle = "rgba(148, 0, 211, 0.8)";
     context.beginPath();
     context.rect(0, 0, context.canvas.width, context.canvas.height);

@@ -18,7 +18,7 @@ export class LoginScreen extends BaseGameScreen {
   private webSocketService: WebSocketService;
 
   private messageObject: MessageObject | null = null;
-  private closeableMessageObject: CloseableMessageObject | null = null;
+  private errorCloseableMessageObject: CloseableMessageObject | null = null;
 
   constructor(gameController: GameController) {
     super(gameController);
@@ -60,13 +60,24 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   public loadCloseableMessageObject(): void {
-    this.closeableMessageObject = new CloseableMessageObject(this.canvas);
-    this.uiObjects.push(this.closeableMessageObject);
+    this.errorCloseableMessageObject = new CloseableMessageObject(this.canvas);
+    this.uiObjects.push(this.errorCloseableMessageObject);
+  }
+
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.handleErrorCloseableMessageObject();
+    super.update(deltaTimeStamp);
   }
 
   private showError(message: string): void {
     this.messageObject?.setOpacity(0);
-    this.closeableMessageObject?.show(message);
+    this.errorCloseableMessageObject?.show(message);
+  }
+
+  private handleErrorCloseableMessageObject(): void {
+    if (this.errorCloseableMessageObject?.isPressed()) {
+      window.location.reload();
+    }
   }
 
   private checkForUpdates(): void {

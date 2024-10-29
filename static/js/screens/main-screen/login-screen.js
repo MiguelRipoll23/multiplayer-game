@@ -3,12 +3,14 @@ import { BaseGameScreen } from "../base/base-game-screen.js";
 import { GameRegistration } from "../../models/game-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { SERVER_CONNECTED_EVENT } from "../../constants/events-contants.js";
+import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 export class LoginScreen extends BaseGameScreen {
     gameServer;
     apiService;
     cryptoService;
     webSocketService;
     messageObject = null;
+    closeableMessageObject = null;
     constructor(gameController) {
         super(gameController);
         this.gameServer = gameController.getGameState().getGameServer();
@@ -19,6 +21,7 @@ export class LoginScreen extends BaseGameScreen {
     }
     loadObjects() {
         this.loadMessageObject();
+        this.loadCloseableMessageObject();
         super.loadObjects();
     }
     hasTransitionFinished() {
@@ -38,17 +41,25 @@ export class LoginScreen extends BaseGameScreen {
         this.messageObject = new MessageObject(this.canvas);
         this.uiObjects.push(this.messageObject);
     }
+    loadCloseableMessageObject() {
+        this.closeableMessageObject = new CloseableMessageObject(this.canvas);
+        this.uiObjects.push(this.closeableMessageObject);
+    }
+    showError(message) {
+        this.messageObject?.setOpacity(0);
+        this.closeableMessageObject?.show(message);
+    }
     checkForUpdates() {
         this.messageObject?.show("Checking for updates...");
         this.apiService.checkForUpdates().then((requiresUpdate) => {
             if (requiresUpdate) {
-                return alert("An update is required to play the game");
+                return this.showError("An update is required to play the game");
             }
             this.messageObject?.hide();
             this.registerUser();
         }).catch((error) => {
             console.error(error);
-            alert("An error occurred while checking for updates");
+            this.showError("An error occurred while checking for updates");
         });
     }
     registerUser() {
@@ -63,7 +74,7 @@ export class LoginScreen extends BaseGameScreen {
         })
             .catch((error) => {
             console.error(error);
-            alert("An error occurred while registering to the server");
+            this.showError("An error occurred while registering to the server");
         });
     }
     downloadConfiguration() {
@@ -74,7 +85,7 @@ export class LoginScreen extends BaseGameScreen {
         })
             .catch((error) => {
             console.error(error);
-            alert("An error occurred while downloading configuration");
+            this.showError("An error occurred while downloading configuration");
         });
     }
     async applyConfiguration(configurationResponse) {

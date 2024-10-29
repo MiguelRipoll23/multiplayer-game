@@ -18,7 +18,7 @@ export class MainMenuScreen extends BaseGameScreen {
   private messagesResponse: MessagesResponse[] | null = null;
   private serverMessageWindowObject: ServerMessageWindowObject | null = null;
 
-  private closeableMessageObject: CloseableMessageObject | null = null;
+  private errorCloseableMessageObject: CloseableMessageObject | null = null;
 
   constructor(gameController: GameController) {
     super(gameController);
@@ -40,6 +40,7 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.handleErrorMessageObject();
     this.handleMenuOptionObjects();
     this.handleServerMessageWindowObject();
 
@@ -72,8 +73,8 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private loadCloseableMessageObject(): void {
-    this.closeableMessageObject = new CloseableMessageObject(this.canvas);
-    this.uiObjects.push(this.closeableMessageObject);
+    this.errorCloseableMessageObject = new CloseableMessageObject(this.canvas);
+    this.uiObjects.push(this.errorCloseableMessageObject);
   }
 
   private loadServerMessageWindow(): void {
@@ -88,7 +89,9 @@ export class MainMenuScreen extends BaseGameScreen {
       this.showMessages(messages);
     }).catch((error) => {
       console.error(error);
-      this.closeableMessageObject?.show("Failed to download server messages");
+      this.errorCloseableMessageObject?.show(
+        "Failed to download server messages",
+      );
     });
   }
 
@@ -125,6 +128,13 @@ export class MainMenuScreen extends BaseGameScreen {
     );
   }
 
+  private handleErrorMessageObject(): void {
+    if (this.errorCloseableMessageObject?.isPressed()) {
+      console.log("Reloading window");
+      window.location.reload();
+    }
+  }
+
   private handleServerMessageWindowObject() {
     if (this.serverMessageWindowObject?.getNext()) {
       const index = this.serverMessageWindowObject.getIndex() + 1;
@@ -149,13 +159,13 @@ export class MainMenuScreen extends BaseGameScreen {
         break;
 
       case 1:
-        return this.closeableMessageObject?.show("Not implemented");
+        return this.errorCloseableMessageObject?.show("Not implemented");
 
       case 2:
-        return this.closeableMessageObject?.show("Not implemented");
+        return this.errorCloseableMessageObject?.show("Not implemented");
 
       default:
-        return this.closeableMessageObject?.show("Invalid menu option");
+        return this.errorCloseableMessageObject?.show("Invalid menu option");
     }
   }
 

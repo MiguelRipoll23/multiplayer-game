@@ -2,7 +2,7 @@ import { MessageObject } from "../../objects/common/message-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { GameRegistration } from "../../models/game-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
-import { SERVER_CONNECTED_EVENT } from "../../constants/events-contants.js";
+import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, } from "../../constants/events-contants.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 export class LoginScreen extends BaseGameScreen {
     gameServer;
@@ -27,15 +27,21 @@ export class LoginScreen extends BaseGameScreen {
     hasTransitionFinished() {
         this.checkForUpdates();
     }
-    hasConnectedToServer() {
+    addCustomEventListeners() {
+        window.addEventListener(SERVER_CONNECTED_EVENT, () => {
+            this.handleServerConnectedEvent();
+        });
+        window.addEventListener(SERVER_DISCONNECTED_EVENT, () => {
+            this.handleServerDisconnectedEvent();
+        });
+    }
+    handleServerConnectedEvent() {
+        console.log(`Event ${SERVER_CONNECTED_EVENT} handled`);
         this.messageObject?.hide();
         this.transitionToMatchmakingScreen();
     }
-    addCustomEventListeners() {
-        window.addEventListener(SERVER_CONNECTED_EVENT, () => {
-            console.log(`Event ${SERVER_CONNECTED_EVENT} handled`);
-            this.hasConnectedToServer();
-        });
+    handleServerDisconnectedEvent() {
+        this.showError("Couldn't connect to the server");
     }
     loadMessageObject() {
         this.messageObject = new MessageObject(this.canvas);

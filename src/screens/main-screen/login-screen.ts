@@ -8,7 +8,10 @@ import { RegistrationResponse } from "../../services/interfaces/registration-res
 import { GameRegistration } from "../../models/game-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
-import { SERVER_CONNECTED_EVENT } from "../../constants/events-contants.js";
+import {
+  SERVER_CONNECTED_EVENT,
+  SERVER_DISCONNECTED_EVENT,
+} from "../../constants/events-contants.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 
 export class LoginScreen extends BaseGameScreen {
@@ -42,16 +45,24 @@ export class LoginScreen extends BaseGameScreen {
     this.checkForUpdates();
   }
 
-  public hasConnectedToServer(): void {
+  private addCustomEventListeners(): void {
+    window.addEventListener(SERVER_CONNECTED_EVENT, () => {
+      this.handleServerConnectedEvent();
+    });
+
+    window.addEventListener(SERVER_DISCONNECTED_EVENT, () => {
+      this.handleServerDisconnectedEvent();
+    });
+  }
+
+  private handleServerConnectedEvent(): void {
+    console.log(`Event ${SERVER_CONNECTED_EVENT} handled`);
     this.messageObject?.hide();
     this.transitionToMatchmakingScreen();
   }
 
-  private addCustomEventListeners(): void {
-    window.addEventListener(SERVER_CONNECTED_EVENT, () => {
-      console.log(`Event ${SERVER_CONNECTED_EVENT} handled`);
-      this.hasConnectedToServer();
-    });
+  private handleServerDisconnectedEvent(): void {
+    this.showError("Couldn't connect to the server");
   }
 
   private loadMessageObject(): void {

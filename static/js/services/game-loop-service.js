@@ -67,6 +67,8 @@ export class GameLoopService {
             this.gamePointer.setType(event.pointerType);
             this.gamePointer.setX(event.clientX);
             this.gamePointer.setY(event.clientY);
+            this.gamePointer.setInitialX(event.clientX);
+            this.gamePointer.setInitialY(event.clientY);
             this.gamePointer.setPressing(true);
         });
         window.addEventListener("pointerup", (event) => {

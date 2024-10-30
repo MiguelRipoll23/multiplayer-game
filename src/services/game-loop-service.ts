@@ -58,7 +58,7 @@ export class GameLoopService {
     console.info(
       "%cDebug mode on",
       "color: #b6ff35; font-size: 20px; font-weight: bold"
-    );ñ
+    );
   }
 
   private setCanvasSize(): void {

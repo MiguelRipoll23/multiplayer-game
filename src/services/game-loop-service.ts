@@ -58,7 +58,7 @@ export class GameLoopService {
     console.info(
       "%cDebug mode on",
       "color: #b6ff35; font-size: 20px; font-weight: bold"
-    );
+    );ñ
   }
 
   private setCanvasSize(): void {
@@ -89,6 +89,8 @@ export class GameLoopService {
       this.gamePointer.setType(event.pointerType as PointerType);
       this.gamePointer.setX(event.clientX);
       this.gamePointer.setY(event.clientY);
+      this.gamePointer.setInitialX(event.clientX);
+      this.gamePointer.setInitialY(event.clientY);
       this.gamePointer.setPressing(true);
     });
 

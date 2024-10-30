@@ -1,5 +1,5 @@
 import { BaseGameObject } from "./base/base-game-object.js";
-import { TouchPoint } from "./interfaces/touch-point.js";
+import { GamePointer } from "../models/game-pointer.js";
 
 export class JoystickObject extends BaseGameObject {
   private readonly RADIUS: number = 40;
@@ -12,15 +12,12 @@ export class JoystickObject extends BaseGameObject {
   private x: number = 0;
   private y: number = 0;
 
-  private initialTouch: TouchPoint = { x: 0, y: 0 };
-  private touchPoint: TouchPoint = { x: 0, y: 0 };
   private usingTouch: boolean = false;
 
   private pressedKeys: Set<string> = new Set();
 
-  constructor(private readonly canvas: HTMLCanvasElement) {
+  constructor(private readonly canvas: HTMLCanvasElement, private readonly gamePointer: GamePointer) {
     super();
-    this.addTouchEventListeners();
     this.addKeyboardEventListeners();
   }
 
@@ -40,8 +37,8 @@ export class JoystickObject extends BaseGameObject {
     const distance = this.calculateDistance();
 
     if (distance <= this.MAX_DISTANCE) {
-      this.x = this.touchPoint.x;
-      this.y = this.touchPoint.y;
+      this.x = this.gamePointer.getX();
+      this.y = this.gamePointer.getY();
     } else {
       this.adjustPosition();
     }
@@ -51,25 +48,25 @@ export class JoystickObject extends BaseGameObject {
 
   private calculateDistance(): number {
     return Math.sqrt(
-      Math.pow(this.touchPoint.x - this.initialTouch.x, 2) +
-        Math.pow(this.touchPoint.y - this.initialTouch.y, 2),
+      Math.pow(this.gamePointer.getX() - this.gamePointer.getInitialX(), 2) +
+        Math.pow(this.gamePointer.getY() - this.gamePointer.getInitialY(), 2),
     );
   }
 
   private adjustPosition() {
     const angle = Math.atan2(
-      this.touchPoint.y - this.initialTouch.y,
-      this.touchPoint.x - this.initialTouch.x,
+      this.gamePointer.getY() - this.gamePointer.getInitialY(),
+      this.gamePointer.getX() - this.gamePointer.getInitialX(),
     );
-    const newX = this.initialTouch.x + this.MAX_DISTANCE * Math.cos(angle);
-    const newY = this.initialTouch.y + this.MAX_DISTANCE * Math.sin(angle);
+    const newX = this.gamePointer.getInitialX() + this.MAX_DISTANCE * Math.cos(angle);
+    const newY = this.gamePointer.getInitialY() + this.MAX_DISTANCE * Math.sin(angle);
     this.x = newX;
     this.y = newY;
   }
 
   private calculateControlValues() {
-    const relativeX = this.x - this.initialTouch.x;
-    const relativeY = this.y - this.initialTouch.y;
+    const relativeX = this.x - this.gamePointer.getInitialX();
+    const relativeY = this.y - this.gamePointer.getInitialY();
 
     this.controlX = relativeX / this.MAX_DISTANCE;
     this.controlY = relativeY / this.MAX_DISTANCE;
@@ -95,8 +92,8 @@ export class JoystickObject extends BaseGameObject {
   private drawInitialTouchCircleBorder(context: CanvasRenderingContext2D) {
     context.beginPath();
     context.arc(
-      this.initialTouch.x,
-      this.initialTouch.y,
+      this.gamePointer.getInitialX(),
+      this.gamePointer.getInitialY(),
       this.RADIUS,
       0,
       Math.PI * 2,
@@ -135,51 +132,6 @@ export class JoystickObject extends BaseGameObject {
     context.restore();
 
     context.closePath();
-  }
-
-  private addTouchEventListeners() {
-    this.canvas.addEventListener(
-      "touchstart",
-      this.handleTouchStart.bind(this),
-      { passive: false },
-    );
-
-    this.canvas.addEventListener("touchmove", this.handleTouchMove.bind(this), {
-      passive: false,
-    });
-
-    this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this)),
-      { passive: true };
-  }
-
-  private handleTouchStart(event: TouchEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    this.active = true;
-    this.usingTouch = true;
-
-    const touch = event.touches[0];
-    const rect = this.canvas.getBoundingClientRect();
-    this.initialTouch = this.getTouchPoint(touch, rect);
-    this.touchPoint = this.initialTouch;
-  }
-
-  private handleTouchMove(event: TouchEvent) {
-    const touch = event.touches[0];
-    const rect = this.canvas.getBoundingClientRect();
-    this.touchPoint = this.getTouchPoint(touch, rect);
-  }
-
-  private handleTouchEnd(event: TouchEvent) {
-    this.resetJoystick();
-  }
-
-  private getTouchPoint(touch: Touch, rect: DOMRect): TouchPoint {
-    return {
-      x: touch.clientX - rect.left,
-      y: touch.clientY - rect.top,
-    };
   }
 
   private addKeyboardEventListeners() {
@@ -231,7 +183,6 @@ export class JoystickObject extends BaseGameObject {
   private resetJoystick() {
     this.active = false;
     this.usingTouch = false;
-    this.touchPoint = { x: 0, y: 0 };
     this.controlX = 0;
     this.controlY = 0;
   }

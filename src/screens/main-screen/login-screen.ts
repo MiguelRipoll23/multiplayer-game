@@ -1,4 +1,3 @@
-import { GameServer } from "../../models/game-server.js";
 import { MessageObject } from "../../objects/common/message-object.js";
 import { CryptoService } from "../../services/crypto-service.js";
 import { WebSocketService } from "../../services/websocket-service.js";
@@ -8,14 +7,15 @@ import { RegistrationResponse } from "../../services/interfaces/registration-res
 import { GameRegistration } from "../../models/game-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
+import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
+import { GameState } from "../../models/game-state.js";
 import {
   SERVER_CONNECTED_EVENT,
   SERVER_DISCONNECTED_EVENT,
-} from "../../constants/events-contants.js";
-import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
+} from "../../constants/events-constants.js";
 
 export class LoginScreen extends BaseGameScreen {
-  private gameServer: GameServer;
+  private gameState: GameState;
   private apiService: ApiService;
   private cryptoService: CryptoService;
   private webSocketService: WebSocketService;
@@ -26,7 +26,7 @@ export class LoginScreen extends BaseGameScreen {
   constructor(gameController: GameController) {
     super(gameController);
 
-    this.gameServer = gameController.getGameState().getGameServer();
+    this.gameState = gameController.getGameState();
     this.apiService = gameController.getApiService();
     this.cryptoService = gameController.getCryptoService();
     this.webSocketService = gameController.getWebSocketService();
@@ -94,21 +94,20 @@ export class LoginScreen extends BaseGameScreen {
   private checkForUpdates(): void {
     this.messageObject?.show("Checking for updates...");
 
-    this.apiService.checkForUpdates().then((requiresUpdate) => {
-      if (requiresUpdate) {
-        return this.showError(
-          "An update is required to play the game",
-        );
-      }
+    this.apiService
+      .checkForUpdates()
+      .then((requiresUpdate) => {
+        if (requiresUpdate) {
+          return this.showError("An update is required to play the game");
+        }
 
-      this.messageObject?.hide();
-      this.registerUser();
-    }).catch((error) => {
-      console.error(error);
-      this.showError(
-        "An error occurred while checking for updates",
-      );
-    });
+        this.messageObject?.hide();
+        this.registerUser();
+      })
+      .catch((error) => {
+        console.error(error);
+        this.showError("An error occurred while checking for updates");
+      });
   }
 
   private registerUser(): void {
@@ -118,46 +117,46 @@ export class LoginScreen extends BaseGameScreen {
       return this.registerUser();
     }
 
-    this.apiService.registerUser(name)
+    this.apiService
+      .registerUser(name)
       .then((registrationResponse: RegistrationResponse) => {
-        this.gameServer.setGameRegistration(
-          new GameRegistration(registrationResponse),
-        );
+        this.gameState.getGamePlayer().setName(name);
+
+        this.gameState
+          .getGameServer()
+          .setGameRegistration(new GameRegistration(registrationResponse));
 
         this.downloadConfiguration();
       })
       .catch((error) => {
         console.error(error);
-        this.showError(
-          "An error occurred while registering to the server",
-        );
+        this.showError("An error occurred while registering to the server");
       });
   }
 
   private downloadConfiguration(): void {
     this.messageObject?.show("Downloading configuration...");
 
-    this.apiService.getConfiguration()
+    this.apiService
+      .getConfiguration()
       .then(async (configurationResponse: ArrayBuffer) => {
         await this.applyConfiguration(configurationResponse);
       })
       .catch((error) => {
         console.error(error);
-        this.showError(
-          "An error occurred while downloading configuration",
-        );
+        this.showError("An error occurred while downloading configuration");
       });
   }
 
   private async applyConfiguration(
-    configurationResponse: ArrayBuffer,
+    configurationResponse: ArrayBuffer
   ): Promise<void> {
     const decryptedResponse = await this.cryptoService.decryptResponse(
-      configurationResponse,
+      configurationResponse
     );
 
     const configuration = JSON.parse(decryptedResponse);
-    this.gameServer.setConfiguration(configuration);
+    this.gameState.getGameServer().setConfiguration(configuration);
 
     console.log("Configuration response (decrypted)", configuration);
 
@@ -173,9 +172,8 @@ export class LoginScreen extends BaseGameScreen {
     const mainMenuScreen = new MainMenuScreen(this.gameController);
     mainMenuScreen.loadObjects();
 
-    this.screenManagerService?.getTransitionService().crossfade(
-      mainMenuScreen,
-      0.2,
-    );
+    this.screenManagerService
+      ?.getTransitionService()
+      .crossfade(mainMenuScreen, 0.2);
   }
 }

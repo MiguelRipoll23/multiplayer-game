@@ -6,7 +6,7 @@ export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
   protected hitboxObjects: HitboxObject[];
 
   private collidingObjects: BaseStaticCollidableGameObject[];
-  private avodingCollision: boolean = false;
+  private avoidingCollision: boolean = false;
 
   constructor() {
     super();
@@ -24,8 +24,8 @@ export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
   }
 
   public isColliding(): boolean {
-    return this.collidingObjects.some((collidingObject) =>
-      collidingObject.isCrossable() === false
+    return this.collidingObjects.some(
+      (collidingObject) => collidingObject.isCrossable() === false
     );
   }
 
@@ -42,7 +42,7 @@ export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
   }
 
   public addCollidingObject(
-    collidingObject: BaseStaticCollidableGameObject,
+    collidingObject: BaseStaticCollidableGameObject
   ): void {
     if (this.collidingObjects.includes(collidingObject) === false) {
       this.collidingObjects.push(collidingObject);
@@ -50,19 +50,19 @@ export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
   }
 
   public removeCollidingObject(
-    collidingObject: BaseStaticCollidableGameObject,
+    collidingObject: BaseStaticCollidableGameObject
   ): void {
     this.collidingObjects = this.collidingObjects.filter(
-      (object) => object !== collidingObject,
+      (object) => object !== collidingObject
     );
   }
 
   public isAvoidingCollision(): boolean {
-    return this.avodingCollision;
+    return this.avoidingCollision;
   }
 
-  public setAvoidingCollision(avodingCollision: boolean): void {
-    this.avodingCollision = avodingCollision;
+  public setAvoidingCollision(avoidingCollision: boolean): void {
+    this.avoidingCollision = avoidingCollision;
   }
 
   public render(context: CanvasRenderingContext2D): void {

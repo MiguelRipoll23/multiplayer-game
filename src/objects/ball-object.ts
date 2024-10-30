@@ -1,5 +1,6 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
+import { PlayerObject } from "./player-object.js";
 
 export class BallObject extends BaseDynamicCollidableGameObject {
   private readonly MASS: number = 1;
@@ -11,10 +12,12 @@ export class BallObject extends BaseDynamicCollidableGameObject {
   private inactive: boolean = false;
   private elapsedInactiveMilliseconds: number = 0;
 
+  private lastPlayerTouched: PlayerObject | null = null;
+
   constructor(
     x: number,
     y: number,
-    private readonly canvas: HTMLCanvasElement,
+    private readonly canvas: HTMLCanvasElement
   ) {
     super();
     this.x = x;
@@ -32,6 +35,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     this.applyFriction();
     this.calculateMovement();
     this.updateHitbox();
+    //this.handlePlayerCollision();
   }
 
   public override render(context: CanvasRenderingContext2D): void {
@@ -44,7 +48,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
       0,
       this.x,
       this.y,
-      this.radius,
+      this.radius
     );
     gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Inner color (white)
     gradient.addColorStop(1, "rgba(200, 200, 200, 1)"); // Outer color (light gray)
@@ -84,7 +88,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
       this.x - this.RADIUS * 2,
       this.y - this.RADIUS * 2,
       this.RADIUS * 2,
-      this.RADIUS * 2,
+      this.RADIUS * 2
     );
 
     this.setHitboxObjects([hitboxObject]);
@@ -128,4 +132,12 @@ export class BallObject extends BaseDynamicCollidableGameObject {
       object.setY(this.y - this.RADIUS);
     });
   }
+
+  /*   private handlePlayerCollision(): void {
+    this.getCollidingObjects()
+      .filter((object) => object instanceof PlayerObject)
+      .forEach((player) => {
+        this.lastPlayerTouched = player;
+      });
+  } */
 }

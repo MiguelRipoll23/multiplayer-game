@@ -3,7 +3,7 @@ export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
     crossable = false;
     hitboxObjects;
     collidingObjects;
-    avodingCollision = false;
+    avoidingCollision = false;
     constructor() {
         super();
         this.hitboxObjects = [];
@@ -37,10 +37,10 @@ export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
         this.collidingObjects = this.collidingObjects.filter((object) => object !== collidingObject);
     }
     isAvoidingCollision() {
-        return this.avodingCollision;
+        return this.avoidingCollision;
     }
-    setAvoidingCollision(avodingCollision) {
-        this.avodingCollision = avodingCollision;
+    setAvoidingCollision(avoidingCollision) {
+        this.avoidingCollision = avoidingCollision;
     }
     render(context) {
         this.hitboxObjects.forEach((object) => object.render(context));

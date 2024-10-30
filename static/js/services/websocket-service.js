@@ -1,5 +1,5 @@
 import { WEBSOCKET_BASE_URL, WEBSOCKET_ENDPOINT, } from "../constants/api-constants.js";
-import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, } from "../constants/events-contants.js";
+import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, } from "../constants/events-constants.js";
 import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
 export class WebSocketService {
     gameState;
@@ -14,7 +14,8 @@ export class WebSocketService {
             throw new Error("Game registration not found");
         }
         const authenticationToken = gameRegistration.getAuthenticationToken();
-        this.webSocket = new WebSocket(WEBSOCKET_BASE_URL + WEBSOCKET_ENDPOINT +
+        this.webSocket = new WebSocket(WEBSOCKET_BASE_URL +
+            WEBSOCKET_ENDPOINT +
             `?access_token=${authenticationToken}`);
         this.webSocket.binaryType = "arraybuffer";
         this.addEventListeners(this.webSocket);

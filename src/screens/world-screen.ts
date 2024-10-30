@@ -1,5 +1,4 @@
 import { LocalCarObject } from "../objects/local-car-object.js";
-import { PlayerObject } from "../objects/player-object.js";
 import { WorldBackgroundObject } from "../objects/backgrounds/world-background-object.js";
 import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
@@ -9,6 +8,7 @@ import { GameState } from "../models/game-state.js";
 import { getConfigurationKey } from "../utils/configuration-utils.js";
 import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
 import { GameController } from "../models/game-controller.js";
+import { LocalPlayerObject } from "../objects/local-player-object.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -45,7 +45,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const durationSeconds: number | null = getConfigurationKey<number>(
       SCOREBOARD_SECONDS_DURATION,
       60 * 5,
-      this.gameState,
+      this.gameState
     );
 
     this.scoreboardObject = new ScoreboardObject(this.canvas);
@@ -83,8 +83,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.uiObjects.push(localCarObject.getJoystickObject());
   }
 
-  private createAndGetPlayerObject(): PlayerObject {
-    const playerObject = new PlayerObject("player1");
+  private createAndGetPlayerObject(): LocalPlayerObject {
+    const player = this.gameState.getGamePlayer();
+
+    const playerObject = new LocalPlayerObject(player);
     this.sceneObjects.push(playerObject);
 
     return playerObject;
@@ -96,14 +98,12 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private detectScores() {
-    if (
-      this.ballObject === null ||
-      this.ballObject?.isInactive()
-    ) {
+    if (this.ballObject === null || this.ballObject?.isInactive()) {
       return;
     }
 
-    const hasOrangeTeamScored = this.orangeGoalObject?.getCollidingObjects()
+    const hasOrangeTeamScored = this.orangeGoalObject
+      ?.getCollidingObjects()
       .includes(this.ballObject);
 
     if (hasOrangeTeamScored) {
@@ -111,10 +111,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
       this.scoreboardObject?.incrementBlueScore();
     }
 
-    const hasBlueTeamScored = this.blueGoalObject?.getCollidingObjects()
-      .includes(
-        this.ballObject,
-      );
+    const hasBlueTeamScored = this.blueGoalObject
+      ?.getCollidingObjects()
+      .includes(this.ballObject);
 
     if (hasBlueTeamScored) {
       this.ballObject.setInactive();

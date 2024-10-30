@@ -8,7 +8,7 @@ import {
   SERVER_CONNECTED_EVENT,
   SERVER_DISCONNECTED_EVENT,
   SERVER_NOTIFICATION_EVENT,
-} from "../constants/events-contants.js";
+} from "../constants/events-constants.js";
 import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
 import { GameState } from "../models/game-state.js";
 import { GameController } from "../models/game-controller.js";
@@ -32,8 +32,9 @@ export class WebSocketService {
     const authenticationToken = gameRegistration.getAuthenticationToken();
 
     this.webSocket = new WebSocket(
-      WEBSOCKET_BASE_URL + WEBSOCKET_ENDPOINT +
-        `?access_token=${authenticationToken}`,
+      WEBSOCKET_BASE_URL +
+        WEBSOCKET_ENDPOINT +
+        `?access_token=${authenticationToken}`
     );
 
     this.webSocket.binaryType = "arraybuffer";
@@ -72,7 +73,7 @@ export class WebSocketService {
         detail: {
           connectionLost: this.gameState.getGameServer().isConnected(),
         },
-      }),
+      })
     );
 
     this.gameState.getGameServer().setConnected(false);
@@ -96,7 +97,7 @@ export class WebSocketService {
     const text = new TextDecoder("utf-8").decode(payload);
 
     dispatchEvent(
-      new CustomEvent(SERVER_NOTIFICATION_EVENT, { detail: { text } }),
+      new CustomEvent(SERVER_NOTIFICATION_EVENT, { detail: { text } })
     );
   }
 }

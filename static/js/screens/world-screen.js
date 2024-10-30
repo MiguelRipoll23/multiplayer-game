@@ -1,5 +1,4 @@
 import { LocalCarObject } from "../objects/local-car-object.js";
-import { PlayerObject } from "../objects/player-object.js";
 import { WorldBackgroundObject } from "../objects/backgrounds/world-background-object.js";
 import { GoalObject } from "../objects/goal-object.js";
 import { BallObject } from "../objects/ball-object.js";
@@ -7,6 +6,7 @@ import { ScoreboardObject } from "../objects/scoreboard-object.js";
 import { BaseCollidingGameScreen } from "./base/base-colliding-game-screen.js";
 import { getConfigurationKey } from "../utils/configuration-utils.js";
 import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
+import { LocalPlayerObject } from "../objects/local-player-object.js";
 export class WorldScreen extends BaseCollidingGameScreen {
     gameState;
     scoreboardObject = null;
@@ -61,7 +61,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.uiObjects.push(localCarObject.getJoystickObject());
     }
     createAndGetPlayerObject() {
-        const playerObject = new PlayerObject("player1");
+        const player = this.gameState.getGamePlayer();
+        const playerObject = new LocalPlayerObject(player);
         this.sceneObjects.push(playerObject);
         return playerObject;
     }
@@ -70,17 +71,18 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.detectScores();
     }
     detectScores() {
-        if (this.ballObject === null ||
-            this.ballObject?.isInactive()) {
+        if (this.ballObject === null || this.ballObject?.isInactive()) {
             return;
         }
-        const hasOrangeTeamScored = this.orangeGoalObject?.getCollidingObjects()
+        const hasOrangeTeamScored = this.orangeGoalObject
+            ?.getCollidingObjects()
             .includes(this.ballObject);
         if (hasOrangeTeamScored) {
             this.ballObject.setInactive();
             this.scoreboardObject?.incrementBlueScore();
         }
-        const hasBlueTeamScored = this.blueGoalObject?.getCollidingObjects()
+        const hasBlueTeamScored = this.blueGoalObject
+            ?.getCollidingObjects()
             .includes(this.ballObject);
         if (hasBlueTeamScored) {
             this.ballObject.setInactive();

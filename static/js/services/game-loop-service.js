@@ -1,4 +1,4 @@
-import { SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, } from "../constants/events-contants.js";
+import { SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, } from "../constants/events-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";

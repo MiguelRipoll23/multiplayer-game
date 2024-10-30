@@ -1,7 +1,7 @@
 import {
   SERVER_DISCONNECTED_EVENT,
   SERVER_NOTIFICATION_EVENT,
-} from "../constants/events-contants.js";
+} from "../constants/events-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
 import { GamePointer, PointerType } from "../models/game-pointer.js";
@@ -57,7 +57,7 @@ export class GameLoopService {
 
     console.info(
       "%cDebug mode on",
-      "color: #b6ff35; font-size: 20px; font-weight: bold",
+      "color: #b6ff35; font-size: 20px; font-weight: bold"
     );
   }
 
@@ -125,17 +125,13 @@ export class GameLoopService {
   private handleServerNotificationEvent(event: CustomEvent<any>): void {
     console.log(`Event ${SERVER_NOTIFICATION_EVENT} handled`, event);
 
-    this.gameFrame.getNotificationObject()?.show(
-      event.detail.text,
-    );
+    this.gameFrame.getNotificationObject()?.show(event.detail.text);
   }
 
   private loadNotificationObject(): void {
     const notificationObject = new NotificationObject(this.canvas);
 
-    this.gameFrame.setNotificationObject(
-      notificationObject,
-    );
+    this.gameFrame.setNotificationObject(notificationObject);
   }
 
   private setInitialScreen() {

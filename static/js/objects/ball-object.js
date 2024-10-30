@@ -9,6 +9,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     radius = this.RADIUS;
     inactive = false;
     elapsedInactiveMilliseconds = 0;
+    lastPlayerTouched = null;
     constructor(x, y, canvas) {
         super();
         this.canvas = canvas;
@@ -25,6 +26,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         this.applyFriction();
         this.calculateMovement();
         this.updateHitbox();
+        //this.handlePlayerCollision();
     }
     render(context) {
         context.save(); // Save the current context state

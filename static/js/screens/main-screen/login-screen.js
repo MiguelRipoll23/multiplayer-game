@@ -2,10 +2,10 @@ import { MessageObject } from "../../objects/common/message-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { GameRegistration } from "../../models/game-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
-import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, } from "../../constants/events-contants.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
+import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, } from "../../constants/events-constants.js";
 export class LoginScreen extends BaseGameScreen {
-    gameServer;
+    gameState;
     apiService;
     cryptoService;
     webSocketService;
@@ -13,7 +13,7 @@ export class LoginScreen extends BaseGameScreen {
     errorCloseableMessageObject = null;
     constructor(gameController) {
         super(gameController);
-        this.gameServer = gameController.getGameState().getGameServer();
+        this.gameState = gameController.getGameState();
         this.apiService = gameController.getApiService();
         this.cryptoService = gameController.getCryptoService();
         this.webSocketService = gameController.getWebSocketService();
@@ -66,13 +66,16 @@ export class LoginScreen extends BaseGameScreen {
     }
     checkForUpdates() {
         this.messageObject?.show("Checking for updates...");
-        this.apiService.checkForUpdates().then((requiresUpdate) => {
+        this.apiService
+            .checkForUpdates()
+            .then((requiresUpdate) => {
             if (requiresUpdate) {
                 return this.showError("An update is required to play the game");
             }
             this.messageObject?.hide();
             this.registerUser();
-        }).catch((error) => {
+        })
+            .catch((error) => {
             console.error(error);
             this.showError("An error occurred while checking for updates");
         });
@@ -82,9 +85,13 @@ export class LoginScreen extends BaseGameScreen {
         if (name === null) {
             return this.registerUser();
         }
-        this.apiService.registerUser(name)
+        this.apiService
+            .registerUser(name)
             .then((registrationResponse) => {
-            this.gameServer.setGameRegistration(new GameRegistration(registrationResponse));
+            this.gameState.getGamePlayer().setName(name);
+            this.gameState
+                .getGameServer()
+                .setGameRegistration(new GameRegistration(registrationResponse));
             this.downloadConfiguration();
         })
             .catch((error) => {
@@ -94,7 +101,8 @@ export class LoginScreen extends BaseGameScreen {
     }
     downloadConfiguration() {
         this.messageObject?.show("Downloading configuration...");
-        this.apiService.getConfiguration()
+        this.apiService
+            .getConfiguration()
             .then(async (configurationResponse) => {
             await this.applyConfiguration(configurationResponse);
         })
@@ -106,7 +114,7 @@ export class LoginScreen extends BaseGameScreen {
     async applyConfiguration(configurationResponse) {
         const decryptedResponse = await this.cryptoService.decryptResponse(configurationResponse);
         const configuration = JSON.parse(decryptedResponse);
-        this.gameServer.setConfiguration(configuration);
+        this.gameState.getGameServer().setConfiguration(configuration);
         console.log("Configuration response (decrypted)", configuration);
         this.connectToServer();
     }
@@ -117,6 +125,8 @@ export class LoginScreen extends BaseGameScreen {
     transitionToMatchmakingScreen() {
         const mainMenuScreen = new MainMenuScreen(this.gameController);
         mainMenuScreen.loadObjects();
-        this.screenManagerService?.getTransitionService().crossfade(mainMenuScreen, 0.2);
+        this.screenManagerService
+            ?.getTransitionService()
+            .crossfade(mainMenuScreen, 0.2);
     }
 }

@@ -41,6 +41,8 @@ export class CarObject extends BaseDynamicCollidableGameObject {
         context.rotate((this.angle * Math.PI) / 180);
         context.drawImage(this.carImage, -this.WIDTH / 2, -this.HEIGHT / 2, this.WIDTH, this.HEIGHT);
         context.restore();
+        // Debug
+        this.renderDebugInformation(context);
         // Hitbox debug
         super.render(context);
     }
@@ -102,5 +104,46 @@ export class CarObject extends BaseDynamicCollidableGameObject {
         this.vy = Math.sin(angleInRadians) * this.speed;
         this.x -= this.vx;
         this.y -= this.vy;
+    }
+    renderDebugInformation(context) {
+        if (this.debug === false) {
+            return;
+        }
+        this.renderDebugPositionInformation(context);
+        this.renderDebugAngleInformation(context);
+        this.renderDebugIsOutsideBounds(context);
+    }
+    renderDebugPositionInformation(context) {
+        const displayX = Math.round(this.x);
+        const displayY = Math.round(this.y);
+        const text = `Position: x(${displayX}) y(${displayY})`;
+        context.fillStyle = "rgba(0, 0, 0, 0.6)";
+        context.fillRect(24, 24, 85, 10);
+        context.fillStyle = "#FFFF00";
+        context.font = "8px system-ui";
+        context.textAlign = "left";
+        context.fillText(text, 28, 32);
+    }
+    renderDebugAngleInformation(context) {
+        const displayAngle = Math.round(this.angle);
+        const text = `Angle: ${displayAngle}`;
+        context.fillStyle = "rgba(0, 0, 0, 0.6)";
+        context.fillRect(24, 36, 45, 10);
+        context.fillStyle = "#FFFF00";
+        context.font = "8px system-ui";
+        context.textAlign = "left";
+        context.fillText(text, 28, 44);
+    }
+    renderDebugIsOutsideBounds(context) {
+        const outsideBounds = this.x < 0 ||
+            this.x > this.canvas.width ||
+            this.y < 0 ||
+            this.y > this.canvas.height;
+        context.fillStyle = "rgba(255, 255, 255, 0.6)";
+        context.fillRect(24, 48, 85, 10);
+        context.fillStyle = "purple";
+        context.font = "8px system-ui";
+        context.textAlign = "left";
+        context.fillText("Outside bounds: " + outsideBounds, 28, 56);
     }
 }

@@ -59,9 +59,12 @@ export class MainMenuScreen extends BaseGameScreen {
         this.uiObjects.push(this.serverMessageWindowObject);
     }
     downloadServerMessages() {
-        this.apiService.getMessages().then((messages) => {
+        this.apiService
+            .getMessages()
+            .then((messages) => {
             this.showMessages(messages);
-        }).catch((error) => {
+        })
+            .catch((error) => {
             console.error(error);
             this.closeableMessageObject?.show("Failed to download server messages");
         });
@@ -115,9 +118,10 @@ export class MainMenuScreen extends BaseGameScreen {
         }
     }
     transitionToMatchmakingScreen() {
-        this.uiObjects.filter((uiObject) => uiObject instanceof MenuOptionObject)
-            .forEach((uiObject) => {
-            uiObject.setActive(false);
+        this.uiObjects.forEach((uiObject) => {
+            if (uiObject instanceof MenuOptionObject) {
+                uiObject.setActive(false);
+            }
         });
         const matchmakingScreen = new MatchmakingScreen(this.gameController);
         matchmakingScreen.loadObjects();

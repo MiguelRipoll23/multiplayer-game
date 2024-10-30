@@ -84,14 +84,15 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private downloadServerMessages(): void {
-    this.apiService.getMessages().then((messages) => {
-      this.showMessages(messages);
-    }).catch((error) => {
-      console.error(error);
-      this.closeableMessageObject?.show(
-        "Failed to download server messages",
-      );
-    });
+    this.apiService
+      .getMessages()
+      .then((messages) => {
+        this.showMessages(messages);
+      })
+      .catch((error) => {
+        console.error(error);
+        this.closeableMessageObject?.show("Failed to download server messages");
+      });
   }
 
   private showMessages(messages: MessagesResponse[]): void {
@@ -123,7 +124,7 @@ export class MainMenuScreen extends BaseGameScreen {
       index,
       length,
       item.title,
-      item.content,
+      item.content
     );
   }
 
@@ -162,10 +163,11 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private transitionToMatchmakingScreen(): void {
-    this.uiObjects.filter((uiObject) => uiObject instanceof MenuOptionObject)
-      .forEach((uiObject) => {
+    this.uiObjects.forEach((uiObject) => {
+      if (uiObject instanceof MenuOptionObject) {
         uiObject.setActive(false);
-      });
+      }
+    });
 
     const matchmakingScreen = new MatchmakingScreen(this.gameController);
     matchmakingScreen.loadObjects();

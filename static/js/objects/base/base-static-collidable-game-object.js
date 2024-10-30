@@ -1,6 +1,6 @@
 import { BasePositionableGameObject } from "./base-positionable-game-object.js";
 export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
-    crossable = false;
+    rigidBody = true;
     hitboxObjects;
     collidingObjects;
     avoidingCollision = false;
@@ -13,11 +13,11 @@ export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
         this.getHitboxObjects().forEach((object) => object.setDebug(this.debug));
         super.load();
     }
-    isCrossable() {
-        return this.crossable;
+    hasRigidBody() {
+        return this.rigidBody;
     }
     isColliding() {
-        return this.collidingObjects.some((collidingObject) => collidingObject.isCrossable() === false);
+        return this.collidingObjects.some((collidingObject) => collidingObject.hasRigidBody());
     }
     getHitboxObjects() {
         return this.hitboxObjects;

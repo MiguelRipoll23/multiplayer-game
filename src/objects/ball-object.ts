@@ -1,6 +1,7 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
 import { PlayerObject } from "./player-object.js";
+import { CarObject } from "./car-object.js";
 
 export class BallObject extends BaseDynamicCollidableGameObject {
   private readonly MASS: number = 1;
@@ -12,7 +13,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
   private inactive: boolean = false;
   private elapsedInactiveMilliseconds: number = 0;
 
-  private lastPlayerTouched: PlayerObject | null = null;
+  private lastPlayerObject: PlayerObject | null = null;
 
   constructor(
     x: number,
@@ -35,7 +36,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     this.applyFriction();
     this.calculateMovement();
     this.updateHitbox();
-    //this.handlePlayerCollision();
+    this.handlePlayerCollision();
   }
 
   public override render(context: CanvasRenderingContext2D): void {
@@ -62,6 +63,10 @@ export class BallObject extends BaseDynamicCollidableGameObject {
 
     // Restore the context state
     context.restore();
+
+    if (this.debug) {
+      this.renderDebugInformation(context);
+    }
 
     // Hitbox render
     super.render(context);
@@ -133,11 +138,26 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     });
   }
 
-  /*   private handlePlayerCollision(): void {
-    this.getCollidingObjects()
-      .filter((object) => object instanceof PlayerObject)
-      .forEach((player) => {
-        this.lastPlayerTouched = player;
-      });
-  } */
+  private handlePlayerCollision(): void {
+    this.getCollidingObjects().forEach((object) => {
+      if (object instanceof CarObject) {
+        this.lastPlayerObject = object.getPlayerObject();
+      }
+    });
+  }
+
+  private renderDebugInformation(context: CanvasRenderingContext2D) {
+    this.renderLastPlayerTouched(context);
+  }
+
+  private renderLastPlayerTouched(context: CanvasRenderingContext2D) {
+    const playerName = this.lastPlayerObject?.getName() ?? "none";
+
+    context.fillStyle = "rgba(255, 255, 255, 0.6)";
+    context.fillRect(24, 72, 100, 10);
+    context.fillStyle = "blue";
+    context.font = "8px system-ui";
+    context.textAlign = "left";
+    context.fillText(`Last Ball Player: ${playerName}`, 28, 80);
+  }
 }

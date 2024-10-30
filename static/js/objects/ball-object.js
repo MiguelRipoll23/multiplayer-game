@@ -1,5 +1,6 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
+import { CarObject } from "./car-object.js";
 export class BallObject extends BaseDynamicCollidableGameObject {
     canvas;
     MASS = 1;
@@ -9,7 +10,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     radius = this.RADIUS;
     inactive = false;
     elapsedInactiveMilliseconds = 0;
-    lastPlayerTouched = null;
+    lastPlayerObject = null;
     constructor(x, y, canvas) {
         super();
         this.canvas = canvas;
@@ -26,7 +27,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         this.applyFriction();
         this.calculateMovement();
         this.updateHitbox();
-        //this.handlePlayerCollision();
+        this.handlePlayerCollision();
     }
     render(context) {
         context.save(); // Save the current context state
@@ -42,6 +43,9 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         context.closePath();
         // Restore the context state
         context.restore();
+        if (this.debug) {
+            this.renderDebugInformation(context);
+        }
         // Hitbox render
         super.render(context);
     }
@@ -92,5 +96,24 @@ export class BallObject extends BaseDynamicCollidableGameObject {
             object.setX(this.x - this.RADIUS);
             object.setY(this.y - this.RADIUS);
         });
+    }
+    handlePlayerCollision() {
+        this.getCollidingObjects().forEach((object) => {
+            if (object instanceof CarObject) {
+                this.lastPlayerObject = object.getPlayerObject();
+            }
+        });
+    }
+    renderDebugInformation(context) {
+        this.renderLastPlayerTouched(context);
+    }
+    renderLastPlayerTouched(context) {
+        const playerName = this.lastPlayerObject?.getName() ?? "none";
+        context.fillStyle = "rgba(255, 255, 255, 0.6)";
+        context.fillRect(24, 72, 100, 10);
+        context.fillStyle = "blue";
+        context.font = "8px system-ui";
+        context.textAlign = "left";
+        context.fillText(`Last Ball Player: ${playerName}`, 28, 80);
     }
 }

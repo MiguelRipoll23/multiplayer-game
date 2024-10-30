@@ -2,7 +2,7 @@ import { HitboxObject } from "../common/hitbox-object.js";
 import { BasePositionableGameObject } from "./base-positionable-game-object.js";
 
 export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
-  protected crossable: boolean = false;
+  protected rigidBody: boolean = true;
   protected hitboxObjects: HitboxObject[];
 
   private collidingObjects: BaseStaticCollidableGameObject[];
@@ -19,13 +19,13 @@ export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
     super.load();
   }
 
-  public isCrossable(): boolean {
-    return this.crossable;
+  public hasRigidBody(): boolean {
+    return this.rigidBody;
   }
 
   public isColliding(): boolean {
-    return this.collidingObjects.some(
-      (collidingObject) => collidingObject.isCrossable() === false
+    return this.collidingObjects.some((collidingObject) =>
+      collidingObject.hasRigidBody()
     );
   }
 

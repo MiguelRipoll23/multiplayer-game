@@ -10,8 +10,7 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
         this.detectCollisions();
     }
     detectCollisions() {
-        const collidableObjects = this
-            .sceneObjects.filter((sceneObject) => sceneObject instanceof BaseStaticCollidableGameObject ||
+        const collidableObjects = this.sceneObjects.filter((sceneObject) => sceneObject instanceof BaseStaticCollidableGameObject ||
             sceneObject instanceof BaseDynamicCollidableGameObject);
         collidableObjects.forEach((collidableObject) => {
             // Reset colliding state for hitboxes
@@ -39,8 +38,8 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
         }
         collidableObject.addCollidingObject(otherCollidableObject);
         otherCollidableObject.addCollidingObject(collidableObject);
-        if (collidableObject.isCrossable() ||
-            otherCollidableObject.isCrossable()) {
+        if (collidableObject.hasRigidBody() === false ||
+            otherCollidableObject.hasRigidBody() === false) {
             return;
         }
         const areDynamicObjectsColliding = collidableObject instanceof BaseDynamicCollidableGameObject &&
@@ -117,10 +116,8 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
             (dynamicCollidableObject.getMass() +
                 otherDynamicCollidableObject.getMass());
         // Update velocities for both movable objects
-        const impulseX = impulse * otherDynamicCollidableObject.getMass() *
-            vCollisionNorm.x;
-        const impulseY = impulse * otherDynamicCollidableObject.getMass() *
-            vCollisionNorm.y;
+        const impulseX = impulse * otherDynamicCollidableObject.getMass() * vCollisionNorm.x;
+        const impulseY = impulse * otherDynamicCollidableObject.getMass() * vCollisionNorm.y;
         dynamicCollidableObject.setVX(dynamicCollidableObject.getVX() + impulseX);
         dynamicCollidableObject.setVY(dynamicCollidableObject.getVY() + impulseY);
         otherDynamicCollidableObject.setVX(otherDynamicCollidableObject.getVX() - impulseX);

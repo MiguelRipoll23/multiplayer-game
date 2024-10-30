@@ -83,6 +83,10 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     }
   }
 
+  public getPlayerObject(): PlayerObject | null {
+    return this.playerObject;
+  }
+
   public setPlayerObject(playerObject: PlayerObject): void {
     this.playerObject = playerObject;
   }
@@ -156,7 +160,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     const displayX = Math.round(this.x);
     const displayY = Math.round(this.y);
 
-    const text = `Position: x(${displayX}) y(${displayY})`;
+    const text = `Position: X(${displayX}) Y(${displayY})`;
 
     context.fillStyle = "rgba(0, 0, 0, 0.6)";
     context.fillRect(24, 24, 85, 10);
@@ -191,6 +195,6 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     context.fillStyle = "purple";
     context.font = "8px system-ui";
     context.textAlign = "left";
-    context.fillText("Outside bounds: " + outsideBounds, 28, 56);
+    context.fillText("Outside Bounds: " + outsideBounds, 28, 56);
   }
 }

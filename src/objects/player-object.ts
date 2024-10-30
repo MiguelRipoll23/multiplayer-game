@@ -8,6 +8,10 @@ export class PlayerObject extends BaseGameObject {
     this.name = name;
   }
 
+  public getName(): string {
+    return this.name;
+  }
+
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {}
 
   public render(context: CanvasRenderingContext2D): void {}

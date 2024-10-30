@@ -18,7 +18,7 @@ export class GoalObject extends BaseStaticCollidableGameObject {
   constructor(orangeTeam: boolean, canvas: HTMLCanvasElement) {
     super();
     this.orangeTeam = orangeTeam;
-    this.crossable = true;
+    this.rigidBody = false;
     this.setPositionAndFillColor(canvas, orangeTeam);
   }
 
@@ -78,7 +78,7 @@ export class GoalObject extends BaseStaticCollidableGameObject {
 
   private setPositionAndFillColor(
     canvas: HTMLCanvasElement,
-    orangeTeam: boolean,
+    orangeTeam: boolean
   ): void {
     if (orangeTeam) {
       // Position goal at the top of the canvas

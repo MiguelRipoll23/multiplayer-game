@@ -12,7 +12,7 @@ export class GoalObject extends BaseStaticCollidableGameObject {
     constructor(orangeTeam, canvas) {
         super();
         this.orangeTeam = orangeTeam;
-        this.crossable = true;
+        this.rigidBody = false;
         this.setPositionAndFillColor(canvas, orangeTeam);
     }
     load() {

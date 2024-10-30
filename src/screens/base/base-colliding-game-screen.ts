@@ -15,11 +15,11 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
   }
 
   public detectCollisions(): void {
-    const collidableObjects: BaseStaticCollidableGameObject[] = this
-      .sceneObjects.filter(
+    const collidableObjects: BaseStaticCollidableGameObject[] =
+      this.sceneObjects.filter(
         (sceneObject) =>
           sceneObject instanceof BaseStaticCollidableGameObject ||
-          sceneObject instanceof BaseDynamicCollidableGameObject,
+          sceneObject instanceof BaseDynamicCollidableGameObject
       ) as unknown as BaseStaticCollidableGameObject[];
 
     collidableObjects.forEach((collidableObject) => {
@@ -35,7 +35,7 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
 
         this.detectStaticAndDynamicCollisions(
           collidableObject,
-          otherCollidableObject,
+          otherCollidableObject
         );
       });
 
@@ -51,7 +51,7 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
       | BaseDynamicCollidableGameObject,
     otherCollidableObject:
       | BaseStaticCollidableGameObject
-      | BaseDynamicCollidableGameObject,
+      | BaseDynamicCollidableGameObject
   ): void {
     const hitboxes = collidableObject.getHitboxObjects();
     const otherHitboxes = otherCollidableObject.getHitboxObjects();
@@ -66,8 +66,8 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
     otherCollidableObject.addCollidingObject(collidableObject);
 
     if (
-      collidableObject.isCrossable() ||
-      otherCollidableObject.isCrossable()
+      collidableObject.hasRigidBody() === false ||
+      otherCollidableObject.hasRigidBody() === false
     ) {
       return;
     }
@@ -83,7 +83,7 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
     if (areDynamicObjectsColliding) {
       this.simulateCollisionBetweenDynamicObjects(
         collidableObject,
-        otherCollidableObject,
+        otherCollidableObject
       );
     } else if (isDynamicObjectCollidingWithStatic) {
       if (collidableObject.isAvoidingCollision()) {
@@ -96,7 +96,7 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
 
   private doesHitboxesIntersect(
     hitboxObjects: HitboxObject[],
-    otherHitboxObjects: HitboxObject[],
+    otherHitboxObjects: HitboxObject[]
   ) {
     let intersecting = false;
 
@@ -119,7 +119,7 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
   }
 
   private simulateCollisionBetweenDynamicAndStaticObjects(
-    dynamicCollidableObject: BaseDynamicCollidableGameObject,
+    dynamicCollidableObject: BaseDynamicCollidableGameObject
   ) {
     let vx = -dynamicCollidableObject.getVX();
     let vy = -dynamicCollidableObject.getVY();
@@ -140,7 +140,7 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
 
   private simulateCollisionBetweenDynamicObjects(
     dynamicCollidableObject: BaseDynamicCollidableGameObject,
-    otherDynamicCollidableObject: BaseDynamicCollidableGameObject,
+    otherDynamicCollidableObject: BaseDynamicCollidableGameObject
   ) {
     // Calculate collision vector
     const vCollision = {
@@ -150,7 +150,7 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
 
     // Calculate distance between objects
     const distance = Math.sqrt(
-      Math.pow(vCollision.x, 2) + Math.pow(vCollision.y, 2),
+      Math.pow(vCollision.x, 2) + Math.pow(vCollision.y, 2)
     );
 
     // Normalize collision vector
@@ -166,7 +166,8 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
     };
 
     // Calculate speed along collision normal
-    const speed = vRelativeVelocity.x * vCollisionNorm.x +
+    const speed =
+      vRelativeVelocity.x * vCollisionNorm.x +
       vRelativeVelocity.y * vCollisionNorm.y;
 
     if (speed < 0) {
@@ -175,24 +176,25 @@ export class BaseCollidingGameScreen extends BaseGameScreen {
     }
 
     // Calculate impulse
-    const impulse = (2 * speed) /
+    const impulse =
+      (2 * speed) /
       (dynamicCollidableObject.getMass() +
         otherDynamicCollidableObject.getMass());
 
     // Update velocities for both movable objects
-    const impulseX = impulse * otherDynamicCollidableObject.getMass() *
-      vCollisionNorm.x;
-    const impulseY = impulse * otherDynamicCollidableObject.getMass() *
-      vCollisionNorm.y;
+    const impulseX =
+      impulse * otherDynamicCollidableObject.getMass() * vCollisionNorm.x;
+    const impulseY =
+      impulse * otherDynamicCollidableObject.getMass() * vCollisionNorm.y;
 
     dynamicCollidableObject.setVX(dynamicCollidableObject.getVX() + impulseX);
     dynamicCollidableObject.setVY(dynamicCollidableObject.getVY() + impulseY);
 
     otherDynamicCollidableObject.setVX(
-      otherDynamicCollidableObject.getVX() - impulseX,
+      otherDynamicCollidableObject.getVX() - impulseX
     );
     otherDynamicCollidableObject.setVY(
-      otherDynamicCollidableObject.getVY() - impulseY,
+      otherDynamicCollidableObject.getVY() - impulseY
     );
   }
 }

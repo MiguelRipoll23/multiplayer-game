@@ -3,6 +3,7 @@ import { CryptoService } from "../services/crypto-service.js";
 import { ScreenTransitionService } from "../services/screen-transition-service.js";
 import { WebSocketService } from "../services/websocket-service.js";
 import { GameFrame } from "./game-frame.js";
+import { GameKeyboard } from "./game-keyboard.js";
 import { GamePointer } from "./game-pointer.js";
 import { GameState } from "./game-state.js";
 export class GameController {
@@ -11,6 +12,7 @@ export class GameController {
     gameState;
     gameFrame;
     gamePointer;
+    gameKeyboard;
     transitionService;
     apiService;
     cryptoService;
@@ -21,6 +23,7 @@ export class GameController {
         this.gameState = new GameState();
         this.gameFrame = new GameFrame();
         this.gamePointer = new GamePointer();
+        this.gameKeyboard = new GameKeyboard();
         this.transitionService = new ScreenTransitionService(this.gameFrame);
         this.apiService = new ApiService();
         this.cryptoService = new CryptoService(this.gameState.getGameServer());
@@ -40,6 +43,9 @@ export class GameController {
     }
     getGamePointer() {
         return this.gamePointer;
+    }
+    getGameKeyboard() {
+        return this.gameKeyboard;
     }
     getTransitionService() {
         return this.transitionService;

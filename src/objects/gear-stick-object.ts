@@ -1,5 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GamePointer } from "../models/game-pointer.js";
+import { GameKeyboard } from "../models/game-keyboard.js";
 
 export class GearStickObject extends BaseGameObject {
   private readonly SIZE: number = 65; // Adjust size as needed
@@ -15,15 +16,16 @@ export class GearStickObject extends BaseGameObject {
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
-    private readonly gamePointer: GamePointer
+    private readonly gamePointer: GamePointer,
+    private readonly gameKeyboard: GameKeyboard
   ) {
     super();
     this.y = this.canvas.height - (this.SIZE + this.Y_OFFSET);
-    this.addKeyboardEventListeners();
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.handleTouchEvents();
+    this.handleKeyboardEvents();
   }
 
   public render(context: CanvasRenderingContext2D): void {
@@ -95,14 +97,12 @@ export class GearStickObject extends BaseGameObject {
     );
   }
 
-  private addKeyboardEventListeners(): void {
-    window.addEventListener("keydown", this.handleKeyDown.bind(this));
-  }
+  private handleKeyboardEvents(): void {
+    const pressedKeys = this.gameKeyboard.getPressedKeys();
 
-  private handleKeyDown(event: KeyboardEvent): void {
-    if (event.key === "ArrowUp" || event.key === "w") {
+    if (pressedKeys.has("ArrowUp") || pressedKeys.has("w")) {
       this.currentGear = "F";
-    } else if (event.key === "ArrowDown" || event.key === "s") {
+    } else if (pressedKeys.has("ArrowDown") || pressedKeys.has("s")) {
       this.currentGear = "R";
     }
   }

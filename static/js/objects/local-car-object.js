@@ -4,10 +4,10 @@ import { JoystickObject } from "./joystick-object.js";
 export class LocalCarObject extends CarObject {
     joystickObject;
     gearStickObject;
-    constructor(x, y, angle, canvas, gamePointer) {
+    constructor(x, y, angle, canvas, gamePointer, gameKeyboard) {
         super(x, y, angle, false, canvas);
-        this.joystickObject = new JoystickObject(canvas, gamePointer);
-        this.gearStickObject = new GearStickObject(canvas, gamePointer);
+        this.joystickObject = new JoystickObject(canvas, gamePointer, gameKeyboard);
+        this.gearStickObject = new GearStickObject(canvas, gamePointer, gameKeyboard);
     }
     update(deltaTimeStamp) {
         this.handleControls();

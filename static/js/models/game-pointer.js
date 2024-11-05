@@ -59,4 +59,24 @@ export class GamePointer {
         this.pressing = false;
         this.pressed = false;
     }
+    addEventListeners() {
+        window.addEventListener("pointermove", (event) => {
+            this.setX(event.clientX);
+            this.setY(event.clientY);
+        });
+        window.addEventListener("pointerdown", (event) => {
+            this.setType(event.pointerType);
+            this.setX(event.clientX);
+            this.setY(event.clientY);
+            this.setInitialX(event.clientX);
+            this.setInitialY(event.clientY);
+            this.setPressing(true);
+        });
+        window.addEventListener("pointerup", (event) => {
+            this.setX(event.clientX);
+            this.setY(event.clientY);
+            this.setPressing(false);
+            this.setPressed(true);
+        });
+    }
 }

@@ -12,10 +12,12 @@ export class WorldScreen extends BaseCollidingGameScreen {
     gameController;
     gameState;
     scoreboardObject = null;
+    localCarObject = null;
     ballObject = null;
     orangeGoalObject = null;
     blueGoalObject = null;
     alertObject = null;
+    goalTimerService = null;
     constructor(gameController) {
         super(gameController);
         this.gameController = gameController;
@@ -58,14 +60,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
         const gamePointer = this.gameController.getGamePointer();
         const gameKeyboard = this.gameController.getGameKeyboard();
         const playerObject = this.createAndGetPlayerObject();
-        const localCarObject = new LocalCarObject(0, 0, 90, this.canvas, gamePointer, gameKeyboard);
-        localCarObject.setCenterPosition();
-        localCarObject.setPlayerObject(playerObject);
+        this.localCarObject = new LocalCarObject(0, 0, 90, this.canvas, gamePointer, gameKeyboard);
+        this.localCarObject.setCenterPosition();
+        this.localCarObject.setPlayerObject(playerObject);
         // Scene
-        this.sceneObjects.push(localCarObject);
+        this.sceneObjects.push(this.localCarObject);
         // UI
-        this.uiObjects.push(localCarObject.getGearStickObject());
-        this.uiObjects.push(localCarObject.getJoystickObject());
+        this.uiObjects.push(this.localCarObject.getGearStickObject());
+        this.uiObjects.push(this.localCarObject.getJoystickObject());
     }
     createAndGetPlayerObject() {
         const player = this.gameState.getGamePlayer();
@@ -80,6 +82,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     update(deltaTimeStamp) {
         super.update(deltaTimeStamp);
         this.detectScores();
+        this.handleGoalTimerComplete();
     }
     detectScores() {
         if (this.ballObject === null || this.ballObject?.isInactive()) {
@@ -99,6 +102,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
         }
     }
     handleGoalScored(orange) {
+        console.log(`Goal scored by ${orange ? "orange" : "blue"} team`);
         this.ballObject?.setInactive();
         if (orange) {
             this.scoreboardObject?.incrementOrangeScore();
@@ -107,10 +111,20 @@ export class WorldScreen extends BaseCollidingGameScreen {
             this.scoreboardObject?.incrementBlueScore();
         }
         this.showGoalAlert();
+        this.goalTimerService = this.gameController.addTimer(5);
     }
     showGoalAlert() {
         const playerObject = this.ballObject?.getLastPlayerObject();
         const playerName = playerObject?.getName().toUpperCase() || "UNKNOWN";
         this.alertObject?.show(`${playerName} SCORED!`);
+    }
+    handleGoalTimerComplete() {
+        if (this.goalTimerService?.isComplete()) {
+            console.log("Goal timer complete");
+            this.goalTimerService.reset();
+            this.ballObject?.reset();
+            this.localCarObject?.reset();
+            this.alertObject?.fadeOut(0.1);
+        }
     }
 }

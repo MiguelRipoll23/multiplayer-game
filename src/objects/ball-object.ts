@@ -7,7 +7,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
   private readonly MASS: number = 1;
   private readonly RADIUS: number = 20;
   private readonly FRICTION: number = 0.01;
-  private readonly INACTIVE_DURATION_MILLISECONDS: number = 5_000;
   private radius: number = this.RADIUS;
 
   private inactive: boolean = false;
@@ -29,6 +28,35 @@ export class BallObject extends BaseDynamicCollidableGameObject {
   public override load(): void {
     this.createHitbox();
     super.load();
+  }
+
+  public reset() {
+    this.vx = 0;
+    this.vy = 0;
+    this.radius = this.RADIUS;
+    this.setCenterPosition();
+    this.elapsedInactiveMilliseconds = 0;
+    this.inactive = false;
+  }
+
+  public setCenterPosition(): void {
+    // Set position to the center of the canvas accounting for the radius
+    this.x = this.canvas.width / 2;
+    this.y = this.canvas.height / 2;
+  }
+
+  public isInactive(): boolean {
+    return this.inactive;
+  }
+
+  public setInactive(): void {
+    this.inactive = true;
+    this.vx = -this.vx * 2;
+    this.vy = -this.vy * 2;
+  }
+
+  public getLastPlayerObject(): PlayerObject | null {
+    return this.lastPlayerObject;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -72,26 +100,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     super.render(context);
   }
 
-  public setCenterPosition(): void {
-    // Set position to the center of the canvas accounting for the radius
-    this.x = this.canvas.width / 2;
-    this.y = this.canvas.height / 2;
-  }
-
-  public isInactive(): boolean {
-    return this.inactive;
-  }
-
-  public setInactive(): void {
-    this.inactive = true;
-    this.vx = -this.vx * 2;
-    this.vy = -this.vy * 2;
-  }
-
-  public getLastPlayerObject(): PlayerObject | null {
-    return this.lastPlayerObject;
-  }
-
   private createHitbox(): void {
     const hitboxObject = new HitboxObject(
       this.x - this.RADIUS * 2,
@@ -105,24 +113,8 @@ export class BallObject extends BaseDynamicCollidableGameObject {
 
   private handleInactiveState(deltaTimeStamp: DOMHighResTimeStamp) {
     if (this.inactive) {
-      this.elapsedInactiveMilliseconds += deltaTimeStamp;
       this.radius += 1;
-
-      if (
-        this.elapsedInactiveMilliseconds > this.INACTIVE_DURATION_MILLISECONDS
-      ) {
-        this.resetBallState();
-      }
     }
-  }
-
-  private resetBallState() {
-    this.vx = 0;
-    this.vy = 0;
-    this.radius = this.RADIUS;
-    this.setCenterPosition();
-    this.elapsedInactiveMilliseconds = 0;
-    this.inactive = false;
   }
 
   private applyFriction(): void {

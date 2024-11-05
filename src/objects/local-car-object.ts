@@ -25,6 +25,19 @@ export class LocalCarObject extends CarObject {
     );
   }
 
+  public getJoystickObject(): JoystickObject {
+    return this.joystickObject;
+  }
+
+  public getGearStickObject(): GearStickObject {
+    return this.gearStickObject;
+  }
+
+  public reset(): void {
+    this.angle = 90;
+    this.setCenterPosition();
+  }
+
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.handleControls();
 
@@ -36,14 +49,6 @@ export class LocalCarObject extends CarObject {
     this.renderDebugInformation(context);
 
     super.render(context);
-  }
-
-  public getJoystickObject(): JoystickObject {
-    return this.joystickObject;
-  }
-
-  public getGearStickObject(): GearStickObject {
-    return this.gearStickObject;
   }
 
   private handleControls(): void {

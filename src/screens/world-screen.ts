@@ -10,15 +10,19 @@ import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constant
 import { GameController } from "../models/game-controller.js";
 import { LocalPlayerObject } from "../objects/local-player-object.js";
 import { AlertObject } from "../objects/alert-object.js";
+import { TimerService } from "../services/timer-service.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
 
   private scoreboardObject: ScoreboardObject | null = null;
+  private localCarObject: LocalCarObject | null = null;
   private ballObject: BallObject | null = null;
   private orangeGoalObject: GoalObject | null = null;
   private blueGoalObject: GoalObject | null = null;
   private alertObject: AlertObject | null = null;
+
+  private goalTimerService: TimerService | null = null;
 
   constructor(protected gameController: GameController) {
     super(gameController);
@@ -77,7 +81,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     const playerObject = this.createAndGetPlayerObject();
 
-    const localCarObject = new LocalCarObject(
+    this.localCarObject = new LocalCarObject(
       0,
       0,
       90,
@@ -86,15 +90,15 @@ export class WorldScreen extends BaseCollidingGameScreen {
       gameKeyboard
     );
 
-    localCarObject.setCenterPosition();
-    localCarObject.setPlayerObject(playerObject);
+    this.localCarObject.setCenterPosition();
+    this.localCarObject.setPlayerObject(playerObject);
 
     // Scene
-    this.sceneObjects.push(localCarObject);
+    this.sceneObjects.push(this.localCarObject);
 
     // UI
-    this.uiObjects.push(localCarObject.getGearStickObject());
-    this.uiObjects.push(localCarObject.getJoystickObject());
+    this.uiObjects.push(this.localCarObject.getGearStickObject());
+    this.uiObjects.push(this.localCarObject.getJoystickObject());
   }
 
   private createAndGetPlayerObject(): LocalPlayerObject {
@@ -114,6 +118,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
     this.detectScores();
+    this.handleGoalTimerComplete();
   }
 
   private detectScores() {
@@ -139,6 +144,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private handleGoalScored(orange: boolean) {
+    console.log(`Goal scored by ${orange ? "orange" : "blue"} team`);
+
     this.ballObject?.setInactive();
 
     if (orange) {
@@ -148,6 +155,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
 
     this.showGoalAlert();
+    this.goalTimerService = this.gameController.addTimer(5);
   }
 
   private showGoalAlert() {
@@ -155,5 +163,16 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const playerName = playerObject?.getName().toUpperCase() || "UNKNOWN";
 
     this.alertObject?.show(`${playerName} SCORED!`);
+  }
+
+  private handleGoalTimerComplete() {
+    if (this.goalTimerService?.isComplete()) {
+      console.log("Goal timer complete");
+
+      this.goalTimerService.reset();
+      this.ballObject?.reset();
+      this.localCarObject?.reset();
+      this.alertObject?.fadeOut(0.1);
+    }
   }
 }

@@ -8,6 +8,7 @@ import { GamePointer, PointerType } from "../models/game-pointer.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
 import { GameKeyboard } from "../models/game-keyboard.js";
+import { TimerService } from "./timer-service.js";
 
 export class GameLoopService {
   private context: CanvasRenderingContext2D;
@@ -137,6 +138,10 @@ export class GameLoopService {
   }
 
   private update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.gameController
+      .getTimers()
+      .forEach((timer) => timer.update(deltaTimeStamp));
+
     this.gameController.getTransitionService().update(deltaTimeStamp);
 
     this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);

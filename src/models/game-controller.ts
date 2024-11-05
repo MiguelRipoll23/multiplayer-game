@@ -1,6 +1,7 @@
 import { ApiService } from "../services/api-service.js";
 import { CryptoService } from "../services/crypto-service.js";
 import { ScreenTransitionService } from "../services/screen-transition-service.js";
+import { TimerService } from "../services/timer-service.js";
 import { WebSocketService } from "../services/websocket-service.js";
 import { GameFrame } from "./game-frame.js";
 import { GameKeyboard } from "./game-keyboard.js";
@@ -12,6 +13,8 @@ export class GameController {
   private gameFrame: GameFrame;
   private gamePointer: GamePointer;
   private gameKeyboard: GameKeyboard;
+
+  private timers: TimerService[] = [];
 
   private readonly transitionService: ScreenTransitionService;
   private readonly apiService: ApiService;
@@ -55,6 +58,27 @@ export class GameController {
 
   public getGameKeyboard(): GameKeyboard {
     return this.gameKeyboard;
+  }
+
+  public getTimers(): TimerService[] {
+    return this.timers;
+  }
+
+  public addTimer(seconds: number): TimerService {
+    const timerService = new TimerService(seconds);
+    timerService.start();
+
+    this.timers.push(timerService);
+
+    return timerService;
+  }
+
+  public removeTimer(timer: TimerService): void {
+    const index = this.timers.indexOf(timer);
+
+    if (index !== -1) {
+      this.timers.splice(index, 1);
+    }
   }
 
   public getTransitionService(): ScreenTransitionService {

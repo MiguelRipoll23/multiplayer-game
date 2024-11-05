@@ -11,6 +11,16 @@ export class LocalCarObject extends CarObject {
         this.joystickObject = new JoystickObject(canvas, gamePointer, gameKeyboard);
         this.gearStickObject = new GearStickObject(canvas, gamePointer, gameKeyboard);
     }
+    getJoystickObject() {
+        return this.joystickObject;
+    }
+    getGearStickObject() {
+        return this.gearStickObject;
+    }
+    reset() {
+        this.angle = 90;
+        this.setCenterPosition();
+    }
     update(deltaTimeStamp) {
         this.handleControls();
         super.update(deltaTimeStamp);
@@ -19,12 +29,6 @@ export class LocalCarObject extends CarObject {
         // Debug
         this.renderDebugInformation(context);
         super.render(context);
-    }
-    getJoystickObject() {
-        return this.joystickObject;
-    }
-    getGearStickObject() {
-        return this.gearStickObject;
     }
     handleControls() {
         if (!this.joystickObject || !this.gearStickObject)

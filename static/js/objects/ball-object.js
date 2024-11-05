@@ -6,7 +6,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     MASS = 1;
     RADIUS = 20;
     FRICTION = 0.01;
-    INACTIVE_DURATION_MILLISECONDS = 5_000;
     radius = this.RADIUS;
     inactive = false;
     elapsedInactiveMilliseconds = 0;
@@ -21,6 +20,30 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     load() {
         this.createHitbox();
         super.load();
+    }
+    reset() {
+        this.vx = 0;
+        this.vy = 0;
+        this.radius = this.RADIUS;
+        this.setCenterPosition();
+        this.elapsedInactiveMilliseconds = 0;
+        this.inactive = false;
+    }
+    setCenterPosition() {
+        // Set position to the center of the canvas accounting for the radius
+        this.x = this.canvas.width / 2;
+        this.y = this.canvas.height / 2;
+    }
+    isInactive() {
+        return this.inactive;
+    }
+    setInactive() {
+        this.inactive = true;
+        this.vx = -this.vx * 2;
+        this.vy = -this.vy * 2;
+    }
+    getLastPlayerObject() {
+        return this.lastPlayerObject;
     }
     update(deltaTimeStamp) {
         this.handleInactiveState(deltaTimeStamp);
@@ -49,42 +72,14 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         // Hitbox render
         super.render(context);
     }
-    setCenterPosition() {
-        // Set position to the center of the canvas accounting for the radius
-        this.x = this.canvas.width / 2;
-        this.y = this.canvas.height / 2;
-    }
-    isInactive() {
-        return this.inactive;
-    }
-    setInactive() {
-        this.inactive = true;
-        this.vx = -this.vx * 2;
-        this.vy = -this.vy * 2;
-    }
-    getLastPlayerObject() {
-        return this.lastPlayerObject;
-    }
     createHitbox() {
         const hitboxObject = new HitboxObject(this.x - this.RADIUS * 2, this.y - this.RADIUS * 2, this.RADIUS * 2, this.RADIUS * 2);
         this.setHitboxObjects([hitboxObject]);
     }
     handleInactiveState(deltaTimeStamp) {
         if (this.inactive) {
-            this.elapsedInactiveMilliseconds += deltaTimeStamp;
             this.radius += 1;
-            if (this.elapsedInactiveMilliseconds > this.INACTIVE_DURATION_MILLISECONDS) {
-                this.resetBallState();
-            }
         }
-    }
-    resetBallState() {
-        this.vx = 0;
-        this.vy = 0;
-        this.radius = this.RADIUS;
-        this.setCenterPosition();
-        this.elapsedInactiveMilliseconds = 0;
-        this.inactive = false;
     }
     applyFriction() {
         this.vx *= 1 - this.FRICTION;

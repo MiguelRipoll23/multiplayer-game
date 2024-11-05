@@ -2,8 +2,10 @@ import { BaseGameScreen } from "./base-game-screen.js";
 import { BaseStaticCollidableGameObject as BaseStaticCollidableGameObject } from "../../objects/base/base-static-collidable-game-object.js";
 import { BaseDynamicCollidableGameObject } from "../../objects/base/base-collidable-dynamic-game-object.js";
 export class BaseCollidingGameScreen extends BaseGameScreen {
+    gameController;
     constructor(gameController) {
         super(gameController);
+        this.gameController = gameController;
     }
     update(deltaTimeStamp) {
         super.update(deltaTimeStamp);

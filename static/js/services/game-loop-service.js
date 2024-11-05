@@ -67,6 +67,8 @@ export class GameLoopService {
             this.gamePointer.setType(event.pointerType);
             this.gamePointer.setX(event.clientX);
             this.gamePointer.setY(event.clientY);
+            this.gamePointer.setInitialX(event.clientX);
+            this.gamePointer.setInitialY(event.clientY);
             this.gamePointer.setPressing(true);
         });
         window.addEventListener("pointerup", (event) => {
@@ -121,6 +123,7 @@ export class GameLoopService {
         this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
         this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
         this.gameFrame.getNotificationObject()?.update(deltaTimeStamp);
+        this.gamePointer.setPressed(false);
     }
     render() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);

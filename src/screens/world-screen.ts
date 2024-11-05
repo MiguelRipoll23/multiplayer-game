@@ -18,7 +18,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private orangeGoalObject: GoalObject | null = null;
   private blueGoalObject: GoalObject | null = null;
 
-  constructor(gameController: GameController) {
+  constructor(protected gameController: GameController) {
     super(gameController);
     this.gameState = gameController.getGameState();
   }
@@ -69,9 +69,17 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private createPlayerAndLocalCarObjects() {
+    const gamePointer = this.gameController.getGamePointer();
     const playerObject = this.createAndGetPlayerObject();
 
-    const localCarObject = new LocalCarObject(0, 0, 90, this.canvas);
+    const localCarObject = new LocalCarObject(
+      0,
+      0,
+      90,
+      this.canvas,
+      gamePointer
+    );
+
     localCarObject.setCenterPosition();
     localCarObject.setPlayerObject(playerObject);
 

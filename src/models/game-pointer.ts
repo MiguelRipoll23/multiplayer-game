@@ -3,6 +3,8 @@ export type PointerType = "mouse" | "touch" | "pen";
 export class GamePointer {
   private x: number = 0;
   private y: number = 0;
+  private initialX: number = 0;
+  private initialY: number = 0;
 
   private type: PointerType = "mouse";
 
@@ -17,12 +19,28 @@ export class GamePointer {
     return this.y;
   }
 
+  public getInitialX(): number {
+    return this.initialX;
+  }
+
+  public getInitialY(): number {
+    return this.initialY;
+  }
+
   public setX(x: number): void {
     this.x = x;
   }
 
   public setY(y: number): void {
     this.y = y;
+  }
+
+  public setInitialX(x: number): void {
+    this.initialX = x;
+  }
+
+  public setInitialY(y: number): void {
+    this.initialY = y;
   }
 
   public isPressing(): boolean {
@@ -49,9 +67,15 @@ export class GamePointer {
     this.type = type;
   }
 
+  public isTouch(): boolean {
+    return this.type === "touch";
+  }
+
   public reset(): void {
     this.x = -1;
     this.y = -1;
+    this.initialX = -1;
+    this.initialY = -1;
     this.pressing = false;
     this.pressed = false;
   }

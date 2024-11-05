@@ -1,3 +1,4 @@
+import { GameKeyboard } from "../models/game-keyboard.js";
 import { GamePointer } from "../models/game-pointer.js";
 import { CarObject } from "./car-object.js";
 import { GearStickObject } from "./gear-stick-object.js";
@@ -12,11 +13,16 @@ export class LocalCarObject extends CarObject {
     y: number,
     angle: number,
     canvas: HTMLCanvasElement,
-    gamePointer: GamePointer
+    gamePointer: GamePointer,
+    gameKeyboard: GameKeyboard
   ) {
     super(x, y, angle, false, canvas);
-    this.joystickObject = new JoystickObject(canvas, gamePointer);
-    this.gearStickObject = new GearStickObject(canvas, gamePointer);
+    this.joystickObject = new JoystickObject(canvas, gamePointer, gameKeyboard);
+    this.gearStickObject = new GearStickObject(
+      canvas,
+      gamePointer,
+      gameKeyboard
+    );
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {

@@ -1,6 +1,6 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 import { GamePointer } from "../models/game-pointer.js";
-import { KeyboardService } from "../services/keyboard-service.js";
+import { GameKeyboard } from "../models/game-keyboard.js";
 
 export class JoystickObject extends BaseGameObject {
   private readonly RADIUS: number = 40;
@@ -13,22 +13,21 @@ export class JoystickObject extends BaseGameObject {
   private x: number = 0;
   private y: number = 0;
 
-  private keyboardService: KeyboardService;
-
   constructor(
     private readonly canvas: HTMLCanvasElement,
-    private readonly gamePointer: GamePointer
+    private readonly gamePointer: GamePointer,
+    private readonly gameKeyboard: GameKeyboard
   ) {
     super();
-    this.keyboardService = new KeyboardService();
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp) {
     if (this.gamePointer.isTouch()) {
       this.handleGamePointerEvents();
       this.updateJoystickPosition();
+    } else {
+      this.updateControlValues();
     }
-    this.updateControlValues();
   }
 
   public render(context: CanvasRenderingContext2D) {
@@ -149,7 +148,7 @@ export class JoystickObject extends BaseGameObject {
   }
 
   private updateControlValues() {
-    const pressedKeys = this.keyboardService.getPressedKeys();
+    const pressedKeys = this.gameKeyboard.getPressedKeys();
 
     const isArrowUpPressed = pressedKeys.has("ArrowUp") || pressedKeys.has("w");
     const isArrowDownPressed =

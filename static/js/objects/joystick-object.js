@@ -2,6 +2,7 @@ import { BaseGameObject } from "./base/base-game-object.js";
 export class JoystickObject extends BaseGameObject {
     canvas;
     gamePointer;
+    gameKeyboard;
     RADIUS = 40;
     MAX_DISTANCE = 30;
     active = false;
@@ -9,17 +10,19 @@ export class JoystickObject extends BaseGameObject {
     controlY = 0;
     x = 0;
     y = 0;
-    pressedKeys = new Set();
-    constructor(canvas, gamePointer) {
+    constructor(canvas, gamePointer, gameKeyboard) {
         super();
         this.canvas = canvas;
         this.gamePointer = gamePointer;
-        this.addKeyboardEventListeners();
+        this.gameKeyboard = gameKeyboard;
     }
     update(deltaTimeStamp) {
         if (this.gamePointer.isTouch()) {
             this.handleGamePointerEvents();
             this.updateJoystickPosition();
+        }
+        else {
+            this.updateControlValues();
         }
     }
     render(context) {
@@ -101,23 +104,12 @@ export class JoystickObject extends BaseGameObject {
         context.restore();
         context.closePath();
     }
-    addKeyboardEventListeners() {
-        window.addEventListener("keydown", this.handleKeyDown.bind(this));
-        window.addEventListener("keyup", this.handleKeyUp.bind(this));
-    }
-    handleKeyDown(event) {
-        this.pressedKeys.add(event.key);
-        this.updateControlValues();
-    }
-    handleKeyUp(event) {
-        this.pressedKeys.delete(event.key);
-        this.updateControlValues();
-    }
     updateControlValues() {
-        const isArrowUpPressed = this.pressedKeys.has("ArrowUp") || this.pressedKeys.has("w");
-        const isArrowDownPressed = this.pressedKeys.has("ArrowDown") || this.pressedKeys.has("s");
-        const isArrowLeftPressed = this.pressedKeys.has("ArrowLeft") || this.pressedKeys.has("a");
-        const isArrowRightPressed = this.pressedKeys.has("ArrowRight") || this.pressedKeys.has("d");
+        const pressedKeys = this.gameKeyboard.getPressedKeys();
+        const isArrowUpPressed = pressedKeys.has("ArrowUp") || pressedKeys.has("w");
+        const isArrowDownPressed = pressedKeys.has("ArrowDown") || pressedKeys.has("s");
+        const isArrowLeftPressed = pressedKeys.has("ArrowLeft") || pressedKeys.has("a");
+        const isArrowRightPressed = pressedKeys.has("ArrowRight") || pressedKeys.has("d");
         this.active = isArrowUpPressed || isArrowDownPressed;
         if (isArrowUpPressed && !isArrowDownPressed) {
             this.controlY = -1;

@@ -9,6 +9,7 @@ export class GameLoopService {
     gameController;
     gameFrame;
     gamePointer;
+    gameKeyboard;
     isRunning = false;
     previousTimeStamp = 0;
     deltaTimeStamp = 0;
@@ -19,6 +20,7 @@ export class GameLoopService {
         this.gameController = new GameController(this.canvas, this.debug);
         this.gameFrame = this.gameController.getGameFrame();
         this.gamePointer = this.gameController.getGamePointer();
+        this.gameKeyboard = this.gameController.getGameKeyboard();
         this.setCanvasSize();
         this.addEventListeners();
         this.loadNotificationObject();
@@ -51,6 +53,7 @@ export class GameLoopService {
         this.addWindowEventListeners();
         this.addPointerEventListeners();
         this.addCustomEventListeners();
+        this.gameKeyboard.addEventListeners();
     }
     addWindowEventListeners() {
         window.addEventListener("resize", () => {

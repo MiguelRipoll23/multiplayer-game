@@ -70,6 +70,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
   private createPlayerAndLocalCarObjects() {
     const gamePointer = this.gameController.getGamePointer();
+    const gameKeyboard = this.gameController.getGameKeyboard();
+
     const playerObject = this.createAndGetPlayerObject();
 
     const localCarObject = new LocalCarObject(
@@ -77,7 +79,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
       0,
       90,
       this.canvas,
-      gamePointer
+      gamePointer,
+      gameKeyboard
     );
 
     localCarObject.setCenterPosition();

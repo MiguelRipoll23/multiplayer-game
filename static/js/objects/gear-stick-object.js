@@ -2,6 +2,7 @@ import { BaseGameObject } from "./base/base-game-object.js";
 export class GearStickObject extends BaseGameObject {
     canvas;
     gamePointer;
+    gameKeyboard;
     SIZE = 65; // Adjust size as needed
     FILL_COLOR = "black"; // Change fill color to black
     FONT_SIZE = 36; // Adjust font size as needed
@@ -10,15 +11,16 @@ export class GearStickObject extends BaseGameObject {
     x = 30;
     active = false;
     currentGear = "F";
-    constructor(canvas, gamePointer) {
+    constructor(canvas, gamePointer, gameKeyboard) {
         super();
         this.canvas = canvas;
         this.gamePointer = gamePointer;
+        this.gameKeyboard = gameKeyboard;
         this.y = this.canvas.height - (this.SIZE + this.Y_OFFSET);
-        this.addKeyboardEventListeners();
     }
     update(deltaTimeStamp) {
         this.handleTouchEvents();
+        this.handleKeyboardEvents();
     }
     render(context) {
         this.drawCircle(context); // Modified to draw a circle
@@ -73,14 +75,12 @@ export class GearStickObject extends BaseGameObject {
             y >= this.y &&
             y <= this.y + this.SIZE);
     }
-    addKeyboardEventListeners() {
-        window.addEventListener("keydown", this.handleKeyDown.bind(this));
-    }
-    handleKeyDown(event) {
-        if (event.key === "ArrowUp" || event.key === "w") {
+    handleKeyboardEvents() {
+        const pressedKeys = this.gameKeyboard.getPressedKeys();
+        if (pressedKeys.has("ArrowUp") || pressedKeys.has("w")) {
             this.currentGear = "F";
         }
-        else if (event.key === "ArrowDown" || event.key === "s") {
+        else if (pressedKeys.has("ArrowDown") || pressedKeys.has("s")) {
             this.currentGear = "R";
         }
     }

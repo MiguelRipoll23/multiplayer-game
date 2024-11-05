@@ -1,4 +1,4 @@
-export class KeyboardService {
+export class GameKeyboard {
   private pressedKeys: Set<string> = new Set();
 
   public addEventListeners(): void {

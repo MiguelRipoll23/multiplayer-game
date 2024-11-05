@@ -9,6 +9,7 @@ import { getConfigurationKey } from "../utils/configuration-utils.js";
 import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { LocalPlayerObject } from "../objects/local-player-object.js";
+import { AlertObject } from "../objects/alert-object.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -17,6 +18,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private ballObject: BallObject | null = null;
   private orangeGoalObject: GoalObject | null = null;
   private blueGoalObject: GoalObject | null = null;
+  private alertObject: AlertObject | null = null;
 
   constructor(protected gameController: GameController) {
     super(gameController);
@@ -29,6 +31,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.createPlayerAndLocalCarObjects();
     this.createBallObject();
     this.createGoalObjects();
+    this.createAlertObject();
     super.loadObjects();
   }
 
@@ -103,6 +106,11 @@ export class WorldScreen extends BaseCollidingGameScreen {
     return playerObject;
   }
 
+  private createAlertObject() {
+    this.alertObject = new AlertObject(this.canvas);
+    this.uiObjects.push(this.alertObject);
+  }
+
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
     this.detectScores();
@@ -118,8 +126,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       .includes(this.ballObject);
 
     if (hasOrangeTeamScored) {
-      this.ballObject.setInactive();
-      this.scoreboardObject?.incrementBlueScore();
+      this.handleGoalScored(true);
     }
 
     const hasBlueTeamScored = this.blueGoalObject
@@ -127,8 +134,26 @@ export class WorldScreen extends BaseCollidingGameScreen {
       .includes(this.ballObject);
 
     if (hasBlueTeamScored) {
-      this.ballObject.setInactive();
-      this.scoreboardObject?.incrementOrangeScore();
+      this.handleGoalScored(false);
     }
+  }
+
+  private handleGoalScored(orange: boolean) {
+    this.ballObject?.setInactive();
+
+    if (orange) {
+      this.scoreboardObject?.incrementOrangeScore();
+    } else {
+      this.scoreboardObject?.incrementBlueScore();
+    }
+
+    this.showGoalAlert();
+  }
+
+  private showGoalAlert() {
+    const playerObject = this.ballObject?.getLastPlayerObject();
+    const playerName = playerObject?.getName().toUpperCase() || "UNKNOWN";
+
+    this.alertObject?.show(`${playerName} SCORED!`);
   }
 }

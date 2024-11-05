@@ -62,6 +62,9 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         this.vx = -this.vx * 2;
         this.vy = -this.vy * 2;
     }
+    getLastPlayerObject() {
+        return this.lastPlayerObject;
+    }
     createHitbox() {
         const hitboxObject = new HitboxObject(this.x - this.RADIUS * 2, this.y - this.RADIUS * 2, this.RADIUS * 2, this.RADIUS * 2);
         this.setHitboxObjects([hitboxObject]);

@@ -16,7 +16,7 @@ export class LocalCarObject extends CarObject {
   ) {
     super(x, y, angle, false, canvas);
     this.joystickObject = new JoystickObject(canvas, gamePointer);
-    this.gearStickObject = new GearStickObject(canvas);
+    this.gearStickObject = new GearStickObject(canvas, gamePointer);
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {

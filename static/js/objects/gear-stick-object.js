@@ -1,6 +1,7 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class GearStickObject extends BaseGameObject {
     canvas;
+    gamePointer;
     SIZE = 65; // Adjust size as needed
     FILL_COLOR = "black"; // Change fill color to black
     FONT_SIZE = 36; // Adjust font size as needed
@@ -9,15 +10,15 @@ export class GearStickObject extends BaseGameObject {
     x = 30;
     active = false;
     currentGear = "F";
-    constructor(canvas) {
+    constructor(canvas, gamePointer) {
         super();
         this.canvas = canvas;
+        this.gamePointer = gamePointer;
         this.y = this.canvas.height - (this.SIZE + this.Y_OFFSET);
-        this.addTouchEventListeners();
         this.addKeyboardEventListeners();
     }
     update(deltaTimeStamp) {
-        // Implement update logic if required
+        this.handleTouchEvents();
     }
     render(context) {
         this.drawCircle(context); // Modified to draw a circle
@@ -40,7 +41,8 @@ export class GearStickObject extends BaseGameObject {
         this.y + this.SIZE / 2, // y-coordinate of the center
         this.SIZE / 2, // radius
         0, // start angle
-        Math.PI * 2);
+        Math.PI * 2 // end angle
+        );
         context.closePath();
         context.fill();
     }
@@ -51,26 +53,17 @@ export class GearStickObject extends BaseGameObject {
         context.textAlign = "center";
         context.fillText(this.currentGear, this.x + this.SIZE / 2, this.y + this.SIZE / 2 + 12);
     }
-    addTouchEventListeners() {
-        this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this), { passive: false });
-        this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this), {
-            passive: true,
-        });
-    }
-    handleTouchStart(event) {
-        const touch = event.touches[0];
-        if (!touch)
-            return;
+    handleTouchEvents() {
         const rect = this.canvas.getBoundingClientRect();
-        const touchX = touch.clientX - rect.left;
-        const touchY = touch.clientY - rect.top;
+        const touchX = this.gamePointer.getX() - rect.left;
+        const touchY = this.gamePointer.getY() - rect.top;
         if (this.isWithinGearStick(touchX, touchY)) {
             this.active = true;
+            if (this.gamePointer.isPressed()) {
+                this.switchGear();
+            }
         }
-    }
-    handleTouchEnd(event) {
-        if (this.active) {
-            this.switchGear();
+        else {
             this.active = false;
         }
     }

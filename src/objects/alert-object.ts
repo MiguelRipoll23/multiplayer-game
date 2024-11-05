@@ -32,7 +32,7 @@ export class AlertObject extends BaseAnimatedGameObject {
 
     context.globalAlpha = this.opacity;
 
-    context.font = "32px Arial";
+    context.font = "lighter 30px system-ui";
     context.fillStyle = this.color;
     context.textAlign = "center";
     context.textBaseline = "middle";

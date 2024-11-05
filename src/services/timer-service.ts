@@ -10,7 +10,7 @@ export class TimerService {
     this.durationMilliseconds = durationSeconds * 1000;
   }
 
-  public isComplete(): boolean {
+  public hasFinished(): boolean {
     return this.elapsedMilliseconds >= this.durationMilliseconds;
   }
 

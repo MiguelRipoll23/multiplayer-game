@@ -168,7 +168,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private handleGoalTimerComplete() {
-    if (this.goalTimerService?.isComplete()) {
+    if (this.goalTimerService?.hasFinished()) {
       console.log("Goal timer complete");
 
       this.goalTimerService.reset();

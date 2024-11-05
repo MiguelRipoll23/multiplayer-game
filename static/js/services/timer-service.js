@@ -7,7 +7,7 @@ export class TimerService {
         console.log(`TimerService(durationSeconds=${durationSeconds},started=${started})`);
         this.durationMilliseconds = durationSeconds * 1000;
     }
-    isComplete() {
+    hasFinished() {
         return this.elapsedMilliseconds >= this.durationMilliseconds;
     }
     start() {

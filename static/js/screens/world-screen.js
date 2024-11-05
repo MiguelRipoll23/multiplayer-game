@@ -120,7 +120,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.alertObject?.show(`${playerName} SCORED!`, color);
     }
     handleGoalTimerComplete() {
-        if (this.goalTimerService?.isComplete()) {
+        if (this.goalTimerService?.hasFinished()) {
             console.log("Goal timer complete");
             this.goalTimerService.reset();
             this.ballObject?.reset();

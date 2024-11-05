@@ -109,7 +109,10 @@ export class GameLoopService {
         this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
         this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
         this.gameFrame.getNotificationObject()?.update(deltaTimeStamp);
-        this.gamePointer.setPressed(false);
+        this.gameController
+            .getTimers()
+            .filter((timer) => timer.hasFinished())
+            .forEach((timer) => this.gameController.removeTimer(timer));
     }
     render() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);

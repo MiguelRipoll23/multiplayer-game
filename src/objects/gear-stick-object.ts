@@ -23,7 +23,6 @@ export class GearStickObject extends BaseGameObject {
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    // Implement update logic if required
     this.handleTouchEvents();
   }
 
@@ -53,7 +52,7 @@ export class GearStickObject extends BaseGameObject {
       this.y + this.SIZE / 2, // y-coordinate of the center
       this.SIZE / 2, // radius
       0, // start angle
-      Math.PI * 2, // end angle
+      Math.PI * 2 // end angle
     );
     context.closePath();
     context.fill();
@@ -67,22 +66,23 @@ export class GearStickObject extends BaseGameObject {
     context.fillText(
       this.currentGear,
       this.x + this.SIZE / 2,
-      this.y + this.SIZE / 2 + 12,
+      this.y + this.SIZE / 2 + 12
     );
   }
 
   private handleTouchEvents(): void {
-    if (this.gamePointer.isPressed()) {
-      const rect = this.canvas.getBoundingClientRect();
-      const touchX = this.gamePointer.getX() - rect.left;
-      const touchY = this.gamePointer.getY() - rect.top;
+    const rect = this.canvas.getBoundingClientRect();
+    const touchX = this.gamePointer.getX() - rect.left;
+    const touchY = this.gamePointer.getY() - rect.top;
 
-      if (this.isWithinGearStick(touchX, touchY)) {
-        this.active = true;
+    if (this.isWithinGearStick(touchX, touchY)) {
+      this.active = true;
+
+      if (this.gamePointer.isPressed()) {
         this.switchGear();
-      } else {
-        this.active = false;
       }
+    } else {
+      this.active = false;
     }
   }
 

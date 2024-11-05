@@ -64,10 +64,8 @@ export class GameController {
     return this.timers;
   }
 
-  public addTimer(seconds: number): TimerService {
-    const timerService = new TimerService(seconds);
-    timerService.start();
-
+  public addTimer(seconds: number, start = true): TimerService {
+    const timerService = new TimerService(seconds, start);
     this.timers.push(timerService);
 
     return timerService;

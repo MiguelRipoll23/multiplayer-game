@@ -1,9 +1,10 @@
 export class TimerService {
-    started = false;
+    started;
     elapsedMilliseconds = 0;
     durationMilliseconds = 0;
-    constructor(durationSeconds) {
-        console.log(`TimerService(durationSeconds=${durationSeconds})`);
+    constructor(durationSeconds, started = true) {
+        this.started = started;
+        console.log(`TimerService(durationSeconds=${durationSeconds},started=${started})`);
         this.durationMilliseconds = durationSeconds * 1000;
     }
     isComplete() {

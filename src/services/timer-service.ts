@@ -1,11 +1,12 @@
 export class TimerService {
-  private started: boolean = false;
-
   private elapsedMilliseconds: number = 0;
   private durationMilliseconds: number = 0;
 
-  constructor(durationSeconds: number) {
-    console.log(`TimerService(durationSeconds=${durationSeconds})`);
+  constructor(durationSeconds: number, private started: boolean = true) {
+    console.log(
+      `TimerService(durationSeconds=${durationSeconds},started=${started})`
+    );
+
     this.durationMilliseconds = durationSeconds * 1000;
   }
 

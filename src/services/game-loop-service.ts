@@ -71,8 +71,8 @@ export class GameLoopService {
 
   private addEventListeners(): void {
     this.addWindowEventListeners();
-    this.addPointerEventListeners();
     this.addCustomEventListeners();
+    this.gamePointer.addEventListeners();
     this.gameKeyboard.addEventListeners();
   }
 
@@ -80,29 +80,6 @@ export class GameLoopService {
     window.addEventListener("resize", () => {
       this.canvas.width = document.body.clientWidth;
       this.canvas.height = document.body.clientHeight;
-    });
-  }
-
-  private addPointerEventListeners(): void {
-    window.addEventListener("pointermove", (event) => {
-      this.gamePointer.setX(event.clientX);
-      this.gamePointer.setY(event.clientY);
-    });
-
-    window.addEventListener("pointerdown", (event) => {
-      this.gamePointer.setType(event.pointerType as PointerType);
-      this.gamePointer.setX(event.clientX);
-      this.gamePointer.setY(event.clientY);
-      this.gamePointer.setInitialX(event.clientX);
-      this.gamePointer.setInitialY(event.clientY);
-      this.gamePointer.setPressing(true);
-    });
-
-    window.addEventListener("pointerup", (event) => {
-      this.gamePointer.setX(event.clientX);
-      this.gamePointer.setY(event.clientY);
-      this.gamePointer.setPressing(false);
-      this.gamePointer.setPressed(true);
     });
   }
 

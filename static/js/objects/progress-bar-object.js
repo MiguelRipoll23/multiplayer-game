@@ -21,10 +21,11 @@ export class ProgressBarObject extends BaseGameObject {
         this.setProperties(canvas);
     }
     update() {
-        this.progressBarWidth = (this.canvas.width - 2 * this.rectX) *
-            this.currentProgress;
+        this.progressBarWidth =
+            (this.canvas.width - 2 * this.rectX) * this.currentProgress;
     }
     render(context) {
+        context.save();
         context.fillStyle = "rgba(0, 0, 0, 0.8)";
         this.roundedRect(context, this.rectX, this.rectY, this.rectWidth, this.RECT_HEIGHT, this.RECT_CORNER_RADIUS);
         const text = this.text;
@@ -36,6 +37,7 @@ export class ProgressBarObject extends BaseGameObject {
         context.fillRect(this.rectX, this.progressBarY, this.rectWidth, this.PROGRESS_BAR_HEIGHT);
         context.fillStyle = ORANGE_TEAM_COLOR;
         context.fillRect(this.rectX, this.progressBarY, this.progressBarWidth, this.PROGRESS_BAR_HEIGHT);
+        context.restore();
     }
     setProperties(canvas) {
         this.rectX = canvas.width * 0.05;
@@ -43,8 +45,8 @@ export class ProgressBarObject extends BaseGameObject {
         this.rectWidth = this.canvas.width - 2 * this.rectX;
         this.textX = this.rectX + 15; // adjusted text X position
         this.textY = this.rectY + 25;
-        this.progressBarY = this.rectY + this.RECT_HEIGHT -
-            this.PROGRESS_BAR_HEIGHT;
+        this.progressBarY =
+            this.rectY + this.RECT_HEIGHT - this.PROGRESS_BAR_HEIGHT;
     }
     roundedRect(ctx, x, y, width, height, radius) {
         ctx.beginPath();

@@ -110,7 +110,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     renderLastPlayerTouched(context) {
         const playerName = this.lastPlayerObject?.getName() ?? "none";
         context.fillStyle = "rgba(255, 255, 255, 0.6)";
-        context.fillRect(24, 72, 100, 10);
+        context.fillRect(24, 72, 120, 10);
         context.fillStyle = "blue";
         context.font = "8px system-ui";
         context.textAlign = "left";

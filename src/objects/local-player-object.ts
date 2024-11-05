@@ -22,7 +22,7 @@ export class LocalPlayerObject extends PlayerObject {
     const score = this.gamePlayer.getScore();
 
     context.fillStyle = "rgba(0, 0, 0, 0.6)";
-    context.fillRect(24, 60, 40, 10);
+    context.fillRect(24, 60, 60, 10);
     context.fillStyle = "#FFFF00";
     context.font = "8px system-ui";
     context.textAlign = "left";

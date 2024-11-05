@@ -17,10 +17,10 @@ export class LocalPlayerObject extends PlayerObject {
     renderDebugScoreInformation(context) {
         const score = this.gamePlayer.getScore();
         context.fillStyle = "rgba(0, 0, 0, 0.6)";
-        context.fillRect(24, 60, 60, 10);
+        context.fillRect(24, 72, 80, 20);
         context.fillStyle = "#FFFF00";
-        context.font = "8px system-ui";
+        context.font = "12px system-ui";
         context.textAlign = "left";
-        context.fillText(`Score: ${score}`, 28, 68);
+        context.fillText(`Score: ${score}`, 30, 86);
     }
 }

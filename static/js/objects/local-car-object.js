@@ -56,39 +56,26 @@ export class LocalCarObject extends CarObject {
         }
         this.renderDebugPositionInformation(context);
         this.renderDebugAngleInformation(context);
-        this.renderDebugIsOutsideBounds(context);
     }
     renderDebugPositionInformation(context) {
         const displayX = Math.round(this.x);
         const displayY = Math.round(this.y);
         const text = `Position: X(${displayX}) Y(${displayY})`;
         context.fillStyle = "rgba(0, 0, 0, 0.6)";
-        context.fillRect(24, 24, 120, 10);
+        context.fillRect(24, 24, 160, 20);
         context.fillStyle = "#FFFF00";
-        context.font = "8px system-ui";
+        context.font = "12px system-ui";
         context.textAlign = "left";
-        context.fillText(text, 28, 32);
+        context.fillText(text, 30, 38);
     }
     renderDebugAngleInformation(context) {
         const displayAngle = Math.round(this.angle);
-        const text = `Angle: ${displayAngle}`;
+        const text = `Angle: ${displayAngle}°`;
         context.fillStyle = "rgba(0, 0, 0, 0.6)";
-        context.fillRect(24, 36, 60, 10);
+        context.fillRect(24, 48, 80, 20);
         context.fillStyle = "#FFFF00";
-        context.font = "8px system-ui";
+        context.font = "12px system-ui";
         context.textAlign = "left";
-        context.fillText(text, 28, 44);
-    }
-    renderDebugIsOutsideBounds(context) {
-        const outsideBounds = this.x < 0 ||
-            this.x > this.canvas.width ||
-            this.y < 0 ||
-            this.y > this.canvas.height;
-        context.fillStyle = "rgba(255, 255, 255, 0.6)";
-        context.fillRect(24, 48, 120, 10);
-        context.fillStyle = "purple";
-        context.font = "8px system-ui";
-        context.textAlign = "left";
-        context.fillText("Outside Bounds: " + outsideBounds, 28, 56);
+        context.fillText(text, 30, 62);
     }
 }

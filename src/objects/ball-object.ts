@@ -150,10 +150,10 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     const playerName = this.lastPlayerObject?.getName() ?? "none";
 
     context.fillStyle = "rgba(255, 255, 255, 0.6)";
-    context.fillRect(24, 72, 120, 10);
+    context.fillRect(24, 96, 160, 20);
     context.fillStyle = "blue";
-    context.font = "8px system-ui";
+    context.font = "12px system-ui";
     context.textAlign = "left";
-    context.fillText(`Last Ball Player: ${playerName}`, 28, 80);
+    context.fillText(`Last Touch: ${playerName}`, 30, 110);
   }
 }

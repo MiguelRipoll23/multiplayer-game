@@ -110,13 +110,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
         else {
             this.scoreboardObject?.incrementBlueScore();
         }
-        this.showGoalAlert();
+        const color = orange ? "orange" : "blue";
+        this.showGoalAlert(color);
         this.goalTimerService = this.gameController.addTimer(5);
     }
-    showGoalAlert() {
+    showGoalAlert(color) {
         const playerObject = this.ballObject?.getLastPlayerObject();
         const playerName = playerObject?.getName().toUpperCase() || "UNKNOWN";
-        this.alertObject?.show(`${playerName} SCORED!`);
+        this.alertObject?.show(`${playerName} SCORED!`, color);
     }
     handleGoalTimerComplete() {
         if (this.goalTimerService?.isComplete()) {

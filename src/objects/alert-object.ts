@@ -1,15 +1,29 @@
+import {
+  BLUE_TEAM_COLOR,
+  ORANGE_TEAM_COLOR,
+} from "../constants/colors-constants.js";
 import { BaseAnimatedGameObject } from "./base/base-animated-object.js";
 
 export class AlertObject extends BaseAnimatedGameObject {
   private text: string = "Unknown message";
+  private color: string = "white";
 
   constructor(protected readonly canvas: HTMLCanvasElement) {
     super();
     this.setInitialValues();
   }
 
-  public show(text: string): void {
+  public show(text: string, color = "white"): void {
     this.text = text;
+
+    if (color === "orange") {
+      this.color = ORANGE_TEAM_COLOR;
+    } else if (color === "blue") {
+      this.color = BLUE_TEAM_COLOR;
+    } else {
+      this.color = color;
+    }
+
     this.fadeIn(0.5);
   }
 
@@ -18,8 +32,8 @@ export class AlertObject extends BaseAnimatedGameObject {
 
     context.globalAlpha = this.opacity;
 
-    context.font = "48px Arial";
-    context.fillStyle = "white";
+    context.font = "32px Arial";
+    context.fillStyle = this.color;
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText(this.text, this.x, this.y);

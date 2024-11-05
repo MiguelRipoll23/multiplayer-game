@@ -67,6 +67,10 @@ export class GamePointer {
     this.type = type;
   }
 
+  public isTouch(): boolean {
+    return this.type === "touch";
+  }
+
   public reset(): void {
     this.x = -1;
     this.y = -1;

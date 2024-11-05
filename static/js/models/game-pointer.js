@@ -48,6 +48,9 @@ export class GamePointer {
     setType(type) {
         this.type = type;
     }
+    isTouch() {
+        return this.type === "touch";
+    }
     reset() {
         this.x = -1;
         this.y = -1;

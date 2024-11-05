@@ -123,6 +123,7 @@ export class GameLoopService {
         this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
         this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
         this.gameFrame.getNotificationObject()?.update(deltaTimeStamp);
+        this.gamePointer.setPressed(false);
     }
     render() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);

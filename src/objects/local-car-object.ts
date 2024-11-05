@@ -1,3 +1,4 @@
+import { GamePointer } from "../models/game-pointer.js";
 import { CarObject } from "./car-object.js";
 import { GearStickObject } from "./gear-stick-object.js";
 import { JoystickObject } from "./joystick-object.js";
@@ -6,9 +7,15 @@ export class LocalCarObject extends CarObject {
   private readonly joystickObject: JoystickObject;
   private readonly gearStickObject: GearStickObject;
 
-  constructor(x: number, y: number, angle: number, canvas: HTMLCanvasElement) {
+  constructor(
+    x: number,
+    y: number,
+    angle: number,
+    canvas: HTMLCanvasElement,
+    gamePointer: GamePointer
+  ) {
     super(x, y, angle, false, canvas);
-    this.joystickObject = new JoystickObject(canvas);
+    this.joystickObject = new JoystickObject(canvas, gamePointer);
     this.gearStickObject = new GearStickObject(canvas);
   }
 
@@ -47,7 +54,8 @@ export class LocalCarObject extends CarObject {
       }
     }
 
-    this.angle += this.HANDLING *
+    this.angle +=
+      this.HANDLING *
       (this.speed / this.TOP_SPEED) *
       this.joystickObject.getControlX();
   }

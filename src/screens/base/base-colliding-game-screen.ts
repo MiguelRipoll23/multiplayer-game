@@ -5,7 +5,7 @@ import { HitboxObject } from "../../objects/common/hitbox-object.js";
 import { GameController } from "../../models/game-controller.js";
 
 export class BaseCollidingGameScreen extends BaseGameScreen {
-  constructor(gameController: GameController) {
+  constructor(protected gameController: GameController) {
     super(gameController);
   }
 

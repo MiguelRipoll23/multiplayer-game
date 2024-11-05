@@ -161,6 +161,8 @@ export class GameLoopService {
     this.gameFrame.getCurrentScreen()?.update(deltaTimeStamp);
     this.gameFrame.getNextScreen()?.update(deltaTimeStamp);
     this.gameFrame.getNotificationObject()?.update(deltaTimeStamp);
+
+    this.gamePointer.setPressed(false);
   }
 
   private render(): void {

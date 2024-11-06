@@ -1,5 +1,6 @@
 import { ApiService } from "../services/api-service.js";
 import { CryptoService } from "../services/crypto-service.js";
+import { MatchmakingService } from "../services/matchmaking-service.js";
 import { ScreenTransitionService } from "../services/screen-transition-service.js";
 import { TimerService } from "../services/timer-service.js";
 import { WebSocketService } from "../services/websocket-service.js";
@@ -19,6 +20,7 @@ export class GameController {
     apiService;
     cryptoService;
     webSocketService;
+    matchMakingService;
     constructor(canvas, debug = false) {
         this.canvas = canvas;
         this.debug = debug;
@@ -30,6 +32,7 @@ export class GameController {
         this.apiService = new ApiService();
         this.cryptoService = new CryptoService(this.gameState.getGameServer());
         this.webSocketService = new WebSocketService(this);
+        this.matchMakingService = new MatchmakingService(this);
     }
     getCanvas() {
         return this.canvas;
@@ -74,5 +77,8 @@ export class GameController {
     }
     getWebSocketService() {
         return this.webSocketService;
+    }
+    getMatchmakingService() {
+        return this.matchMakingService;
     }
 }

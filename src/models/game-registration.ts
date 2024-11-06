@@ -1,4 +1,4 @@
-import { RegistrationResponse } from "../services/interfaces/registration-response.js";
+import { RegistrationResponse } from "../services/interfaces/response/registration-response.js";
 
 export class GameRegistration {
   private authenticationToken: string;

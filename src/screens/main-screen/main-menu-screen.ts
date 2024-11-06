@@ -4,10 +4,10 @@ import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
 import { ServerMessageWindowObject } from "../../objects/server-message-window-object.js";
 import { ApiService } from "../../services/api-service.js";
-import { MessagesResponse } from "../../services/interfaces/messages-response.js";
+import { MessagesResponse } from "../../services/interfaces/response/messages-response.js";
 import { ScreenTransitionService } from "../../services/screen-transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
-import { MatchmakingScreen } from "./matchmaking-screen.js";
+import { LoadingScreen } from "./loading-screen.js";
 
 export class MainMenuScreen extends BaseGameScreen {
   private MENU_OPTIONS_TEXT: string[] = ["Join game", "Scoreboard", "Settings"];
@@ -35,7 +35,8 @@ export class MainMenuScreen extends BaseGameScreen {
     super.loadObjects();
   }
 
-  public hasTransitionFinished(): void {
+  public override hasTransitionFinished(): void {
+    super.hasTransitionFinished();
     this.downloadServerMessages();
   }
 
@@ -148,7 +149,7 @@ export class MainMenuScreen extends BaseGameScreen {
 
     switch (index) {
       case 0:
-        this.transitionToMatchmakingScreen();
+        this.transitionToLoadingScreen();
         break;
 
       case 1:
@@ -162,16 +163,16 @@ export class MainMenuScreen extends BaseGameScreen {
     }
   }
 
-  private transitionToMatchmakingScreen(): void {
+  private transitionToLoadingScreen(): void {
     this.uiObjects.forEach((uiObject) => {
       if (uiObject instanceof MenuOptionObject) {
         uiObject.setActive(false);
       }
     });
 
-    const matchmakingScreen = new MatchmakingScreen(this.gameController);
-    matchmakingScreen.loadObjects();
+    const loadingScreen = new LoadingScreen(this.gameController);
+    loadingScreen.loadObjects();
 
-    this.transitionService.crossfade(matchmakingScreen, 0.2);
+    this.transitionService.crossfade(loadingScreen, 0.2);
   }
 }

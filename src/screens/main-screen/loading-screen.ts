@@ -4,7 +4,7 @@ import { ScreenTransitionService } from "../../services/screen-transition-servic
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";
 
-export class MatchmakingScreen extends BaseGameScreen {
+export class LoadingScreen extends BaseGameScreen {
   private transitionService: ScreenTransitionService;
   private progressBarObject: ProgressBarObject | null = null;
   private worldScreen: WorldScreen | null = null;
@@ -20,7 +20,9 @@ export class MatchmakingScreen extends BaseGameScreen {
     super.loadObjects();
   }
 
-  public hasTransitionFinished(): void {
+  public override hasTransitionFinished(): void {
+    super.hasTransitionFinished();
+
     this.worldScreen = new WorldScreen(this.gameController);
     this.worldScreen.loadObjects();
 

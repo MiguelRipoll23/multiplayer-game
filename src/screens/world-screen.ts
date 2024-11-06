@@ -40,6 +40,17 @@ export class WorldScreen extends BaseCollidingGameScreen {
     super.loadObjects();
   }
 
+  public override hasTransitionFinished(): void {
+    super.hasTransitionFinished();
+    this.gameController.getMatchmakingService().findOrAdvertiseMatch();
+  }
+
+  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    super.update(deltaTimeStamp);
+    this.detectScores();
+    this.handleGoalTimerComplete();
+  }
+
   private createBackgroundObject() {
     const backgroundObject = new WorldBackgroundObject(this.canvas);
     this.sceneObjects.push(backgroundObject);
@@ -114,12 +125,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private createAlertObject() {
     this.alertObject = new AlertObject(this.canvas);
     this.uiObjects.push(this.alertObject);
-  }
-
-  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    super.update(deltaTimeStamp);
-    this.detectScores();
-    this.handleGoalTimerComplete();
   }
 
   private detectScores() {

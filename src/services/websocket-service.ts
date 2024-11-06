@@ -9,7 +9,10 @@ import {
   SERVER_DISCONNECTED_EVENT,
   SERVER_NOTIFICATION_EVENT,
 } from "../constants/events-constants.js";
-import { NOTIFICATION_ID } from "../constants/websocket-constants.js";
+import {
+  NOTIFICATION_ID,
+  TUNNEL_ID,
+} from "../constants/websocket-constants.js";
 import { GameState } from "../models/game-state.js";
 import { GameController } from "../models/game-controller.js";
 
@@ -39,6 +42,13 @@ export class WebSocketService {
 
     this.webSocket.binaryType = "arraybuffer";
     this.addEventListeners(this.webSocket);
+  }
+
+  public sendTunnelMessage(token: Uint8Array) {
+    const message = new Uint8Array([TUNNEL_ID, ...token]);
+    this.webSocket?.send(message);
+
+    console.log("Sent tunnel message:", message);
   }
 
   private addEventListeners(webSocket: WebSocket): void {
@@ -90,6 +100,15 @@ export class WebSocketService {
         this.handleNotification(payload);
         break;
       }
+
+      case TUNNEL_ID: {
+        this.handleTunnelMessage(payload);
+        break;
+      }
+
+      default: {
+        console.warn("Unknown websocket message identifier", id);
+      }
     }
   }
 
@@ -99,5 +118,17 @@ export class WebSocketService {
     dispatchEvent(
       new CustomEvent(SERVER_NOTIFICATION_EVENT, { detail: { text } })
     );
+  }
+
+  private handleTunnelMessage(payload: Uint8Array) {
+    const originTokenBytes = payload.slice(0, 32);
+    const networkInformationBytes = payload.slice(32);
+
+    const originToken = btoa(String.fromCharCode(...originTokenBytes));
+    const networkInformation = new TextDecoder("utf-8").decode(
+      networkInformationBytes
+    );
+
+    console.log("Tunnel message", originToken, networkInformation);
   }
 }

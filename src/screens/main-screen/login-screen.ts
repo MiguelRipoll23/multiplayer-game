@@ -3,7 +3,7 @@ import { CryptoService } from "../../services/crypto-service.js";
 import { WebSocketService } from "../../services/websocket-service.js";
 import { ApiService } from "../../services/api-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
-import { RegistrationResponse } from "../../services/interfaces/registration-response.js";
+import { RegistrationResponse } from "../../services/interfaces/response/registration-response.js";
 import { GameRegistration } from "../../models/game-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
@@ -41,7 +41,8 @@ export class LoginScreen extends BaseGameScreen {
     super.loadObjects();
   }
 
-  public hasTransitionFinished(): void {
+  public override hasTransitionFinished(): void {
+    super.hasTransitionFinished();
     this.checkForUpdates();
   }
 
@@ -58,7 +59,7 @@ export class LoginScreen extends BaseGameScreen {
   private handleServerConnectedEvent(): void {
     console.log(`Event ${SERVER_CONNECTED_EVENT} handled`);
     this.messageObject?.hide();
-    this.transitionToMatchmakingScreen();
+    this.transitionToMainMenuScreen();
   }
 
   private handleServerDisconnectedEvent(): void {
@@ -168,7 +169,7 @@ export class LoginScreen extends BaseGameScreen {
     this.webSocketService.connectToServer();
   }
 
-  private transitionToMatchmakingScreen(): void {
+  private transitionToMainMenuScreen(): void {
     const mainMenuScreen = new MainMenuScreen(this.gameController);
     mainMenuScreen.loadObjects();
 

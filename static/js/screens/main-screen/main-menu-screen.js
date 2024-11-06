@@ -3,7 +3,7 @@ import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
 import { ServerMessageWindowObject } from "../../objects/server-message-window-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
-import { MatchmakingScreen } from "./matchmaking-screen.js";
+import { LoadingScreen } from "./loading-screen.js";
 export class MainMenuScreen extends BaseGameScreen {
     MENU_OPTIONS_TEXT = ["Join game", "Scoreboard", "Settings"];
     apiService;
@@ -24,6 +24,7 @@ export class MainMenuScreen extends BaseGameScreen {
         super.loadObjects();
     }
     hasTransitionFinished() {
+        super.hasTransitionFinished();
         this.downloadServerMessages();
     }
     update(deltaTimeStamp) {
@@ -107,7 +108,7 @@ export class MainMenuScreen extends BaseGameScreen {
         const index = menuOptionObject.getIndex();
         switch (index) {
             case 0:
-                this.transitionToMatchmakingScreen();
+                this.transitionToLoadingScreen();
                 break;
             case 1:
                 return this.closeableMessageObject?.show("Not implemented");
@@ -117,14 +118,14 @@ export class MainMenuScreen extends BaseGameScreen {
                 return this.closeableMessageObject?.show("Invalid menu option");
         }
     }
-    transitionToMatchmakingScreen() {
+    transitionToLoadingScreen() {
         this.uiObjects.forEach((uiObject) => {
             if (uiObject instanceof MenuOptionObject) {
                 uiObject.setActive(false);
             }
         });
-        const matchmakingScreen = new MatchmakingScreen(this.gameController);
-        matchmakingScreen.loadObjects();
-        this.transitionService.crossfade(matchmakingScreen, 0.2);
+        const loadingScreen = new LoadingScreen(this.gameController);
+        loadingScreen.loadObjects();
+        this.transitionService.crossfade(loadingScreen, 0.2);
     }
 }

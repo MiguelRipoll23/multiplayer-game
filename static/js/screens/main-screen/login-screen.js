@@ -25,6 +25,7 @@ export class LoginScreen extends BaseGameScreen {
         super.loadObjects();
     }
     hasTransitionFinished() {
+        super.hasTransitionFinished();
         this.checkForUpdates();
     }
     addCustomEventListeners() {
@@ -38,7 +39,7 @@ export class LoginScreen extends BaseGameScreen {
     handleServerConnectedEvent() {
         console.log(`Event ${SERVER_CONNECTED_EVENT} handled`);
         this.messageObject?.hide();
-        this.transitionToMatchmakingScreen();
+        this.transitionToMainMenuScreen();
     }
     handleServerDisconnectedEvent() {
         this.showError("Couldn't connect to the server");
@@ -122,7 +123,7 @@ export class LoginScreen extends BaseGameScreen {
         this.messageObject?.show("Connecting to the server...");
         this.webSocketService.connectToServer();
     }
-    transitionToMatchmakingScreen() {
+    transitionToMainMenuScreen() {
         const mainMenuScreen = new MainMenuScreen(this.gameController);
         mainMenuScreen.loadObjects();
         this.screenManagerService

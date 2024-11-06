@@ -1,4 +1,4 @@
-import { API_BASE_URL, CONFIGURATION_ENDPOINT, MESSAGES_ENDPOINT, REGISTER_ENDPOINT, VERSION_ENDPOINT, } from "../constants/api-constants.js";
+import { API_BASE_URL, CONFIGURATION_ENDPOINT, MATCHES_ADVERTISE_ENDPOINT, MATCHES_FIND_ENDPOINT, MESSAGES_ENDPOINT, REGISTER_ENDPOINT, VERSION_ENDPOINT, } from "../constants/api-constants.js";
 export class ApiService {
     authenticationToken = null;
     async checkForUpdates() {
@@ -34,7 +34,7 @@ export class ApiService {
         }
         const response = await fetch(API_BASE_URL + CONFIGURATION_ENDPOINT, {
             headers: {
-                "Authorization": this.authenticationToken,
+                Authorization: this.authenticationToken,
             },
         });
         if (response.ok === false) {
@@ -48,7 +48,7 @@ export class ApiService {
         }
         const response = await fetch(API_BASE_URL + MESSAGES_ENDPOINT, {
             headers: {
-                "Authorization": this.authenticationToken,
+                Authorization: this.authenticationToken,
             },
         });
         if (response.ok === false) {
@@ -57,5 +57,44 @@ export class ApiService {
         const messagesResponse = await response.json();
         console.log("Messages response", messagesResponse);
         return messagesResponse;
+    }
+    async findMatches(findMatchesRequest) {
+        if (this.authenticationToken === null) {
+            throw new Error("Authentication token not found");
+        }
+        const response = await fetch(API_BASE_URL + MATCHES_FIND_ENDPOINT, {
+            method: "POST",
+            headers: {
+                Authorization: this.authenticationToken,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(findMatchesRequest),
+        });
+        if (response.ok === false) {
+            throw new Error("Failed to find matches");
+        }
+        const findMatchResponse = await response.json();
+        console.log("Find matches response", findMatchResponse);
+        return findMatchResponse;
+    }
+    async advertiseMatch(advertiseMatchRequest) {
+        if (this.authenticationToken === null) {
+            throw new Error("Authentication token not found");
+        }
+        const response = await fetch(API_BASE_URL + MATCHES_ADVERTISE_ENDPOINT, {
+            method: "POST",
+            headers: {
+                Authorization: this.authenticationToken,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(advertiseMatchRequest),
+        });
+        if (response.ok === false) {
+            throw new Error("Failed to advertise match");
+        }
+        if (response.status !== 204) {
+            throw new Error("Failed to advertise match");
+        }
+        console.log("Match advertised");
     }
 }

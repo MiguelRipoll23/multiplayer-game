@@ -64,6 +64,13 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         context.fill();
         context.closePath();
+        // Add glow effect if inactive
+        if (this.inactive) {
+            context.shadowColor = "rgba(255, 255, 255, 0.8)";
+            context.shadowBlur = 20;
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 0;
+        }
         // Restore the context state
         context.restore();
         if (this.debug) {
@@ -78,7 +85,11 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     }
     handleInactiveState(deltaTimeStamp) {
         if (this.inactive) {
-            // TODO: glow effect
+            this.elapsedInactiveMilliseconds += deltaTimeStamp;
+            if (this.elapsedInactiveMilliseconds >= 1000) {
+                this.elapsedInactiveMilliseconds = 0;
+                this.radius = this.RADIUS + 5; // Increase radius to create a glow effect
+            }
         }
     }
     applyFriction() {

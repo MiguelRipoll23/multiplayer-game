@@ -4,4 +4,5 @@ export var AnimationType;
     AnimationType[AnimationType["FadeOut"] = 1] = "FadeOut";
     AnimationType[AnimationType["MoveX"] = 2] = "MoveX";
     AnimationType[AnimationType["MoveY"] = 3] = "MoveY";
+    AnimationType[AnimationType["Scale"] = 4] = "Scale";
 })(AnimationType || (AnimationType = {}));

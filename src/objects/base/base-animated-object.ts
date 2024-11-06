@@ -4,6 +4,8 @@ import { BasePositionableGameObject } from "./base-positionable-game-object.js";
 
 export class BaseAnimatedGameObject extends BasePositionableGameObject {
   protected opacity: number = 1;
+  protected scale: number = 1;
+
   protected animations: ObjectAnimationService[] = [];
 
   constructor() {
@@ -18,15 +20,23 @@ export class BaseAnimatedGameObject extends BasePositionableGameObject {
     this.opacity = opacity;
   }
 
+  public getScale(): number {
+    return this.scale;
+  }
+
+  public setScale(scale: number): void {
+    this.scale = scale;
+  }
+
   public fadeIn(seconds: number): void {
     this.animations.push(
-      new ObjectAnimationService(this, AnimationType.FadeIn, 0, 1, seconds),
+      new ObjectAnimationService(this, AnimationType.FadeIn, 0, 1, seconds)
     );
   }
 
   public fadeOut(seconds: number): void {
     this.animations.push(
-      new ObjectAnimationService(this, AnimationType.FadeOut, 1, 0, seconds),
+      new ObjectAnimationService(this, AnimationType.FadeOut, 1, 0, seconds)
     );
   }
 
@@ -37,8 +47,8 @@ export class BaseAnimatedGameObject extends BasePositionableGameObject {
         AnimationType.MoveX,
         this.x,
         newX,
-        seconds,
-      ),
+        seconds
+      )
     );
   }
 
@@ -49,8 +59,20 @@ export class BaseAnimatedGameObject extends BasePositionableGameObject {
         AnimationType.MoveY,
         this.y,
         newY,
-        seconds,
-      ),
+        seconds
+      )
+    );
+  }
+
+  public scaleTo(newScale: number, seconds: number) {
+    this.animations.push(
+      new ObjectAnimationService(
+        this,
+        AnimationType.Scale,
+        this.scale,
+        newScale,
+        seconds
+      )
     );
   }
 

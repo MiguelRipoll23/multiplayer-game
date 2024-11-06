@@ -19,7 +19,7 @@ export class ObjectAnimationService {
     animationType: AnimationType,
     startValue: number,
     endValue: number,
-    durationSeconds: number,
+    durationSeconds: number
   ) {
     this.object = object;
     this.startValue = startValue;
@@ -28,9 +28,7 @@ export class ObjectAnimationService {
     this.animationType = animationType;
 
     console.log(
-      `AnimationService (${
-        AnimationType[animationType]
-      }) created for ${object.constructor.name}`,
+      `AnimationService (${AnimationType[animationType]}) created for ${object.constructor.name}`
     );
   }
 
@@ -38,8 +36,8 @@ export class ObjectAnimationService {
     this.currentTime += deltaTimeStamp;
 
     const progress = Math.min(this.currentTime / this.durationMilliseconds, 1);
-    const newValue = this.startValue +
-      (this.endValue - this.startValue) * progress;
+    const newValue =
+      this.startValue + (this.endValue - this.startValue) * progress;
 
     switch (this.animationType) {
       case AnimationType.FadeIn:
@@ -53,6 +51,10 @@ export class ObjectAnimationService {
 
       case AnimationType.MoveY:
         this.object.setY(newValue);
+        break;
+
+      case AnimationType.Scale:
+        this.object.setScale(newValue);
         break;
     }
 

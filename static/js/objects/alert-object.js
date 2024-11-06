@@ -20,14 +20,21 @@ export class AlertObject extends BaseAnimatedGameObject {
         else {
             this.color = color;
         }
-        this.fadeIn(0.5);
+        this.fadeIn(0.3);
+        this.scaleTo(1, 0.3);
     }
     render(context) {
         context.save();
         context.globalAlpha = this.opacity;
+        this.setTransformOrigin(context);
         this.setFontStyle(context);
         this.renderMultilineText(context);
         context.restore();
+    }
+    setTransformOrigin(context) {
+        context.translate(this.x, this.y);
+        context.scale(this.scale, this.scale);
+        context.translate(-this.x, -this.y);
     }
     setFontStyle(context) {
         context.font = "42px system-ui";
@@ -52,6 +59,7 @@ export class AlertObject extends BaseAnimatedGameObject {
     }
     setInitialValues() {
         this.opacity = 0;
+        this.scale = 0;
         this.setCenterPosition();
     }
     setCenterPosition() {

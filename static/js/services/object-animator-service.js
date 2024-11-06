@@ -18,8 +18,7 @@ export class ObjectAnimationService {
     update(deltaTimeStamp) {
         this.currentTime += deltaTimeStamp;
         const progress = Math.min(this.currentTime / this.durationMilliseconds, 1);
-        const newValue = this.startValue +
-            (this.endValue - this.startValue) * progress;
+        const newValue = this.startValue + (this.endValue - this.startValue) * progress;
         switch (this.animationType) {
             case AnimationType.FadeIn:
             case AnimationType.FadeOut:
@@ -30,6 +29,9 @@ export class ObjectAnimationService {
                 break;
             case AnimationType.MoveY:
                 this.object.setY(newValue);
+                break;
+            case AnimationType.Scale:
+                this.object.setScale(newValue);
                 break;
         }
         this.completed = progress >= 1;

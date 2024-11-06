@@ -24,17 +24,25 @@ export class AlertObject extends BaseAnimatedGameObject {
       this.color = color;
     }
 
-    this.fadeIn(0.5);
+    this.fadeIn(0.3);
+    this.scaleTo(1, 0.3);
   }
 
   public override render(context: CanvasRenderingContext2D): void {
     context.save();
     context.globalAlpha = this.opacity;
 
+    this.setTransformOrigin(context);
     this.setFontStyle(context);
     this.renderMultilineText(context);
 
     context.restore();
+  }
+
+  private setTransformOrigin(context: CanvasRenderingContext2D): void {
+    context.translate(this.x, this.y);
+    context.scale(this.scale, this.scale);
+    context.translate(-this.x, -this.y);
   }
 
   private setFontStyle(context: CanvasRenderingContext2D): void {
@@ -70,6 +78,7 @@ export class AlertObject extends BaseAnimatedGameObject {
 
   private setInitialValues() {
     this.opacity = 0;
+    this.scale = 0;
     this.setCenterPosition();
   }
 

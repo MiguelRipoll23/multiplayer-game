@@ -3,6 +3,7 @@ import { ObjectAnimationService } from "../../services/object-animator-service.j
 import { BasePositionableGameObject } from "./base-positionable-game-object.js";
 export class BaseAnimatedGameObject extends BasePositionableGameObject {
     opacity = 1;
+    scale = 1;
     animations = [];
     constructor() {
         super();
@@ -12,6 +13,12 @@ export class BaseAnimatedGameObject extends BasePositionableGameObject {
     }
     setOpacity(opacity) {
         this.opacity = opacity;
+    }
+    getScale() {
+        return this.scale;
+    }
+    setScale(scale) {
+        this.scale = scale;
     }
     fadeIn(seconds) {
         this.animations.push(new ObjectAnimationService(this, AnimationType.FadeIn, 0, 1, seconds));
@@ -24,6 +31,9 @@ export class BaseAnimatedGameObject extends BasePositionableGameObject {
     }
     moveToY(newY, seconds) {
         this.animations.push(new ObjectAnimationService(this, AnimationType.MoveY, this.y, newY, seconds));
+    }
+    scaleTo(newScale, seconds) {
+        this.animations.push(new ObjectAnimationService(this, AnimationType.Scale, this.scale, newScale, seconds));
     }
     reset() {
         this.animations.length = 0;

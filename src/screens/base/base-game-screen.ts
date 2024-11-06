@@ -76,6 +76,17 @@ export class BaseGameScreen implements GameScreen {
     console.log(`Transition to ${this.constructor.name} finished`);
   }
 
+  public getTotalObjectsCount(): number {
+    return this.sceneObjects.length + this.uiObjects.length;
+  }
+
+  public getLoadedObjectsCount(): number {
+    return (
+      this.sceneObjects.filter((object) => object.hasLoaded()).length +
+      this.uiObjects.filter((object) => object.hasLoaded()).length
+    );
+  }
+
   private setDebugToChildObjects(): void {
     const debug = this.gameController.isDebugging();
 

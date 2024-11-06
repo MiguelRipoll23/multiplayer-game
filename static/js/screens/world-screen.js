@@ -10,6 +10,7 @@ import { LocalPlayerObject } from "../objects/local-player-object.js";
 import { AlertObject } from "../objects/alert-object.js";
 import { ToastObject } from "../objects/common/toast-object.js";
 import { MATCH_ADVERTISED_EVENT } from "../constants/events-constants.js";
+import { Team } from "../models/game-teams.js";
 export class WorldScreen extends BaseCollidingGameScreen {
     gameController;
     gameState;
@@ -107,45 +108,58 @@ export class WorldScreen extends BaseCollidingGameScreen {
         if (this.ballObject === null || this.ballObject?.isInactive()) {
             return;
         }
-        const hasOrangeTeamScored = this.orangeGoalObject
+        const orangeGoal = this.orangeGoalObject
             ?.getCollidingObjects()
             .includes(this.ballObject);
-        if (hasOrangeTeamScored) {
-            this.handleGoalScored(true);
+        if (orangeGoal) {
+            this.handleGoalScored(Team.Orange);
         }
-        const hasBlueTeamScored = this.blueGoalObject
+        const blueGoal = this.blueGoalObject
             ?.getCollidingObjects()
             .includes(this.ballObject);
-        if (hasBlueTeamScored) {
-            this.handleGoalScored(false);
+        if (blueGoal) {
+            this.handleGoalScored(Team.Blue);
         }
     }
-    handleGoalScored(orange) {
-        console.log(`Goal scored by ${orange ? "orange" : "blue"} team`);
+    handleGoalScored(goalTeam) {
         // Ball
         this.ballObject?.setInactive();
         // Scoreboard
-        if (orange) {
-            this.scoreboardObject?.incrementOrangeScore();
-        }
-        else {
+        if (goalTeam === Team.Orange) {
             this.scoreboardObject?.incrementBlueScore();
         }
-        // Player
-        const playerObject = this.ballObject?.getLastPlayerObject();
-        if (playerObject) {
-            playerObject.sumScore(1);
-            if (playerObject instanceof LocalPlayerObject) {
-                this.gameController.getGameState().getGamePlayer().sumScore(1);
-            }
-            // Alert
-            const color = orange ? "orange" : "blue";
-            this.showGoalAlert(playerObject, color);
+        else if (goalTeam === Team.Blue) {
+            this.scoreboardObject?.incrementOrangeScore();
         }
+        const playerObject = this.ballObject?.getLastPlayerObject();
+        // Score
+        if (playerObject) {
+            this.handlePlayerScore(playerObject, goalTeam);
+        }
+        // Alert
+        this.showGoalAlert(playerObject, goalTeam);
+        // Timer
         this.goalTimerService = this.gameController.addTimer(5);
     }
-    showGoalAlert(playerObject, color) {
+    handlePlayerScore(playerObject, goalTeam) {
+        const playerTeam = playerObject?.getTeam();
+        if (playerTeam === goalTeam) {
+            return console.warn("Own goal detected, score not counted");
+        }
+        playerObject.sumScore(1);
+        if (playerObject instanceof LocalPlayerObject) {
+            this.gameController.getGameState().getGamePlayer().sumScore(1);
+        }
+    }
+    showGoalAlert(playerObject, goalTeam) {
         const playerName = playerObject?.getName().toUpperCase() || "UNKNOWN";
+        let color = "white";
+        if (goalTeam === Team.Orange) {
+            color = "blue";
+        }
+        else if (goalTeam === Team.Blue) {
+            color = "orange";
+        }
         this.alertObject?.show([playerName, "SCORED!"], color);
     }
     handleGoalTimerComplete() {

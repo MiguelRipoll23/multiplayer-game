@@ -25,6 +25,10 @@ export class JoystickObject extends BaseGameObject {
     if (this.gamePointer.isTouch()) {
       this.handleGamePointerEvents();
       this.updateJoystickPosition();
+
+      if (this.debug) {
+        this.updateControlValues();
+      }
     } else {
       this.updateControlValues();
     }

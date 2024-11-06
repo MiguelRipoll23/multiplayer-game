@@ -113,7 +113,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
 
   private handleInactiveState(deltaTimeStamp: DOMHighResTimeStamp) {
     if (this.inactive) {
-      this.radius += 1;
+      // TODO: glow effect
     }
   }
 

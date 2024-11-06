@@ -14,6 +14,10 @@ export class GamePlayer {
     this.name = name;
   }
 
+  public sumScore(score: number): void {
+    this.score += score;
+  }
+
   public setScore(score: number): void {
     this.score = score;
   }

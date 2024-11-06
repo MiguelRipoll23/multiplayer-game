@@ -5,7 +5,7 @@ import {
 import { BaseAnimatedGameObject } from "./base/base-animated-object.js";
 
 export class AlertObject extends BaseAnimatedGameObject {
-  private text: string = "Unknown message";
+  private multilineText: string[] = ["Unknown", "message"];
   private color: string = "white";
 
   constructor(protected readonly canvas: HTMLCanvasElement) {
@@ -13,8 +13,8 @@ export class AlertObject extends BaseAnimatedGameObject {
     this.setInitialValues();
   }
 
-  public show(text: string, color = "white"): void {
-    this.text = text;
+  public show(text: string[], color = "white"): void {
+    this.multilineText = text;
 
     if (color === "orange") {
       this.color = ORANGE_TEAM_COLOR;
@@ -29,16 +29,43 @@ export class AlertObject extends BaseAnimatedGameObject {
 
   public override render(context: CanvasRenderingContext2D): void {
     context.save();
-
     context.globalAlpha = this.opacity;
 
-    context.font = "lighter 30px system-ui";
+    this.setFontStyle(context);
+    this.renderMultilineText(context);
+
+    context.restore();
+  }
+
+  private setFontStyle(context: CanvasRenderingContext2D): void {
+    context.font = "42px system-ui";
     context.fillStyle = this.color;
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.fillText(this.text, this.x, this.y);
+  }
 
-    context.restore();
+  private renderMultilineText(context: CanvasRenderingContext2D): void {
+    const lineHeight = 42; // Adjust as needed for line spacing
+
+    this.multilineText.forEach((line, index) => {
+      const yPosition = this.y + index * lineHeight;
+      this.drawTextWithStroke(context, line, this.x, yPosition);
+    });
+  }
+
+  private drawTextWithStroke(
+    context: CanvasRenderingContext2D,
+    text: string,
+    x: number,
+    y: number
+  ): void {
+    // Draw filled text
+    context.fillText(text, x, y);
+
+    // Set up stroke style and draw stroke text
+    context.strokeStyle = "rgba(0, 0, 0, 0.2)";
+    context.lineWidth = 1;
+    context.strokeText(text, x, y);
   }
 
   private setInitialValues() {

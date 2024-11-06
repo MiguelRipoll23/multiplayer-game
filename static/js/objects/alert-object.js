@@ -2,7 +2,7 @@ import { BLUE_TEAM_COLOR, ORANGE_TEAM_COLOR, } from "../constants/colors-constan
 import { BaseAnimatedGameObject } from "./base/base-animated-object.js";
 export class AlertObject extends BaseAnimatedGameObject {
     canvas;
-    text = "Unknown message";
+    multilineText = ["Unknown", "message"];
     color = "white";
     constructor(canvas) {
         super();
@@ -10,7 +10,7 @@ export class AlertObject extends BaseAnimatedGameObject {
         this.setInitialValues();
     }
     show(text, color = "white") {
-        this.text = text;
+        this.multilineText = text;
         if (color === "orange") {
             this.color = ORANGE_TEAM_COLOR;
         }
@@ -25,12 +25,30 @@ export class AlertObject extends BaseAnimatedGameObject {
     render(context) {
         context.save();
         context.globalAlpha = this.opacity;
-        context.font = "lighter 30px system-ui";
+        this.setFontStyle(context);
+        this.renderMultilineText(context);
+        context.restore();
+    }
+    setFontStyle(context) {
+        context.font = "42px system-ui";
         context.fillStyle = this.color;
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillText(this.text, this.x, this.y);
-        context.restore();
+    }
+    renderMultilineText(context) {
+        const lineHeight = 42; // Adjust as needed for line spacing
+        this.multilineText.forEach((line, index) => {
+            const yPosition = this.y + index * lineHeight;
+            this.drawTextWithStroke(context, line, this.x, yPosition);
+        });
+    }
+    drawTextWithStroke(context, text, x, y) {
+        // Draw filled text
+        context.fillText(text, x, y);
+        // Set up stroke style and draw stroke text
+        context.strokeStyle = "rgba(0, 0, 0, 0.2)";
+        context.lineWidth = 1;
+        context.strokeText(text, x, y);
     }
     setInitialValues() {
         this.opacity = 0;

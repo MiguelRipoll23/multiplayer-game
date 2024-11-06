@@ -10,6 +10,9 @@ export class GamePlayer {
     setName(name) {
         this.name = name;
     }
+    sumScore(score) {
+        this.score += score;
+    }
     setScore(score) {
         this.score = score;
     }

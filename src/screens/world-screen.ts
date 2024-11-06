@@ -11,6 +11,7 @@ import { GameController } from "../models/game-controller.js";
 import { LocalPlayerObject } from "../objects/local-player-object.js";
 import { AlertObject } from "../objects/alert-object.js";
 import { TimerService } from "../services/timer-service.js";
+import { PlayerObject } from "../objects/player-object.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -146,25 +147,37 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private handleGoalScored(orange: boolean) {
     console.log(`Goal scored by ${orange ? "orange" : "blue"} team`);
 
+    // Ball
     this.ballObject?.setInactive();
 
+    // Scoreboard
     if (orange) {
       this.scoreboardObject?.incrementOrangeScore();
     } else {
       this.scoreboardObject?.incrementBlueScore();
     }
 
-    const color = orange ? "orange" : "blue";
-    this.showGoalAlert(color);
+    // Player
+    const playerObject = this.ballObject?.getLastPlayerObject();
+
+    if (playerObject) {
+      playerObject.sumScore(1);
+
+      if (playerObject instanceof LocalPlayerObject) {
+        this.gameController.getGameState().getGamePlayer().sumScore(1);
+      }
+
+      // Alert
+      const color = orange ? "orange" : "blue";
+      this.showGoalAlert(playerObject, color);
+    }
 
     this.goalTimerService = this.gameController.addTimer(5);
   }
 
-  private showGoalAlert(color: string) {
-    const playerObject = this.ballObject?.getLastPlayerObject();
+  private showGoalAlert(playerObject: PlayerObject, color: string) {
     const playerName = playerObject?.getName().toUpperCase() || "UNKNOWN";
-
-    this.alertObject?.show(`${playerName} SCORED!`, color);
+    this.alertObject?.show([playerName, "SCORED!"], color);
   }
 
   private handleGoalTimerComplete() {
@@ -174,7 +187,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       this.goalTimerService.reset();
       this.ballObject?.reset();
       this.localCarObject?.reset();
-      this.alertObject?.fadeOut(0.1);
+      this.alertObject?.fadeOut(0.2);
     }
   }
 }

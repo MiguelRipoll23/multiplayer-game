@@ -78,7 +78,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     }
     handleInactiveState(deltaTimeStamp) {
         if (this.inactive) {
-            this.radius += 1;
+            // TODO: glow effect
         }
     }
     applyFriction() {

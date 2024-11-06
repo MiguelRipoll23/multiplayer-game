@@ -103,21 +103,31 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
     handleGoalScored(orange) {
         console.log(`Goal scored by ${orange ? "orange" : "blue"} team`);
+        // Ball
         this.ballObject?.setInactive();
+        // Scoreboard
         if (orange) {
             this.scoreboardObject?.incrementOrangeScore();
         }
         else {
             this.scoreboardObject?.incrementBlueScore();
         }
-        const color = orange ? "orange" : "blue";
-        this.showGoalAlert(color);
+        // Player
+        const playerObject = this.ballObject?.getLastPlayerObject();
+        if (playerObject) {
+            playerObject.sumScore(1);
+            if (playerObject instanceof LocalPlayerObject) {
+                this.gameController.getGameState().getGamePlayer().sumScore(1);
+            }
+            // Alert
+            const color = orange ? "orange" : "blue";
+            this.showGoalAlert(playerObject, color);
+        }
         this.goalTimerService = this.gameController.addTimer(5);
     }
-    showGoalAlert(color) {
-        const playerObject = this.ballObject?.getLastPlayerObject();
+    showGoalAlert(playerObject, color) {
         const playerName = playerObject?.getName().toUpperCase() || "UNKNOWN";
-        this.alertObject?.show(`${playerName} SCORED!`, color);
+        this.alertObject?.show([playerName, "SCORED!"], color);
     }
     handleGoalTimerComplete() {
         if (this.goalTimerService?.hasFinished()) {
@@ -125,7 +135,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
             this.goalTimerService.reset();
             this.ballObject?.reset();
             this.localCarObject?.reset();
-            this.alertObject?.fadeOut(0.1);
+            this.alertObject?.fadeOut(0.2);
         }
     }
 }

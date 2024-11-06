@@ -1,5 +1,5 @@
 import { GameController } from "../../models/game-controller.js";
-import { ProgressBarObject } from "../../objects/progress-bar-object.js";
+import { ProgressBarObject } from "../../objects/common/progress-bar-object.js";
 import { ScreenTransitionService } from "../../services/screen-transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";

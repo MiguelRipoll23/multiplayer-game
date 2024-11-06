@@ -1,13 +1,12 @@
-import { BaseGameObject } from "../base/base-game-object.js";
+import { BasePositionableGameObject } from "../base/base-positionable-game-object.js";
 
-export class TitleObject extends BaseGameObject {
-  private x: number = 30;
-  private y: number = 55;
-
+export class TitleObject extends BasePositionableGameObject {
   private text: string = "Unknown";
 
   constructor() {
     super();
+    this.x = 30;
+    this.y = 55;
   }
 
   public setText(text: string): void {

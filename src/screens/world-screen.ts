@@ -12,6 +12,7 @@ import { LocalPlayerObject } from "../objects/local-player-object.js";
 import { AlertObject } from "../objects/alert-object.js";
 import { TimerService } from "../services/timer-service.js";
 import { PlayerObject } from "../objects/player-object.js";
+import { ToastObject } from "../objects/common/toast-object.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -22,6 +23,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private orangeGoalObject: GoalObject | null = null;
   private blueGoalObject: GoalObject | null = null;
   private alertObject: AlertObject | null = null;
+  private toastObject: ToastObject | null = null;
 
   private goalTimerService: TimerService | null = null;
 
@@ -37,11 +39,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.createBallObject();
     this.createGoalObjects();
     this.createAlertObject();
+    this.createToastObject();
     super.loadObjects();
   }
 
   public override hasTransitionFinished(): void {
     super.hasTransitionFinished();
+
+    this.toastObject?.show("Finding matches...");
     this.gameController.getMatchmakingService().findOrAdvertiseMatch();
   }
 
@@ -125,6 +130,11 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private createAlertObject() {
     this.alertObject = new AlertObject(this.canvas);
     this.uiObjects.push(this.alertObject);
+  }
+
+  private createToastObject() {
+    this.toastObject = new ToastObject(this.canvas);
+    this.sceneObjects.push(this.toastObject);
   }
 
   private detectScores() {

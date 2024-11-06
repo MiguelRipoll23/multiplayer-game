@@ -8,6 +8,7 @@ import { getConfigurationKey } from "../utils/configuration-utils.js";
 import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
 import { LocalPlayerObject } from "../objects/local-player-object.js";
 import { AlertObject } from "../objects/alert-object.js";
+import { ToastObject } from "../objects/common/toast-object.js";
 export class WorldScreen extends BaseCollidingGameScreen {
     gameController;
     gameState;
@@ -17,6 +18,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     orangeGoalObject = null;
     blueGoalObject = null;
     alertObject = null;
+    toastObject = null;
     goalTimerService = null;
     constructor(gameController) {
         super(gameController);
@@ -30,10 +32,12 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.createBallObject();
         this.createGoalObjects();
         this.createAlertObject();
+        this.createToastObject();
         super.loadObjects();
     }
     hasTransitionFinished() {
         super.hasTransitionFinished();
+        this.toastObject?.show("Finding matches...");
         this.gameController.getMatchmakingService().findOrAdvertiseMatch();
     }
     update(deltaTimeStamp) {
@@ -87,6 +91,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
     createAlertObject() {
         this.alertObject = new AlertObject(this.canvas);
         this.uiObjects.push(this.alertObject);
+    }
+    createToastObject() {
+        this.toastObject = new ToastObject(this.canvas);
+        this.sceneObjects.push(this.toastObject);
     }
     detectScores() {
         if (this.ballObject === null || this.ballObject?.isInactive()) {

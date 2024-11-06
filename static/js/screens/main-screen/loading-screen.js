@@ -1,4 +1,4 @@
-import { ProgressBarObject } from "../../objects/progress-bar-object.js";
+import { ProgressBarObject } from "../../objects/common/progress-bar-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";
 export class LoadingScreen extends BaseGameScreen {

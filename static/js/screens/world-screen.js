@@ -9,6 +9,7 @@ import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constant
 import { LocalPlayerObject } from "../objects/local-player-object.js";
 import { AlertObject } from "../objects/alert-object.js";
 import { ToastObject } from "../objects/common/toast-object.js";
+import { MATCH_ADVERTISED_EVENT } from "../constants/events-constants.js";
 export class WorldScreen extends BaseCollidingGameScreen {
     gameController;
     gameState;
@@ -24,6 +25,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
         super(gameController);
         this.gameController = gameController;
         this.gameState = gameController.getGameState();
+        this.addCustomEventListeners();
     }
     loadObjects() {
         this.createBackgroundObject();
@@ -50,6 +52,11 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.sceneObjects.push(backgroundObject);
         backgroundObject.getCollisionHitboxes().forEach((object) => {
             this.sceneObjects.push(object);
+        });
+    }
+    addCustomEventListeners() {
+        window.addEventListener(MATCH_ADVERTISED_EVENT, (event) => {
+            this.toastObject?.show("Waiting for players...");
         });
     }
     createScoreboardObject() {

@@ -1,3 +1,4 @@
+import { MATCH_ADVERTISED_EVENT } from "../constants/events-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { ApiService } from "./api-service.js";
 import { AdvertiseMatchRequest } from "./interfaces/request/advertise-match-request.js";
@@ -51,6 +52,8 @@ export class MatchmakingService {
     };
 
     await this.apiService.advertiseMatch(body);
+
+    dispatchEvent(new CustomEvent(MATCH_ADVERTISED_EVENT));
   }
 
   private joinMatch(match: FindMatchesResponse): void {

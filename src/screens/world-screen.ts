@@ -13,6 +13,7 @@ import { AlertObject } from "../objects/alert-object.js";
 import { TimerService } from "../services/timer-service.js";
 import { PlayerObject } from "../objects/player-object.js";
 import { ToastObject } from "../objects/common/toast-object.js";
+import { MATCH_ADVERTISED_EVENT } from "../constants/events-constants.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -30,6 +31,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   constructor(protected gameController: GameController) {
     super(gameController);
     this.gameState = gameController.getGameState();
+    this.addCustomEventListeners();
   }
 
   public override loadObjects(): void {
@@ -62,6 +64,12 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     backgroundObject.getCollisionHitboxes().forEach((object) => {
       this.sceneObjects.push(object);
+    });
+  }
+
+  private addCustomEventListeners(): void {
+    window.addEventListener(MATCH_ADVERTISED_EVENT, (event) => {
+      this.toastObject?.show("Waiting for players...");
     });
   }
 

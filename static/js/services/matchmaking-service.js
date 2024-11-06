@@ -1,3 +1,4 @@
+import { MATCH_ADVERTISED_EVENT } from "../constants/events-constants.js";
 export class MatchmakingService {
     gameController;
     apiService;
@@ -36,6 +37,7 @@ export class MatchmakingService {
             },
         };
         await this.apiService.advertiseMatch(body);
+        dispatchEvent(new CustomEvent(MATCH_ADVERTISED_EVENT));
     }
     joinMatch(match) {
         const { token } = match;

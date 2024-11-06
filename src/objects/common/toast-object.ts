@@ -8,47 +8,27 @@ export class ToastObject extends BaseAnimatedGameObject {
   private readonly cornerRadius: number = 10;
   private readonly bottomMargin: number = 30; // Renamed to bottomMargin
 
+  private context: CanvasRenderingContext2D;
+
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
-    this.configureToast();
+    this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+    this.reset();
   }
 
   public show(text: string): void {
     this.text = text;
-    this.configureToast();
+    this.reset();
     this.fadeIn(0.2);
     this.scaleTo(1, 0.2);
   }
 
-  private configureToast(): void {
-    this.resetToastProperties();
-    const context = this.getCanvasContext();
-    this.measureToastDimensions(context);
-    this.setToastPosition();
-  }
-
-  private resetToastProperties(): void {
+  public override reset(): void {
     this.opacity = 0;
     this.scale = 0;
-  }
 
-  private getCanvasContext(): CanvasRenderingContext2D {
-    const context = this.canvas.getContext("2d");
-    if (!context) throw new Error("Unable to get canvas context");
-    return context;
-  }
-
-  private measureToastDimensions(context: CanvasRenderingContext2D): void {
-    context.font = "16px Arial";
-    const textWidth = context.measureText(this.text).width;
-    this.toastWidth = textWidth + this.padding * 2;
-    this.toastHeight = 30; // Fixed height for simplicity
-  }
-
-  private setToastPosition(): void {
-    const canvasHeight = this.canvas.height;
-    this.x = (this.canvas.width - this.toastWidth) / 2;
-    this.y = canvasHeight - this.bottomMargin - this.toastHeight;
+    this.measureDimensions();
+    this.setPosition();
   }
 
   public override render(context: CanvasRenderingContext2D): void {
@@ -60,6 +40,19 @@ export class ToastObject extends BaseAnimatedGameObject {
     this.drawToastText(context);
 
     context.restore();
+  }
+
+  private measureDimensions(): void {
+    this.context.font = "16px Arial";
+    const textWidth = this.context.measureText(this.text).width;
+    this.toastWidth = textWidth + this.padding * 2;
+    this.toastHeight = 30; // Fixed height for simplicity
+  }
+
+  private setPosition(): void {
+    const canvasHeight = this.canvas.height;
+    this.x = (this.canvas.width - this.toastWidth) / 2;
+    this.y = canvasHeight - this.bottomMargin - this.toastHeight;
   }
 
   private applyOpacity(context: CanvasRenderingContext2D): void {
@@ -79,7 +72,7 @@ export class ToastObject extends BaseAnimatedGameObject {
   }
 
   private drawToastBackground(context: CanvasRenderingContext2D): void {
-    context.fillStyle = "rgba(0, 0, 0, 0.8)";
+    context.fillStyle = "rgba(0, 0, 0, 0.7)";
     context.beginPath();
     this.drawRoundedRectangle(context);
     context.closePath();

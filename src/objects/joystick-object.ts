@@ -25,9 +25,12 @@ export class JoystickObject extends BaseGameObject {
     if (this.gamePointer.isTouch()) {
       this.handleGamePointerEvents();
       this.updateJoystickPosition();
-      if (this.debug && !this.gamePointer.isPressing()) {
+
+      if (this.debug && this.gamePointer.isPressing() === false) {
         this.handleKeyboardEvents();
       }
+    } else {
+      this.handleKeyboardEvents();
     }
   }
 

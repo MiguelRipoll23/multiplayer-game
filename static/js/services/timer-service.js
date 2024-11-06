@@ -20,9 +20,9 @@ export class TimerService {
         this.started = false;
         this.elapsedMilliseconds = 0;
     }
-    update(deltaTimeMilliseconds) {
+    update(deltaTimeStamp) {
         if (this.started) {
-            this.elapsedMilliseconds += deltaTimeMilliseconds;
+            this.elapsedMilliseconds += deltaTimeStamp;
         }
     }
 }

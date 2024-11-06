@@ -27,9 +27,9 @@ export class TimerService {
     this.elapsedMilliseconds = 0;
   }
 
-  public update(deltaTimeMilliseconds: DOMHighResTimeStamp): void {
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     if (this.started) {
-      this.elapsedMilliseconds += deltaTimeMilliseconds;
+      this.elapsedMilliseconds += deltaTimeStamp;
     }
   }
 }

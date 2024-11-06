@@ -46,7 +46,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         return this.lastPlayerObject;
     }
     update(deltaTimeStamp) {
-        this.handleInactiveState(deltaTimeStamp);
         this.applyFriction();
         this.calculateMovement();
         this.updateHitbox();
@@ -54,32 +53,55 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     }
     render(context) {
         context.save(); // Save the current context state
-        // Set up gradient
-        const gradient = context.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-        gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Inner color (white)
-        gradient.addColorStop(1, "rgba(200, 200, 200, 1)"); // Outer color (light gray)
-        // Draw the football ball with gradient
+        // Draw the gradient ball
+        this.drawBallWithGradient(context);
+        // If the ball is inactive, apply glow effect
+        if (this.inactive) {
+            this.applyGlowEffect(context);
+            this.drawBallWithGlow(context);
+        }
+        // Restore the context state
+        context.restore();
+        // Render debug information if enabled
+        if (this.debug) {
+            this.renderDebugInformation(context);
+        }
+        // Hitbox render (from superclass)
+        super.render(context);
+    }
+    // Function to create and draw the gradient ball
+    drawBallWithGradient(context) {
+        const gradient = this.createGradient(context);
         context.beginPath();
         context.fillStyle = gradient;
         context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         context.fill();
         context.closePath();
-        // Restore the context state
-        context.restore();
-        if (this.debug) {
-            this.renderDebugInformation(context);
-        }
-        // Hitbox render
-        super.render(context);
+    }
+    // Function to create the radial gradient
+    createGradient(context) {
+        const gradient = context.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+        gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Inner color (white)
+        gradient.addColorStop(1, "rgba(200, 200, 200, 1)"); // Outer color (light gray)
+        return gradient;
+    }
+    // Function to apply the glow effect when the ball is inactive
+    applyGlowEffect(context) {
+        context.shadowColor = "rgba(255, 215, 0, 1)"; // Glow color (golden yellow)
+        context.shadowBlur = 25; // Glow intensity
+        context.shadowOffsetX = 0;
+        context.shadowOffsetY = 0;
+    }
+    // Function to draw the ball with the glow effect
+    drawBallWithGlow(context) {
+        context.beginPath();
+        context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        context.fill();
+        context.closePath();
     }
     createHitbox() {
         const hitboxObject = new HitboxObject(this.x - this.RADIUS * 2, this.y - this.RADIUS * 2, this.RADIUS * 2, this.RADIUS * 2);
         this.setHitboxObjects([hitboxObject]);
-    }
-    handleInactiveState(deltaTimeStamp) {
-        if (this.inactive) {
-            // TODO: glow effect
-        }
     }
     applyFriction() {
         this.vx *= 1 - this.FRICTION;

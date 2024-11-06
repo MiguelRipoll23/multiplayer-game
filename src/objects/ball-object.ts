@@ -60,7 +60,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    this.handleInactiveState(deltaTimeStamp);
     this.applyFriction();
     this.calculateMovement();
     this.updateHitbox();
@@ -70,7 +69,39 @@ export class BallObject extends BaseDynamicCollidableGameObject {
   public override render(context: CanvasRenderingContext2D): void {
     context.save(); // Save the current context state
 
-    // Set up gradient
+    // Draw the gradient ball
+    this.drawBallWithGradient(context);
+
+    // If the ball is inactive, apply glow effect
+    if (this.inactive) {
+      this.applyGlowEffect(context);
+      this.drawBallWithGlow(context);
+    }
+
+    // Restore the context state
+    context.restore();
+
+    // Render debug information if enabled
+    if (this.debug) {
+      this.renderDebugInformation(context);
+    }
+
+    // Hitbox render (from superclass)
+    super.render(context);
+  }
+
+  // Function to create and draw the gradient ball
+  private drawBallWithGradient(context: CanvasRenderingContext2D): void {
+    const gradient = this.createGradient(context);
+    context.beginPath();
+    context.fillStyle = gradient;
+    context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    context.fill();
+    context.closePath();
+  }
+
+  // Function to create the radial gradient
+  private createGradient(context: CanvasRenderingContext2D): CanvasGradient {
     const gradient = context.createRadialGradient(
       this.x,
       this.y,
@@ -81,23 +112,23 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     );
     gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Inner color (white)
     gradient.addColorStop(1, "rgba(200, 200, 200, 1)"); // Outer color (light gray)
+    return gradient;
+  }
 
-    // Draw the football ball with gradient
+  // Function to apply the glow effect when the ball is inactive
+  private applyGlowEffect(context: CanvasRenderingContext2D): void {
+    context.shadowColor = "rgba(255, 215, 0, 1)"; // Glow color (golden yellow)
+    context.shadowBlur = 25; // Glow intensity
+    context.shadowOffsetX = 0;
+    context.shadowOffsetY = 0;
+  }
+
+  // Function to draw the ball with the glow effect
+  private drawBallWithGlow(context: CanvasRenderingContext2D): void {
     context.beginPath();
-    context.fillStyle = gradient;
     context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     context.fill();
     context.closePath();
-
-    // Restore the context state
-    context.restore();
-
-    if (this.debug) {
-      this.renderDebugInformation(context);
-    }
-
-    // Hitbox render
-    super.render(context);
   }
 
   private createHitbox(): void {
@@ -109,12 +140,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     );
 
     this.setHitboxObjects([hitboxObject]);
-  }
-
-  private handleInactiveState(deltaTimeStamp: DOMHighResTimeStamp) {
-    if (this.inactive) {
-      // TODO: glow effect
-    }
   }
 
   private applyFriction(): void {

@@ -46,10 +46,16 @@ export class AlertObject extends BaseAnimatedGameObject {
   }
 
   private setFontStyle(context: CanvasRenderingContext2D): void {
-    context.font = "42px system-ui";
+    context.font = "lighter 44px system-ui";
     context.fillStyle = this.color;
     context.textAlign = "center";
     context.textBaseline = "middle";
+
+    // Adding black shadow to text for readability
+    context.shadowColor = "black";
+    context.shadowOffsetX = 0; // Horizontal offset of shadow
+    context.shadowOffsetY = 0; // Vertical offset of shadow
+    context.shadowBlur = 10; // Blur effect for the shadow
   }
 
   private renderMultilineText(context: CanvasRenderingContext2D): void {
@@ -57,23 +63,18 @@ export class AlertObject extends BaseAnimatedGameObject {
 
     this.multilineText.forEach((line, index) => {
       const yPosition = this.y + index * lineHeight;
-      this.drawTextWithStroke(context, line, this.x, yPosition);
+      this.drawText(context, line, this.x, yPosition);
     });
   }
 
-  private drawTextWithStroke(
+  private drawText(
     context: CanvasRenderingContext2D,
     text: string,
     x: number,
     y: number
   ): void {
-    // Draw filled text
+    // Draw filled text with shadow applied
     context.fillText(text, x, y);
-
-    // Set up stroke style and draw stroke text
-    context.strokeStyle = "rgba(0, 0, 0, 0.2)";
-    context.lineWidth = 1;
-    context.strokeText(text, x, y);
   }
 
   private setInitialValues() {

@@ -25,12 +25,9 @@ export class JoystickObject extends BaseGameObject {
     if (this.gamePointer.isTouch()) {
       this.handleGamePointerEvents();
       this.updateJoystickPosition();
-
-      if (this.debug) {
-        this.updateControlValues();
+      if (this.debug && !this.gamePointer.isPressing()) {
+        this.handleKeyboardEvents();
       }
-    } else {
-      this.updateControlValues();
     }
   }
 
@@ -151,7 +148,7 @@ export class JoystickObject extends BaseGameObject {
     context.closePath();
   }
 
-  private updateControlValues() {
+  private handleKeyboardEvents() {
     const pressedKeys = this.gameKeyboard.getPressedKeys();
 
     const isArrowUpPressed = pressedKeys.has("ArrowUp") || pressedKeys.has("w");

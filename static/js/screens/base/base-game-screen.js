@@ -50,6 +50,13 @@ export class BaseGameScreen {
     hasTransitionFinished() {
         console.log(`Transition to ${this.constructor.name} finished`);
     }
+    getTotalObjectsCount() {
+        return this.sceneObjects.length + this.uiObjects.length;
+    }
+    getLoadedObjectsCount() {
+        return (this.sceneObjects.filter((object) => object.hasLoaded()).length +
+            this.uiObjects.filter((object) => object.hasLoaded()).length);
+    }
     setDebugToChildObjects() {
         const debug = this.gameController.isDebugging();
         this.sceneObjects.forEach((object) => object.setDebug(debug));

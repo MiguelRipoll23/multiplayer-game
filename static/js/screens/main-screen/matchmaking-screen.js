@@ -4,6 +4,7 @@ import { WorldScreen } from "../world-screen.js";
 export class MatchmakingScreen extends BaseGameScreen {
     transitionService;
     progressBarObject = null;
+    worldScreen = null;
     constructor(gameController) {
         super(gameController);
         this.transitionService = gameController.getTransitionService();
@@ -13,10 +14,15 @@ export class MatchmakingScreen extends BaseGameScreen {
         super.loadObjects();
     }
     hasTransitionFinished() {
-        const worldScreen = new WorldScreen(this.gameController);
-        worldScreen.loadObjects();
-        this.progressBarObject?.setProgress(1);
-        this.transitionService.fadeOutAndIn(worldScreen, 1, 1);
+        this.worldScreen = new WorldScreen(this.gameController);
+        this.worldScreen.loadObjects();
+        this.transitionService.fadeOutAndIn(this.worldScreen, 1, 1);
+    }
+    update(deltaTimeStamp) {
+        const totalObjects = this.worldScreen?.getTotalObjectsCount() || 1;
+        const loadedObjects = this.worldScreen?.getLoadedObjectsCount() || 0;
+        this.progressBarObject?.setProgress(loadedObjects / totalObjects);
+        super.update(deltaTimeStamp);
     }
     loadProgressBarObject() {
         this.progressBarObject = new ProgressBarObject(this.canvas);

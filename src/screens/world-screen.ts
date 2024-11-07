@@ -13,7 +13,10 @@ import { AlertObject } from "../objects/alert-object.js";
 import { TimerService } from "../services/timer-service.js";
 import { PlayerObject } from "../objects/player-object.js";
 import { ToastObject } from "../objects/common/toast-object.js";
-import { MATCH_ADVERTISED_EVENT } from "../constants/events-constants.js";
+import {
+  MATCH_ADVERTISED_EVENT,
+  PLAYER_CONNECTED_EVENT,
+} from "../constants/events-constants.js";
 import { Team } from "../models/game-teams.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
@@ -72,6 +75,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private addCustomEventListeners(): void {
     window.addEventListener(MATCH_ADVERTISED_EVENT, (event) => {
       this.toastObject?.show("Waiting for players...");
+    });
+
+    window.addEventListener(PLAYER_CONNECTED_EVENT, (event) => {
+      this.toastObject?.hide();
     });
   }
 
@@ -232,7 +239,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       this.goalTimerService.reset();
       this.ballObject?.reset();
       this.localCarObject?.reset();
-      this.alertObject?.fadeOut(0.2);
+      this.alertObject?.hide();
     }
   }
 }

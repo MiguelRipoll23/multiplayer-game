@@ -28,6 +28,11 @@ export class AlertObject extends BaseAnimatedGameObject {
     this.scaleTo(1, 0.3);
   }
 
+  public hide(): void {
+    this.fadeOut(0.3);
+    this.scaleTo(0, 0.3);
+  }
+
   public override render(context: CanvasRenderingContext2D): void {
     context.save();
     context.globalAlpha = this.opacity;

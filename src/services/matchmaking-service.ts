@@ -1,7 +1,7 @@
 import {
   MATCH_ADVERTISED_EVENT,
-  SERVER_ICE_CANDIDATE_MESSAGE,
-  SERVER_SESSION_DESCRIPTION_MESSAGE,
+  SERVER_ICE_CANDIDATE_EVENT,
+  SERVER_SESSION_DESCRIPTION_EVENT,
 } from "../constants/events-constants.js";
 import {
   ICE_CANDIDATE_ID,
@@ -36,19 +36,24 @@ export class MatchmakingService {
   }
 
   private addEventListeners(): void {
-    window.addEventListener(SERVER_SESSION_DESCRIPTION_MESSAGE, (event) => {
+    window.addEventListener(SERVER_SESSION_DESCRIPTION_EVENT, (event) => {
       this.handleSessionDescriptionEvent(event as CustomEvent<any>);
     });
 
-    window.addEventListener(SERVER_ICE_CANDIDATE_MESSAGE, (event) => {
+    window.addEventListener(SERVER_ICE_CANDIDATE_EVENT, (event) => {
       this.handleNewIceCandidate(event as CustomEvent<any>);
     });
   }
 
   private handleNewIceCandidate(event: CustomEvent<any>): void {
-    const { iceCandidate } = event.detail;
+    const { originToken, iceCandidate } = event.detail;
+    const user = this.webrtcService.getUser(originToken);
 
-    this.webrtcService.addOrQueueIceCandidate(iceCandidate);
+    if (user === null) {
+      return console.warn("WebRTC user with token not found", originToken);
+    }
+
+    user.addRemoteIceCandidate(iceCandidate);
   }
 
   public async findOrAdvertiseMatch(): Promise<void> {
@@ -102,16 +107,14 @@ export class MatchmakingService {
     // Update game state to client
     this.gameController.getGameState().setHost(false);
 
-    const offer = await this.webrtcService.createOffer();
-
-    matches.forEach((match) => this.joinMatch(match, offer));
+    matches.forEach((match) => this.joinMatch(match));
   }
 
-  private joinMatch(
-    match: FindMatchesResponse,
-    offer: RTCSessionDescriptionInit
-  ): void {
+  private async joinMatch(match: FindMatchesResponse): Promise<void> {
     const { token } = match;
+
+    const user = this.webrtcService.createUser(token);
+    const offer = await user.createOffer();
 
     console.log("Sending join request...", token, offer);
 
@@ -143,7 +146,9 @@ export class MatchmakingService {
   ): Promise<void> {
     console.log("Join request", originToken, rtcSessionDescription);
 
-    const answer = await this.webrtcService.createAnswer(rtcSessionDescription);
+    const user = this.webrtcService.createUser(originToken);
+    const answer = await user.createAnswer(rtcSessionDescription);
+
     console.log("Sending join response...", originToken, answer);
 
     const originTokenBytes = Uint8Array.from(atob(originToken), (c) =>
@@ -167,13 +172,23 @@ export class MatchmakingService {
   ): Promise<void> {
     console.log("Join response", originToken, rtcSessionDescription);
 
+    if (this.findMatchesTimerService.hasFinished()) {
+      return console.warn("Ignoring join response, timed out");
+    }
+
     this.findMatchesTimerService.stop();
 
-    this.webrtcService.getQueuedIceCandidates().forEach((iceCandidate) => {
+    const user = this.webrtcService.getUser(originToken);
+
+    if (user === null) {
+      return console.warn("WebRTC user with token not found", originToken);
+    }
+
+    user.getQueuedIceCandidates().forEach((iceCandidate) => {
       this.sendIceCandidate(originToken, iceCandidate);
     });
 
-    await this.webrtcService.connect(rtcSessionDescription);
+    await user.connect(rtcSessionDescription);
   }
 
   private sendIceCandidate(

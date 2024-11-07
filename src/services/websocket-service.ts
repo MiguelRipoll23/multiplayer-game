@@ -7,9 +7,9 @@ import {
 import {
   SERVER_CONNECTED_EVENT,
   SERVER_DISCONNECTED_EVENT,
-  SERVER_ICE_CANDIDATE_MESSAGE,
+  SERVER_ICE_CANDIDATE_EVENT,
   SERVER_NOTIFICATION_EVENT,
-  SERVER_SESSION_DESCRIPTION_MESSAGE,
+  SERVER_SESSION_DESCRIPTION_EVENT,
 } from "../constants/events-constants.js";
 import {
   NOTIFICATION_ID,
@@ -169,7 +169,7 @@ export class WebSocketService {
     rtcSessionDescription: RTCSessionDescriptionInit
   ) {
     dispatchEvent(
-      new CustomEvent(SERVER_SESSION_DESCRIPTION_MESSAGE, {
+      new CustomEvent(SERVER_SESSION_DESCRIPTION_EVENT, {
         detail: { originToken, rtcSessionDescription },
       })
     );
@@ -179,8 +179,9 @@ export class WebSocketService {
     originToken: string,
     iceCandidate: RTCIceCandidateInit
   ) {
+    console.log("Received ICE candidate...", originToken, iceCandidate);
     dispatchEvent(
-      new CustomEvent(SERVER_ICE_CANDIDATE_MESSAGE, {
+      new CustomEvent(SERVER_ICE_CANDIDATE_EVENT, {
         detail: { originToken, iceCandidate },
       })
     );

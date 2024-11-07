@@ -5,7 +5,7 @@ export class ToastObject extends BaseAnimatedGameObject {
     width = 0;
     height = 0;
     padding = 10;
-    bottomMargin = 30;
+    topMargin = 160; // Changed bottomMargin to topMargin
     cornerRadius = 10; // Corner radius for rounded corners
     context;
     constructor(canvas) {
@@ -19,6 +19,10 @@ export class ToastObject extends BaseAnimatedGameObject {
         this.reset();
         this.fadeIn(0.2);
         this.scaleTo(1, 0.2);
+    }
+    hide() {
+        this.fadeOut(0.2);
+        this.scaleTo(0, 0.2);
     }
     reset() {
         this.opacity = 0;
@@ -43,7 +47,7 @@ export class ToastObject extends BaseAnimatedGameObject {
     setPosition() {
         const canvasHeight = this.canvas.height;
         this.x = (this.canvas.width - this.width) / 2;
-        this.y = canvasHeight - this.bottomMargin - this.height;
+        this.y = this.topMargin; // Set y position based on topMargin
     }
     applyOpacity(context) {
         context.globalAlpha = this.opacity;

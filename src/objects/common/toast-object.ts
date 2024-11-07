@@ -5,7 +5,7 @@ export class ToastObject extends BaseAnimatedGameObject {
   private width: number = 0;
   private height: number = 0;
   private readonly padding: number = 10;
-  private readonly bottomMargin: number = 30;
+  private readonly topMargin: number = 160; // Changed bottomMargin to topMargin
   private readonly cornerRadius: number = 10; // Corner radius for rounded corners
 
   private context: CanvasRenderingContext2D;
@@ -21,6 +21,11 @@ export class ToastObject extends BaseAnimatedGameObject {
     this.reset();
     this.fadeIn(0.2);
     this.scaleTo(1, 0.2);
+  }
+
+  public hide(): void {
+    this.fadeOut(0.2);
+    this.scaleTo(0, 0.2);
   }
 
   public override reset(): void {
@@ -52,7 +57,7 @@ export class ToastObject extends BaseAnimatedGameObject {
   private setPosition(): void {
     const canvasHeight = this.canvas.height;
     this.x = (this.canvas.width - this.width) / 2;
-    this.y = canvasHeight - this.bottomMargin - this.height;
+    this.y = this.topMargin; // Set y position based on topMargin
   }
 
   private applyOpacity(context: CanvasRenderingContext2D): void {

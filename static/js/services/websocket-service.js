@@ -1,5 +1,5 @@
 import { WEBSOCKET_BASE_URL, WEBSOCKET_ENDPOINT, } from "../constants/api-constants.js";
-import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_ICE_CANDIDATE_MESSAGE, SERVER_NOTIFICATION_EVENT, SERVER_SESSION_DESCRIPTION_MESSAGE, } from "../constants/events-constants.js";
+import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_ICE_CANDIDATE_EVENT, SERVER_NOTIFICATION_EVENT, SERVER_SESSION_DESCRIPTION_EVENT, } from "../constants/events-constants.js";
 import { NOTIFICATION_ID, TUNNEL_ID, } from "../constants/websocket-constants.js";
 import { ICE_CANDIDATE_ID, SESSION_DESCRIPTION_ID, } from "../constants/webrtc-constants.js";
 export class WebSocketService {
@@ -101,12 +101,13 @@ export class WebSocketService {
         }
     }
     handleSessionDescriptionMessage(originToken, rtcSessionDescription) {
-        dispatchEvent(new CustomEvent(SERVER_SESSION_DESCRIPTION_MESSAGE, {
+        dispatchEvent(new CustomEvent(SERVER_SESSION_DESCRIPTION_EVENT, {
             detail: { originToken, rtcSessionDescription },
         }));
     }
     handleIceCandidateMessage(originToken, iceCandidate) {
-        dispatchEvent(new CustomEvent(SERVER_ICE_CANDIDATE_MESSAGE, {
+        console.log("Received ICE candidate...", originToken, iceCandidate);
+        dispatchEvent(new CustomEvent(SERVER_ICE_CANDIDATE_EVENT, {
             detail: { originToken, iceCandidate },
         }));
     }

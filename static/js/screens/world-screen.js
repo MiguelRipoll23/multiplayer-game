@@ -9,7 +9,7 @@ import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constant
 import { LocalPlayerObject } from "../objects/local-player-object.js";
 import { AlertObject } from "../objects/alert-object.js";
 import { ToastObject } from "../objects/common/toast-object.js";
-import { MATCH_ADVERTISED_EVENT } from "../constants/events-constants.js";
+import { MATCH_ADVERTISED_EVENT, PLAYER_CONNECTED_EVENT, } from "../constants/events-constants.js";
 import { Team } from "../models/game-teams.js";
 export class WorldScreen extends BaseCollidingGameScreen {
     gameController;
@@ -59,6 +59,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     addCustomEventListeners() {
         window.addEventListener(MATCH_ADVERTISED_EVENT, (event) => {
             this.toastObject?.show("Waiting for players...");
+        });
+        window.addEventListener(PLAYER_CONNECTED_EVENT, (event) => {
+            this.toastObject?.hide();
         });
     }
     createScoreboardObject() {
@@ -169,7 +172,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
             this.goalTimerService.reset();
             this.ballObject?.reset();
             this.localCarObject?.reset();
-            this.alertObject?.fadeOut(0.2);
+            this.alertObject?.hide();
         }
     }
 }

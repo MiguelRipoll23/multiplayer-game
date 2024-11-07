@@ -23,6 +23,10 @@ export class AlertObject extends BaseAnimatedGameObject {
         this.fadeIn(0.3);
         this.scaleTo(1, 0.3);
     }
+    hide() {
+        this.fadeOut(0.3);
+        this.scaleTo(0, 0.3);
+    }
     render(context) {
         context.save();
         context.globalAlpha = this.opacity;

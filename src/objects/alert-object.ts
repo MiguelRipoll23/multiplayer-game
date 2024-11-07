@@ -51,7 +51,7 @@ export class AlertObject extends BaseAnimatedGameObject {
   }
 
   private setFontStyle(context: CanvasRenderingContext2D): void {
-    context.font = "lighter 44px system-ui";
+    context.font = "44px system-ui";
     context.fillStyle = this.color;
     context.textAlign = "center";
     context.textBaseline = "middle";

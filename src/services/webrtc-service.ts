@@ -44,12 +44,17 @@ export class WebRTCService {
     this.iceCandidateQueue.forEach((candidate) =>
       this.addIceCandidate(candidate)
     );
+
     this.iceCandidateQueue = [];
 
     const answer = await this.peerConnection.createAnswer();
     await this.peerConnection.setLocalDescription(answer);
 
     return answer;
+  }
+
+  public getQueuedIceCandidates(): RTCIceCandidateInit[] {
+    return this.iceCandidateQueue;
   }
 
   public async connect(answer: RTCSessionDescriptionInit): Promise<void> {
@@ -62,6 +67,7 @@ export class WebRTCService {
     this.iceCandidateQueue.forEach((candidate) =>
       this.addIceCandidate(candidate)
     );
+
     this.iceCandidateQueue = [];
   }
 
@@ -92,10 +98,6 @@ export class WebRTCService {
   }
 
   private addEventListeners(): void {
-    this.peerConnection.ondatachannel = () => {
-      this.handleConnection();
-    };
-
     this.peerConnection.onconnectionstatechange = () => {
       this.handleStateChange();
     };
@@ -107,7 +109,7 @@ export class WebRTCService {
   private addIceListeners(): void {
     this.peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        this.handleNewIceCandidate(event.candidate.toJSON());
+        this.addOrQueueIceCandidate(event.candidate.toJSON());
       }
     };
 
@@ -126,22 +128,23 @@ export class WebRTCService {
     };
   }
 
-  private handleNewIceCandidate(candidate: RTCIceCandidateInit): void {
-    console.log("ICE Candidate", candidate);
-
+  public addOrQueueIceCandidate(iceCandidate: RTCIceCandidateInit): void {
     if (this.peerConnection.remoteDescription) {
       // Add candidate immediately if remote description is set
-      this.addIceCandidate(candidate);
+      this.addIceCandidate(iceCandidate);
     } else {
       // Queue the candidate if remote description is not yet set
-      this.iceCandidateQueue.push(candidate);
+      this.iceCandidateQueue.push(iceCandidate);
+      console.log("Queued ICE candidate", iceCandidate);
     }
   }
 
-  private async addIceCandidate(candidate: RTCIceCandidateInit): Promise<void> {
+  private async addIceCandidate(
+    iceCandidate: RTCIceCandidateInit
+  ): Promise<void> {
     try {
-      await this.peerConnection.addIceCandidate(candidate);
-      console.log("ICE candidate added successfully");
+      await this.peerConnection.addIceCandidate(iceCandidate);
+      console.log("Added ICE candidate", iceCandidate);
     } catch (error) {
       console.error("Error adding ICE candidate", error);
     }
@@ -165,19 +168,31 @@ export class WebRTCService {
     };
   }
 
+  private handleStateChange(): void {
+    console.log("Peer connection state: ", this.peerConnection.connectionState);
+
+    switch (this.peerConnection.connectionState) {
+      case "connected":
+        this.handleConnection();
+        break;
+
+      case "disconnected":
+      case "failed":
+      case "closed":
+        this.handleDisconnection();
+        break;
+    }
+  }
+
   private handleConnection(): void {
     console.log("Peer connection established");
   }
 
-  private handleStateChange(): void {
-    console.log("Peer connection state: ", this.peerConnection.connectionState);
-
-    if (this.peerConnection.connectionState === "disconnected") {
-      console.log("Peer connection closed");
-    }
+  private handleDisconnection(): void {
+    console.log("Peer connection closed", event);
   }
 
   private handleMessage(message: string): void {
-    console.log("Received message: ", message);
+    console.log("Received message", message);
   }
 }

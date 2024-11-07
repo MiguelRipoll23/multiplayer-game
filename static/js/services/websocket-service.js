@@ -1,6 +1,7 @@
 import { WEBSOCKET_BASE_URL, WEBSOCKET_ENDPOINT, } from "../constants/api-constants.js";
-import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, SERVER_TUNNEL_MESSAGE, } from "../constants/events-constants.js";
+import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_ICE_CANDIDATE_MESSAGE, SERVER_NOTIFICATION_EVENT, SERVER_SESSION_DESCRIPTION_MESSAGE, } from "../constants/events-constants.js";
 import { NOTIFICATION_ID, TUNNEL_ID, } from "../constants/websocket-constants.js";
+import { ICE_CANDIDATE_ID, SESSION_DESCRIPTION_ID, } from "../constants/webrtc-constants.js";
 export class WebSocketService {
     gameState;
     webSocket = null;
@@ -77,16 +78,36 @@ export class WebSocketService {
     }
     handleTunnelMessage(payload) {
         const originTokenBytes = payload.slice(0, 32);
-        const webrtcDescriptionBytes = payload.slice(32);
+        const webrtcType = payload[32];
+        const webrtcDataBytes = payload.slice(33);
         const originToken = btoa(String.fromCharCode(...originTokenBytes));
-        // TODO: utils for encoding/decoding webrtc description
-        const webrtcDescription = JSON.parse(new TextDecoder("utf-8").decode(webrtcDescriptionBytes));
-        console.log("Tunnel message", originToken, webrtcDescription);
-        dispatchEvent(new CustomEvent(SERVER_TUNNEL_MESSAGE, {
-            detail: {
-                originToken,
-                webrtcDescription,
-            },
+        const webrtcData = JSON.parse(new TextDecoder("utf-8").decode(webrtcDataBytes));
+        console.log("Tunnel message", originToken, webrtcType, webrtcData);
+        this.handleWebRTCMessage(originToken, webrtcType, webrtcData);
+    }
+    handleWebRTCMessage(originToken, type, webrtcData) {
+        switch (type) {
+            case SESSION_DESCRIPTION_ID: {
+                this.handleSessionDescriptionMessage(originToken, webrtcData);
+                break;
+            }
+            case ICE_CANDIDATE_ID: {
+                this.handleIceCandidateMessage(originToken, webrtcData);
+                break;
+            }
+            default: {
+                console.warn("Unknown WebRTC message type", type);
+            }
+        }
+    }
+    handleSessionDescriptionMessage(originToken, rtcSessionDescription) {
+        dispatchEvent(new CustomEvent(SERVER_SESSION_DESCRIPTION_MESSAGE, {
+            detail: { originToken, rtcSessionDescription },
+        }));
+    }
+    handleIceCandidateMessage(originToken, iceCandidate) {
+        dispatchEvent(new CustomEvent(SERVER_ICE_CANDIDATE_MESSAGE, {
+            detail: { originToken, iceCandidate },
         }));
     }
 }

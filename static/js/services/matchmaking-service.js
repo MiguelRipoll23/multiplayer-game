@@ -1,4 +1,5 @@
-import { MATCH_ADVERTISED_EVENT, SERVER_TUNNEL_MESSAGE, } from "../constants/events-constants.js";
+import { MATCH_ADVERTISED_EVENT, SERVER_ICE_CANDIDATE_MESSAGE, SERVER_SESSION_DESCRIPTION_MESSAGE, } from "../constants/events-constants.js";
+import { ICE_CANDIDATE_ID, SESSION_DESCRIPTION_ID, } from "../constants/webrtc-constants.js";
 export class MatchmakingService {
     gameController;
     apiService;
@@ -18,9 +19,16 @@ export class MatchmakingService {
         }
     }
     addEventListeners() {
-        window.addEventListener(SERVER_TUNNEL_MESSAGE, (event) => {
-            this.handleServerTunnelMessage(event);
+        window.addEventListener(SERVER_SESSION_DESCRIPTION_MESSAGE, (event) => {
+            this.handleSessionDescriptionEvent(event);
         });
+        window.addEventListener(SERVER_ICE_CANDIDATE_MESSAGE, (event) => {
+            this.handleNewIceCandidate(event);
+        });
+    }
+    handleNewIceCandidate(event) {
+        const { iceCandidate } = event.detail;
+        this.webrtcService.addOrQueueIceCandidate(iceCandidate);
     }
     async findOrAdvertiseMatch() {
         const matches = await this.findMatches();
@@ -68,29 +76,51 @@ export class MatchmakingService {
         console.log("Sending join request...", token, offer);
         const tokenBytes = Uint8Array.from(atob(token), (c) => c.charCodeAt(0));
         const offerBytes = new TextEncoder().encode(JSON.stringify(offer));
-        const payload = new Uint8Array([...tokenBytes, ...offerBytes]);
+        const payload = new Uint8Array([
+            ...tokenBytes,
+            SESSION_DESCRIPTION_ID,
+            ...offerBytes,
+        ]);
         this.gameController.getWebSocketService().sendTunnelMessage(payload);
     }
-    handleServerTunnelMessage(event) {
-        const { originToken, webrtcDescription } = event.detail;
+    handleSessionDescriptionEvent(event) {
+        const { originToken, rtcSessionDescription } = event.detail;
         if (this.gameController.getGameState().isHost()) {
-            this.handleJoinRequest(originToken, webrtcDescription);
+            this.handleJoinRequest(originToken, rtcSessionDescription);
         }
         else {
-            this.handleJoinResponse(originToken, webrtcDescription);
+            this.handleJoinResponse(originToken, rtcSessionDescription);
         }
     }
     async handleJoinRequest(originToken, rtcSessionDescription) {
         console.log("Join request", originToken, rtcSessionDescription);
         const answer = await this.webrtcService.createAnswer(rtcSessionDescription);
+        console.log("Sending join response...", originToken, answer);
         const originTokenBytes = Uint8Array.from(atob(originToken), (c) => c.charCodeAt(0));
         const answerBytes = new TextEncoder().encode(JSON.stringify(answer));
-        const payload = new Uint8Array([...originTokenBytes, ...answerBytes]);
+        const payload = new Uint8Array([
+            ...originTokenBytes,
+            SESSION_DESCRIPTION_ID,
+            ...answerBytes,
+        ]);
         this.gameController.getWebSocketService().sendTunnelMessage(payload);
     }
     async handleJoinResponse(originToken, rtcSessionDescription) {
         console.log("Join response", originToken, rtcSessionDescription);
         this.findMatchesTimerService.stop();
+        this.webrtcService.getQueuedIceCandidates().forEach((iceCandidate) => {
+            this.sendIceCandidate(originToken, iceCandidate);
+        });
         await this.webrtcService.connect(rtcSessionDescription);
+    }
+    sendIceCandidate(originToken, iceCandidate) {
+        console.log("Sending ICE candidate...", originToken, iceCandidate);
+        const candidateBytes = new TextEncoder().encode(JSON.stringify(iceCandidate));
+        const payload = new Uint8Array([
+            ...Uint8Array.from(atob(originToken), (c) => c.charCodeAt(0)),
+            ICE_CANDIDATE_ID,
+            ...candidateBytes,
+        ]);
+        this.gameController.getWebSocketService().sendTunnelMessage(payload);
     }
 }

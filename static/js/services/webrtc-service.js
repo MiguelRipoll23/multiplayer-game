@@ -37,6 +37,9 @@ export class WebRTCService {
         await this.peerConnection.setLocalDescription(answer);
         return answer;
     }
+    getQueuedIceCandidates() {
+        return this.iceCandidateQueue;
+    }
     async connect(answer) {
         console.log("Connecting to peer...", answer);
         const remoteDesc = new RTCSessionDescription(answer);
@@ -68,9 +71,6 @@ export class WebRTCService {
         });
     }
     addEventListeners() {
-        this.peerConnection.ondatachannel = () => {
-            this.handleConnection();
-        };
         this.peerConnection.onconnectionstatechange = () => {
             this.handleStateChange();
         };
@@ -80,7 +80,7 @@ export class WebRTCService {
     addIceListeners() {
         this.peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
-                this.handleNewIceCandidate(event.candidate.toJSON());
+                this.addOrQueueIceCandidate(event.candidate.toJSON());
             }
         };
         this.peerConnection.oniceconnectionstatechange = () => {
@@ -90,21 +90,21 @@ export class WebRTCService {
             console.log("ICE gathering state:", this.peerConnection.iceGatheringState);
         };
     }
-    handleNewIceCandidate(candidate) {
-        console.log("ICE Candidate", candidate);
+    addOrQueueIceCandidate(iceCandidate) {
         if (this.peerConnection.remoteDescription) {
             // Add candidate immediately if remote description is set
-            this.addIceCandidate(candidate);
+            this.addIceCandidate(iceCandidate);
         }
         else {
             // Queue the candidate if remote description is not yet set
-            this.iceCandidateQueue.push(candidate);
+            this.iceCandidateQueue.push(iceCandidate);
+            console.log("Queued ICE candidate", iceCandidate);
         }
     }
-    async addIceCandidate(candidate) {
+    async addIceCandidate(iceCandidate) {
         try {
-            await this.peerConnection.addIceCandidate(candidate);
-            console.log("ICE candidate added successfully");
+            await this.peerConnection.addIceCandidate(iceCandidate);
+            console.log("Added ICE candidate", iceCandidate);
         }
         catch (error) {
             console.error("Error adding ICE candidate", error);
@@ -124,16 +124,26 @@ export class WebRTCService {
             this.handleMessage(event.data);
         };
     }
+    handleStateChange() {
+        console.log("Peer connection state: ", this.peerConnection.connectionState);
+        switch (this.peerConnection.connectionState) {
+            case "connected":
+                this.handleConnection();
+                break;
+            case "disconnected":
+            case "failed":
+            case "closed":
+                this.handleDisconnection();
+                break;
+        }
+    }
     handleConnection() {
         console.log("Peer connection established");
     }
-    handleStateChange() {
-        console.log("Peer connection state: ", this.peerConnection.connectionState);
-        if (this.peerConnection.connectionState === "disconnected") {
-            console.log("Peer connection closed");
-        }
+    handleDisconnection() {
+        console.log("Peer connection closed", event);
     }
     handleMessage(message) {
-        console.log("Received message: ", message);
+        console.log("Received message", message);
     }
 }

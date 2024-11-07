@@ -16,7 +16,7 @@ export class MainScreen extends BaseGameScreen {
   }
 
   public override loadObjects(): void {
-    this.createMainBrackgroundObject();
+    this.createMainBackgroundObject();
     this.loginScreen.loadObjects();
     super.loadObjects();
   }
@@ -49,7 +49,7 @@ export class MainScreen extends BaseGameScreen {
     this.loginScreen.setScreenManagerService(this.screenManagerService);
   }
 
-  private createMainBrackgroundObject() {
+  private createMainBackgroundObject() {
     const mainBackgroundObject = new MainBackgroundObject(this.canvas);
     this.sceneObjects.push(mainBackgroundObject);
   }

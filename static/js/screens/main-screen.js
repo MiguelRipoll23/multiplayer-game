@@ -10,7 +10,7 @@ export class MainScreen extends BaseGameScreen {
         this.updateLoginScreen();
     }
     loadObjects() {
-        this.createMainBrackgroundObject();
+        this.createMainBackgroundObject();
         this.loginScreen.loadObjects();
         super.loadObjects();
     }
@@ -34,7 +34,7 @@ export class MainScreen extends BaseGameScreen {
         this.screenManagerService.setCurrentScreen(this.loginScreen);
         this.loginScreen.setScreenManagerService(this.screenManagerService);
     }
-    createMainBrackgroundObject() {
+    createMainBackgroundObject() {
         const mainBackgroundObject = new MainBackgroundObject(this.canvas);
         this.sceneObjects.push(mainBackgroundObject);
     }

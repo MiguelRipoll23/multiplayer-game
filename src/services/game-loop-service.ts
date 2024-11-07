@@ -11,7 +11,7 @@ import { GameKeyboard } from "../models/game-keyboard.js";
 
 export class GameLoopService {
   private context: CanvasRenderingContext2D;
-  private debug: boolean = false;
+  private debug: boolean = true;
 
   private gameController: GameController;
   private gameFrame: GameFrame;

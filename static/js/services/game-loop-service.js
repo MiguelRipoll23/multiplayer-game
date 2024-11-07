@@ -5,7 +5,7 @@ import { MainScreen } from "../screens/main-screen.js";
 export class GameLoopService {
     canvas;
     context;
-    debug = false;
+    debug = true;
     gameController;
     gameFrame;
     gamePointer;

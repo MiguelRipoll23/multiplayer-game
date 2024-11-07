@@ -1,3 +1,4 @@
+import { LoadingBackgroundObject } from "../../objects/backgrounds/loading-background-object.js";
 import { ProgressBarObject } from "../../objects/common/progress-bar-object.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { WorldScreen } from "../world-screen.js";
@@ -10,6 +11,7 @@ export class LoadingScreen extends BaseGameScreen {
         this.transitionService = gameController.getTransitionService();
     }
     loadObjects() {
+        this.createBackgroundObject();
         this.loadProgressBarObject();
         super.loadObjects();
     }
@@ -24,6 +26,10 @@ export class LoadingScreen extends BaseGameScreen {
         const loadedObjects = this.worldScreen?.getLoadedObjectsCount() || 0;
         this.progressBarObject?.setProgress(loadedObjects / totalObjects);
         super.update(deltaTimeStamp);
+    }
+    createBackgroundObject() {
+        const loadingBackgroundObject = new LoadingBackgroundObject(this.canvas);
+        this.sceneObjects.push(loadingBackgroundObject);
     }
     loadProgressBarObject() {
         this.progressBarObject = new ProgressBarObject(this.canvas);

@@ -1,4 +1,5 @@
 import { GameController } from "../../models/game-controller.js";
+import { LoadingBackgroundObject } from "../../objects/backgrounds/loading-background-object.js";
 import { ProgressBarObject } from "../../objects/common/progress-bar-object.js";
 import { ScreenTransitionService } from "../../services/screen-transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
@@ -15,6 +16,7 @@ export class LoadingScreen extends BaseGameScreen {
   }
 
   public override loadObjects(): void {
+    this.createBackgroundObject();
     this.loadProgressBarObject();
 
     super.loadObjects();
@@ -36,6 +38,11 @@ export class LoadingScreen extends BaseGameScreen {
     this.progressBarObject?.setProgress(loadedObjects / totalObjects);
 
     super.update(deltaTimeStamp);
+  }
+
+  private createBackgroundObject() {
+    const loadingBackgroundObject = new LoadingBackgroundObject(this.canvas);
+    this.sceneObjects.push(loadingBackgroundObject);
   }
 
   private loadProgressBarObject(): void {

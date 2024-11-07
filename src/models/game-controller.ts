@@ -70,8 +70,8 @@ export class GameController {
     return this.timers;
   }
 
-  public addTimer(seconds: number, start = true): TimerService {
-    const timerService = new TimerService(seconds, start);
+  public addTimer(seconds: number, callback: () => void, start = true): TimerService {
+    const timerService = new TimerService(seconds, callback, start);
     this.timers.push(timerService);
 
     return timerService;

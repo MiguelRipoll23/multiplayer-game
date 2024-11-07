@@ -47,7 +47,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
         super.update(deltaTimeStamp);
         this.gameController.getMatchmakingService().handleTimers();
         this.detectScores();
-        this.handleGoalTimerComplete();
     }
     createBackgroundObject() {
         const backgroundObject = new WorldBackgroundObject(this.canvas);
@@ -143,7 +142,12 @@ export class WorldScreen extends BaseCollidingGameScreen {
         // Alert
         this.showGoalAlert(playerObject, goalTeam);
         // Timer
-        this.goalTimerService = this.gameController.addTimer(5);
+        this.goalTimerService = this.gameController.addTimer(5, () => {
+            console.log("Goal timer complete");
+            this.ballObject?.reset();
+            this.localCarObject?.reset();
+            this.alertObject?.hide();
+        });
     }
     handlePlayerScore(playerObject, goalTeam) {
         const playerTeam = playerObject?.getTeam();
@@ -165,14 +169,5 @@ export class WorldScreen extends BaseCollidingGameScreen {
             color = "orange";
         }
         this.alertObject?.show([playerName, "SCORED!"], color);
-    }
-    handleGoalTimerComplete() {
-        if (this.goalTimerService?.hasFinished()) {
-            console.log("Goal timer complete");
-            this.goalTimerService.reset();
-            this.ballObject?.reset();
-            this.localCarObject?.reset();
-            this.alertObject?.hide();
-        }
     }
 }

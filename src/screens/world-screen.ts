@@ -58,9 +58,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
-    this.gameController.getMatchmakingService().handleTimers();
     this.detectScores();
-    this.handleGoalTimerComplete();
   }
 
   private createBackgroundObject() {
@@ -198,7 +196,13 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.showGoalAlert(playerObject, goalTeam);
 
     // Timer
-    this.goalTimerService = this.gameController.addTimer(5);
+    this.goalTimerService = this.gameController.addTimer(5, () => {
+      console.log("Goal timer complete");
+
+      this.ballObject?.reset();
+      this.localCarObject?.reset();
+      this.alertObject?.hide();
+    });
   }
 
   private handlePlayerScore(playerObject: PlayerObject, goalTeam: Team) {
@@ -230,16 +234,5 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
 
     this.alertObject?.show([playerName, "SCORED!"], color);
-  }
-
-  private handleGoalTimerComplete() {
-    if (this.goalTimerService?.hasFinished()) {
-      console.log("Goal timer complete");
-
-      this.goalTimerService.reset();
-      this.ballObject?.reset();
-      this.localCarObject?.reset();
-      this.alertObject?.hide();
-    }
   }
 }

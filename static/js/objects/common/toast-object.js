@@ -2,11 +2,11 @@ import { BaseAnimatedGameObject } from "../base/base-animated-object.js";
 export class ToastObject extends BaseAnimatedGameObject {
     canvas;
     text = "Unknown";
-    toastWidth = 0;
-    toastHeight = 0;
+    width = 0;
+    height = 0;
     padding = 10;
-    cornerRadius = 10;
-    bottomMargin = 30; // Renamed to bottomMargin
+    bottomMargin = 30;
+    cornerRadius = 10; // Corner radius for rounded corners
     context;
     constructor(canvas) {
         super();
@@ -37,45 +37,43 @@ export class ToastObject extends BaseAnimatedGameObject {
     measureDimensions() {
         this.context.font = "16px Arial";
         const textWidth = this.context.measureText(this.text).width;
-        this.toastWidth = textWidth + this.padding * 2;
-        this.toastHeight = 30; // Fixed height for simplicity
+        this.width = textWidth + this.padding * 2;
+        this.height = 30; // Fixed height for simplicity
     }
     setPosition() {
         const canvasHeight = this.canvas.height;
-        this.x = (this.canvas.width - this.toastWidth) / 2;
-        this.y = canvasHeight - this.bottomMargin - this.toastHeight;
+        this.x = (this.canvas.width - this.width) / 2;
+        this.y = canvasHeight - this.bottomMargin - this.height;
     }
     applyOpacity(context) {
         context.globalAlpha = this.opacity;
     }
     applyTransformations(context) {
-        context.translate(this.x + this.toastWidth / 2, this.y + this.toastHeight / 2);
+        context.translate(this.x + this.width / 2, this.y + this.height / 2);
         context.scale(this.scale, this.scale);
-        context.translate(-(this.x + this.toastWidth / 2), -(this.y + this.toastHeight / 2));
+        context.translate(-(this.x + this.width / 2), -(this.y + this.height / 2));
     }
     drawToastBackground(context) {
         context.fillStyle = "rgba(0, 0, 0, 0.7)";
         context.beginPath();
-        this.drawRoundedRectangle(context);
+        // Rounded rectangle with corner radius
+        context.moveTo(this.x + this.cornerRadius, this.y);
+        context.lineTo(this.x + this.width - this.cornerRadius, this.y);
+        context.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + this.height, this.cornerRadius);
+        context.lineTo(this.x + this.width, this.y + this.height - this.cornerRadius);
+        context.arcTo(this.x + this.width, this.y + this.height, this.x + this.width - this.cornerRadius, this.y + this.height, this.cornerRadius);
+        context.lineTo(this.x + this.cornerRadius, this.y + this.height);
+        context.arcTo(this.x, this.y + this.height, this.x, this.y + this.height - this.cornerRadius, this.cornerRadius);
+        context.lineTo(this.x, this.y + this.cornerRadius);
+        context.arcTo(this.x, this.y, this.x + this.cornerRadius, this.y, this.cornerRadius);
         context.closePath();
         context.fill();
-    }
-    drawRoundedRectangle(context) {
-        context.moveTo(this.x + this.cornerRadius, this.y);
-        context.lineTo(this.x + this.toastWidth - this.cornerRadius, this.y);
-        context.quadraticCurveTo(this.x + this.toastWidth, this.y, this.x + this.toastWidth, this.y + this.cornerRadius);
-        context.lineTo(this.x + this.toastWidth, this.y + this.toastHeight - this.cornerRadius);
-        context.quadraticCurveTo(this.x + this.toastWidth, this.y + this.toastHeight, this.x + this.toastWidth - this.cornerRadius, this.y + this.toastHeight);
-        context.lineTo(this.x + this.cornerRadius, this.y + this.toastHeight);
-        context.quadraticCurveTo(this.x, this.y + this.toastHeight, this.x, this.y + this.toastHeight - this.cornerRadius);
-        context.lineTo(this.x, this.y + this.cornerRadius);
-        context.quadraticCurveTo(this.x, this.y, this.x + this.cornerRadius, this.y);
     }
     drawToastText(context) {
         context.fillStyle = "white";
         context.font = "16px system-ui";
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillText(this.text, this.x + this.toastWidth / 2, this.y + this.toastHeight / 2);
+        context.fillText(this.text, this.x + this.width / 2, this.y + this.height / 2);
     }
 }

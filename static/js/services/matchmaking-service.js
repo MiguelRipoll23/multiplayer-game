@@ -4,19 +4,12 @@ export class MatchmakingService {
     gameController;
     apiService;
     webrtcService;
-    findMatchesTimerService;
+    findMatchesTimerService = null;
     constructor(gameController) {
         this.gameController = gameController;
         this.apiService = gameController.getApiService();
         this.webrtcService = gameController.getWebRTCService();
-        this.findMatchesTimerService = this.gameController.addTimer(10, false);
         this.addEventListeners();
-    }
-    handleTimers() {
-        if (this.findMatchesTimerService.hasFinished()) {
-            this.findMatchesTimerService.reset();
-            this.advertiseMatch();
-        }
     }
     addEventListeners() {
         window.addEventListener(SERVER_SESSION_DESCRIPTION_EVENT, (event) => {
@@ -41,7 +34,12 @@ export class MatchmakingService {
             return this.advertiseMatch();
         }
         await this.joinMatches(matches);
-        this.findMatchesTimerService.start();
+        this.findMatchesTimerService = this.gameController.addTimer(10, () => {
+            this.advertiseMatch();
+        });
+    }
+    stopFindMatchesTimer() {
+        this.findMatchesTimerService?.stop();
     }
     async findMatches() {
         console.log("Finding matches...");
@@ -113,10 +111,6 @@ export class MatchmakingService {
     }
     async handleJoinResponse(originToken, rtcSessionDescription) {
         console.log("Join response", originToken, rtcSessionDescription);
-        if (this.findMatchesTimerService.hasFinished()) {
-            return console.warn("Ignoring join response, timed out");
-        }
-        this.findMatchesTimerService.stop();
         const user = this.webrtcService.getUser(originToken);
         if (user === null) {
             return console.warn("WebRTC user with token not found", originToken);

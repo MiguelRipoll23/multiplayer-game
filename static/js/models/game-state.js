@@ -1,11 +1,18 @@
 import { GamePlayer } from "./game-player.js";
 import { GameServer } from "./game-server.js";
 export class GameState {
+    host = false;
     gamePlayer;
     gameServer;
     constructor() {
         this.gamePlayer = new GamePlayer();
         this.gameServer = new GameServer();
+    }
+    isHost() {
+        return this.host;
+    }
+    setHost(host) {
+        this.host = host;
     }
     getGamePlayer() {
         return this.gamePlayer;

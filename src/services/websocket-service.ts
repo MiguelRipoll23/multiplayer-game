@@ -8,6 +8,7 @@ import {
   SERVER_CONNECTED_EVENT,
   SERVER_DISCONNECTED_EVENT,
   SERVER_NOTIFICATION_EVENT,
+  SERVER_TUNNEL_MESSAGE,
 } from "../constants/events-constants.js";
 import {
   NOTIFICATION_ID,
@@ -44,8 +45,8 @@ export class WebSocketService {
     this.addEventListeners(this.webSocket);
   }
 
-  public sendTunnelMessage(token: Uint8Array) {
-    const message = new Uint8Array([TUNNEL_ID, ...token]);
+  public sendTunnelMessage(payload: Uint8Array) {
+    const message = new Uint8Array([TUNNEL_ID, ...payload]);
     this.webSocket?.send(message);
 
     console.log("Sent tunnel message:", message);
@@ -122,13 +123,24 @@ export class WebSocketService {
 
   private handleTunnelMessage(payload: Uint8Array) {
     const originTokenBytes = payload.slice(0, 32);
-    const networkInformationBytes = payload.slice(32);
+    const webrtcDescriptionBytes = payload.slice(32);
 
     const originToken = btoa(String.fromCharCode(...originTokenBytes));
-    const networkInformation = new TextDecoder("utf-8").decode(
-      networkInformationBytes
+
+    // TODO: utils for encoding/decoding webrtc description
+    const webrtcDescription = JSON.parse(
+      new TextDecoder("utf-8").decode(webrtcDescriptionBytes)
     );
 
-    console.log("Tunnel message", originToken, networkInformation);
+    console.log("Tunnel message", originToken, webrtcDescription);
+
+    dispatchEvent(
+      new CustomEvent(SERVER_TUNNEL_MESSAGE, {
+        detail: {
+          originToken,
+          webrtcDescription,
+        },
+      })
+    );
   }
 }

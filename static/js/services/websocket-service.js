@@ -1,5 +1,5 @@
 import { WEBSOCKET_BASE_URL, WEBSOCKET_ENDPOINT, } from "../constants/api-constants.js";
-import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, } from "../constants/events-constants.js";
+import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, SERVER_TUNNEL_MESSAGE, } from "../constants/events-constants.js";
 import { NOTIFICATION_ID, TUNNEL_ID, } from "../constants/websocket-constants.js";
 export class WebSocketService {
     gameState;
@@ -20,8 +20,8 @@ export class WebSocketService {
         this.webSocket.binaryType = "arraybuffer";
         this.addEventListeners(this.webSocket);
     }
-    sendTunnelMessage(token) {
-        const message = new Uint8Array([TUNNEL_ID, ...token]);
+    sendTunnelMessage(payload) {
+        const message = new Uint8Array([TUNNEL_ID, ...payload]);
         this.webSocket?.send(message);
         console.log("Sent tunnel message:", message);
     }
@@ -77,9 +77,16 @@ export class WebSocketService {
     }
     handleTunnelMessage(payload) {
         const originTokenBytes = payload.slice(0, 32);
-        const networkInformationBytes = payload.slice(32);
+        const webrtcDescriptionBytes = payload.slice(32);
         const originToken = btoa(String.fromCharCode(...originTokenBytes));
-        const networkInformation = new TextDecoder("utf-8").decode(networkInformationBytes);
-        console.log("Tunnel message", originToken, networkInformation);
+        // TODO: utils for encoding/decoding webrtc description
+        const webrtcDescription = JSON.parse(new TextDecoder("utf-8").decode(webrtcDescriptionBytes));
+        console.log("Tunnel message", originToken, webrtcDescription);
+        dispatchEvent(new CustomEvent(SERVER_TUNNEL_MESSAGE, {
+            detail: {
+                originToken,
+                webrtcDescription,
+            },
+        }));
     }
 }

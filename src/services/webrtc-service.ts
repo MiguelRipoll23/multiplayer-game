@@ -27,6 +27,17 @@ export class WebRTCService {
     return offer;
   }
 
+  public async createAnswer(
+    offer: RTCSessionDescriptionInit
+  ): Promise<RTCSessionDescriptionInit> {
+    await this.peerConnection.setRemoteDescription(offer);
+
+    const answer = await this.peerConnection.createAnswer();
+    await this.peerConnection.setLocalDescription(answer);
+
+    return answer;
+  }
+
   public async connect(answer: RTCSessionDescriptionInit): Promise<void> {
     const remoteDesc = new RTCSessionDescription(answer);
     await this.peerConnection.setRemoteDescription(remoteDesc);

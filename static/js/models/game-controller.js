@@ -3,6 +3,7 @@ import { CryptoService } from "../services/crypto-service.js";
 import { MatchmakingService } from "../services/matchmaking-service.js";
 import { ScreenTransitionService } from "../services/screen-transition-service.js";
 import { TimerService } from "../services/timer-service.js";
+import { WebRTCService } from "../services/webrtc-service.js";
 import { WebSocketService } from "../services/websocket-service.js";
 import { GameFrame } from "./game-frame.js";
 import { GameKeyboard } from "./game-keyboard.js";
@@ -21,6 +22,7 @@ export class GameController {
     cryptoService;
     webSocketService;
     matchMakingService;
+    webRTCService;
     constructor(canvas, debug = false) {
         this.canvas = canvas;
         this.debug = debug;
@@ -32,6 +34,7 @@ export class GameController {
         this.apiService = new ApiService();
         this.cryptoService = new CryptoService(this.gameState.getGameServer());
         this.webSocketService = new WebSocketService(this);
+        this.webRTCService = new WebRTCService();
         this.matchMakingService = new MatchmakingService(this);
     }
     getCanvas() {
@@ -80,5 +83,8 @@ export class GameController {
     }
     getMatchmakingService() {
         return this.matchMakingService;
+    }
+    getWebRTCService() {
+        return this.webRTCService;
     }
 }

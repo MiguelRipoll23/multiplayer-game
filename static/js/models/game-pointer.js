@@ -61,10 +61,12 @@ export class GamePointer {
     }
     addEventListeners() {
         window.addEventListener("pointermove", (event) => {
+            event.preventDefault();
             this.setX(event.clientX);
             this.setY(event.clientY);
         });
         window.addEventListener("pointerdown", (event) => {
+            event.preventDefault();
             this.setType(event.pointerType);
             this.setX(event.clientX);
             this.setY(event.clientY);
@@ -73,6 +75,7 @@ export class GamePointer {
             this.setPressing(true);
         });
         window.addEventListener("pointerup", (event) => {
+            event.preventDefault();
             this.setX(event.clientX);
             this.setY(event.clientY);
             this.setPressing(false);

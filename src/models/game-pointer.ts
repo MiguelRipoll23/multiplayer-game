@@ -81,28 +81,40 @@ export class GamePointer {
   }
 
   public addEventListeners(): void {
-    window.addEventListener("pointermove", (event) => {
-      event.preventDefault();
-      this.setX(event.clientX);
-      this.setY(event.clientY);
-    });
+    window.addEventListener(
+      "pointermove",
+      (event) => {
+        event.preventDefault();
+        this.setX(event.clientX);
+        this.setY(event.clientY);
+      },
+      { passive: false }
+    );
 
-    window.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
-      this.setType(event.pointerType as PointerType);
-      this.setX(event.clientX);
-      this.setY(event.clientY);
-      this.setInitialX(event.clientX);
-      this.setInitialY(event.clientY);
-      this.setPressing(true);
-    });
+    window.addEventListener(
+      "pointerdown",
+      (event) => {
+        event.preventDefault();
+        this.setType(event.pointerType as PointerType);
+        this.setX(event.clientX);
+        this.setY(event.clientY);
+        this.setInitialX(event.clientX);
+        this.setInitialY(event.clientY);
+        this.setPressing(true);
+      },
+      { passive: false }
+    );
 
-    window.addEventListener("pointerup", (event) => {
-      event.preventDefault();
-      this.setX(event.clientX);
-      this.setY(event.clientY);
-      this.setPressing(false);
-      this.setPressed(true);
-    });
+    window.addEventListener(
+      "pointerup",
+      (event) => {
+        event.preventDefault();
+        this.setX(event.clientX);
+        this.setY(event.clientY);
+        this.setPressing(false);
+        this.setPressed(true);
+      },
+      { passive: false }
+    );
   }
 }

@@ -64,7 +64,7 @@ export class GamePointer {
             event.preventDefault();
             this.setX(event.clientX);
             this.setY(event.clientY);
-        });
+        }, { passive: false });
         window.addEventListener("pointerdown", (event) => {
             event.preventDefault();
             this.setType(event.pointerType);
@@ -73,13 +73,13 @@ export class GamePointer {
             this.setInitialX(event.clientX);
             this.setInitialY(event.clientY);
             this.setPressing(true);
-        });
+        }, { passive: false });
         window.addEventListener("pointerup", (event) => {
             event.preventDefault();
             this.setX(event.clientX);
             this.setY(event.clientY);
             this.setPressing(false);
             this.setPressed(true);
-        });
+        }, { passive: false });
     }
 }

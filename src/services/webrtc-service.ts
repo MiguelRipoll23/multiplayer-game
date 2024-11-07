@@ -1,15 +1,29 @@
 export class WebRTCService {
   private peerConnection: RTCPeerConnection;
-  private dataChannel: RTCDataChannel;
+
+  private reliableOrderedDataChannel: RTCDataChannel;
+  private reliableUnorderedDataChannel: RTCDataChannel;
+  private unreliableOrderedDataChannel: RTCDataChannel;
+  private unreliableUnorderedDataChannel: RTCDataChannel;
 
   constructor() {
     this.peerConnection = new RTCPeerConnection();
-    this.dataChannel = this.peerConnection.createDataChannel("dataChannel");
+    this.reliableOrderedDataChannel =
+      this.createReliableAndOrderedDataChannel();
+    this.reliableUnorderedDataChannel =
+      this.createReliableAndUnorderedDataChannel();
+    this.unreliableOrderedDataChannel =
+      this.createUnreliableAndOrderedDataChannel();
+    this.unreliableUnorderedDataChannel =
+      this.createUnreliableAndUnorderedDataChannel();
+
+    this.addEventListeners();
   }
 
   public async createOffer(): Promise<RTCSessionDescriptionInit> {
     const offer = await this.peerConnection.createOffer();
     await this.peerConnection.setLocalDescription(offer);
+
     return offer;
   }
 
@@ -22,25 +36,77 @@ export class WebRTCService {
         console.log("New ICE candidate: ", event.candidate);
       }
     };
-
-    this.dataChannel.onopen = () => {
-      console.log("Data channel is open");
-    };
-
-    this.dataChannel.onmessage = (event) => {
-      this.handleMessage(event.data);
-    };
   }
 
-  private handleMessage(message: string): void {
-    console.log("Received message: ", message);
+  private createReliableAndOrderedDataChannel(): RTCDataChannel {
+    return this.peerConnection.createDataChannel("reliable-ordered", {
+      ordered: true,
+    });
+  }
+
+  private createReliableAndUnorderedDataChannel(): RTCDataChannel {
+    return this.peerConnection.createDataChannel("reliable-unordered", {
+      ordered: false,
+    });
+  }
+
+  private createUnreliableAndOrderedDataChannel(): RTCDataChannel {
+    return this.peerConnection.createDataChannel("unreliable-ordered", {
+      ordered: true,
+      maxRetransmits: 0,
+    });
+  }
+
+  private createUnreliableAndUnorderedDataChannel(): RTCDataChannel {
+    return this.peerConnection.createDataChannel("unreliable-unordered", {
+      ordered: false,
+      maxRetransmits: 0,
+    });
+  }
+
+  private addEventListeners(): void {
+    this.peerConnection.ondatachannel = () => {
+      this.handleConnection();
+    };
+
+    this.peerConnection.onconnectionstatechange = () => {
+      this.handleStateChange();
+    };
+
+    this.addMessageListeners();
+  }
+
+  private addMessageListeners(): void {
+    this.reliableOrderedDataChannel.onmessage = (event) => {
+      this.handleMessage(event.data);
+    };
+
+    this.reliableUnorderedDataChannel.onmessage = (event) => {
+      this.handleMessage(event.data);
+    };
+
+    this.unreliableOrderedDataChannel.onmessage = (event) => {
+      this.handleMessage(event.data);
+    };
+
+    this.unreliableUnorderedDataChannel.onmessage = (event) => {
+      this.handleMessage(event.data);
+    };
   }
 
   private handleConnection(): void {
     console.log("Peer connection established");
   }
 
-  private handleDisconnection(): void {
-    console.log("Peer connection closed");
+  private handleStateChange(): void {
+    console.log("Peer connection state: ", this.peerConnection.connectionState);
+
+    if (this.peerConnection.connectionState === "disconnected") {
+      console.log("Peer connection closed");
+    }
+  }
+
+  private handleMessage(message: string): void {
+    console.log("Received message: ", message);
   }
 }

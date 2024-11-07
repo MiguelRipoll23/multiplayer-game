@@ -45,7 +45,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
     update(deltaTimeStamp) {
         super.update(deltaTimeStamp);
-        this.gameController.getMatchmakingService().handleTimers();
         this.detectScores();
     }
     createBackgroundObject() {

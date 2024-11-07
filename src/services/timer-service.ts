@@ -1,9 +1,15 @@
 export class TimerService {
   private elapsedMilliseconds: number = 0;
   private durationMilliseconds: number = 0;
+  private finished: boolean = false;
+
   private callback: () => void;
 
-  constructor(durationSeconds: number, callback: () => void, private started: boolean = true) {
+  constructor(
+    durationSeconds: number,
+    callback: () => void,
+    private started: boolean = true
+  ) {
     console.log(
       `TimerService(durationSeconds=${durationSeconds},started=${started})`
     );
@@ -22,12 +28,18 @@ export class TimerService {
 
   public reset(): void {
     this.started = false;
+    this.finished = true;
     this.elapsedMilliseconds = 0;
+  }
+
+  public hasFinished(): boolean {
+    return this.finished;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     if (this.started) {
       this.elapsedMilliseconds += deltaTimeStamp;
+
       if (this.elapsedMilliseconds >= this.durationMilliseconds) {
         this.callback();
         this.reset();

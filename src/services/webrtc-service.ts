@@ -1,5 +1,6 @@
 export class WebRTCService {
   private peerConnection: RTCPeerConnection;
+  private iceCandidateQueue: RTCIceCandidateInit[] = [];
 
   private reliableOrderedDataChannel: RTCDataChannel;
   private reliableUnorderedDataChannel: RTCDataChannel;
@@ -7,7 +8,14 @@ export class WebRTCService {
   private unreliableUnorderedDataChannel: RTCDataChannel;
 
   constructor() {
-    this.peerConnection = new RTCPeerConnection();
+    this.peerConnection = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: "stun:stun.l.google.com:19302",
+        },
+      ],
+    });
+
     this.reliableOrderedDataChannel =
       this.createReliableAndOrderedDataChannel();
     this.reliableUnorderedDataChannel =
@@ -32,6 +40,12 @@ export class WebRTCService {
   ): Promise<RTCSessionDescriptionInit> {
     await this.peerConnection.setRemoteDescription(offer);
 
+    // Process any queued ICE candidates now that the remote description is set
+    this.iceCandidateQueue.forEach((candidate) =>
+      this.addIceCandidate(candidate)
+    );
+    this.iceCandidateQueue = [];
+
     const answer = await this.peerConnection.createAnswer();
     await this.peerConnection.setLocalDescription(answer);
 
@@ -39,14 +53,16 @@ export class WebRTCService {
   }
 
   public async connect(answer: RTCSessionDescriptionInit): Promise<void> {
+    console.log("Connecting to peer...", answer);
+
     const remoteDesc = new RTCSessionDescription(answer);
     await this.peerConnection.setRemoteDescription(remoteDesc);
 
-    this.peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log("New ICE candidate: ", event.candidate);
-      }
-    };
+    // Process any queued ICE candidates now that the remote description is set
+    this.iceCandidateQueue.forEach((candidate) =>
+      this.addIceCandidate(candidate)
+    );
+    this.iceCandidateQueue = [];
   }
 
   private createReliableAndOrderedDataChannel(): RTCDataChannel {
@@ -84,7 +100,51 @@ export class WebRTCService {
       this.handleStateChange();
     };
 
+    this.addIceListeners();
     this.addMessageListeners();
+  }
+
+  private addIceListeners(): void {
+    this.peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        this.handleNewIceCandidate(event.candidate.toJSON());
+      }
+    };
+
+    this.peerConnection.oniceconnectionstatechange = () => {
+      console.log(
+        "ICE connection state:",
+        this.peerConnection.iceConnectionState
+      );
+    };
+
+    this.peerConnection.onicegatheringstatechange = () => {
+      console.log(
+        "ICE gathering state:",
+        this.peerConnection.iceGatheringState
+      );
+    };
+  }
+
+  private handleNewIceCandidate(candidate: RTCIceCandidateInit): void {
+    console.log("ICE Candidate", candidate);
+
+    if (this.peerConnection.remoteDescription) {
+      // Add candidate immediately if remote description is set
+      this.addIceCandidate(candidate);
+    } else {
+      // Queue the candidate if remote description is not yet set
+      this.iceCandidateQueue.push(candidate);
+    }
+  }
+
+  private async addIceCandidate(candidate: RTCIceCandidateInit): Promise<void> {
+    try {
+      await this.peerConnection.addIceCandidate(candidate);
+      console.log("ICE candidate added successfully");
+    } catch (error) {
+      console.error("Error adding ICE candidate", error);
+    }
   }
 
   private addMessageListeners(): void {

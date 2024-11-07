@@ -2,6 +2,7 @@ import { GamePlayer } from "./game-player.js";
 import { GameServer } from "./game-server.js";
 
 export class GameState {
+  private version: string = "1.0.0";
   private host: boolean = false;
   private gamePlayer: GamePlayer;
   private gameServer: GameServer;
@@ -9,6 +10,10 @@ export class GameState {
   constructor() {
     this.gamePlayer = new GamePlayer();
     this.gameServer = new GameServer();
+  }
+
+  public getVersion(): string {
+    return this.version;
   }
 
   public isHost(): boolean {

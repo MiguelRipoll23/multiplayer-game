@@ -3,11 +3,19 @@ export class MatchmakingService {
     gameController;
     apiService;
     webrtcService;
+    findMatchesTimerService;
     constructor(gameController) {
         this.gameController = gameController;
         this.apiService = gameController.getApiService();
         this.webrtcService = gameController.getWebRTCService();
+        this.findMatchesTimerService = this.gameController.addTimer(10, false);
         this.addEventListeners();
+    }
+    handleTimers() {
+        if (this.findMatchesTimerService.hasFinished()) {
+            this.findMatchesTimerService.reset();
+            this.advertiseMatch();
+        }
     }
     addEventListeners() {
         window.addEventListener(SERVER_TUNNEL_MESSAGE, (event) => {
@@ -21,12 +29,12 @@ export class MatchmakingService {
             return this.advertiseMatch();
         }
         await this.joinMatches(matches);
-        setTimeout(() => this.advertiseMatch(), 10_000);
+        this.findMatchesTimerService.start();
     }
     async findMatches() {
         console.log("Finding matches...");
         const body = {
-            version: "1.0.0",
+            version: this.gameController.getGameState().getVersion(),
             total_slots: 1,
             attributes: {
                 mode: "battle",
@@ -37,7 +45,7 @@ export class MatchmakingService {
     async advertiseMatch() {
         console.log("Advertising match...");
         const body = {
-            version: "1.0.0",
+            version: this.gameController.getGameState().getVersion(),
             total_slots: 4,
             available_slots: 3,
             attributes: {
@@ -57,6 +65,7 @@ export class MatchmakingService {
     }
     joinMatch(match, offer) {
         const { token } = match;
+        console.log("Sending join request...", token, offer);
         const tokenBytes = Uint8Array.from(atob(token), (c) => c.charCodeAt(0));
         const offerBytes = new TextEncoder().encode(JSON.stringify(offer));
         const payload = new Uint8Array([...tokenBytes, ...offerBytes]);
@@ -74,12 +83,14 @@ export class MatchmakingService {
     async handleJoinRequest(originToken, rtcSessionDescription) {
         console.log("Join request", originToken, rtcSessionDescription);
         const answer = await this.webrtcService.createAnswer(rtcSessionDescription);
+        const originTokenBytes = Uint8Array.from(atob(originToken), (c) => c.charCodeAt(0));
         const answerBytes = new TextEncoder().encode(JSON.stringify(answer));
-        const payload = new Uint8Array([...originToken, ...answerBytes]);
+        const payload = new Uint8Array([...originTokenBytes, ...answerBytes]);
         this.gameController.getWebSocketService().sendTunnelMessage(payload);
     }
     async handleJoinResponse(originToken, rtcSessionDescription) {
         console.log("Join response", originToken, rtcSessionDescription);
+        this.findMatchesTimerService.stop();
         await this.webrtcService.connect(rtcSessionDescription);
     }
 }

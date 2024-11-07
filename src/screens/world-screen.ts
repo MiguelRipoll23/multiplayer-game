@@ -55,6 +55,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
+    this.gameController.getMatchmakingService().handleTimers();
     this.detectScores();
     this.handleGoalTimerComplete();
   }

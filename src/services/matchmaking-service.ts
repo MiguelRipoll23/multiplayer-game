@@ -7,16 +7,27 @@ import { ApiService } from "./api-service.js";
 import { AdvertiseMatchRequest } from "./interfaces/request/advertise-match-request.js";
 import { FindMatchRequest as FindMatchesRequest } from "./interfaces/request/find-matches-request.js";
 import { FindMatchesResponse } from "./interfaces/response/find-matches-response.js";
+import { TimerService } from "./timer-service.js";
 import { WebRTCService } from "./webrtc-service.js";
 
 export class MatchmakingService {
   private apiService: ApiService;
   private webrtcService: WebRTCService;
 
+  private findMatchesTimerService: TimerService;
+
   constructor(private readonly gameController: GameController) {
     this.apiService = gameController.getApiService();
     this.webrtcService = gameController.getWebRTCService();
+    this.findMatchesTimerService = this.gameController.addTimer(10, false);
     this.addEventListeners();
+  }
+
+  public handleTimers(): void {
+    if (this.findMatchesTimerService.hasFinished()) {
+      this.findMatchesTimerService.reset();
+      this.advertiseMatch();
+    }
   }
 
   private addEventListeners(): void {
@@ -35,14 +46,14 @@ export class MatchmakingService {
 
     await this.joinMatches(matches);
 
-    setTimeout(() => this.advertiseMatch(), 10_000);
+    this.findMatchesTimerService.start();
   }
 
   private async findMatches(): Promise<FindMatchesResponse[]> {
     console.log("Finding matches...");
 
     const body: FindMatchesRequest = {
-      version: "1.0.0",
+      version: this.gameController.getGameState().getVersion(),
       total_slots: 1,
       attributes: {
         mode: "battle",
@@ -56,7 +67,7 @@ export class MatchmakingService {
     console.log("Advertising match...");
 
     const body: AdvertiseMatchRequest = {
-      version: "1.0.0",
+      version: this.gameController.getGameState().getVersion(),
       total_slots: 4,
       available_slots: 3,
       attributes: {
@@ -87,6 +98,8 @@ export class MatchmakingService {
   ): void {
     const { token } = match;
 
+    console.log("Sending join request...", token, offer);
+
     const tokenBytes = Uint8Array.from(atob(token), (c) => c.charCodeAt(0));
     const offerBytes = new TextEncoder().encode(JSON.stringify(offer));
     const payload = new Uint8Array([...tokenBytes, ...offerBytes]);
@@ -105,24 +118,31 @@ export class MatchmakingService {
   }
 
   private async handleJoinRequest(
-    originToken: Uint8Array,
+    originToken: string,
     rtcSessionDescription: RTCSessionDescriptionInit
   ): Promise<void> {
     console.log("Join request", originToken, rtcSessionDescription);
 
     const answer = await this.webrtcService.createAnswer(rtcSessionDescription);
+
+    const originTokenBytes = Uint8Array.from(atob(originToken), (c) =>
+      c.charCodeAt(0)
+    );
+
     const answerBytes = new TextEncoder().encode(JSON.stringify(answer));
 
-    const payload = new Uint8Array([...originToken, ...answerBytes]);
+    const payload = new Uint8Array([...originTokenBytes, ...answerBytes]);
 
     this.gameController.getWebSocketService().sendTunnelMessage(payload);
   }
 
   private async handleJoinResponse(
-    originToken: Uint8Array,
+    originToken: string,
     rtcSessionDescription: RTCSessionDescriptionInit
   ): Promise<void> {
     console.log("Join response", originToken, rtcSessionDescription);
+
+    this.findMatchesTimerService.stop();
 
     await this.webrtcService.connect(rtcSessionDescription);
   }

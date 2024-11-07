@@ -26,12 +26,6 @@ export class TimerService {
     this.started = false;
   }
 
-  public reset(): void {
-    this.started = false;
-    this.finished = true;
-    this.elapsedMilliseconds = 0;
-  }
-
   public hasFinished(): boolean {
     return this.finished;
   }
@@ -41,9 +35,16 @@ export class TimerService {
       this.elapsedMilliseconds += deltaTimeStamp;
 
       if (this.elapsedMilliseconds >= this.durationMilliseconds) {
-        this.callback();
-        this.reset();
+        this.end();
       }
     }
+  }
+
+  private end(): void {
+    this.started = false;
+    this.finished = true;
+    this.elapsedMilliseconds = 0;
+
+    this.callback();
   }
 }

@@ -1,7 +1,7 @@
 import { HitboxObject } from "../common/hitbox-object.js";
-import { BasePositionableGameObject } from "./base-positionable-game-object.js";
+import { BaseAnimatedGameObject } from "./base-animated-object.js";
 
-export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
+export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {
   protected rigidBody: boolean = true;
   protected hitboxObjects: HitboxObject[];
 

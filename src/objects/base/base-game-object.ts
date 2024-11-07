@@ -4,6 +4,9 @@ export class BaseGameObject implements GameObject {
   protected loaded: boolean = false;
   protected debug: boolean = false;
 
+  protected syncable: boolean = false;
+  protected syncableByHost: boolean = false;
+
   constructor() {
     console.log(`${this.constructor.name} created`);
   }
@@ -19,6 +22,14 @@ export class BaseGameObject implements GameObject {
 
   public setDebug(debug: boolean): void {
     this.debug = debug;
+  }
+
+  public isSyncable(): boolean {
+    return this.syncable;
+  }
+
+  public isSyncableByHost(): boolean {
+    return this.syncableByHost;
   }
 
   public update(deltaTimeStamp: number): void {}

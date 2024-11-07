@@ -1,6 +1,6 @@
 import { PLAYER_CONNECTED_EVENT } from "../constants/events-constants.js";
 
-export class WebRTCUser {
+export class WebRTCUserService {
   public peerConnection: RTCPeerConnection;
   public iceCandidateQueue: RTCIceCandidateInit[] = [];
 

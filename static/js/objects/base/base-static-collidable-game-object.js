@@ -1,5 +1,5 @@
-import { BasePositionableGameObject } from "./base-positionable-game-object.js";
-export class BaseStaticCollidableGameObject extends BasePositionableGameObject {
+import { BaseAnimatedGameObject } from "./base-animated-object.js";
+export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {
     rigidBody = true;
     hitboxObjects;
     collidingObjects;

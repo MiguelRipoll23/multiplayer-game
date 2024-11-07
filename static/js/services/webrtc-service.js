@@ -1,8 +1,8 @@
-import { WebRTCUser } from "../models/webrtc-user.js";
+import { WebRTCUserService } from "./webrtc-user-service.js";
 export class WebRTCService {
     users = new Map();
     createUser(token) {
-        const user = new WebRTCUser(token);
+        const user = new WebRTCUserService(token);
         this.users.set(token, user);
         return user;
     }

@@ -41,6 +41,13 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   public override load(): void {
     this.createHitbox();
     this.loadCarImage();
+    super.load();
+  }
+
+  public override reset(): void {
+    this.angle = 90;
+    this.speed = 0;
+    this.setCenterPosition();
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -48,6 +55,8 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     this.applyFriction();
     this.calculateMovement();
     this.updateHitbox();
+
+    super.update(deltaTimeStamp);
   }
 
   public override render(context: CanvasRenderingContext2D): void {

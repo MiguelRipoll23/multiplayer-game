@@ -17,10 +17,6 @@ export class LocalCarObject extends CarObject {
     getGearStickObject() {
         return this.gearStickObject;
     }
-    reset() {
-        this.angle = 90;
-        this.setCenterPosition();
-    }
     update(deltaTimeStamp) {
         this.handleControls();
         super.update(deltaTimeStamp);

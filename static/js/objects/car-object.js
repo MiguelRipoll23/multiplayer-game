@@ -28,12 +28,19 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     load() {
         this.createHitbox();
         this.loadCarImage();
+        super.load();
+    }
+    reset() {
+        this.angle = 90;
+        this.speed = 0;
+        this.setCenterPosition();
     }
     update(deltaTimeStamp) {
         this.wrapAngle();
         this.applyFriction();
         this.calculateMovement();
         this.updateHitbox();
+        super.update(deltaTimeStamp);
     }
     render(context) {
         context.save();

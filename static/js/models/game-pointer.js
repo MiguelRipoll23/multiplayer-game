@@ -60,6 +60,12 @@ export class GamePointer {
         this.pressed = false;
     }
     addEventListeners() {
+        window.addEventListener("touchstart", (event) => {
+            event.preventDefault();
+        });
+        window.addEventListener("touchmove", (event) => {
+            event.preventDefault();
+        });
         window.addEventListener("pointermove", (event) => {
             event.preventDefault();
             this.setX(event.clientX);

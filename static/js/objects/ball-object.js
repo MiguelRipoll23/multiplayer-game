@@ -13,6 +13,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     constructor(x, y, canvas) {
         super();
         this.canvas = canvas;
+        this.syncableByHost = true;
         this.x = x;
         this.y = y;
         this.mass = this.MASS;

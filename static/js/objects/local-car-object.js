@@ -8,6 +8,7 @@ export class LocalCarObject extends CarObject {
     constructor(x, y, angle, canvas, gamePointer, gameKeyboard) {
         super(x, y, angle, false, canvas);
         this.canvas = canvas;
+        this.syncable = true;
         this.joystickObject = new JoystickObject(canvas, gamePointer, gameKeyboard);
         this.gearStickObject = new GearStickObject(canvas, gamePointer, gameKeyboard);
     }

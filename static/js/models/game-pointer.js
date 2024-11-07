@@ -62,10 +62,10 @@ export class GamePointer {
     addEventListeners() {
         window.addEventListener("touchstart", (event) => {
             event.preventDefault();
-        });
+        }, { passive: false });
         window.addEventListener("touchmove", (event) => {
             event.preventDefault();
-        });
+        }, { passive: false });
         window.addEventListener("pointermove", (event) => {
             event.preventDefault();
             this.setX(event.clientX);

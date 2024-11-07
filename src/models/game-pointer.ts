@@ -81,13 +81,21 @@ export class GamePointer {
   }
 
   public addEventListeners(): void {
-    window.addEventListener("touchstart", (event) => {
-      event.preventDefault();
-    });
+    window.addEventListener(
+      "touchstart",
+      (event) => {
+        event.preventDefault();
+      },
+      { passive: false }
+    );
 
-    window.addEventListener("touchmove", (event) => {
-      event.preventDefault();
-    });
+    window.addEventListener(
+      "touchmove",
+      (event) => {
+        event.preventDefault();
+      },
+      { passive: false }
+    );
 
     window.addEventListener(
       "pointermove",

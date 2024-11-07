@@ -13,8 +13,12 @@ export class TimerService {
     start() {
         this.started = true;
     }
+    pause() {
+        this.started = false;
+    }
     stop() {
         this.started = false;
+        this.finished = true;
     }
     hasFinished() {
         return this.finished;

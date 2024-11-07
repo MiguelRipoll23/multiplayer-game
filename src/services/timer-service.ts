@@ -22,8 +22,13 @@ export class TimerService {
     this.started = true;
   }
 
+  public pause(): void {
+    this.started = false;
+  }
+
   public stop(): void {
     this.started = false;
+    this.finished = true;
   }
 
   public hasFinished(): boolean {

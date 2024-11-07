@@ -19,19 +19,12 @@ export class MatchmakingService {
   private apiService: ApiService;
   private webrtcService: WebRTCService;
 
-  private findMatchesTimerService: TimerService;
+  private findMatchesTimerService: TimerService | null = null;
 
   constructor(private readonly gameController: GameController) {
     this.apiService = gameController.getApiService();
     this.webrtcService = gameController.getWebRTCService();
-    this.findMatchesTimerService = this.gameController.addTimer(10, () => {
-      this.advertiseMatch();
-    }, false);
     this.addEventListeners();
-  }
-
-  public handleTimers(): void {
-    // No longer needed as the callback will handle the timer completion
   }
 
   private addEventListeners(): void {
@@ -65,7 +58,13 @@ export class MatchmakingService {
 
     await this.joinMatches(matches);
 
-    this.findMatchesTimerService.start();
+    this.findMatchesTimerService = this.gameController.addTimer(10, () => {
+      this.advertiseMatch();
+    });
+  }
+
+  public stopFindMatchesTimer(): void {
+    this.findMatchesTimerService?.stop();
   }
 
   private async findMatches(): Promise<FindMatchesResponse[]> {

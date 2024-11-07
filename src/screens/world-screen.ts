@@ -76,6 +76,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     });
 
     window.addEventListener(PLAYER_CONNECTED_EVENT, (event) => {
+      this.gameController.getMatchmakingService().stopFindMatchesTimer();
       this.toastObject?.hide();
     });
   }
@@ -196,13 +197,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.showGoalAlert(playerObject, goalTeam);
 
     // Timer
-    this.goalTimerService = this.gameController.addTimer(5, () => {
-      console.log("Goal timer complete");
-
-      this.ballObject?.reset();
-      this.localCarObject?.reset();
-      this.alertObject?.hide();
-    });
+    this.goalTimerService = this.gameController.addTimer(5, () =>
+      this.handleGoalTimerEnd()
+    );
   }
 
   private handlePlayerScore(playerObject: PlayerObject, goalTeam: Team) {
@@ -234,5 +231,11 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
 
     this.alertObject?.show([playerName, "SCORED!"], color);
+  }
+
+  private handleGoalTimerEnd(): void {
+    this.ballObject?.reset();
+    this.localCarObject?.reset();
+    this.alertObject?.hide();
   }
 }

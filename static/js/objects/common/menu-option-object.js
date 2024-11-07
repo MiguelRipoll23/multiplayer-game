@@ -5,25 +5,11 @@ export class MenuOptionObject extends BasePressableGameObject {
     radius = 15; // Base radius for rounded corners
     textX = 0;
     textY = 0;
-    // Store irregularity values for each corner and side
-    topLeftIrregularity;
-    topRightIrregularity;
-    bottomRightIrregularity;
-    bottomLeftIrregularity;
     constructor(canvas, index, content) {
         super();
         this.index = index;
         this.content = content;
         this.setSize(canvas);
-        // Generate and store irregularity values (these are only generated once)
-        this.topLeftIrregularity = this.getRandomIrregularity();
-        this.topRightIrregularity = this.getRandomIrregularity();
-        this.bottomRightIrregularity = this.getRandomIrregularity();
-        this.bottomLeftIrregularity = this.getRandomIrregularity();
-    }
-    // Generate a random irregularity value
-    getRandomIrregularity() {
-        return Math.random() * 4 - 2; // Between -2 and 2 for subtle irregularity
     }
     getIndex() {
         return this.index;
@@ -34,7 +20,7 @@ export class MenuOptionObject extends BasePressableGameObject {
     setPosition(x, y) {
         this.x = x;
         this.y = y;
-        this.angle = this.index === 0 ? -0.05 : (this.index === 1 ? 0.05 : -0.02);
+        this.angle = this.index === 0 ? -0.05 : this.index === 1 ? 0.05 : -0.02;
         this.calculateTextPosition();
     }
     render(context) {
@@ -46,22 +32,22 @@ export class MenuOptionObject extends BasePressableGameObject {
         // Use the stored irregularity values for each corner and side
         context.beginPath();
         // Top left corner
-        context.moveTo(this.x + this.radius + this.topLeftIrregularity, this.y);
-        context.lineTo(this.x + this.width - this.radius + this.topRightIrregularity, this.y);
+        context.moveTo(this.x + this.radius, this.y);
+        context.lineTo(this.x + this.width - this.radius, this.y);
         // Top right corner
-        context.quadraticCurveTo(this.x + this.width + this.topRightIrregularity, this.y + this.topRightIrregularity, this.x + this.width, this.y + this.radius + this.topRightIrregularity);
+        context.quadraticCurveTo(this.x + this.width, this.y, this.x + this.width, this.y + this.radius);
         // Right side
-        context.lineTo(this.x + this.width, this.y + this.height - this.radius + this.bottomRightIrregularity);
+        context.lineTo(this.x + this.width, this.y + this.height - this.radius);
         // Bottom right corner
-        context.quadraticCurveTo(this.x + this.width + this.bottomRightIrregularity, this.y + this.height + this.bottomRightIrregularity, this.x + this.width - this.radius + this.bottomRightIrregularity, this.y + this.height);
+        context.quadraticCurveTo(this.x + this.width, this.y + this.height, this.x + this.width - this.radius, this.y + this.height);
         // Bottom side
-        context.lineTo(this.x + this.radius + this.bottomLeftIrregularity, this.y + this.height);
+        context.lineTo(this.x + this.radius, this.y + this.height);
         // Bottom left corner
-        context.quadraticCurveTo(this.x + this.bottomLeftIrregularity, this.y + this.height + this.bottomLeftIrregularity, this.x, this.y + this.height - this.radius + this.bottomLeftIrregularity);
+        context.quadraticCurveTo(this.x, this.y + this.height, this.x, this.y + this.height - this.radius);
         // Left side
-        context.lineTo(this.x, this.y + this.radius + this.topLeftIrregularity);
+        context.lineTo(this.x, this.y + this.radius);
         // Top left corner
-        context.quadraticCurveTo(this.x + this.topLeftIrregularity, this.y + this.topLeftIrregularity, this.x + this.radius + this.topLeftIrregularity, this.y);
+        context.quadraticCurveTo(this.x, this.y, this.x + this.radius, this.y);
         context.closePath();
         // Set colors based on the button's index (to match the image)
         if (this.pressed || this.hovering) {

@@ -47,7 +47,7 @@ export class MainMenuScreen extends BaseGameScreen {
             const menuOptionObject = new MenuOptionObject(this.canvas, index, text);
             menuOptionObject.setPosition(30, y);
             this.uiObjects.push(menuOptionObject);
-            y += menuOptionObject.getHeight() + 25;
+            y += menuOptionObject.getHeight() + 30;
         }
     }
     loadCloseableMessageObject() {

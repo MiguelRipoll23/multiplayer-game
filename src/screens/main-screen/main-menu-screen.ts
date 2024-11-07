@@ -68,7 +68,7 @@ export class MainMenuScreen extends BaseGameScreen {
 
       this.uiObjects.push(menuOptionObject);
 
-      y += menuOptionObject.getHeight() + 25;
+      y += menuOptionObject.getHeight() + 30;
     }
   }
 

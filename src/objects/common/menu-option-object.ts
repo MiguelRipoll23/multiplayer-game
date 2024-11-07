@@ -4,9 +4,9 @@ export class MenuOptionObject extends BasePressableGameObject {
   private index: number = 0;
   private content: string = "Unknown";
 
-  private radius = 15; // Base radius for rounded corners
   private textX = 0;
   private textY = 0;
+  private pinchFactor = 12; // Control the pinch depth for the sides
 
   constructor(canvas: HTMLCanvasElement, index: number, content: string) {
     super();
@@ -32,77 +32,96 @@ export class MenuOptionObject extends BasePressableGameObject {
   }
 
   public override render(context: CanvasRenderingContext2D): void {
-    context.save(); // Save current context state before applying transformations
+    context.save();
 
-    // Apply a small rotation to make the buttons look tilted
-    context.translate(this.x + this.width / 2, this.y + this.height / 2); // Move the origin to the center of the button
-    context.rotate(this.angle); // Rotate the canvas slightly
-    context.translate(-(this.x + this.width / 2), -(this.y + this.height / 2)); // Move the origin back
+    context.translate(this.x + this.width / 2, this.y + this.height / 2);
+    context.rotate(this.angle);
+    context.translate(-(this.x + this.width / 2), -(this.y + this.height / 2));
 
-    // Use the stored irregularity values for each corner and side
     context.beginPath();
 
-    // Top left corner
-    context.moveTo(this.x + this.radius, this.y);
-    context.lineTo(this.x + this.width - this.radius, this.y);
+    // Top side with single pinch in the center
+    context.moveTo(this.x + this.pinchFactor, this.y);
+    context.quadraticCurveTo(
+      this.x + this.width / 2,
+      this.y - this.pinchFactor, // Pinch inward at the center
+      this.x + this.width - this.pinchFactor,
+      this.y
+    );
 
-    // Top right corner
+    // Top right corner transitioning from top side to right side
     context.quadraticCurveTo(
       this.x + this.width,
       this.y,
       this.x + this.width,
-      this.y + this.radius
+      this.y + this.pinchFactor
     );
 
-    // Right side
-    context.lineTo(this.x + this.width, this.y + this.height - this.radius);
+    // Right side with single pinch in the center
+    context.lineTo(this.x + this.width, this.y + this.pinchFactor);
+    context.quadraticCurveTo(
+      this.x + this.width + this.pinchFactor / 2, // Pinch inward at the center
+      this.y + this.height / 2,
+      this.x + this.width,
+      this.y + this.height - this.pinchFactor
+    );
 
-    // Bottom right corner
+    // Bottom right corner transitioning from right side to bottom side
     context.quadraticCurveTo(
       this.x + this.width,
       this.y + this.height,
-      this.x + this.width - this.radius,
+      this.x + this.width - this.pinchFactor,
       this.y + this.height
     );
 
-    // Bottom side
-    context.lineTo(this.x + this.radius, this.y + this.height);
+    // Bottom side with single pinch in the center
+    context.lineTo(
+      this.x + this.width - this.pinchFactor,
+      this.y + this.height
+    );
+    context.quadraticCurveTo(
+      this.x + this.width / 2,
+      this.y + this.height + this.pinchFactor, // Pinch inward at the center
+      this.x + this.pinchFactor,
+      this.y + this.height
+    );
 
-    // Bottom left corner
+    // Bottom left corner transitioning from bottom side to left side
     context.quadraticCurveTo(
       this.x,
       this.y + this.height,
       this.x,
-      this.y + this.height - this.radius
+      this.y + this.height - this.pinchFactor
     );
 
-    // Left side
-    context.lineTo(this.x, this.y + this.radius);
+    // Left side with single pinch in the center
+    context.lineTo(this.x, this.y + this.height - this.pinchFactor);
+    context.quadraticCurveTo(
+      this.x - this.pinchFactor / 2, // Pinch inward at the center
+      this.y + this.height / 2,
+      this.x,
+      this.y + this.pinchFactor
+    );
 
-    // Top left corner
-    context.quadraticCurveTo(this.x, this.y, this.x + this.radius, this.y);
+    // Top left corner transitioning from left side to top side
+    context.quadraticCurveTo(this.x, this.y, this.x + this.pinchFactor, this.y);
 
     context.closePath();
 
-    // Set colors based on the button's index (to match the image)
     if (this.pressed || this.hovering) {
-      context.fillStyle = "#7ed321"; // Green for the second button
+      context.fillStyle = "#7ed321";
     } else {
       context.fillStyle = "#4a90e2";
     }
 
     context.fill();
 
-    // Set text properties
-    context.fillStyle = "#FFFFFF"; // White color for the text
-    context.font = "bold 28px system-ui"; // Adjust font size and family as needed
+    context.fillStyle = "#FFFFFF";
+    context.font = "bold 28px system-ui";
     context.textAlign = "center";
-
-    // Draw the text
     context.fillText(this.content, this.textX, this.textY);
 
-    context.restore(); // Restore the canvas state to avoid affecting other elements
-
+    context.restore();
     super.render(context);
   }
 

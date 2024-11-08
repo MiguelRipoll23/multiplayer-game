@@ -25,7 +25,6 @@ export class MatchmakingService {
   constructor(private gameController: GameController) {
     this.apiService = gameController.getApiService();
     this.webrtcService = gameController.getWebRTCService();
-    this.addEventListeners();
   }
 
   public async findOrAdvertiseMatch(): Promise<void> {
@@ -62,27 +61,6 @@ export class MatchmakingService {
 
     const playerNameBytes = new TextEncoder().encode(playerName);
     peer.sendReliableUnorderedMessage(playerNameBytes);
-  }
-
-  private addEventListeners(): void {
-    window.addEventListener(SERVER_SESSION_DESCRIPTION_EVENT, (event) => {
-      this.handleSessionDescriptionEvent(event as CustomEvent<any>);
-    });
-
-    window.addEventListener(SERVER_ICE_CANDIDATE_EVENT, (event) => {
-      this.handleNewIceCandidate(event as CustomEvent<any>);
-    });
-  }
-
-  private handleNewIceCandidate(event: CustomEvent<any>): void {
-    const { originToken, iceCandidate } = event.detail;
-    const peer = this.webrtcService.getPeer(originToken);
-
-    if (peer === null) {
-      return console.warn("WebRTC peer with token not found", originToken);
-    }
-
-    peer.addRemoteIceCandidate(iceCandidate);
   }
 
   private async findMatches(): Promise<FindMatchesResponse[]> {
@@ -128,95 +106,6 @@ export class MatchmakingService {
 
   private async joinMatch(match: FindMatchesResponse): Promise<void> {
     const { token } = match;
-
-    const peer = this.webrtcService.addPeer(token);
-    const offer = await peer.createOffer();
-
-    console.log("Sending join request...", token, offer);
-
-    const tokenBytes = Uint8Array.from(atob(token), (c) => c.charCodeAt(0));
-    const offerBytes = new TextEncoder().encode(JSON.stringify(offer));
-
-    const payload = new Uint8Array([
-      ...tokenBytes,
-      SESSION_DESCRIPTION_ID,
-      ...offerBytes,
-    ]);
-
-    this.gameController.getWebSocketService().sendTunnelMessage(payload);
-  }
-
-  private handleSessionDescriptionEvent(event: CustomEvent<any>): void {
-    const { originToken, rtcSessionDescription } = event.detail;
-
-    if (this.gameController.getGameState().isHost()) {
-      this.handleJoinRequest(originToken, rtcSessionDescription);
-    } else {
-      this.handleJoinResponse(originToken, rtcSessionDescription);
-    }
-  }
-
-  private async handleJoinRequest(
-    originToken: string,
-    rtcSessionDescription: RTCSessionDescriptionInit
-  ): Promise<void> {
-    console.log("Join request", originToken, rtcSessionDescription);
-
-    const peer = this.webrtcService.addPeer(originToken);
-    const answer = await peer.createAnswer(rtcSessionDescription);
-
-    console.log("Sending join response...", originToken, answer);
-
-    const originTokenBytes = Uint8Array.from(atob(originToken), (c) =>
-      c.charCodeAt(0)
-    );
-
-    const answerBytes = new TextEncoder().encode(JSON.stringify(answer));
-
-    const payload = new Uint8Array([
-      ...originTokenBytes,
-      SESSION_DESCRIPTION_ID,
-      ...answerBytes,
-    ]);
-
-    this.gameController.getWebSocketService().sendTunnelMessage(payload);
-  }
-
-  private async handleJoinResponse(
-    originToken: string,
-    rtcSessionDescription: RTCSessionDescriptionInit
-  ): Promise<void> {
-    console.log("Join response", originToken, rtcSessionDescription);
-
-    const peer = this.webrtcService.getPeer(originToken);
-
-    if (peer === null) {
-      return console.warn("WebRTC peer with token not found", originToken);
-    }
-
-    peer.getQueuedIceCandidates().forEach((iceCandidate) => {
-      this.sendIceCandidate(originToken, iceCandidate);
-    });
-
-    await peer.connect(rtcSessionDescription);
-  }
-
-  private sendIceCandidate(
-    originToken: string,
-    iceCandidate: RTCIceCandidateInit
-  ): void {
-    console.log("Sending ICE candidate...", originToken, iceCandidate);
-
-    const candidateBytes = new TextEncoder().encode(
-      JSON.stringify(iceCandidate)
-    );
-
-    const payload = new Uint8Array([
-      ...Uint8Array.from(atob(originToken), (c) => c.charCodeAt(0)),
-      ICE_CANDIDATE_ID,
-      ...candidateBytes,
-    ]);
-
-    this.gameController.getWebSocketService().sendTunnelMessage(payload);
+    this.webrtcService.sendOffer(token);
   }
 }

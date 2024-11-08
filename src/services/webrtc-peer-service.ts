@@ -155,6 +155,7 @@ export class WebRTCPeerService {
 
   private handleDataChannelOpen(label: string): void {
     this.logger.info(`Data channel ${label} opened`);
+
     if (this.areAllDataChannelsOpen()) {
       this.gameController.getMatchmakingService().hasPeerConnected(this);
     }

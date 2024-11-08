@@ -87,7 +87,7 @@ export class WebRTCService {
     token: string,
     rtcSessionDescription: RTCSessionDescriptionInit
   ): Promise<void> {
-    console.log("Join response", token, rtcSessionDescription);
+    console.log("Received WebRTC answer", token, rtcSessionDescription);
 
     const peer = this.getPeer(token);
 

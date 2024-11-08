@@ -54,7 +54,7 @@ export class WebRTCService {
         this.gameController.getWebSocketService().sendTunnelMessage(payload);
     }
     async handlePeerAnswer(token, rtcSessionDescription) {
-        console.log("Join response", token, rtcSessionDescription);
+        console.log("Received WebRTC answer", token, rtcSessionDescription);
         const peer = this.getPeer(token);
         if (peer === null) {
             return console.warn("WebRTC peer with token not found", token);

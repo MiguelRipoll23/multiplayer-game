@@ -149,6 +149,8 @@ export class WebRTCPeerService {
   private addDataChannelListeners(): void {
     Object.values(this.dataChannels).forEach((channel) => {
       channel.onopen = () => this.handleDataChannelOpen(channel.label);
+      channel.onerror = (error) =>
+        this.handleDataChannelError(channel.label, error);
       channel.onmessage = (event) => this.handleMessage(event.data);
     });
   }
@@ -165,6 +167,10 @@ export class WebRTCPeerService {
     return Object.values(this.dataChannels).every(
       (channel) => channel.readyState === "open"
     );
+  }
+
+  private handleDataChannelError(label: string, error: Event): void {
+    this.logger.error(`Data channel ${label} error`, error);
   }
 
   private queueOrProcessIceCandidate(iceCandidate: RTCIceCandidateInit): void {
@@ -200,7 +206,7 @@ export class WebRTCPeerService {
     this.logger.debug(`Sent ${channelKey} message`, arrayBuffer);
   }
 
-  private handleMessage(message: string): void {
-    this.logger.info("Received message from peer", message);
+  private handleMessage(arrayBuffer: ArrayBuffer): void {
+    this.logger.info("Received message from peer", arrayBuffer);
   }
 }

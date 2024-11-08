@@ -1,8 +1,7 @@
 import { GamePlayer } from "./game-player.js";
 import { GameServer } from "./game-server.js";
 export class GameState {
-    version = "1.0.0";
-    host = false;
+    version = "0.0.1-alpha";
     gamePlayer;
     gameServer;
     constructor() {
@@ -11,12 +10,6 @@ export class GameState {
     }
     getVersion() {
         return this.version;
-    }
-    isHost() {
-        return this.host;
-    }
-    setHost(host) {
-        this.host = host;
     }
     getGamePlayer() {
         return this.gamePlayer;

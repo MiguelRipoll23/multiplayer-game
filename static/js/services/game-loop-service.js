@@ -1,11 +1,13 @@
-import { SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, } from "../constants/events-constants.js";
+import { HOST_DISCONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_NOTIFICATION_EVENT, } from "../constants/events-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
+import { LoginScreen } from "../screens/main-screen/login-screen.js";
+import { MainMenuScreen } from "../screens/main-screen/main-menu-screen.js";
 export class GameLoopService {
     canvas;
     context;
-    debug = false;
+    debug = true;
     gameController;
     gameFrame;
     gamePointer;
@@ -68,6 +70,9 @@ export class GameLoopService {
         window.addEventListener(SERVER_NOTIFICATION_EVENT, (event) => {
             this.handleServerNotificationEvent(event);
         });
+        window.addEventListener(HOST_DISCONNECTED_EVENT, () => {
+            this.handleHostDisconnectedEvent();
+        });
     }
     handleServerDisconnectedEvent(event) {
         console.log(`Event ${SERVER_DISCONNECTED_EVENT} handled`, event);
@@ -83,12 +88,25 @@ export class GameLoopService {
         console.log(`Event ${SERVER_NOTIFICATION_EVENT} handled`, event);
         this.gameFrame.getNotificationObject()?.show(event.detail.text);
     }
+    handleHostDisconnectedEvent() {
+        console.log(`Event ${HOST_DISCONNECTED_EVENT} handled`);
+        alert("Host has disconnected");
+        const mainScreen = new MainScreen(this.getGameController());
+        const mainMenuScreen = new MainMenuScreen(this.getGameController(), false);
+        mainScreen.setScreen(mainMenuScreen);
+        mainScreen.loadObjects();
+        this.getGameController()
+            .getTransitionService()
+            .fadeOutAndIn(mainScreen, 1, 1);
+    }
     loadNotificationObject() {
         const notificationObject = new NotificationObject(this.canvas);
         this.gameFrame.setNotificationObject(notificationObject);
     }
     setInitialScreen() {
         const mainScreen = new MainScreen(this.gameController);
+        const loginScreen = new LoginScreen(this.gameController);
+        mainScreen.setScreen(loginScreen);
         mainScreen.loadObjects();
         this.gameController.getTransitionService().crossfade(mainScreen, 1);
     }

@@ -20,7 +20,7 @@ import { GameController } from "../models/game-controller.js";
 import {
   ICE_CANDIDATE_ID,
   SESSION_DESCRIPTION_ID,
-} from "../constants/webrtc-constants.js";
+} from "../constants/websocket-constants.js";
 
 export class WebSocketService {
   private gameState: GameState;
@@ -99,18 +99,14 @@ export class WebSocketService {
     console.log("Received message from server", data);
 
     const id = data[0];
-    const payload = data.slice(1);
+    const payload = data.length > 1 ? data.slice(1) : null;
 
     switch (id) {
-      case NOTIFICATION_ID: {
-        this.handleNotification(payload);
-        break;
-      }
+      case NOTIFICATION_ID:
+        return this.handleNotification(payload);
 
-      case TUNNEL_ID: {
-        this.handleTunnelMessage(payload);
-        break;
-      }
+      case TUNNEL_ID:
+        return this.handleTunnelMessage(payload);
 
       default: {
         console.warn("Unknown websocket message identifier", id);
@@ -118,7 +114,11 @@ export class WebSocketService {
     }
   }
 
-  private handleNotification(payload: Uint8Array) {
+  private handleNotification(payload: Uint8Array | null) {
+    if (payload === null) {
+      return console.warn("Received empty notification");
+    }
+
     const text = new TextDecoder("utf-8").decode(payload);
 
     dispatchEvent(
@@ -126,7 +126,13 @@ export class WebSocketService {
     );
   }
 
-  private handleTunnelMessage(payload: Uint8Array) {
+  private handleTunnelMessage(payload: Uint8Array | null) {
+    if (payload === null) {
+      return console.warn("Received empty tunnel message");
+    } else if (payload.length < 33) {
+      return console.warn("Invalid tunnel message length", payload);
+    }
+
     const originTokenBytes = payload.slice(0, 32);
     const webrtcType = payload[32];
     const webrtcDataBytes = payload.slice(33);

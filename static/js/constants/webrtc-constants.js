@@ -1,2 +1,2 @@
-export const SESSION_DESCRIPTION_ID = 0;
-export const ICE_CANDIDATE_ID = 1;
+export const JOIN_REQUEST_ID = 0;
+export const JOIN_RESPONSE_ID = 1;

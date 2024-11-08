@@ -1,6 +1,10 @@
-import { PLAYER_CONNECTED_EVENT } from "../constants/events-constants.js";
+import {
+  JOIN_REQUEST_ID,
+  JOIN_RESPONSE_ID,
+} from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { LoggerUtils } from "../utils/logger-utils.js";
+import { MatchmakingService } from "./matchmaking-service.js";
 
 export class WebRTCPeerService {
   public peerConnection: RTCPeerConnection;
@@ -8,17 +12,35 @@ export class WebRTCPeerService {
   public dataChannels: Record<string, RTCDataChannel> = {};
 
   private logger: LoggerUtils;
+  private matchmakingService: MatchmakingService;
+
+  private host: boolean = false;
+  private name: string | null = null;
 
   constructor(private gameController: GameController, private token: string) {
     this.logger = new LoggerUtils(`WebRTC(${this.token})`);
     this.logger.info("WebRTCPeer initialized");
 
+    this.matchmakingService = this.gameController.getMatchmakingService();
+    this.host = this.gameController.getGameMatch()?.isHost() ?? false;
+
     this.peerConnection = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
 
-    this.initializeDataChannels();
+    if (this.host === false) {
+      this.initializeDataChannels();
+    }
+
     this.addEventListeners();
+  }
+
+  public getName(): string | null {
+    return this.name;
+  }
+
+  public setName(name: string): void {
+    this.name = name;
   }
 
   public getQueuedIceCandidates(): RTCIceCandidateInit[] {
@@ -46,13 +68,20 @@ export class WebRTCPeerService {
 
   public async connect(answer: RTCSessionDescriptionInit): Promise<void> {
     this.logger.info("Connecting to peer...", answer);
+
     await this.peerConnection.setRemoteDescription(
       new RTCSessionDescription(answer)
     );
+
     this.iceCandidateQueue.forEach((candidate) =>
       this.processIceCandidate(candidate, true)
     );
+
     this.iceCandidateQueue = [];
+  }
+
+  public disconnect(): void {
+    this.peerConnection.close();
   }
 
   public sendReliableOrderedMessage(arrayBuffer: ArrayBuffer): void {
@@ -93,10 +122,14 @@ export class WebRTCPeerService {
   }
 
   private addEventListeners(): void {
-    this.peerConnection.onconnectionstatechange = () =>
-      this.handleConnectionStateChange();
+    this.addConnectionListeners();
     this.addIceListeners();
     this.addDataChannelListeners();
+  }
+
+  private addConnectionListeners(): void {
+    this.peerConnection.onconnectionstatechange = () =>
+      this.handleConnectionStateChange();
   }
 
   private handleConnectionStateChange(): void {
@@ -118,11 +151,11 @@ export class WebRTCPeerService {
 
   private handleConnection(): void {
     this.logger.info("Peer connection established");
-    dispatchEvent(new CustomEvent(PLAYER_CONNECTED_EVENT));
   }
 
   private handleDisconnection(): void {
     this.logger.info("Peer connection closed");
+    this.matchmakingService.hasPeerDisconnected(this);
     this.gameController.getWebRTCService().removePeer(this.token);
   }
 
@@ -132,34 +165,55 @@ export class WebRTCPeerService {
         this.queueOrProcessIceCandidate(event.candidate.toJSON());
       }
     };
+
     this.peerConnection.oniceconnectionstatechange = () => {
       this.logger.info(
         "ICE connection state:",
         this.peerConnection.iceConnectionState
       );
     };
+
     this.peerConnection.onicegatheringstatechange = () => {
       this.logger.info(
         "ICE gathering state:",
         this.peerConnection.iceGatheringState
       );
     };
+
+    this.peerConnection.onicecandidateerror = (event) => {
+      this.logger.error("ICE candidate error", event);
+    };
   }
 
   private addDataChannelListeners(): void {
-    Object.values(this.dataChannels).forEach((channel) => {
-      channel.onopen = () => this.handleDataChannelOpen(channel.label);
-      channel.onerror = (error) =>
-        this.handleDataChannelError(channel.label, error);
-      channel.onmessage = (event) => this.handleMessage(event.data);
-    });
+    if (this.host) {
+      // If the instance is not the host, listen for the data channels from the host
+      this.peerConnection.ondatachannel = (event) => {
+        const channel = event.channel;
+        this.dataChannels[channel.label] = channel;
+        this.setupDataChannelListeners(channel);
+      };
+    } else {
+      // For the non-host, set up listeners for already created channels
+      Object.values(this.dataChannels).forEach((channel) => {
+        this.setupDataChannelListeners(channel);
+      });
+    }
+  }
+
+  private setupDataChannelListeners(channel: RTCDataChannel): void {
+    channel.onopen = () => this.handleDataChannelOpen(channel.label);
+    channel.onerror = (error) =>
+      this.handleDataChannelError(channel.label, error);
+    channel.onmessage = (event) =>
+      this.handleMessage(new Uint8Array(event.data));
   }
 
   private handleDataChannelOpen(label: string): void {
     this.logger.info(`Data channel ${label} opened`);
 
-    if (this.areAllDataChannelsOpen()) {
-      this.gameController.getMatchmakingService().hasPeerConnected(this);
+    if (this.host === false && this.areAllDataChannelsOpen()) {
+      this.matchmakingService.hasPeerConnected(this);
     }
   }
 
@@ -206,7 +260,22 @@ export class WebRTCPeerService {
     this.logger.debug(`Sent ${channelKey} message`, arrayBuffer);
   }
 
-  private handleMessage(arrayBuffer: ArrayBuffer): void {
-    this.logger.info("Received message from peer", arrayBuffer);
+  private handleMessage(data: Uint8Array): void {
+    this.logger.info("Received message from peer", data);
+
+    const id = data[0];
+    const payload = data.length > 1 ? data.slice(1) : null;
+
+    switch (id) {
+      case JOIN_REQUEST_ID:
+        return this.matchmakingService.handleJoinRequest(this, payload);
+
+      case JOIN_RESPONSE_ID:
+        return this.matchmakingService.handleJoinResponse(this, payload);
+
+      default: {
+        this.logger.warn("Unknown message identifier", id);
+      }
+    }
   }
 }

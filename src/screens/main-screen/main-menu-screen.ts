@@ -16,11 +16,11 @@ export class MainMenuScreen extends BaseGameScreen {
   private transitionService: ScreenTransitionService;
 
   private messagesResponse: MessagesResponse[] | null = null;
-  private serverMessageWindowObject: ServerMessageWindowObject | null = null;
 
+  private serverMessageWindowObject: ServerMessageWindowObject | null = null;
   private closeableMessageObject: CloseableMessageObject | null = null;
 
-  constructor(gameController: GameController) {
+  constructor(gameController: GameController, private downloadNews = true) {
     super(gameController);
     this.apiService = gameController.getApiService();
     this.transitionService = gameController.getTransitionService();
@@ -37,7 +37,10 @@ export class MainMenuScreen extends BaseGameScreen {
 
   public override hasTransitionFinished(): void {
     super.hasTransitionFinished();
-    this.downloadServerMessages();
+
+    if (this.downloadNews) {
+      this.downloadServerMessages();
+    }
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {

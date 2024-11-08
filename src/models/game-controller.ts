@@ -7,6 +7,7 @@ import { WebRTCService } from "../services/webrtc-service.js";
 import { WebSocketService } from "../services/websocket-service.js";
 import { GameFrame } from "./game-frame.js";
 import { GameKeyboard } from "./game-keyboard.js";
+import { GameMatch } from "./game-match.js";
 import { GamePointer } from "./game-pointer.js";
 import { GameState } from "./game-state.js";
 
@@ -15,6 +16,7 @@ export class GameController {
   private gameFrame: GameFrame;
   private gamePointer: GamePointer;
   private gameKeyboard: GameKeyboard;
+  private gameMatch: GameMatch | null = null;
 
   private timers: TimerService[] = [];
 
@@ -64,6 +66,24 @@ export class GameController {
 
   public getGameKeyboard(): GameKeyboard {
     return this.gameKeyboard;
+  }
+
+  public getGameMatch(): GameMatch | null {
+    return this.gameMatch;
+  }
+
+  public setGameMatch(gameMatch: GameMatch | null): void {
+    this.gameMatch = gameMatch;
+
+    if (gameMatch === null) {
+      return console.log("Game match deleted");
+    }
+
+    if (gameMatch.isHost()) {
+      console.log("Game match created", gameMatch);
+    } else {
+      console.log("Game match set", gameMatch);
+    }
   }
 
   public getTimers(): TimerService[] {

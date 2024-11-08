@@ -1,7 +1,7 @@
 import { WEBSOCKET_BASE_URL, WEBSOCKET_ENDPOINT, } from "../constants/api-constants.js";
 import { SERVER_CONNECTED_EVENT, SERVER_DISCONNECTED_EVENT, SERVER_ICE_CANDIDATE_EVENT, SERVER_NOTIFICATION_EVENT, SERVER_SESSION_DESCRIPTION_EVENT, } from "../constants/events-constants.js";
 import { NOTIFICATION_ID, TUNNEL_ID, } from "../constants/websocket-constants.js";
-import { ICE_CANDIDATE_ID, SESSION_DESCRIPTION_ID, } from "../constants/webrtc-constants.js";
+import { ICE_CANDIDATE_ID, SESSION_DESCRIPTION_ID, } from "../constants/websocket-constants.js";
 export class WebSocketService {
     gameState;
     webSocket = null;
@@ -57,26 +57,31 @@ export class WebSocketService {
     handleMessage(data) {
         console.log("Received message from server", data);
         const id = data[0];
-        const payload = data.slice(1);
+        const payload = data.length > 1 ? data.slice(1) : null;
         switch (id) {
-            case NOTIFICATION_ID: {
-                this.handleNotification(payload);
-                break;
-            }
-            case TUNNEL_ID: {
-                this.handleTunnelMessage(payload);
-                break;
-            }
+            case NOTIFICATION_ID:
+                return this.handleNotification(payload);
+            case TUNNEL_ID:
+                return this.handleTunnelMessage(payload);
             default: {
                 console.warn("Unknown websocket message identifier", id);
             }
         }
     }
     handleNotification(payload) {
+        if (payload === null) {
+            return console.warn("Received empty notification");
+        }
         const text = new TextDecoder("utf-8").decode(payload);
         dispatchEvent(new CustomEvent(SERVER_NOTIFICATION_EVENT, { detail: { text } }));
     }
     handleTunnelMessage(payload) {
+        if (payload === null) {
+            return console.warn("Received empty tunnel message");
+        }
+        else if (payload.length < 33) {
+            return console.warn("Invalid tunnel message length", payload);
+        }
         const originTokenBytes = payload.slice(0, 32);
         const webrtcType = payload[32];
         const webrtcDataBytes = payload.slice(33);

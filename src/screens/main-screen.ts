@@ -1,28 +1,34 @@
-import { GameLoopService } from "../services/game-loop-service.js";
 import { BaseGameScreen } from "./base/base-game-screen.js";
 import { ScreenManagerService } from "../services/screen-manager-service.js";
-import { LoginScreen } from "./main-screen/login-screen.js";
 import { MainBackgroundObject } from "../objects/backgrounds/main-background-object.js";
 import { GameController } from "../models/game-controller.js";
+import { GameScreen } from "./interfaces/game-screen.js";
 
 export class MainScreen extends BaseGameScreen {
-  private loginScreen: LoginScreen;
+  private screen: GameScreen | null = null;
 
   constructor(gameController: GameController) {
     super(gameController);
+  }
 
-    this.loginScreen = new LoginScreen(this.gameController);
-    this.updateLoginScreen();
+  public setScreen(screen: GameScreen): void {
+    this.screen = screen;
+    this.updateScreen(screen);
   }
 
   public override loadObjects(): void {
     this.createMainBackgroundObject();
-    this.loginScreen.loadObjects();
-    super.loadObjects();
+
+    if (this.screen === null) {
+      console.warn("MainScreen: No screen has been set");
+    } else {
+      this.screen?.loadObjects();
+      super.loadObjects();
+    }
   }
 
   public hasTransitionFinished(): void {
-    this.loginScreen.hasTransitionFinished();
+    this.screen?.hasTransitionFinished();
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -39,14 +45,14 @@ export class MainScreen extends BaseGameScreen {
     this.screenManagerService?.render(context);
   }
 
-  private updateLoginScreen(): void {
-    // Set the login screen to be fully visible
-    this.loginScreen.setOpacity(1);
+  private updateScreen(screen: GameScreen): void {
+    // Set the screen to be fully visible
+    this.screen?.setOpacity(1);
 
-    this.screenManagerService = new ScreenManagerService(this.loginScreen);
-    this.screenManagerService.setCurrentScreen(this.loginScreen);
+    this.screenManagerService = new ScreenManagerService(screen);
+    this.screenManagerService.setCurrentScreen(screen);
 
-    this.loginScreen.setScreenManagerService(this.screenManagerService);
+    this.screen?.setScreenManagerService(this.screenManagerService);
   }
 
   private createMainBackgroundObject() {

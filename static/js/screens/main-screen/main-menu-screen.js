@@ -5,14 +5,16 @@ import { ServerMessageWindowObject } from "../../objects/server-message-window-o
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { LoadingScreen } from "./loading-screen.js";
 export class MainMenuScreen extends BaseGameScreen {
+    downloadNews;
     MENU_OPTIONS_TEXT = ["Join game", "Scoreboard", "Settings"];
     apiService;
     transitionService;
     messagesResponse = null;
     serverMessageWindowObject = null;
     closeableMessageObject = null;
-    constructor(gameController) {
+    constructor(gameController, downloadNews = true) {
         super(gameController);
+        this.downloadNews = downloadNews;
         this.apiService = gameController.getApiService();
         this.transitionService = gameController.getTransitionService();
     }
@@ -25,7 +27,9 @@ export class MainMenuScreen extends BaseGameScreen {
     }
     hasTransitionFinished() {
         super.hasTransitionFinished();
-        this.downloadServerMessages();
+        if (this.downloadNews) {
+            this.downloadServerMessages();
+        }
     }
     update(deltaTimeStamp) {
         this.handleMenuOptionObjects();

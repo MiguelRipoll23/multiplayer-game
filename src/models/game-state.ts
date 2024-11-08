@@ -2,8 +2,7 @@ import { GamePlayer } from "./game-player.js";
 import { GameServer } from "./game-server.js";
 
 export class GameState {
-  private version: string = "1.0.0";
-  private host: boolean = false;
+  private version: string = "0.0.1-alpha";
   private gamePlayer: GamePlayer;
   private gameServer: GameServer;
 
@@ -14,14 +13,6 @@ export class GameState {
 
   public getVersion(): string {
     return this.version;
-  }
-
-  public isHost(): boolean {
-    return this.host;
-  }
-
-  public setHost(host: boolean): void {
-    this.host = host;
   }
 
   public getGamePlayer(): GamePlayer {

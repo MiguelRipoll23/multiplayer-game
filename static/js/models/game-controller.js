@@ -16,6 +16,7 @@ export class GameController {
     gameFrame;
     gamePointer;
     gameKeyboard;
+    gameMatch = null;
     timers = [];
     transitionService;
     apiService;
@@ -54,6 +55,21 @@ export class GameController {
     }
     getGameKeyboard() {
         return this.gameKeyboard;
+    }
+    getGameMatch() {
+        return this.gameMatch;
+    }
+    setGameMatch(gameMatch) {
+        this.gameMatch = gameMatch;
+        if (gameMatch === null) {
+            return console.log("Game match deleted");
+        }
+        if (gameMatch.isHost()) {
+            console.log("Game match created", gameMatch);
+        }
+        else {
+            console.log("Game match set", gameMatch);
+        }
     }
     getTimers() {
         return this.timers;

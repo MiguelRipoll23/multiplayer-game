@@ -5,7 +5,7 @@ import {
 import {
   ICE_CANDIDATE_ID,
   SESSION_DESCRIPTION_ID,
-} from "../constants/webrtc-constants.js";
+} from "../constants/websocket-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { WebRTCPeerService } from "./webrtc-peer-service.js";
 
@@ -109,7 +109,7 @@ export class WebRTCService {
   private handleSessionDescriptionEvent(event: CustomEvent<any>): void {
     const { originToken, rtcSessionDescription } = event.detail;
 
-    if (this.gameController.getGameState().isHost()) {
+    if (this.gameController.getGameMatch()?.isHost()) {
       this.handlePeerOffer(originToken, rtcSessionDescription);
     } else {
       this.handlePeerAnswer(originToken, rtcSessionDescription);

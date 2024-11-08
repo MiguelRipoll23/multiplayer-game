@@ -149,7 +149,7 @@ export class GameLoopService {
 
     this.gameController
       .getTimers()
-      .filter((timer) => timer.hasFinished())
+      .filter((timer) => timer.hasCompleted())
       .forEach((timer) => this.gameController.removeTimer(timer));
   }
 

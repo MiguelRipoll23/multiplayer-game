@@ -1,14 +1,17 @@
 import { PLAYER_CONNECTED_EVENT } from "../constants/events-constants.js";
+import { LoggerUtils } from "../utils/logger-utils.js";
 export class WebRTCPeerService {
     gameController;
     token;
     peerConnection;
     iceCandidateQueue = [];
     dataChannels = {};
+    logger;
     constructor(gameController, token) {
         this.gameController = gameController;
         this.token = token;
-        console.log(`WebRTCPeer(token=${token})`);
+        this.logger = new LoggerUtils(`WebRTC peer (${this.token})`);
+        this.logger.info("WebRTCPeer initialized");
         this.peerConnection = new RTCPeerConnection({
             iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
         });
@@ -33,7 +36,7 @@ export class WebRTCPeerService {
         return answer;
     }
     async connect(answer) {
-        console.log("Connecting to peer...", answer);
+        this.logger.info("Connecting to peer...", answer);
         await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
         this.iceCandidateQueue.forEach((candidate) => this.processIceCandidate(candidate, true));
         this.iceCandidateQueue = [];
@@ -64,7 +67,7 @@ export class WebRTCPeerService {
         this.addDataChannelListeners();
     }
     handleConnectionStateChange() {
-        console.log("Peer connection state:", this.peerConnection.connectionState);
+        this.logger.info("Peer connection state:", this.peerConnection.connectionState);
         switch (this.peerConnection.connectionState) {
             case "connected":
                 this.handleConnection();
@@ -77,11 +80,11 @@ export class WebRTCPeerService {
         }
     }
     handleConnection() {
-        console.log("Peer connection established", this.token);
+        this.logger.info("Peer connection established");
         dispatchEvent(new CustomEvent(PLAYER_CONNECTED_EVENT));
     }
     handleDisconnection() {
-        console.log("Peer connection closed", this.token);
+        this.logger.info("Peer connection closed");
         this.gameController.getWebRTCService().removePeer(this.token);
     }
     addIceListeners() {
@@ -91,10 +94,10 @@ export class WebRTCPeerService {
             }
         };
         this.peerConnection.oniceconnectionstatechange = () => {
-            console.log("ICE connection state:", this.peerConnection.iceConnectionState);
+            this.logger.info("ICE connection state:", this.peerConnection.iceConnectionState);
         };
         this.peerConnection.onicegatheringstatechange = () => {
-            console.log("ICE gathering state:", this.peerConnection.iceGatheringState);
+            this.logger.info("ICE gathering state:", this.peerConnection.iceGatheringState);
         };
     }
     addDataChannelListeners() {
@@ -104,9 +107,9 @@ export class WebRTCPeerService {
         });
     }
     handleDataChannelOpen() {
-        console.log("Data channel opened", this.token);
+        this.logger.info("Data channel opened");
         if (this.areAllDataChannelsOpen()) {
-            this.gameController.getMatchmakingService().hasConnected(this);
+            this.gameController.getMatchmakingService().hasPeerConnected(this);
         }
     }
     areAllDataChannelsOpen() {
@@ -118,30 +121,28 @@ export class WebRTCPeerService {
         }
         else {
             this.iceCandidateQueue.push(iceCandidate);
-            console.log("Queued ICE candidate", iceCandidate);
+            this.logger.info("Queued ICE candidate", iceCandidate);
         }
     }
     async processIceCandidate(iceCandidate, local) {
         const type = local ? "local" : "remote";
         try {
             await this.peerConnection.addIceCandidate(iceCandidate);
-            console.log(`Added ${type} ICE candidate`, iceCandidate);
+            this.logger.info(`Added ${type} ICE candidate`, iceCandidate);
         }
         catch (error) {
-            console.error(`Error adding ${type} ICE candidate`, error);
+            this.logger.error(`Error adding ${type} ICE candidate`, error);
         }
     }
     sendMessage(channelKey, arrayBuffer) {
         const channel = this.dataChannels[channelKey];
-        if (channel) {
-            channel.send(arrayBuffer);
-            console.debug(`Sent ${channelKey} message`, arrayBuffer);
+        if (channel === undefined) {
+            return this.logger.warn(`Data channel not found for key: ${channelKey}`);
         }
-        else {
-            console.warn(`Data channel not found for key: ${channelKey}`);
-        }
+        channel.send(arrayBuffer);
+        this.logger.debug(`Sent ${channelKey} message`, arrayBuffer);
     }
     handleMessage(message) {
-        console.log("Received message from peer:", message);
+        this.logger.debug("Received message from peer", message);
     }
 }

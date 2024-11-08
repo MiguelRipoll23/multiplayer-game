@@ -111,7 +111,7 @@ export class GameLoopService {
         this.gameFrame.getNotificationObject()?.update(deltaTimeStamp);
         this.gameController
             .getTimers()
-            .filter((timer) => timer.hasFinished())
+            .filter((timer) => timer.hasCompleted())
             .forEach((timer) => this.gameController.removeTimer(timer));
     }
     render() {

@@ -1,12 +1,19 @@
-import { WebRTCUserService } from "./webrtc-user-service.js";
+import { WebRTCPeerService } from "./webrtc-peer-service.js";
 export class WebRTCService {
-    users = new Map();
-    createUser(token) {
-        const user = new WebRTCUserService(token);
-        this.users.set(token, user);
-        return user;
+    gameController;
+    peers = new Map();
+    constructor(gameController) {
+        this.gameController = gameController;
     }
-    getUser(token) {
-        return this.users.get(token) ?? null;
+    getPeer(token) {
+        return this.peers.get(token) ?? null;
+    }
+    addPeer(token) {
+        const peer = new WebRTCPeerService(this.gameController, token);
+        this.peers.set(token, peer);
+        return peer;
+    }
+    removePeer(token) {
+        this.peers.delete(token);
     }
 }

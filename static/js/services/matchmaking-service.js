@@ -11,22 +11,6 @@ export class MatchmakingService {
         this.webrtcService = gameController.getWebRTCService();
         this.addEventListeners();
     }
-    addEventListeners() {
-        window.addEventListener(SERVER_SESSION_DESCRIPTION_EVENT, (event) => {
-            this.handleSessionDescriptionEvent(event);
-        });
-        window.addEventListener(SERVER_ICE_CANDIDATE_EVENT, (event) => {
-            this.handleNewIceCandidate(event);
-        });
-    }
-    handleNewIceCandidate(event) {
-        const { originToken, iceCandidate } = event.detail;
-        const user = this.webrtcService.getUser(originToken);
-        if (user === null) {
-            return console.warn("WebRTC user with token not found", originToken);
-        }
-        user.addRemoteIceCandidate(iceCandidate);
-    }
     async findOrAdvertiseMatch() {
         const matches = await this.findMatches();
         if (matches.length === 0) {
@@ -38,8 +22,37 @@ export class MatchmakingService {
             this.advertiseMatch();
         });
     }
-    stopFindMatchesTimer() {
-        this.findMatchesTimerService?.stop();
+    hasPeerConnected(peer) {
+        if (this.gameController.getGameState().isHost()) {
+            return console.log("Player joined", peer);
+        }
+        console.log("Joined to host", peer);
+        this.findMatchesTimerService?.stop(false);
+        this.sendPlayerData(peer);
+    }
+    sendPlayerData(peer) {
+        const playerName = this.gameController
+            .getGameState()
+            .getGamePlayer()
+            .getName();
+        const playerNameBytes = new TextEncoder().encode(playerName);
+        peer.sendReliableUnorderedMessage(playerNameBytes);
+    }
+    addEventListeners() {
+        window.addEventListener(SERVER_SESSION_DESCRIPTION_EVENT, (event) => {
+            this.handleSessionDescriptionEvent(event);
+        });
+        window.addEventListener(SERVER_ICE_CANDIDATE_EVENT, (event) => {
+            this.handleNewIceCandidate(event);
+        });
+    }
+    handleNewIceCandidate(event) {
+        const { originToken, iceCandidate } = event.detail;
+        const peer = this.webrtcService.getPeer(originToken);
+        if (peer === null) {
+            return console.warn("WebRTC peer with token not found", originToken);
+        }
+        peer.addRemoteIceCandidate(iceCandidate);
     }
     async findMatches() {
         console.log("Finding matches...");
@@ -74,8 +87,8 @@ export class MatchmakingService {
     }
     async joinMatch(match) {
         const { token } = match;
-        const user = this.webrtcService.createUser(token);
-        const offer = await user.createOffer();
+        const peer = this.webrtcService.addPeer(token);
+        const offer = await peer.createOffer();
         console.log("Sending join request...", token, offer);
         const tokenBytes = Uint8Array.from(atob(token), (c) => c.charCodeAt(0));
         const offerBytes = new TextEncoder().encode(JSON.stringify(offer));
@@ -97,8 +110,8 @@ export class MatchmakingService {
     }
     async handleJoinRequest(originToken, rtcSessionDescription) {
         console.log("Join request", originToken, rtcSessionDescription);
-        const user = this.webrtcService.createUser(originToken);
-        const answer = await user.createAnswer(rtcSessionDescription);
+        const peer = this.webrtcService.addPeer(originToken);
+        const answer = await peer.createAnswer(rtcSessionDescription);
         console.log("Sending join response...", originToken, answer);
         const originTokenBytes = Uint8Array.from(atob(originToken), (c) => c.charCodeAt(0));
         const answerBytes = new TextEncoder().encode(JSON.stringify(answer));
@@ -111,14 +124,14 @@ export class MatchmakingService {
     }
     async handleJoinResponse(originToken, rtcSessionDescription) {
         console.log("Join response", originToken, rtcSessionDescription);
-        const user = this.webrtcService.getUser(originToken);
-        if (user === null) {
-            return console.warn("WebRTC user with token not found", originToken);
+        const peer = this.webrtcService.getPeer(originToken);
+        if (peer === null) {
+            return console.warn("WebRTC peer with token not found", originToken);
         }
-        user.getQueuedIceCandidates().forEach((iceCandidate) => {
+        peer.getQueuedIceCandidates().forEach((iceCandidate) => {
             this.sendIceCandidate(originToken, iceCandidate);
         });
-        await user.connect(rtcSessionDescription);
+        await peer.connect(rtcSessionDescription);
     }
     sendIceCandidate(originToken, iceCandidate) {
         console.log("Sending ICE candidate...", originToken, iceCandidate);

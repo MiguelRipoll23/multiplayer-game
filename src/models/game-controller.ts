@@ -38,7 +38,7 @@ export class GameController {
     this.apiService = new ApiService();
     this.cryptoService = new CryptoService(this.gameState.getGameServer());
     this.webSocketService = new WebSocketService(this);
-    this.webRTCService = new WebRTCService();
+    this.webRTCService = new WebRTCService(this);
     this.matchMakingService = new MatchmakingService(this);
   }
 
@@ -70,9 +70,15 @@ export class GameController {
     return this.timers;
   }
 
-  public addTimer(seconds: number, callback: () => void, start = true): TimerService {
+  public addTimer(
+    seconds: number,
+    callback: () => void,
+    start = true
+  ): TimerService {
     const timerService = new TimerService(seconds, callback, start);
     this.timers.push(timerService);
+
+    console.log("Added timer, updated timers count", this.timers.length);
 
     return timerService;
   }
@@ -83,6 +89,8 @@ export class GameController {
     if (index !== -1) {
       this.timers.splice(index, 1);
     }
+
+    console.log("Removed timer, updated timers count", this.timers.length);
   }
 
   public getTransitionService(): ScreenTransitionService {

@@ -76,7 +76,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     });
 
     window.addEventListener(PLAYER_CONNECTED_EVENT, (event) => {
-      this.gameController.getMatchmakingService().stopFindMatchesTimer();
       this.toastObject?.hide();
     });
   }

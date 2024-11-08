@@ -59,7 +59,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
             this.toastObject?.show("Waiting for players...");
         });
         window.addEventListener(PLAYER_CONNECTED_EVENT, (event) => {
-            this.gameController.getMatchmakingService().stopFindMatchesTimer();
             this.toastObject?.hide();
         });
     }

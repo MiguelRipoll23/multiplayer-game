@@ -1,6 +1,8 @@
 export class TimerService {
   private elapsedMilliseconds: number = 0;
   private durationMilliseconds: number = 0;
+
+  private completed: boolean = false;
   private finished: boolean = false;
 
   private callback: () => void;
@@ -10,9 +12,7 @@ export class TimerService {
     callback: () => void,
     private started: boolean = true
   ) {
-    console.log(
-      `TimerService(durationSeconds=${durationSeconds},started=${started})`
-    );
+    console.log(`${this.constructor.name} created`, this);
 
     this.durationMilliseconds = durationSeconds * 1000;
     this.callback = callback;
@@ -26,14 +26,21 @@ export class TimerService {
     this.started = false;
   }
 
-  public stop(): void {
+  public stop(finished: boolean): void {
+    this.finished = finished;
+
+    if (this.finished) {
+      console.log(`${this.constructor.name} finished`, this);
+    } else {
+      console.log(`${this.constructor.name} stopped`, this);
+    }
+
     this.started = false;
-    this.elapsedMilliseconds = 0;
-    this.finished = true;
+    this.completed = true;
   }
 
-  public hasFinished(): boolean {
-    return this.finished;
+  public hasCompleted(): boolean {
+    return this.completed;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -41,7 +48,7 @@ export class TimerService {
       this.elapsedMilliseconds += deltaTimeStamp;
 
       if (this.elapsedMilliseconds >= this.durationMilliseconds) {
-        this.stop();
+        this.stop(true);
         this.callback();
       }
     }

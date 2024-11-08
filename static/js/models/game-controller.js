@@ -34,7 +34,7 @@ export class GameController {
         this.apiService = new ApiService();
         this.cryptoService = new CryptoService(this.gameState.getGameServer());
         this.webSocketService = new WebSocketService(this);
-        this.webRTCService = new WebRTCService();
+        this.webRTCService = new WebRTCService(this);
         this.matchMakingService = new MatchmakingService(this);
     }
     getCanvas() {
@@ -61,6 +61,7 @@ export class GameController {
     addTimer(seconds, callback, start = true) {
         const timerService = new TimerService(seconds, callback, start);
         this.timers.push(timerService);
+        console.log("Added timer, updated timers count", this.timers.length);
         return timerService;
     }
     removeTimer(timer) {
@@ -68,6 +69,7 @@ export class GameController {
         if (index !== -1) {
             this.timers.splice(index, 1);
         }
+        console.log("Removed timer, updated timers count", this.timers.length);
     }
     getTransitionService() {
         return this.transitionService;

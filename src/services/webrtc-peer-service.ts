@@ -10,7 +10,7 @@ export class WebRTCPeerService {
   private logger: LoggerUtils;
 
   constructor(private gameController: GameController, private token: string) {
-    this.logger = new LoggerUtils(`WebRTC peer (${this.token})`);
+    this.logger = new LoggerUtils(`WebRTC(${this.token})`);
     this.logger.info("WebRTCPeer initialized");
 
     this.peerConnection = new RTCPeerConnection({
@@ -148,13 +148,13 @@ export class WebRTCPeerService {
 
   private addDataChannelListeners(): void {
     Object.values(this.dataChannels).forEach((channel) => {
-      channel.onopen = () => this.handleDataChannelOpen();
+      channel.onopen = () => this.handleDataChannelOpen(channel.label);
       channel.onmessage = (event) => this.handleMessage(event.data);
     });
   }
 
-  private handleDataChannelOpen(): void {
-    this.logger.info("Data channel opened");
+  private handleDataChannelOpen(label: string): void {
+    this.logger.info(`Data channel ${label} opened`);
     if (this.areAllDataChannelsOpen()) {
       this.gameController.getMatchmakingService().hasPeerConnected(this);
     }
@@ -200,6 +200,6 @@ export class WebRTCPeerService {
   }
 
   private handleMessage(message: string): void {
-    this.logger.debug("Received message from peer", message);
+    this.logger.info("Received message from peer", message);
   }
 }

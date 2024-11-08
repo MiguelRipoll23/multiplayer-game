@@ -13,7 +13,7 @@ export class ObjectAnimationService {
         this.endValue = endValue;
         this.durationMilliseconds = durationSeconds * 1000;
         this.animationType = animationType;
-        console.log(`AnimationService (${AnimationType[animationType]}) created for ${object.constructor.name}`);
+        console.log(`ObjectAnimationService(${AnimationType[animationType]}) created for ${object.constructor.name}`);
     }
     update(deltaTimeStamp) {
         this.currentTime += deltaTimeStamp;

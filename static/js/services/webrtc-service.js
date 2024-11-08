@@ -11,9 +11,11 @@ export class WebRTCService {
     addPeer(token) {
         const peer = new WebRTCPeerService(this.gameController, token);
         this.peers.set(token, peer);
+        console.log("Added WebRTC peer, updated peers count", this.peers.size);
         return peer;
     }
     removePeer(token) {
         this.peers.delete(token);
+        console.log("Removed WebRTC peer, updated peers count", this.peers.size);
     }
 }

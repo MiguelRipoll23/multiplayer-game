@@ -1,9 +1,22 @@
+import { Team } from "./game-teams.js";
+
 export class GamePlayer {
-  private name: string = "Unknown";
-  private score: number = 0;
+  private name: string;
+  protected team: Team;
+  private score: number;
+
+  constructor(name = "Unknown", team = Team.Blue, score = 0) {
+    this.name = name;
+    this.team = team;
+    this.score = score;
+  }
 
   public getName(): string {
     return this.name;
+  }
+
+  public getTeam(): Team {
+    return this.team;
   }
 
   public getScore(): number {

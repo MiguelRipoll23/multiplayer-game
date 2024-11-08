@@ -1,12 +1,11 @@
 export class GameMatch {
     host;
     totalSlots;
-    availableSlots;
     attributes;
+    players = new Map();
     constructor(host, totalSlots, attributes) {
         this.host = host;
         this.totalSlots = totalSlots;
-        this.availableSlots = totalSlots - 1;
         this.attributes = attributes;
     }
     isHost() {
@@ -16,17 +15,17 @@ export class GameMatch {
         return this.totalSlots;
     }
     getAvailableSlots() {
-        return this.availableSlots;
+        return this.totalSlots - this.players.size;
     }
     getAttributes() {
         return this.attributes;
     }
-    incrementAvailableSlots() {
-        this.availableSlots++;
-        console.log("Added slot, available slots", this.availableSlots);
+    addPlayer(player) {
+        this.players.set(player.getName(), player);
+        console.log(`Added player ${player.getName()} to match, total players`, this.players.size);
     }
-    decrementAvailableSlots() {
-        this.availableSlots--;
-        console.log("Removed slot, available slots", this.availableSlots);
+    removePlayer(playerName) {
+        this.players.delete(playerName);
+        console.log(`Removed player ${playerName} from match, total players`, this.players.size);
     }
 }

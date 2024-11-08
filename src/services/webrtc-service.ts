@@ -109,7 +109,7 @@ export class WebRTCService {
   private handleSessionDescriptionEvent(event: CustomEvent<any>): void {
     const { originToken, rtcSessionDescription } = event.detail;
 
-    if (this.gameController.getGameMatch()?.isHost()) {
+    if (this.gameController.getGameState().getGameMatch()?.isHost()) {
       this.handlePeerOffer(originToken, rtcSessionDescription);
     } else {
       this.handlePeerAnswer(originToken, rtcSessionDescription);

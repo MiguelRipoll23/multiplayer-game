@@ -1,3 +1,4 @@
+import { GAME_VERSION } from "../constants/game-constants.js";
 import { ApiService } from "../services/api-service.js";
 import { CryptoService } from "../services/crypto-service.js";
 import { MatchmakingService } from "../services/matchmaking-service.js";
@@ -16,7 +17,6 @@ export class GameController {
     gameFrame;
     gamePointer;
     gameKeyboard;
-    gameMatch = null;
     timers = [];
     transitionService;
     apiService;
@@ -38,6 +38,9 @@ export class GameController {
         this.webRTCService = new WebRTCService(this);
         this.matchMakingService = new MatchmakingService(this);
     }
+    getVersion() {
+        return GAME_VERSION;
+    }
     getCanvas() {
         return this.canvas;
     }
@@ -55,21 +58,6 @@ export class GameController {
     }
     getGameKeyboard() {
         return this.gameKeyboard;
-    }
-    getGameMatch() {
-        return this.gameMatch;
-    }
-    setGameMatch(gameMatch) {
-        this.gameMatch = gameMatch;
-        if (gameMatch === null) {
-            return console.log("Game match deleted");
-        }
-        if (gameMatch.isHost()) {
-            console.log("Game match created", gameMatch);
-        }
-        else {
-            console.log("Game match set", gameMatch);
-        }
     }
     getTimers() {
         return this.timers;

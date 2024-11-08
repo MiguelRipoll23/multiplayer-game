@@ -9,6 +9,7 @@ export class WebRTCPeerService {
     logger;
     matchmakingService;
     host = false;
+    joined = false;
     name = null;
     constructor(gameController, token) {
         this.gameController = gameController;
@@ -16,7 +17,8 @@ export class WebRTCPeerService {
         this.logger = new LoggerUtils(`WebRTC(${this.token})`);
         this.logger.info("WebRTCPeer initialized");
         this.matchmakingService = this.gameController.getMatchmakingService();
-        this.host = this.gameController.getGameMatch()?.isHost() ?? false;
+        this.host =
+            this.gameController.getGameState().getGameMatch()?.isHost() ?? false;
         this.peerConnection = new RTCPeerConnection({
             iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
         });
@@ -30,6 +32,12 @@ export class WebRTCPeerService {
     }
     setName(name) {
         this.name = name;
+    }
+    hasJoined() {
+        return this.joined;
+    }
+    setJoined(joined) {
+        this.joined = joined;
     }
     getQueuedIceCandidates() {
         return this.iceCandidateQueue;

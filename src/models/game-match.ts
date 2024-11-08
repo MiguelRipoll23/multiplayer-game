@@ -1,15 +1,16 @@
 import { MatchAttributes } from "../services/interfaces/match-attributes.js";
+import { GamePlayer } from "./game-player.js";
 
 export class GameMatch {
   private host: boolean;
   private totalSlots: number;
-  private availableSlots: number;
   private attributes: MatchAttributes;
+
+  private players: Map<string, GamePlayer> = new Map();
 
   constructor(host: boolean, totalSlots: number, attributes: MatchAttributes) {
     this.host = host;
     this.totalSlots = totalSlots;
-    this.availableSlots = totalSlots - 1;
     this.attributes = attributes;
   }
 
@@ -22,20 +23,28 @@ export class GameMatch {
   }
 
   public getAvailableSlots(): number {
-    return this.availableSlots;
+    return this.totalSlots - this.players.size;
   }
 
   public getAttributes(): MatchAttributes {
     return this.attributes;
   }
 
-  public incrementAvailableSlots(): void {
-    this.availableSlots++;
-    console.log("Added slot, available slots", this.availableSlots);
+  public addPlayer(player: GamePlayer): void {
+    this.players.set(player.getName(), player);
+
+    console.log(
+      `Added player ${player.getName()} to match, total players`,
+      this.players.size
+    );
   }
 
-  public decrementAvailableSlots(): void {
-    this.availableSlots--;
-    console.log("Removed slot, available slots", this.availableSlots);
+  public removePlayer(playerName: string): void {
+    this.players.delete(playerName);
+
+    console.log(
+      `Removed player ${playerName} from match, total players`,
+      this.players.size
+    );
   }
 }

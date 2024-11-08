@@ -1,18 +1,15 @@
+import { GameMatch } from "./game-match.js";
 import { GamePlayer } from "./game-player.js";
 import { GameServer } from "./game-server.js";
 
 export class GameState {
-  private version: string = "0.0.1-alpha";
   private gamePlayer: GamePlayer;
   private gameServer: GameServer;
+  private gameMatch: GameMatch | null = null;
 
   constructor() {
     this.gamePlayer = new GamePlayer();
     this.gameServer = new GameServer();
-  }
-
-  public getVersion(): string {
-    return this.version;
   }
 
   public getGamePlayer(): GamePlayer {
@@ -21,5 +18,23 @@ export class GameState {
 
   public getGameServer(): GameServer {
     return this.gameServer;
+  }
+
+  public getGameMatch(): GameMatch | null {
+    return this.gameMatch;
+  }
+
+  public setGameMatch(gameMatch: GameMatch | null): void {
+    this.gameMatch = gameMatch;
+
+    if (gameMatch === null) {
+      return console.log("Game match deleted");
+    }
+
+    if (gameMatch.isHost()) {
+      console.log("Game match created", gameMatch);
+    } else {
+      console.log("Game match set", gameMatch);
+    }
   }
 }

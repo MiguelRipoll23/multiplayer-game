@@ -35,7 +35,6 @@ export class ScoreboardObject extends BaseGameObject {
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
-    this.syncableByHost = true;
     this.x = this.canvas.width / 2 - this.SPACE_BETWEEN / 2;
   }
 

@@ -18,6 +18,7 @@ export class TimerService {
     }
     stop() {
         this.started = false;
+        this.elapsedMilliseconds = 0;
         this.finished = true;
     }
     hasFinished() {
@@ -27,14 +28,9 @@ export class TimerService {
         if (this.started) {
             this.elapsedMilliseconds += deltaTimeStamp;
             if (this.elapsedMilliseconds >= this.durationMilliseconds) {
-                this.end();
+                this.stop();
+                this.callback();
             }
         }
-    }
-    end() {
-        this.started = false;
-        this.finished = true;
-        this.elapsedMilliseconds = 0;
-        this.callback();
     }
 }

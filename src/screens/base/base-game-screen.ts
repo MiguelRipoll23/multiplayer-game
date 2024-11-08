@@ -1,5 +1,6 @@
 import { GameController } from "../../models/game-controller.js";
 import { GamePointer } from "../../models/game-pointer.js";
+import { BaseAnimatedGameObject } from "../../objects/base/base-animated-object.js";
 import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
@@ -28,7 +29,7 @@ export class BaseGameScreen implements GameScreen {
   }
 
   public setScreenManagerService(
-    screenManagerService: ScreenManagerService,
+    screenManagerService: ScreenManagerService
   ): void {
     this.screenManagerService = screenManagerService;
   }
@@ -96,8 +97,9 @@ export class BaseGameScreen implements GameScreen {
 
   private handlePointerEvent(): void {
     const pressableObjects = this.uiObjects
-      .filter((object): object is BasePressableGameObject =>
-        object instanceof BasePressableGameObject
+      .filter(
+        (object): object is BasePressableGameObject =>
+          object instanceof BasePressableGameObject
       )
       .filter((object) => object.isActive())
       .reverse();
@@ -115,7 +117,7 @@ export class BaseGameScreen implements GameScreen {
 
   private updateObjects(
     objects: GameObject[],
-    deltaTimeStamp: DOMHighResTimeStamp,
+    deltaTimeStamp: DOMHighResTimeStamp
   ): void {
     objects.forEach((object) => {
       if (object.hasLoaded()) {
@@ -126,7 +128,7 @@ export class BaseGameScreen implements GameScreen {
 
   private renderObjects(
     objects: GameObject[],
-    context: CanvasRenderingContext2D,
+    context: CanvasRenderingContext2D
   ): void {
     objects.forEach((object) => {
       if (object.hasLoaded()) {

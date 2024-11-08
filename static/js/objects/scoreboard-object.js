@@ -26,7 +26,6 @@ export class ScoreboardObject extends BaseGameObject {
     constructor(canvas) {
         super();
         this.canvas = canvas;
-        this.syncableByHost = true;
         this.x = this.canvas.width / 2 - this.SPACE_BETWEEN / 2;
     }
     update(deltaTimeStamp) {

@@ -20,7 +20,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     private readonly canvas: HTMLCanvasElement
   ) {
     super();
-    this.syncableByHost = true;
     this.x = x;
     this.y = y;
     this.mass = this.MASS;

@@ -1,8 +1,6 @@
 export class BaseGameObject {
     loaded = false;
     debug = false;
-    syncable = false;
-    syncableByHost = false;
     constructor() {
         console.log(`${this.constructor.name} created`);
     }
@@ -15,12 +13,6 @@ export class BaseGameObject {
     }
     setDebug(debug) {
         this.debug = debug;
-    }
-    isSyncable() {
-        return this.syncable;
-    }
-    isSyncableByHost() {
-        return this.syncableByHost;
     }
     update(deltaTimeStamp) { }
     render(context) { }

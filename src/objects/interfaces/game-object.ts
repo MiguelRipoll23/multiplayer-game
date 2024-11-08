@@ -3,9 +3,6 @@ export interface GameObject {
   hasLoaded(): boolean;
   setDebug(debug: boolean): void;
 
-  isSyncable(): boolean;
-  isSyncableByHost(): boolean;
-
   update(deltaTimeStamp: DOMHighResTimeStamp): void;
   render(context: CanvasRenderingContext2D): void;
 }

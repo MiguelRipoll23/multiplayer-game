@@ -52,7 +52,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   public override hasTransitionFinished(): void {
     super.hasTransitionFinished();
 
-    this.toastObject?.show("Finding matches...");
+    this.toastObject?.show("Finding sessions...");
     this.gameController.getMatchmakingService().findOrAdvertiseMatch();
   }
 

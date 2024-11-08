@@ -40,7 +40,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
     hasTransitionFinished() {
         super.hasTransitionFinished();
-        this.toastObject?.show("Finding matches...");
+        this.toastObject?.show("Finding sessions...");
         this.gameController.getMatchmakingService().findOrAdvertiseMatch();
     }
     update(deltaTimeStamp) {

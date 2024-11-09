@@ -8,8 +8,8 @@ export class WebRTCPeerService {
     dataChannels = {};
     logger;
     matchmakingService;
-    player = null;
     host = false;
+    player = null;
     joined = false;
     constructor(gameController, token) {
         this.gameController = gameController;

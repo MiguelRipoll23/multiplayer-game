@@ -18,8 +18,8 @@ export class WebRTCPeerService {
   private logger: LoggerUtils;
   private matchmakingService: MatchmakingService;
 
-  private player: GamePlayer | null = null;
   private host: boolean = false;
+  private player: GamePlayer | null = null;
   private joined: boolean = false;
 
   constructor(private gameController: GameController, private token: string) {

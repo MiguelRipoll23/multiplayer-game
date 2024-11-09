@@ -1,14 +1,36 @@
 import { Team } from "./game-teams.js";
 
 export class GamePlayer {
+  private id: string;
+  private host: boolean;
   private name: string;
-  protected team: Team;
+  private team: Team;
   private score: number;
 
-  constructor(name = "Unknown", team = Team.Blue, score = 0) {
+  constructor(
+    id: string = self.crypto.randomUUID(),
+    host: boolean = false,
+    name = "Unknown",
+    team = Team.Blue,
+    score = 0
+  ) {
+    this.id = id;
+    this.host = host;
     this.name = name;
     this.team = team;
     this.score = score;
+  }
+
+  public getId(): string {
+    return this.id;
+  }
+
+  public isHost(): boolean {
+    return this.host;
+  }
+
+  public setHost(host: boolean): void {
+    this.host = host;
   }
 
   public getName(): string {

@@ -20,12 +20,28 @@ export class GameMatch {
     getAttributes() {
         return this.attributes;
     }
+    getPlayers() {
+        return Array.from(this.players.values());
+    }
+    getPlayer(id) {
+        return this.players.get(id);
+    }
     addPlayer(player) {
-        this.players.set(player.getName(), player);
+        this.players.set(player.getId(), player);
         console.log(`Added player ${player.getName()} to match, total players`, this.players.size);
     }
-    removePlayer(playerName) {
-        this.players.delete(playerName);
-        console.log(`Removed player ${playerName} from match, total players`, this.players.size);
+    removePlayer(id) {
+        this.players.delete(id);
+        console.log(`Removed player ${id} from match, total players`, this.players.size);
+    }
+    getPlayerName(id) {
+        if (id === null) {
+            return "Unknown";
+        }
+        const player = this.players.get(id);
+        if (player === undefined) {
+            return id;
+        }
+        return player.getName();
     }
 }

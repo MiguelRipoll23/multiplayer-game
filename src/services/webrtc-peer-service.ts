@@ -1,6 +1,7 @@
 import {
   JOIN_REQUEST_ID,
   JOIN_RESPONSE_ID,
+  PLAYER_LIST_ID,
 } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { LoggerUtils } from "../utils/logger-utils.js";
@@ -14,9 +15,9 @@ export class WebRTCPeerService {
   private logger: LoggerUtils;
   private matchmakingService: MatchmakingService;
 
+  private id: string | null = null;
   private host: boolean = false;
   private joined: boolean = false;
-  private name: string | null = null;
 
   constructor(private gameController: GameController, private token: string) {
     this.logger = new LoggerUtils(`WebRTC(${this.token})`);
@@ -37,12 +38,16 @@ export class WebRTCPeerService {
     this.addEventListeners();
   }
 
-  public getName(): string | null {
-    return this.name;
+  public getId(): string | null {
+    return this.id;
   }
 
-  public setName(name: string): void {
-    this.name = name;
+  public setId(id: string): void {
+    this.id = id;
+  }
+
+  public getToken(): string {
+    return this.token;
   }
 
   public hasJoined() {
@@ -282,6 +287,9 @@ export class WebRTCPeerService {
 
       case JOIN_RESPONSE_ID:
         return this.matchmakingService.handleJoinResponse(this, payload);
+
+      case PLAYER_LIST_ID:
+        return this.matchmakingService.handlePlayerList(payload);
 
       default: {
         this.logger.warn("Unknown message identifier", id);

@@ -55,18 +55,4 @@ export class GameMatch {
       this.players.size
     );
   }
-
-  public getPlayerName(id: string | null): string {
-    if (id === null) {
-      return "Unknown";
-    }
-
-    const player = this.players.get(id);
-
-    if (player === undefined) {
-      return id;
-    }
-
-    return player.getName();
-  }
 }

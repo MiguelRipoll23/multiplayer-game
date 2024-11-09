@@ -1,9 +1,12 @@
 import {
+  INITIAL_DATA_ACK_ID,
+  INITIAL_DATA_END_ID,
   JOIN_REQUEST_ID,
   JOIN_RESPONSE_ID,
   PLAYER_LIST_ID,
 } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
+import { GamePlayer } from "../models/game-player.js";
 import { LoggerUtils } from "../utils/logger-utils.js";
 import { MatchmakingService } from "./matchmaking-service.js";
 
@@ -15,7 +18,7 @@ export class WebRTCPeerService {
   private logger: LoggerUtils;
   private matchmakingService: MatchmakingService;
 
-  private id: string | null = null;
+  private player: GamePlayer | null = null;
   private host: boolean = false;
   private joined: boolean = false;
 
@@ -38,16 +41,20 @@ export class WebRTCPeerService {
     this.addEventListeners();
   }
 
-  public getId(): string | null {
-    return this.id;
-  }
-
-  public setId(id: string): void {
-    this.id = id;
-  }
-
   public getToken(): string {
     return this.token;
+  }
+
+  public setPlayer(player: GamePlayer): void {
+    this.player = player;
+  }
+
+  public getId(): string | null {
+    return this.player?.getId() ?? null;
+  }
+
+  public getName(): string {
+    return this.player?.getName() ?? this.token;
   }
 
   public hasJoined() {
@@ -289,7 +296,13 @@ export class WebRTCPeerService {
         return this.matchmakingService.handleJoinResponse(this, payload);
 
       case PLAYER_LIST_ID:
-        return this.matchmakingService.handlePlayerList(payload);
+        return this.matchmakingService.handlePlayerList(this, payload);
+
+      case INITIAL_DATA_END_ID:
+        return this.matchmakingService.handleInitialDataEnd(this);
+
+      case INITIAL_DATA_ACK_ID:
+        return this.matchmakingService.handleInitialDataACK(this);
 
       default: {
         this.logger.warn("Unknown message identifier", id);

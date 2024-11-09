@@ -15,7 +15,9 @@ import { WebRTCPeerService } from "./webrtc-peer-service.js";
 import {
   JOIN_REQUEST_ID,
   JOIN_RESPONSE_ID,
+  INITIAL_DATA_END_ID,
   PLAYER_LIST_ID,
+  INITIAL_DATA_ACK_ID,
 } from "../constants/webrtc-constants.js";
 import { GameMatch } from "../models/game-match.js";
 import {
@@ -67,18 +69,20 @@ export class MatchmakingService {
 
   public hasPeerDisconnected(peer: WebRTCPeerService): void {
     if (peer.hasJoined() === false) {
-      return console.warn("Non-joined peer disconnected", peer);
+      return console.warn("Ignoring disconnecting from non-joined peer", peer);
+    }
+
+    const id = peer.getId();
+
+    if (id === null) {
+      return console.warn("Unknown peer disconnected", peer);
     }
 
     if (this.gameState.getGameMatch()?.isHost()) {
-      this.handlePlayerDisconnected(peer);
+      this.handlePlayerDisconnected(peer, id);
     } else {
       this.handleHostDisconnected(peer);
     }
-
-    dispatchEvent(
-      new CustomEvent(PLAYER_DISCONNECTED_EVENT, { detail: { peer } })
-    );
   }
 
   public handleJoinRequest(
@@ -104,16 +108,11 @@ export class MatchmakingService {
 
     console.log("Received join request from", playerName);
 
-    // Add peer identifier
-    peer.setId(playerId);
-
     // Add player to game match
     const gamePlayer = new GamePlayer(playerId, false, playerName);
-    gameMatch?.addPlayer(gamePlayer);
+    peer.setPlayer(gamePlayer);
 
-    dispatchEvent(
-      new CustomEvent(PLAYER_CONNECTED_EVENT, { detail: { playerName } })
-    );
+    gameMatch?.addPlayer(gamePlayer);
 
     this.sendJoinResponse(peer, gameMatch);
   }
@@ -142,11 +141,12 @@ export class MatchmakingService {
     // Add local player
     const localGamePlayer = this.gameState.getGamePlayer();
     gameMatch.addPlayer(localGamePlayer);
-
-    dispatchEvent(new CustomEvent(PLAYER_CONNECTED_EVENT));
   }
 
-  public handlePlayerList(payload: Uint8Array | null): void {
+  public handlePlayerList(
+    peer: WebRTCPeerService,
+    payload: Uint8Array | null
+  ): void {
     if (payload === null) {
       return console.warn("Received empty player list");
     }
@@ -162,8 +162,36 @@ export class MatchmakingService {
     const gamePlayer = new GamePlayer(id, host, name, team, score);
     this.gameState.getGameMatch()?.addPlayer(gamePlayer);
 
+    if (host) {
+      peer.setPlayer(gamePlayer);
+    }
+
     dispatchEvent(
       new CustomEvent(PLAYER_CONNECTED_EVENT, { detail: { name } })
+    );
+  }
+
+  public handleInitialDataEnd(peer: WebRTCPeerService): void {
+    const playerName = peer.getName();
+    console.log("Received end of initial data from", playerName);
+
+    peer.setJoined(true);
+
+    dispatchEvent(
+      new CustomEvent(PLAYER_CONNECTED_EVENT, { detail: { playerName } })
+    );
+
+    this.sendInitialDataAck(peer);
+  }
+
+  public handleInitialDataACK(peer: WebRTCPeerService): void {
+    const playerName = peer.getName();
+    console.log("Received initial data ACK from", playerName);
+
+    peer.setJoined(true);
+
+    dispatchEvent(
+      new CustomEvent(PLAYER_CONNECTED_EVENT, { detail: { playerName } })
     );
   }
 
@@ -172,31 +200,26 @@ export class MatchmakingService {
       "Already joined a match, disconnecting peer...",
       peer.getToken()
     );
+
     peer.disconnect();
   }
 
-  private handlePlayerDisconnected(peer: WebRTCPeerService): void {
-    const id = peer.getId();
+  private handlePlayerDisconnected(
+    peer: WebRTCPeerService,
+    peerId: string
+  ): void {
+    console.log(`Player ${peer.getName()} disconnected`);
+    this.gameState.getGameMatch()?.removePlayer(peerId);
 
-    if (id === null) {
-      return console.warn("Player unknown disconnected");
-    }
-
-    this.gameState.getGameMatch()?.removePlayer(id);
-
-    const playerName = this.gameState.getGameMatch()?.getPlayer(id)?.getName();
-    console.log(`Player ${playerName} disconnected`);
+    dispatchEvent(
+      new CustomEvent(PLAYER_DISCONNECTED_EVENT, {
+        detail: { playerName: peer.getName() },
+      })
+    );
   }
 
   private handleHostDisconnected(peer: WebRTCPeerService): void {
-    const id = peer.getId();
-
-    if (id === null) {
-      return console.warn("Player unknown disconnected");
-    }
-
-    const playerName = this.gameState.getGameMatch()?.getPlayer(id)?.getName();
-    console.log(`Host ${playerName} disconnected`);
+    console.log(`Host ${peer.getName()} disconnected`);
 
     this.gameState.setGameMatch(null);
     dispatchEvent(new CustomEvent(HOST_DISCONNECTED_EVENT));
@@ -264,7 +287,7 @@ export class MatchmakingService {
   }
 
   private handleUnavailableSlots(peer: WebRTCPeerService): void {
-    console.log("Match is full, disconnecting peer...");
+    console.log("Match is full, disconnecting peer...", peer.getToken());
     peer.disconnect();
   }
 
@@ -275,13 +298,11 @@ export class MatchmakingService {
     const totalSlots = gameMatch.getTotalSlots();
     const payload = new Uint8Array([JOIN_RESPONSE_ID, totalSlots]);
 
-    const playerId = peer.getId();
-    const playerName = gameMatch.getPlayerName(playerId);
-    console.log("Sending join response to", playerName);
-
+    console.log("Sending join response to", peer.getName());
     peer.sendReliableOrderedMessage(payload);
 
     this.sendPlayerList(peer);
+    this.sendEndOfInitialData(peer);
   }
 
   private sendPlayerList(peer: WebRTCPeerService): void {
@@ -291,9 +312,7 @@ export class MatchmakingService {
       return console.warn("Game match is null");
     }
 
-    const playerId = peer.getId();
-    const playerName = gameMatch.getPlayerName(playerId);
-    console.log("Sending player list to", playerName);
+    console.log("Sending player list to", peer.getName());
 
     const players = gameMatch.getPlayers();
 
@@ -325,6 +344,19 @@ export class MatchmakingService {
       ...nameBytes,
     ]);
 
+    peer.sendReliableOrderedMessage(payload);
+  }
+
+  private sendEndOfInitialData(peer: WebRTCPeerService): void {
+    console.log("Sending end of initial data to", peer.getName());
+
+    const payload = new Uint8Array([INITIAL_DATA_END_ID]);
+    peer.sendReliableOrderedMessage(payload);
+  }
+
+  private sendInitialDataAck(peer: WebRTCPeerService): void {
+    console.log("Sending initial data ACK to", peer.getName());
+    const payload = new Uint8Array([INITIAL_DATA_ACK_ID]);
     peer.sendReliableOrderedMessage(payload);
   }
 }

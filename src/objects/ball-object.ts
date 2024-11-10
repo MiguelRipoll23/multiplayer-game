@@ -2,16 +2,18 @@ import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
 import { PlayerObject } from "./player-object.js";
 import { CarObject } from "./car-object.js";
+import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
 
-export class BallObject extends BaseDynamicCollidableGameObject {
+export class BallObject
+  extends BaseDynamicCollidableGameObject
+  implements MultiplayerGameObject
+{
   private readonly MASS: number = 1;
   private readonly RADIUS: number = 20;
   private readonly FRICTION: number = 0.01;
   private radius: number = this.RADIUS;
 
   private inactive: boolean = false;
-  private elapsedInactiveMilliseconds: number = 0;
-
   private lastPlayerObject: PlayerObject | null = null;
 
   constructor(
@@ -25,6 +27,36 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     this.mass = this.MASS;
   }
 
+  public override serialize(): Uint8Array {
+    const buffer = new ArrayBuffer(17); // 4 + 4 + 4 + 4 + 1 bytes (x, y, vx, vy, inactive)
+    const view = new DataView(buffer);
+
+    // x, y, vx, vy (4 bytes each)
+    view.setFloat32(0, this.x, true);
+    view.setFloat32(4, this.y, true);
+    view.setFloat32(8, this.vx, true);
+    view.setFloat32(12, this.vy, true);
+
+    // inactive (1 byte)
+    view.setUint8(16, this.inactive ? 1 : 0);
+
+    return new Uint8Array(buffer);
+  }
+
+  public override synchronize(data: Uint8Array): void {
+    console.log("Synchronizing ball object", data);
+
+    const view = new DataView(data.buffer);
+
+    this.x = view.getFloat32(0, true);
+    this.y = view.getFloat32(4, true);
+    this.vx = view.getFloat32(8, true);
+    this.vy = view.getFloat32(12, true);
+    this.inactive = view.getUint8(16) === 1;
+
+    this.updateHitbox();
+  }
+
   public override load(): void {
     this.createHitbox();
     super.load();
@@ -35,7 +67,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     this.vy = 0;
     this.radius = this.RADIUS;
     this.setCenterPosition();
-    this.elapsedInactiveMilliseconds = 0;
     this.inactive = false;
   }
 

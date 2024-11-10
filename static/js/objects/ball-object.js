@@ -8,7 +8,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     FRICTION = 0.01;
     radius = this.RADIUS;
     inactive = false;
-    elapsedInactiveMilliseconds = 0;
     lastPlayerObject = null;
     constructor(x, y, canvas) {
         super();
@@ -16,6 +15,28 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         this.x = x;
         this.y = y;
         this.mass = this.MASS;
+    }
+    serialize() {
+        const buffer = new ArrayBuffer(17); // 4 + 4 + 4 + 4 + 1 bytes (x, y, vx, vy, inactive)
+        const view = new DataView(buffer);
+        // x, y, vx, vy (4 bytes each)
+        view.setFloat32(0, this.x, true);
+        view.setFloat32(4, this.y, true);
+        view.setFloat32(8, this.vx, true);
+        view.setFloat32(12, this.vy, true);
+        // inactive (1 byte)
+        view.setUint8(16, this.inactive ? 1 : 0);
+        return new Uint8Array(buffer);
+    }
+    synchronize(data) {
+        console.log("Synchronizing ball object", data);
+        const view = new DataView(data.buffer);
+        this.x = view.getFloat32(0, true);
+        this.y = view.getFloat32(4, true);
+        this.vx = view.getFloat32(8, true);
+        this.vy = view.getFloat32(12, true);
+        this.inactive = view.getUint8(16) === 1;
+        this.updateHitbox();
     }
     load() {
         this.createHitbox();
@@ -26,7 +47,6 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         this.vy = 0;
         this.radius = this.RADIUS;
         this.setCenterPosition();
-        this.elapsedInactiveMilliseconds = 0;
         this.inactive = false;
     }
     setCenterPosition() {

@@ -1,4 +1,4 @@
-import { INITIAL_DATA_ACK_ID, INITIAL_DATA_END_ID, JOIN_REQUEST_ID, JOIN_RESPONSE_ID, PLAYER_CONNECTION_STATE_ID, } from "../constants/webrtc-constants.js";
+import { INITIAL_DATA_ACK_ID, INITIAL_DATA_END_ID, JOIN_REQUEST_ID, JOIN_RESPONSE_ID, OBJECT_DATA_ID, PLAYER_CONNECTION_STATE_ID, } from "../constants/webrtc-constants.js";
 import { LoggerUtils } from "../utils/logger-utils.js";
 export class WebRTCPeerService {
     gameController;
@@ -8,6 +8,7 @@ export class WebRTCPeerService {
     dataChannels = {};
     logger;
     matchmakingService;
+    objectOrchestrator;
     host = false;
     player = null;
     joined = false;
@@ -17,6 +18,7 @@ export class WebRTCPeerService {
         this.logger = new LoggerUtils(`WebRTC(${this.token})`);
         this.logger.info("WebRTCPeer initialized");
         this.matchmakingService = this.gameController.getMatchmakingService();
+        this.objectOrchestrator = this.gameController.getObjectOrchestrator();
         this.host =
             this.gameController.getGameState().getGameMatch()?.isHost() ?? false;
         this.peerConnection = new RTCPeerConnection({
@@ -211,6 +213,8 @@ export class WebRTCPeerService {
                 return this.matchmakingService.handleInitialDataEnd(this);
             case INITIAL_DATA_ACK_ID:
                 return this.matchmakingService.handleInitialDataACK(this);
+            case OBJECT_DATA_ID:
+                return this.objectOrchestrator.handleData(payload);
             default: {
                 this.logger.warn("Unknown message identifier", id);
             }

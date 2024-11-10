@@ -27,6 +27,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.gameController = gameController;
         this.gameState = gameController.getGameState();
         this.addCustomEventListeners();
+        this.addSyncableObjectClass(BallObject);
     }
     loadObjects() {
         this.createBackgroundObject();
@@ -46,6 +47,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     update(deltaTimeStamp) {
         super.update(deltaTimeStamp);
         this.detectScores();
+        this.gameController.getObjectOrchestrator().sendData();
     }
     createBackgroundObject() {
         const backgroundObject = new WorldBackgroundObject(this.canvas);

@@ -1,6 +1,6 @@
-import { BaseGameObject } from "./base-game-object.js";
+import { BaseMultiplayerGameObject } from "./base-multiplayer-object.js";
 
-export class BasePositionableGameObject extends BaseGameObject {
+export class BasePositionableGameObject extends BaseMultiplayerGameObject {
   protected x: number = 0;
   protected y: number = 0;
   protected angle: number = 0;

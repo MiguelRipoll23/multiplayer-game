@@ -21,6 +21,9 @@ export class WebRTCService {
         ]);
         this.gameController.getWebSocketService().sendTunnelMessage(payload);
     }
+    getPeers() {
+        return Array.from(this.peers.values());
+    }
     removePeer(token) {
         this.peers.delete(token);
         console.log("Removed WebRTC peer, updated peers count", this.peers.size);

@@ -1,7 +1,7 @@
-import { BaseGameScreen } from "./base-game-screen.js";
-import { BaseStaticCollidableGameObject as BaseStaticCollidableGameObject } from "../../objects/base/base-static-collidable-game-object.js";
+import { BaseStaticCollidableGameObject } from "../../objects/base/base-static-collidable-game-object.js";
 import { BaseDynamicCollidableGameObject } from "../../objects/base/base-collidable-dynamic-game-object.js";
-export class BaseCollidingGameScreen extends BaseGameScreen {
+import { BaseMultiplayerScreen } from "../../objects/base/base-multiplayer-screen.js";
+export class BaseCollidingGameScreen extends BaseMultiplayerScreen {
     gameController;
     constructor(gameController) {
         super(gameController);

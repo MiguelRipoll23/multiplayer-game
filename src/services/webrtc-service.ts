@@ -34,6 +34,10 @@ export class WebRTCService {
     this.gameController.getWebSocketService().sendTunnelMessage(payload);
   }
 
+  public getPeers(): WebRTCPeerService[] {
+    return Array.from(this.peers.values());
+  }
+
   public removePeer(token: string): void {
     this.peers.delete(token);
 

@@ -21,7 +21,6 @@ import { Team } from "../models/game-teams.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
-
   private scoreboardObject: ScoreboardObject | null = null;
   private localCarObject: LocalCarObject | null = null;
   private ballObject: BallObject | null = null;
@@ -36,6 +35,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     super(gameController);
     this.gameState = gameController.getGameState();
     this.addCustomEventListeners();
+    this.addSyncableObjectClass(BallObject);
   }
 
   public override loadObjects(): void {
@@ -59,6 +59,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
     this.detectScores();
+    this.gameController.getObjectOrchestrator().sendData();
   }
 
   private createBackgroundObject() {

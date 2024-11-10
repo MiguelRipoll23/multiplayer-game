@@ -2,6 +2,7 @@ import { GAME_VERSION } from "../constants/game-constants.js";
 import { ApiService } from "../services/api-service.js";
 import { CryptoService } from "../services/crypto-service.js";
 import { MatchmakingService } from "../services/matchmaking-service.js";
+import { ObjectOrchestrator } from "../services/object-orchestrator-service.js";
 import { ScreenTransitionService } from "../services/screen-transition-service.js";
 import { TimerService } from "../services/timer-service.js";
 import { WebRTCService } from "../services/webrtc-service.js";
@@ -24,6 +25,7 @@ export class GameController {
     webSocketService;
     matchMakingService;
     webRTCService;
+    objectOrchestrator;
     constructor(canvas, debug = false) {
         this.canvas = canvas;
         this.debug = debug;
@@ -37,6 +39,7 @@ export class GameController {
         this.webSocketService = new WebSocketService(this);
         this.webRTCService = new WebRTCService(this);
         this.matchMakingService = new MatchmakingService(this);
+        this.objectOrchestrator = new ObjectOrchestrator(this);
     }
     getVersion() {
         return GAME_VERSION;
@@ -92,5 +95,8 @@ export class GameController {
     }
     getWebRTCService() {
         return this.webRTCService;
+    }
+    getObjectOrchestrator() {
+        return this.objectOrchestrator;
     }
 }

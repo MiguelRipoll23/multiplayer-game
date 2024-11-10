@@ -16,7 +16,7 @@ import {
   JOIN_REQUEST_ID,
   JOIN_RESPONSE_ID,
   INITIAL_DATA_END_ID,
-  PLAYER_LIST_ID,
+  PLAYER_CONNECTION_STATE_ID,
   INITIAL_DATA_ACK_ID,
 } from "../constants/webrtc-constants.js";
 import { GameMatch } from "../models/game-match.js";
@@ -143,21 +143,27 @@ export class MatchmakingService {
     gameMatch.addPlayer(localGamePlayer);
   }
 
-  public handlePlayerList(
+  public handlePlayerConnectionState(
     peer: WebRTCPeerService,
     payload: Uint8Array | null
   ): void {
-    if (payload === null) {
-      return console.warn("Received empty player list");
+    if (payload === null || payload.length < 40) {
+      return console.warn("Invalid player connection state payload", payload);
     }
 
-    const id = new TextDecoder().decode(payload.slice(0, 36));
-    const host = payload[36] === 1;
-    const team = payload[37];
-    const score = payload[38];
-    const nameBytes = payload.slice(39);
+    const connected = payload[0];
+    const id = new TextDecoder().decode(payload.slice(1, 37));
+    const host = payload[37] === 1;
+    const team = payload[38];
+    const score = payload[39];
+    const nameBytes = payload.slice(40);
 
     const name = new TextDecoder().decode(nameBytes);
+
+    if (connected === 0) {
+      // TODO
+      return console.warn("Player disconnected", name);
+    }
 
     const gamePlayer = new GamePlayer(id, host, name, team, score);
     this.gameState.getGameMatch()?.addPlayer(gamePlayer);
@@ -317,15 +323,19 @@ export class MatchmakingService {
     const players = gameMatch.getPlayers();
 
     players.forEach((player) => {
-      this.sendPlayer(peer, player);
+      this.sendPlayerConnectionState(peer, player);
     });
   }
 
-  private sendPlayer(peer: WebRTCPeerService, player: GamePlayer): void {
+  private sendPlayerConnectionState(
+    peer: WebRTCPeerService,
+    player: GamePlayer
+  ): void {
     if (player.getId() === peer.getId()) {
       return;
     }
 
+    const connected = 1;
     const id = player.getId();
     const host = player.isHost() ? 1 : 0;
     const team = player.getTeam();
@@ -336,7 +346,8 @@ export class MatchmakingService {
     const nameBytes = new TextEncoder().encode(name);
 
     const payload = new Uint8Array([
-      PLAYER_LIST_ID,
+      PLAYER_CONNECTION_STATE_ID,
+      connected,
       ...idBytes,
       host,
       team,

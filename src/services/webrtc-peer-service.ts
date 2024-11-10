@@ -3,7 +3,7 @@ import {
   INITIAL_DATA_END_ID,
   JOIN_REQUEST_ID,
   JOIN_RESPONSE_ID,
-  PLAYER_LIST_ID,
+  PLAYER_CONNECTION_STATE_ID,
 } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GamePlayer } from "../models/game-player.js";
@@ -295,8 +295,11 @@ export class WebRTCPeerService {
       case JOIN_RESPONSE_ID:
         return this.matchmakingService.handleJoinResponse(this, payload);
 
-      case PLAYER_LIST_ID:
-        return this.matchmakingService.handlePlayerList(this, payload);
+      case PLAYER_CONNECTION_STATE_ID:
+        return this.matchmakingService.handlePlayerConnectionState(
+          this,
+          payload
+        );
 
       case INITIAL_DATA_END_ID:
         return this.matchmakingService.handleInitialDataEnd(this);

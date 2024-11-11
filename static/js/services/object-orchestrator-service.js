@@ -1,117 +1,113 @@
 import { OBJECT_DATA_ID } from "../constants/webrtc-constants.js";
-import { BaseMultiplayerScreen } from "../objects/base/base-multiplayer-screen.js";
-export var SyncableState;
-(function (SyncableState) {
-    SyncableState[SyncableState["Active"] = 0] = "Active";
-    SyncableState[SyncableState["Inactive"] = 1] = "Inactive";
-})(SyncableState || (SyncableState = {}));
-export var SyncableType;
-(function (SyncableType) {
-    SyncableType[SyncableType["Ball"] = 0] = "Ball";
-})(SyncableType || (SyncableType = {}));
+import { BaseMultiplayerScreen } from "../screens/base/base-multiplayer-screen.js";
+import { ObjectState } from "../models/object-state.js";
 export class ObjectOrchestrator {
     gameController;
     webrtcService;
     gameFrame;
-    gameMatch = null;
+    gameState;
     constructor(gameController) {
         this.gameController = gameController;
         this.webrtcService = gameController.getWebRTCService();
         this.gameFrame = gameController.getGameFrame();
-        this.gameMatch = gameController.getGameState().getGameMatch();
+        this.gameState = gameController.getGameState();
     }
     sendData(multiplayerScreen) {
-        if (this.gameController.getGameState().getGameMatch()?.isHost() === false) {
+        if (this.gameState.getGameMatch() === null) {
             return;
         }
-        multiplayerScreen.getSyncableObjects().forEach((object) => {
-            this.sendObjectData(object);
-        });
+        multiplayerScreen
+            .getSyncableObjects()
+            .forEach((object) => this.sendObjectData(object));
     }
-    handleData(data) {
-        if (data === null || data.length < 38) {
-            return console.warn("Invalid data received for object synchronization");
-        }
-        const screen = this.getScreen();
-        if (screen === null) {
+    handleRemoteData(data) {
+        if (!data || data.byteLength < 38) {
+            console.warn("Invalid data received for object synchronization");
             return;
         }
-        const operationId = data[0]; // 0: create/sync, 1: delete
-        const objectTypeId = data[1];
-        const objectId = new TextDecoder().decode(data.slice(2, 38));
-        const objectData = data.slice(38);
-        switch (operationId) {
-            case SyncableState.Active:
-                return this.createOrSynchronize(screen, objectId, objectTypeId, objectData);
-            case SyncableState.Inactive:
-                return this.delete(screen, objectId);
-            default:
-                console.warn(`Invalid operation id ${operationId} for object ${objectId}`);
+        const multiplayerScreen = this.getMultiplayerScreen();
+        if (multiplayerScreen === null) {
+            return;
+        }
+        const dataView = new DataView(data);
+        const objectStateId = dataView.getUint8(0);
+        const objectTypeId = dataView.getUint8(1);
+        const syncableId = new TextDecoder().decode(data.slice(2, 38));
+        const syncableCustomData = data.slice(38);
+        if (objectStateId === ObjectState.Active) {
+            this.createOrSynchronize(multiplayerScreen, syncableId, objectTypeId, syncableCustomData);
+        }
+        else {
+            this.delete(multiplayerScreen, syncableId);
         }
     }
-    createOrSynchronize(screen, objectId, objectTypeId, objectData) {
-        const object = screen.getSyncableObject(objectId);
+    createOrSynchronize(multiplayerScreen, syncableId, objectTypeId, syncableCustomData) {
+        const object = multiplayerScreen.getSyncableObject(syncableId);
         if (object === null) {
-            console.log(`Object not found with id ${objectId}, creating...`);
-            return this.create(screen, objectTypeId, objectId, objectData);
+            this.create(multiplayerScreen, objectTypeId, syncableId, syncableCustomData);
         }
-        //console.log("Synchronizing object...", object);
-        object.synchronize(objectData);
-    }
-    create(screen, objectTypeId, objectId, objectData) {
-        const syncableObject = screen.getSyncableObjectClass(objectTypeId);
-        console.log("result", syncableObject);
-        if (syncableObject === null) {
-            return console.error(`Object class not found for type ${objectTypeId}`);
+        else {
+            object.synchronize(syncableCustomData);
         }
-        const instance = syncableObject.deserialize(objectId, objectData);
-        console.log(`Created object ${objectId} of type ${objectTypeId}`);
     }
-    synchronize(object, data) {
-        object.synchronize(data);
-    }
-    delete(screen, objectId) {
-        const object = screen.getSyncableObject(objectId);
-        if (object === null) {
-            return console.error(`Object not found with id ${objectId}`);
+    create(multiplayerScreen, objectTypeId, syncableId, syncableCustomData) {
+        const syncableObjectClass = multiplayerScreen.getSyncableObjectClass(objectTypeId);
+        if (syncableObjectClass === null) {
+            return console.warn(`Syncable class not found for type ${objectTypeId}`);
         }
-        console.log(`Deleted object ${objectId}`);
-        // TODO: delete object
+        const instance = syncableObjectClass.deserialize(syncableId, syncableCustomData);
+        console.log(`Created object ${syncableId} of type ${objectTypeId}`);
     }
-    sendObjectData(object) {
-        if (object.isSyncableByHost() && this.gameMatch?.isHost() === false) {
+    delete(multiplayerScreen, syncableId) {
+        const object = multiplayerScreen.getSyncableObject(syncableId);
+        if (!object) {
+            console.error(`Object not found with id ${syncableId}`);
             return;
         }
-        const operationId = 0;
-        const syncableTypeId = object.getSyncableTypeId();
-        const syncableId = object.getSyncableId();
-        const objectData = object.serialize();
-        if (syncableTypeId === null || syncableId === null) {
+        // TODO: delete object from the screen if necessary
+        console.log(`Deleted object ${syncableId}`);
+    }
+    sendObjectData(multiplayerObject) {
+        if (this.shouldSkipSendingData(multiplayerObject)) {
             return;
         }
-        const data = new Uint8Array([
-            OBJECT_DATA_ID,
-            operationId,
-            syncableTypeId,
-            ...new TextEncoder().encode(syncableId),
-            ...objectData,
-        ]);
+        const dataBuffer = this.createObjectDataBuffer(multiplayerObject);
+        if (!dataBuffer)
+            return;
         this.webrtcService.getPeers().forEach((peer) => {
-            if (peer.hasJoined() === false) {
-                return;
+            if (peer.hasJoined()) {
+                multiplayerObject.sendSyncableDataToPeer(peer, dataBuffer);
             }
-            peer.sendReliableOrderedMessage(data);
-            // convert to text for logging
-            //const textData = new TextDecoder().decode(data);
-            //console.log("Sending object data", textData);
-            //this.alreadySent = true;
         });
     }
-    getScreen() {
-        const screen = this.gameFrame.getCurrentScreen();
-        if (screen instanceof BaseMultiplayerScreen) {
-            return screen;
+    shouldSkipSendingData(multiplayerObject) {
+        const gameMatch = this.gameState.getGameMatch();
+        return (!multiplayerObject.isSyncableByHost() || gameMatch?.isHost() === false);
+    }
+    createObjectDataBuffer(multiplayerObject) {
+        const objectTypeId = multiplayerObject.getObjectTypeId();
+        const syncableId = multiplayerObject.getSyncableId();
+        const syncableCustomData = multiplayerObject.serialize();
+        if (objectTypeId === null || syncableId === null) {
+            console.error("Invalid syncable object data");
+            return null;
         }
-        return null;
+        const arrayBuffer = new ArrayBuffer(3 + 36 + syncableCustomData.byteLength);
+        const dataView = new DataView(arrayBuffer);
+        dataView.setUint8(0, OBJECT_DATA_ID);
+        dataView.setUint8(1, ObjectState.Active);
+        dataView.setUint8(2, objectTypeId);
+        const idBuffer = new TextEncoder().encode(syncableId);
+        if (idBuffer.byteLength > 36) {
+            console.error("Syncable ID is too long");
+            return null;
+        }
+        new Uint8Array(arrayBuffer, 3, idBuffer.length).set(idBuffer);
+        new Uint8Array(arrayBuffer, 39, syncableCustomData.byteLength).set(new Uint8Array(syncableCustomData));
+        return arrayBuffer;
+    }
+    getMultiplayerScreen() {
+        const screen = this.gameFrame.getCurrentScreen();
+        return screen instanceof BaseMultiplayerScreen ? screen : null;
     }
 }

@@ -1,5 +1,5 @@
 export class ObjectUtils {
-    static getSyncableTypeId(className) {
+    static getObjectTypeId(className) {
         return 0;
     }
 }

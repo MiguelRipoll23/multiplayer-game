@@ -155,9 +155,10 @@ export class WebRTCPeerService {
         }
     }
     setupDataChannelListeners(channel) {
+        channel.binaryType = "arraybuffer";
         channel.onopen = () => this.handleDataChannelOpen(channel.label);
         channel.onerror = (error) => this.handleDataChannelError(channel.label, error);
-        channel.onmessage = (event) => this.handleMessage(new Uint8Array(event.data));
+        channel.onmessage = (event) => this.handleMessage(event.data);
     }
     handleDataChannelOpen(label) {
         this.logger.info(`Data channel ${label} opened`);
@@ -198,10 +199,12 @@ export class WebRTCPeerService {
         channel.send(arrayBuffer);
         //this.logger.debug(`Sent ${channelKey} message`, arrayBuffer);
     }
-    handleMessage(data) {
-        //this.logger.info("Received message from peer", data);
-        const id = data[0];
-        const payload = data.length > 1 ? data.slice(1) : null;
+    handleMessage(arrayBuffer) {
+        //this.logger.info("Received message from peer", new Uint8Array(arrayBuffer));
+        //this.logger.info(new TextDecoder().decode(arrayBuffer));
+        const dataView = new DataView(arrayBuffer);
+        const id = dataView.getUint8(0);
+        const payload = dataView.buffer.byteLength > 1 ? arrayBuffer.slice(1) : null;
         switch (id) {
             case JOIN_REQUEST_ID:
                 return this.matchmakingService.handleJoinRequest(this, payload);
@@ -214,7 +217,7 @@ export class WebRTCPeerService {
             case INITIAL_DATA_ACK_ID:
                 return this.matchmakingService.handleInitialDataACK(this);
             case OBJECT_DATA_ID:
-                return this.objectOrchestrator.handleData(payload);
+                return this.objectOrchestrator.handleRemoteData(payload);
             default: {
                 this.logger.warn("Unknown message identifier", id);
             }

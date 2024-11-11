@@ -1,14 +1,16 @@
-import { SyncableType } from "../../services/object-orchestrator-service.js";
+import { ObjectType } from "../../models/object-types.js";
+import { WebRTCPeer } from "../../services/interfaces/webrtc-peer.js";
 
 export interface MultiplayerGameObject {
   getSyncableId(): string | null;
-  getSyncableTypeId(): SyncableType | null;
+  getObjectTypeId(): ObjectType | null;
   isSyncableByHost(): boolean;
-  serialize(): Uint8Array;
-  synchronize(data: Uint8Array): void;
+  serialize(): ArrayBuffer;
+  sendSyncableDataToPeer(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void;
+  synchronize(data: ArrayBuffer): void;
 }
 
 export interface StaticMultiplayerGameObject {
   new (...args: any[]): MultiplayerGameObject;
-  deserialize(id: string, data: Uint8Array): void;
+  deserialize(id: string, data: ArrayBuffer): void;
 }

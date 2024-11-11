@@ -3,7 +3,8 @@ import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-
 import { PlayerObject } from "./player-object.js";
 import { CarObject } from "./car-object.js";
 import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
-import { SyncableType } from "../services/object-orchestrator-service.js";
+import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
+import { ObjectType } from "../models/object-types.js";
 
 export class BallObject
   extends BaseDynamicCollidableGameObject
@@ -93,37 +94,43 @@ export class BallObject
     super.render(context);
   }
 
-  public override serialize(): Uint8Array {
-    const buffer = new ArrayBuffer(17);
-    const view = new DataView(buffer);
-
-    // x, y, vx, vy (4 bytes each)
-    view.setFloat32(0, this.x, true);
-    view.setFloat32(4, this.y, true);
-    view.setFloat32(8, this.vx, true);
-    view.setFloat32(12, this.vy, true);
-
-    // inactive (1 byte)
-    view.setUint8(16, this.inactive ? 1 : 0);
-
-    return new Uint8Array(buffer);
+  public override sendSyncableDataToPeer(
+    webrtcPeer: WebRTCPeer,
+    data: ArrayBuffer
+  ): void {
+    webrtcPeer.sendUnreliableOrderedMessage(data);
   }
 
-  public override synchronize(data: Uint8Array): void {
-    const view = new DataView(data.buffer);
+  public override serialize(): ArrayBuffer {
+    const arrayBuffer = new ArrayBuffer(10);
+    const dataView = new DataView(arrayBuffer);
 
-    this.x = view.getFloat32(0, true);
-    this.y = view.getFloat32(4, true);
-    this.vx = view.getFloat32(8, true);
-    this.vy = view.getFloat32(12, true);
-    this.inactive = view.getUint8(16) === 1;
+    dataView.setFloat32(0, this.x);
+    dataView.setFloat32(2, this.y);
+    dataView.setFloat32(4, this.vx);
+    dataView.setFloat32(6, this.vy);
+
+    // inactive (1 byte)
+    dataView.setUint8(8, this.inactive ? 1 : 0);
+
+    return dataView.buffer;
+  }
+
+  public override synchronize(data: ArrayBuffer): void {
+    const dataView = new DataView(data);
+
+    this.x = dataView.getFloat32(0);
+    this.y = dataView.getFloat32(2);
+    this.vx = dataView.getFloat32(4);
+    this.vy = dataView.getFloat32(6);
+    this.inactive = dataView.getUint8(9) === 1;
 
     this.updateHitbox();
   }
 
   private setSyncableValues() {
     this.setSyncableId("94c58aa0-41c3-4b22-825a-15a3834be240");
-    this.setSyncableTypeId(SyncableType.Ball);
+    this.setObjectTypeId(ObjectType.Ball);
     this.setSyncableByHost(true);
   }
 

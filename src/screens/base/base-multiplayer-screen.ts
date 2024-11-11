@@ -1,22 +1,20 @@
-import { BaseGameScreen } from "../../screens/base/base-game-screen.js";
-import { SyncableType } from "../../services/object-orchestrator-service.js";
+import { ObjectType } from "../../models/object-types.js";
+import { BaseMultiplayerGameObject } from "../../objects/base/base-multiplayer-object.js";
 import {
-  MultiplayerGameObject,
   StaticMultiplayerGameObject,
-} from "../interfaces/multiplayer-game-object.js";
-import { BaseMultiplayerGameObject } from "./base-multiplayer-object.js";
+  MultiplayerGameObject,
+} from "../../objects/interfaces/multiplayer-game-object.js";
+import { BaseGameScreen } from "../../screens/base/base-game-screen.js";
 
 export class BaseMultiplayerScreen extends BaseGameScreen {
-  protected syncableObjectTypes: Map<
-    SyncableType,
-    StaticMultiplayerGameObject
-  > = new Map();
+  protected syncableObjectTypes: Map<ObjectType, StaticMultiplayerGameObject> =
+    new Map();
 
   public addSyncableObject(
     objectInstance: MultiplayerGameObject,
     objectClass: StaticMultiplayerGameObject
   ): void {
-    const typeId = objectInstance.getSyncableTypeId();
+    const typeId = objectInstance.getObjectTypeId();
 
     if (typeId === null) {
       throw new Error("Object type ID is not set");

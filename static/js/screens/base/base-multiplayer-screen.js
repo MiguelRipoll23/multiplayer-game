@@ -1,5 +1,5 @@
+import { BaseMultiplayerGameObject } from "../../objects/base/base-multiplayer-object.js";
 import { BaseGameScreen } from "../../screens/base/base-game-screen.js";
-import { BaseMultiplayerGameObject } from "./base-multiplayer-object.js";
 export class BaseMultiplayerScreen extends BaseGameScreen {
     syncableObjectTypes = new Map();
     addSyncableObject(objectInstance, objectClass) {

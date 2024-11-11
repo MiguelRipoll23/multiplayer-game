@@ -7,10 +7,11 @@ import {
   SESSION_DESCRIPTION_ID,
 } from "../constants/websocket-constants.js";
 import { GameController } from "../models/game-controller.js";
+import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { WebRTCPeerService } from "./webrtc-peer-service.js";
 
 export class WebRTCService {
-  private peers: Map<string, WebRTCPeerService> = new Map();
+  private peers: Map<string, WebRTCPeer> = new Map();
 
   constructor(private gameController: GameController) {
     this.addEventListeners();
@@ -34,7 +35,7 @@ export class WebRTCService {
     this.gameController.getWebSocketService().sendTunnelMessage(payload);
   }
 
-  public getPeers(): WebRTCPeerService[] {
+  public getPeers(): WebRTCPeer[] {
     return Array.from(this.peers.values());
   }
 
@@ -54,7 +55,7 @@ export class WebRTCService {
     });
   }
 
-  private addPeer(token: string): WebRTCPeerService {
+  private addPeer(token: string): WebRTCPeer {
     const peer = new WebRTCPeerService(this.gameController, token);
     this.peers.set(token, peer);
 
@@ -106,7 +107,7 @@ export class WebRTCService {
     await peer.connect(rtcSessionDescription);
   }
 
-  private getPeer(token: string): WebRTCPeerService | null {
+  private getPeer(token: string): WebRTCPeer | null {
     return this.peers.get(token) ?? null;
   }
 

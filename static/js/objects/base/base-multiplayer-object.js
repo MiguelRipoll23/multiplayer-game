@@ -1,7 +1,7 @@
 import { BaseGameObject } from "./base-game-object.js";
 export class BaseMultiplayerGameObject extends BaseGameObject {
     syncableId = null;
-    syncableTypeId = null;
+    objectTypeId = null;
     syncableByHost = false;
     getSyncableId() {
         return this.syncableId;
@@ -9,11 +9,11 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     setSyncableId(syncableId) {
         this.syncableId = syncableId;
     }
-    getSyncableTypeId() {
-        return this.syncableTypeId;
+    getObjectTypeId() {
+        return this.objectTypeId;
     }
-    setSyncableTypeId(syncableTypeId) {
-        this.syncableTypeId = syncableTypeId;
+    setObjectTypeId(objectTypeId) {
+        this.objectTypeId = objectTypeId;
     }
     isSyncableByHost() {
         return this.syncableByHost;
@@ -22,9 +22,12 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
         this.syncableByHost = syncableByHost;
     }
     serialize() {
-        return new Uint8Array();
+        throw new Error("Method not implemented.");
     }
     static deserialize(id, data) {
+        throw new Error("Method not implemented.");
+    }
+    sendSyncableDataToPeer(webrtcPeer, data) {
         throw new Error("Method not implemented.");
     }
     synchronize(data) {

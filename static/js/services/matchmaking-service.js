@@ -78,7 +78,8 @@ export class MatchmakingService {
         }
         console.log("Received join response from", peer.getToken());
         // Data
-        const totalSlots = payload[0];
+        const dataView = new DataView(payload);
+        const totalSlots = dataView.getUint8(0);
         // Create game match
         const gameMatch = new GameMatch(false, totalSlots, MATCH_ATTRIBUTES);
         this.gameState.setGameMatch(gameMatch);
@@ -87,14 +88,15 @@ export class MatchmakingService {
         gameMatch.addPlayer(localGamePlayer);
     }
     handlePlayerConnectionState(peer, payload) {
-        if (payload === null || payload.length < 40) {
+        if (payload === null || payload.byteLength < 40) {
             return console.warn("Invalid player connection state payload", payload);
         }
-        const connected = payload[0];
+        const dataView = new DataView(payload);
+        const connected = dataView.getUint8(1);
         const id = new TextDecoder().decode(payload.slice(1, 37));
-        const host = payload[37] === 1;
-        const team = payload[38];
-        const score = payload[39];
+        const host = dataView.getUint8(37) === 1;
+        const team = dataView.getUint8(38);
+        const score = dataView.getUint8(39);
         const nameBytes = payload.slice(40);
         const name = new TextDecoder().decode(nameBytes);
         if (connected === 0) {

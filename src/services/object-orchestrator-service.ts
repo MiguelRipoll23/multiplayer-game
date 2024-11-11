@@ -1,37 +1,37 @@
 import { OBJECT_DATA_ID } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
+import { GameMatch } from "../models/game-match.js";
 import { BaseMultiplayerScreen } from "../objects/base/base-multiplayer-screen.js";
 import { MultiplayerGameObject } from "../objects/interfaces/multiplayer-game-object.js";
 import { WebRTCService } from "./webrtc-service.js";
 
+export enum SyncableState {
+  Active,
+  Inactive,
+}
+
+export enum SyncableType {
+  Ball = 0,
+}
+
 export class ObjectOrchestrator {
   private webrtcService: WebRTCService;
   private gameFrame: GameFrame;
-
-  private alreadySent: boolean = false;
+  private gameMatch: GameMatch | null = null;
 
   constructor(private gameController: GameController) {
     this.webrtcService = gameController.getWebRTCService();
     this.gameFrame = gameController.getGameFrame();
+    this.gameMatch = gameController.getGameState().getGameMatch();
   }
 
-  public sendData(): void {
-    const screen = this.getScreen();
-
-    if (screen === null) {
-      return;
-    }
-
-    if (this.alreadySent === true) {
-      return;
-    }
-
+  public sendData(multiplayerScreen: BaseMultiplayerScreen): void {
     if (this.gameController.getGameState().getGameMatch()?.isHost() === false) {
       return;
     }
 
-    screen.getSyncableObjects().forEach((object) => {
+    multiplayerScreen.getSyncableObjects().forEach((object) => {
       this.sendObjectData(object);
     });
   }
@@ -48,12 +48,12 @@ export class ObjectOrchestrator {
     }
 
     const operationId = data[0]; // 0: create/sync, 1: delete
-    const objectId = new TextDecoder().decode(data.slice(1, 37));
-    const objectTypeId = data[37];
+    const objectTypeId = data[1];
+    const objectId = new TextDecoder().decode(data.slice(2, 38));
     const objectData = data.slice(38);
 
     switch (operationId) {
-      case 0:
+      case SyncableState.Active:
         return this.createOrSynchronize(
           screen,
           objectId,
@@ -61,7 +61,7 @@ export class ObjectOrchestrator {
           objectData
         );
 
-      case 1:
+      case SyncableState.Inactive:
         return this.delete(screen, objectId);
 
       default:
@@ -84,7 +84,7 @@ export class ObjectOrchestrator {
       return this.create(screen, objectTypeId, objectId, objectData);
     }
 
-    console.log("Synchronizing object...", object);
+    //console.log("Synchronizing object...", object);
     object.synchronize(objectData);
   }
 
@@ -121,26 +121,38 @@ export class ObjectOrchestrator {
   }
 
   private sendObjectData(object: MultiplayerGameObject): void {
+    if (object.isSyncableByHost() && this.gameMatch?.isHost() === false) {
+      return;
+    }
+
     const operationId = 0;
+    const syncableTypeId = object.getSyncableTypeId();
     const syncableId = object.getSyncableId();
-    const syncableTypeId = object.getSyncableType();
     const objectData = object.serialize();
+
+    if (syncableTypeId === null || syncableId === null) {
+      return;
+    }
 
     const data = new Uint8Array([
       OBJECT_DATA_ID,
       operationId,
-      ...new TextEncoder().encode(syncableId),
       syncableTypeId,
+      ...new TextEncoder().encode(syncableId),
       ...objectData,
     ]);
 
     this.webrtcService.getPeers().forEach((peer) => {
+      if (peer.hasJoined() === false) {
+        return;
+      }
+
       peer.sendReliableOrderedMessage(data);
 
       // convert to text for logging
-      const textData = new TextDecoder().decode(data);
-      console.log("Sending object data", textData);
-      this.alreadySent = true;
+      //const textData = new TextDecoder().decode(data);
+      //console.log("Sending object data", textData);
+      //this.alreadySent = true;
     });
   }
 

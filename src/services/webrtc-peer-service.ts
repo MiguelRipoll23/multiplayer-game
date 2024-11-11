@@ -284,11 +284,11 @@ export class WebRTCPeerService {
     }
 
     channel.send(arrayBuffer);
-    this.logger.debug(`Sent ${channelKey} message`, arrayBuffer);
+    //this.logger.debug(`Sent ${channelKey} message`, arrayBuffer);
   }
 
   private handleMessage(data: Uint8Array): void {
-    this.logger.info("Received message from peer", data);
+    //this.logger.info("Received message from peer", data);
 
     const id = data[0];
     const payload = data.length > 1 ? data.slice(1) : null;

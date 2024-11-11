@@ -1,6 +1,9 @@
+import { SyncableType } from "../../services/object-orchestrator-service.js";
+
 export interface MultiplayerGameObject {
-  getSyncableId(): string;
-  getSyncableType(): number;
+  getSyncableId(): string | null;
+  getSyncableTypeId(): SyncableType | null;
+  isSyncableByHost(): boolean;
   serialize(): Uint8Array;
   synchronize(data: Uint8Array): void;
 }

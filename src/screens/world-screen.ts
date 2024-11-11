@@ -35,7 +35,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     super(gameController);
     this.gameState = gameController.getGameState();
     this.addCustomEventListeners();
-    this.addSyncableObjectClass(BallObject);
   }
 
   public override loadObjects(): void {
@@ -59,7 +58,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
     this.detectScores();
-    this.gameController.getObjectOrchestrator().sendData();
+    this.gameController.getObjectOrchestrator().sendData(this);
   }
 
   private createBackgroundObject() {
@@ -96,6 +95,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private createBallObject() {
     this.ballObject = new BallObject(0, 0, this.canvas);
     this.ballObject.setCenterPosition();
+
+    this.addSyncableObject(this.ballObject, BallObject);
 
     this.sceneObjects.push(this.ballObject);
   }

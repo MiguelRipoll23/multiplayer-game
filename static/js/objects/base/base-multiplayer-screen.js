@@ -1,18 +1,21 @@
 import { BaseGameScreen } from "../../screens/base/base-game-screen.js";
-import { ObjectUtils } from "../../utils/object-utils.js";
 import { BaseMultiplayerGameObject } from "./base-multiplayer-object.js";
 export class BaseMultiplayerScreen extends BaseGameScreen {
     syncableObjectTypes = new Map();
-    async addSyncableObjectClass(syncableObjectClass) {
-        const className = syncableObjectClass.name;
-        const typeId = await ObjectUtils.getSyncableTypeId(className);
-        this.syncableObjectTypes.set(typeId, syncableObjectClass);
+    addSyncableObject(objectInstance, objectClass) {
+        const typeId = objectInstance.getSyncableTypeId();
+        if (typeId === null) {
+            throw new Error("Object type ID is not set");
+        }
+        this.syncableObjectTypes.set(typeId, objectClass);
     }
     getSyncableObjectClass(typeId) {
         return this.syncableObjectTypes.get(typeId) ?? null;
     }
     getSyncableObjects() {
-        return [...this.uiObjects, ...this.sceneObjects].filter((object) => object instanceof BaseMultiplayerGameObject);
+        return [...this.uiObjects, ...this.sceneObjects]
+            .filter((object) => object instanceof BaseMultiplayerGameObject)
+            .filter((object) => object.getSyncableId() !== null);
     }
     getSyncableObject(id) {
         let result = null;

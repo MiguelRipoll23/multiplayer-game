@@ -1,17 +1,12 @@
-import { ObjectUtils } from "../../utils/object-utils.js";
+import { SyncableType } from "../../services/object-orchestrator-service.js";
 import { BaseGameObject } from "./base-game-object.js";
 
 export class BaseMultiplayerGameObject extends BaseGameObject {
-  protected syncableId: string;
-  protected syncableTypeId: number;
+  protected syncableId: string | null = null;
+  protected syncableTypeId: SyncableType | null = null;
+  protected syncableByHost: boolean = false;
 
-  constructor() {
-    super();
-    this.syncableId = "94c58aa0-41c3-4b22-825a-15a3834be240";
-    this.syncableTypeId = ObjectUtils.getSyncableTypeId(this.constructor.name);
-  }
-
-  public getSyncableId(): string {
+  public getSyncableId(): string | null {
     return this.syncableId;
   }
 
@@ -19,8 +14,20 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     this.syncableId = syncableId;
   }
 
-  public getSyncableType(): number {
+  public getSyncableTypeId(): SyncableType | null {
     return this.syncableTypeId;
+  }
+
+  public setSyncableTypeId(syncableTypeId: SyncableType): void {
+    this.syncableTypeId = syncableTypeId;
+  }
+
+  public isSyncableByHost(): boolean {
+    return this.syncableByHost;
+  }
+
+  public setSyncableByHost(syncableByHost: boolean): void {
+    this.syncableByHost = syncableByHost;
   }
 
   public serialize(): Uint8Array {

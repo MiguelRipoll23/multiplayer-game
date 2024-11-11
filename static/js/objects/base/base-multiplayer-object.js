@@ -1,21 +1,25 @@
-import { ObjectUtils } from "../../utils/object-utils.js";
 import { BaseGameObject } from "./base-game-object.js";
 export class BaseMultiplayerGameObject extends BaseGameObject {
-    syncableId;
-    syncableTypeId;
-    constructor() {
-        super();
-        this.syncableId = "94c58aa0-41c3-4b22-825a-15a3834be240";
-        this.syncableTypeId = ObjectUtils.getSyncableTypeId(this.constructor.name);
-    }
+    syncableId = null;
+    syncableTypeId = null;
+    syncableByHost = false;
     getSyncableId() {
         return this.syncableId;
     }
     setSyncableId(syncableId) {
         this.syncableId = syncableId;
     }
-    getSyncableType() {
+    getSyncableTypeId() {
         return this.syncableTypeId;
+    }
+    setSyncableTypeId(syncableTypeId) {
+        this.syncableTypeId = syncableTypeId;
+    }
+    isSyncableByHost() {
+        return this.syncableByHost;
+    }
+    setSyncableByHost(syncableByHost) {
+        this.syncableByHost = syncableByHost;
     }
     serialize() {
         return new Uint8Array();

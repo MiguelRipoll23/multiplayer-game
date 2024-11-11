@@ -89,7 +89,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         this.y = dataView.getFloat32(2);
         this.vx = dataView.getFloat32(4);
         this.vy = dataView.getFloat32(6);
-        this.inactive = dataView.getUint8(9) === 1;
+        this.inactive = dataView.getUint8(8) === 1;
         this.updateHitbox();
     }
     setSyncableValues() {

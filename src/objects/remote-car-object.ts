@@ -3,9 +3,15 @@ import { CarObject } from "./car-object.js";
 import { GameObject } from "./interfaces/game-object.js";
 
 export class RemoteCarObject extends CarObject {
-  constructor(syncableId: string, x: number, y: number, angle: number) {
+  constructor(
+    syncableId: string,
+    x: number,
+    y: number,
+    angle: number,
+    speed: number
+  ) {
     super(x, y, angle, true);
-    this.setDebug(true);
+    this.speed = speed;
     this.setSyncableValues(syncableId);
   }
 
@@ -16,10 +22,11 @@ export class RemoteCarObject extends CarObject {
   public static deserialize(syncableId: string, data: ArrayBuffer): GameObject {
     const dataView = new DataView(data);
     const x = dataView.getFloat32(0);
-    const y = dataView.getFloat32(4);
-    const angle = dataView.getFloat32(6);
+    const y = dataView.getFloat32(2);
+    const angle = dataView.getFloat32(4);
+    const speed = dataView.getFloat32(6);
 
-    return new RemoteCarObject(syncableId, x, y, angle);
+    return new RemoteCarObject(syncableId, x, y, angle, speed);
   }
 
   public override synchronize(data: ArrayBuffer): void {

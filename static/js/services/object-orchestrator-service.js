@@ -67,7 +67,7 @@ export class ObjectOrchestrator {
         }
         const instance = syncableObjectClass.deserialize(syncableId, syncableCustomData);
         multiplayerScreen?.addSceneObject(instance);
-        console.log("Created object", instance);
+        console.log("Created syncable object", instance);
     }
     delete(multiplayerScreen, syncableId) {
         const object = multiplayerScreen.getSyncableObject(syncableId);

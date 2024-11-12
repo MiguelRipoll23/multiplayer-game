@@ -113,7 +113,7 @@ export class ObjectOrchestrator {
     );
 
     multiplayerScreen?.addSceneObject(instance);
-    console.log("Created object", instance);
+    console.log("Created syncable object", instance);
   }
 
   private delete(

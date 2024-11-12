@@ -12,13 +12,16 @@ export class ObjectOrchestrator {
         this.gameFrame = gameController.getGameFrame();
         this.gameState = gameController.getGameState();
     }
-    sendData(multiplayerScreen) {
+    sendLocalData(multiplayerScreen) {
         if (this.gameState.getGameMatch() === null) {
             return;
         }
-        multiplayerScreen
-            .getSyncableObjects()
-            .forEach((object) => this.sendObjectData(object));
+        multiplayerScreen.getSyncableObjects().forEach((object) => {
+            if (this.skipSyncableObject(object)) {
+                return;
+            }
+            this.sendObjectData(object);
+        });
     }
     handleRemoteData(data) {
         if (!data || data.byteLength < 38) {
@@ -41,6 +44,13 @@ export class ObjectOrchestrator {
             this.delete(multiplayerScreen, syncableId);
         }
     }
+    skipSyncableObject(multiplayerObject) {
+        const gameMatch = this.gameState.getGameMatch();
+        if (multiplayerObject.isSyncableByHost()) {
+            return gameMatch?.isHost() ? false : true;
+        }
+        return false;
+    }
     createOrSynchronize(multiplayerScreen, syncableId, objectTypeId, syncableCustomData) {
         const object = multiplayerScreen.getSyncableObject(syncableId);
         if (object === null) {
@@ -56,7 +66,8 @@ export class ObjectOrchestrator {
             return console.warn(`Syncable class not found for type ${objectTypeId}`);
         }
         const instance = syncableObjectClass.deserialize(syncableId, syncableCustomData);
-        console.log(`Created object ${syncableId} of type ${objectTypeId}`);
+        multiplayerScreen?.addSceneObject(instance);
+        console.log("Created object", instance);
     }
     delete(multiplayerScreen, syncableId) {
         const object = multiplayerScreen.getSyncableObject(syncableId);
@@ -68,21 +79,15 @@ export class ObjectOrchestrator {
         console.log(`Deleted object ${syncableId}`);
     }
     sendObjectData(multiplayerObject) {
-        if (this.shouldSkipSendingData(multiplayerObject)) {
+        const dataBuffer = this.createObjectDataBuffer(multiplayerObject);
+        if (dataBuffer === null) {
             return;
         }
-        const dataBuffer = this.createObjectDataBuffer(multiplayerObject);
-        if (!dataBuffer)
-            return;
         this.webrtcService.getPeers().forEach((peer) => {
             if (peer.hasJoined()) {
-                multiplayerObject.sendSyncableDataToPeer(peer, dataBuffer);
+                multiplayerObject.sendSyncableData(peer, dataBuffer);
             }
         });
-    }
-    shouldSkipSendingData(multiplayerObject) {
-        const gameMatch = this.gameState.getGameMatch();
-        return (!multiplayerObject.isSyncableByHost() || gameMatch?.isHost() === false);
     }
     createObjectDataBuffer(multiplayerObject) {
         const objectTypeId = multiplayerObject.getObjectTypeId();
@@ -97,12 +102,8 @@ export class ObjectOrchestrator {
         dataView.setUint8(0, OBJECT_DATA_ID);
         dataView.setUint8(1, ObjectState.Active);
         dataView.setUint8(2, objectTypeId);
-        const idBuffer = new TextEncoder().encode(syncableId);
-        if (idBuffer.byteLength > 36) {
-            console.error("Syncable ID is too long");
-            return null;
-        }
-        new Uint8Array(arrayBuffer, 3, idBuffer.length).set(idBuffer);
+        const syncableIdBytes = new TextEncoder().encode(syncableId);
+        new Uint8Array(arrayBuffer, 3, syncableIdBytes.length).set(syncableIdBytes);
         new Uint8Array(arrayBuffer, 39, syncableCustomData.byteLength).set(new Uint8Array(syncableCustomData));
         return arrayBuffer;
     }

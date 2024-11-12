@@ -10,16 +10,8 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
   protected syncableObjectTypes: Map<ObjectType, StaticMultiplayerGameObject> =
     new Map();
 
-  public addSyncableObject(
-    objectInstance: MultiplayerGameObject,
-    objectClass: StaticMultiplayerGameObject
-  ): void {
-    const typeId = objectInstance.getObjectTypeId();
-
-    if (typeId === null) {
-      throw new Error("Object type ID is not set");
-    }
-
+  public addSyncableObject(objectClass: StaticMultiplayerGameObject): void {
+    const typeId = objectClass.getObjectTypeId();
     this.syncableObjectTypes.set(typeId, objectClass);
   }
 
@@ -30,24 +22,48 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
   }
 
   public getSyncableObjects(): MultiplayerGameObject[] {
-    return [...this.uiObjects, ...this.sceneObjects]
-      .filter((object) => object instanceof BaseMultiplayerGameObject)
-      .filter(
-        (object) => object.getSyncableId() !== null
-      ) as MultiplayerGameObject[];
+    const result: MultiplayerGameObject[] = [];
+
+    for (const object of this.uiObjects) {
+      if (
+        object instanceof BaseMultiplayerGameObject &&
+        object.getSyncableId() !== null
+      ) {
+        result.push(object);
+      }
+    }
+
+    for (const object of this.sceneObjects) {
+      if (
+        object instanceof BaseMultiplayerGameObject &&
+        object.getSyncableId() !== null
+      ) {
+        result.push(object);
+      }
+    }
+
+    return result;
   }
 
   public getSyncableObject(id: string): MultiplayerGameObject | null {
-    let result = null;
-
-    [...this.uiObjects, ...this.sceneObjects].forEach((object) => {
-      if (object instanceof BaseMultiplayerGameObject) {
-        if (object.getSyncableId() === id) {
-          result = object;
-        }
+    for (const object of this.uiObjects) {
+      if (
+        object instanceof BaseMultiplayerGameObject &&
+        object.getSyncableId() === id
+      ) {
+        return object;
       }
-    });
+    }
 
-    return result;
+    for (const object of this.sceneObjects) {
+      if (
+        object instanceof BaseMultiplayerGameObject &&
+        object.getSyncableId() === id
+      ) {
+        return object;
+      }
+    }
+
+    return null;
   }
 }

@@ -211,7 +211,7 @@ export class WebRTCPeerService {
             case JOIN_RESPONSE_ID:
                 return this.matchmakingService.handleJoinResponse(this, payload);
             case PLAYER_CONNECTION_STATE_ID:
-                return this.matchmakingService.handlePlayerConnectionState(this, payload);
+                return this.matchmakingService.handlePlayerConnection(this, payload);
             case INITIAL_DATA_END_ID:
                 return this.matchmakingService.handleInitialDataEnd(this);
             case INITIAL_DATA_ACK_ID:

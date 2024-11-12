@@ -11,6 +11,7 @@ import { AlertObject } from "../objects/alert-object.js";
 import { ToastObject } from "../objects/common/toast-object.js";
 import { MATCH_ADVERTISED_EVENT, PLAYER_CONNECTED_EVENT, } from "../constants/events-constants.js";
 import { Team } from "../models/game-teams.js";
+import { RemoteCarObject } from "../objects/remote-car-object.js";
 export class WorldScreen extends BaseCollidingGameScreen {
     gameController;
     gameState;
@@ -27,6 +28,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.gameController = gameController;
         this.gameState = gameController.getGameState();
         this.addCustomEventListeners();
+        this.addSyncableObject(BallObject);
+        this.addSyncableObject(RemoteCarObject);
     }
     loadObjects() {
         this.createBackgroundObject();
@@ -46,7 +49,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     update(deltaTimeStamp) {
         super.update(deltaTimeStamp);
         this.detectScores();
-        this.gameController.getObjectOrchestrator().sendData(this);
+        this.gameController.getObjectOrchestrator().sendLocalData(this);
     }
     createBackgroundObject() {
         const backgroundObject = new WorldBackgroundObject(this.canvas);
@@ -72,7 +75,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     createBallObject() {
         this.ballObject = new BallObject(0, 0, this.canvas);
         this.ballObject.setCenterPosition();
-        this.addSyncableObject(this.ballObject, BallObject);
         this.sceneObjects.push(this.ballObject);
     }
     createGoalObjects() {
@@ -86,6 +88,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
         const gameKeyboard = this.gameController.getGameKeyboard();
         const playerObject = this.createAndGetPlayerObject();
         this.localCarObject = new LocalCarObject(0, 0, 90, this.canvas, gamePointer, gameKeyboard);
+        this.localCarObject.setCanvas(this.canvas);
         this.localCarObject.setCenterPosition();
         this.localCarObject.setPlayerObject(playerObject);
         // Scene

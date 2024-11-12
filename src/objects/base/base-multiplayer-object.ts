@@ -1,5 +1,6 @@
 import { ObjectType } from "../../models/object-types.js";
 import { WebRTCPeer } from "../../services/interfaces/webrtc-peer.js";
+import { GameObject } from "../interfaces/game-object.js";
 import { BaseGameObject } from "./base-game-object.js";
 
 export class BaseMultiplayerGameObject extends BaseGameObject {
@@ -13,6 +14,10 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
 
   public setSyncableId(syncableId: string): void {
     this.syncableId = syncableId;
+  }
+
+  public static getObjectTypeId(): ObjectType {
+    throw new Error("Method not implemented.");
   }
 
   public getObjectTypeId(): ObjectType | null {
@@ -35,14 +40,11 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     throw new Error("Method not implemented.");
   }
 
-  public static deserialize(id: string, data: ArrayBuffer): void {
+  public static deserialize(id: string, data: ArrayBuffer): GameObject {
     throw new Error("Method not implemented.");
   }
 
-  public sendSyncableDataToPeer(
-    webrtcPeer: WebRTCPeer,
-    data: ArrayBuffer
-  ): void {
+  public sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void {
     throw new Error("Method not implemented.");
   }
 

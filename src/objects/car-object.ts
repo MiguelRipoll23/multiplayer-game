@@ -1,47 +1,44 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { PlayerObject } from "./player-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
+import { Team } from "../models/game-teams.js";
+import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
 
 export class CarObject extends BaseDynamicCollidableGameObject {
   protected readonly TOP_SPEED: number = 4;
   protected readonly ACCELERATION: number = 0.4;
   protected readonly HANDLING: number = 6;
-
+  protected canvas: HTMLCanvasElement | null = null;
   protected speed: number = 0;
   protected playerObject: PlayerObject | null = null;
 
-  private readonly IMAGE_PATH = "./images/car-local.png";
+  private readonly IMAGE_BLUE_PATH = "./images/car-blue.png";
+  private readonly IMAGE_RED_PATH = "./images/car-red.png";
 
   private readonly MASS: number = 500;
   private readonly WIDTH: number = 50;
   private readonly HEIGHT: number = 50;
   private readonly DISTANCE_CENTER: number = 220;
   private readonly FRICTION: number = 0.1;
-  private readonly BOUNCE_MULTIPLIER: number = 0.7;
-
-  private orangeTeam: boolean = false;
 
   private carImage: HTMLImageElement | null = null;
+  private imagePath = this.IMAGE_BLUE_PATH;
 
-  constructor(
-    x: number,
-    y: number,
-    angle: number,
-    orangeTeam: boolean,
-    protected readonly canvas: HTMLCanvasElement
-  ) {
+  constructor(x: number, y: number, angle: number, remote = false) {
     super();
     this.x = x;
     this.y = y;
     this.angle = angle;
-    this.orangeTeam = orangeTeam;
     this.mass = this.MASS;
+
+    if (remote) {
+      this.imagePath = this.IMAGE_RED_PATH;
+    }
   }
 
   public override load(): void {
     this.createHitbox();
     this.loadCarImage();
-    super.load();
   }
 
   public override reset(): void {
@@ -50,7 +47,26 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     this.setCenterPosition();
   }
 
-  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+  public override serialize(): ArrayBuffer {
+    const buffer = new ArrayBuffer(10);
+    const dataView = new DataView(buffer);
+
+    dataView.setFloat32(0, this.x);
+    dataView.setFloat32(2, this.y);
+    dataView.setFloat32(4, this.angle);
+    dataView.setFloat32(6, this.speed);
+
+    return buffer;
+  }
+
+  public override sendSyncableData(
+    webrtcPeer: WebRTCPeer,
+    data: ArrayBuffer
+  ): void {
+    webrtcPeer.sendUnreliableOrderedMessage(data);
+  }
+
+  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.wrapAngle();
     this.applyFriction();
     this.calculateMovement();
@@ -78,17 +94,6 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     super.render(context);
   }
 
-  public setCenterPosition(): void {
-    this.x = this.canvas.width / 2 - this.WIDTH / 2;
-    this.y = this.canvas.height / 2 - this.HEIGHT / 2;
-
-    if (this.orangeTeam) {
-      this.y -= this.DISTANCE_CENTER;
-    } else {
-      this.y += this.DISTANCE_CENTER;
-    }
-  }
-
   public getPlayerObject(): PlayerObject | null {
     return this.playerObject;
   }
@@ -97,13 +102,32 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     this.playerObject = playerObject;
   }
 
+  public setCanvas(canvas: HTMLCanvasElement): void {
+    this.canvas = canvas;
+  }
+
+  public setCenterPosition(): void {
+    if (this.canvas === null) {
+      throw new Error("Canvas is not set");
+    }
+
+    this.x = this.canvas.width / 2 - this.WIDTH / 2;
+    this.y = this.canvas.height / 2 - this.HEIGHT / 2;
+
+    if (this.playerObject?.getTeam() === Team.Orange) {
+      this.y -= this.DISTANCE_CENTER;
+    } else {
+      this.y += this.DISTANCE_CENTER;
+    }
+  }
+
   private createHitbox(): void {
     this.setHitboxObjects([
       new HitboxObject(this.x, this.y, this.WIDTH, this.WIDTH),
     ]);
   }
 
-  private updateHitbox(): void {
+  protected updateHitbox(): void {
     this.getHitboxObjects().forEach((object) => {
       object.setX(this.x);
       object.setY(this.y);
@@ -116,7 +140,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
       super.load();
     };
 
-    this.carImage.src = this.IMAGE_PATH;
+    this.carImage.src = this.imagePath;
   }
 
   private wrapAngle(): void {

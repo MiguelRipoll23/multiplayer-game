@@ -18,6 +18,9 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         this.mass = this.MASS;
         this.setSyncableValues();
     }
+    static getObjectTypeId() {
+        return ObjectType.RemoteCar;
+    }
     load() {
         this.createHitbox();
         super.load();
@@ -69,7 +72,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         // Hitbox render (from superclass)
         super.render(context);
     }
-    sendSyncableDataToPeer(webrtcPeer, data) {
+    sendSyncableData(webrtcPeer, data) {
         webrtcPeer.sendUnreliableOrderedMessage(data);
     }
     serialize() {
@@ -81,7 +84,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         dataView.setFloat32(6, this.vy);
         // inactive (1 byte)
         dataView.setUint8(8, this.inactive ? 1 : 0);
-        return dataView.buffer;
+        return arrayBuffer;
     }
     synchronize(data) {
         const dataView = new DataView(data);

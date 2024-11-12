@@ -1,3 +1,4 @@
+import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
 
 export interface GameScreen {
@@ -7,6 +8,8 @@ export interface GameScreen {
 
   loadObjects(): void;
   hasLoaded(): boolean;
+
+  addSceneObject(object: GameObject): void;
 
   update(deltaTimeStamp: number): void;
   render(context: CanvasRenderingContext2D): void;

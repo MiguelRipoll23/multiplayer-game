@@ -30,6 +30,12 @@ export class BaseGameScreen {
     hasLoaded() {
         return this.loaded;
     }
+    addSceneObject(object) {
+        object.setDebug(this.gameController.isDebugging());
+        // TODO: do this in the update loop?
+        object.load();
+        this.sceneObjects.push(object);
+    }
     update(deltaTimeStamp) {
         this.updateObjects(this.sceneObjects, deltaTimeStamp);
         this.updateObjects(this.uiObjects, deltaTimeStamp);

@@ -1,39 +1,52 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
+import { Team } from "../models/game-teams.js";
 export class CarObject extends BaseDynamicCollidableGameObject {
-    canvas;
     TOP_SPEED = 4;
     ACCELERATION = 0.4;
     HANDLING = 6;
+    canvas = null;
     speed = 0;
     playerObject = null;
-    IMAGE_PATH = "./images/car-local.png";
+    IMAGE_BLUE_PATH = "./images/car-blue.png";
+    IMAGE_RED_PATH = "./images/car-red.png";
     MASS = 500;
     WIDTH = 50;
     HEIGHT = 50;
     DISTANCE_CENTER = 220;
     FRICTION = 0.1;
-    BOUNCE_MULTIPLIER = 0.7;
-    orangeTeam = false;
     carImage = null;
-    constructor(x, y, angle, orangeTeam, canvas) {
+    imagePath = this.IMAGE_BLUE_PATH;
+    constructor(x, y, angle, remote = false) {
         super();
-        this.canvas = canvas;
         this.x = x;
         this.y = y;
         this.angle = angle;
-        this.orangeTeam = orangeTeam;
         this.mass = this.MASS;
+        if (remote) {
+            this.imagePath = this.IMAGE_RED_PATH;
+        }
     }
     load() {
         this.createHitbox();
         this.loadCarImage();
-        super.load();
     }
     reset() {
         this.angle = 90;
         this.speed = 0;
         this.setCenterPosition();
+    }
+    serialize() {
+        const buffer = new ArrayBuffer(10);
+        const dataView = new DataView(buffer);
+        dataView.setFloat32(0, this.x);
+        dataView.setFloat32(2, this.y);
+        dataView.setFloat32(4, this.angle);
+        dataView.setFloat32(6, this.speed);
+        return buffer;
+    }
+    sendSyncableData(webrtcPeer, data) {
+        webrtcPeer.sendUnreliableOrderedMessage(data);
     }
     update(deltaTimeStamp) {
         this.wrapAngle();
@@ -51,21 +64,27 @@ export class CarObject extends BaseDynamicCollidableGameObject {
         // Hitbox debug
         super.render(context);
     }
-    setCenterPosition() {
-        this.x = this.canvas.width / 2 - this.WIDTH / 2;
-        this.y = this.canvas.height / 2 - this.HEIGHT / 2;
-        if (this.orangeTeam) {
-            this.y -= this.DISTANCE_CENTER;
-        }
-        else {
-            this.y += this.DISTANCE_CENTER;
-        }
-    }
     getPlayerObject() {
         return this.playerObject;
     }
     setPlayerObject(playerObject) {
         this.playerObject = playerObject;
+    }
+    setCanvas(canvas) {
+        this.canvas = canvas;
+    }
+    setCenterPosition() {
+        if (this.canvas === null) {
+            throw new Error("Canvas is not set");
+        }
+        this.x = this.canvas.width / 2 - this.WIDTH / 2;
+        this.y = this.canvas.height / 2 - this.HEIGHT / 2;
+        if (this.playerObject?.getTeam() === Team.Orange) {
+            this.y -= this.DISTANCE_CENTER;
+        }
+        else {
+            this.y += this.DISTANCE_CENTER;
+        }
     }
     createHitbox() {
         this.setHitboxObjects([
@@ -83,7 +102,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
         this.carImage.onload = () => {
             super.load();
         };
-        this.carImage.src = this.IMAGE_PATH;
+        this.carImage.src = this.imagePath;
     }
     wrapAngle() {
         this.angle = (this.angle + 360) % 360;

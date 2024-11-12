@@ -18,6 +18,7 @@ import {
   PLAYER_CONNECTED_EVENT,
 } from "../constants/events-constants.js";
 import { Team } from "../models/game-teams.js";
+import { RemoteCarObject } from "../objects/remote-car-object.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -35,6 +36,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
     super(gameController);
     this.gameState = gameController.getGameState();
     this.addCustomEventListeners();
+    this.addSyncableObject(BallObject);
+    this.addSyncableObject(RemoteCarObject);
   }
 
   public override loadObjects(): void {
@@ -58,7 +61,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
     this.detectScores();
-    this.gameController.getObjectOrchestrator().sendData(this);
+    this.gameController.getObjectOrchestrator().sendLocalData(this);
   }
 
   private createBackgroundObject() {
@@ -96,8 +99,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.ballObject = new BallObject(0, 0, this.canvas);
     this.ballObject.setCenterPosition();
 
-    this.addSyncableObject(this.ballObject, BallObject);
-
     this.sceneObjects.push(this.ballObject);
   }
 
@@ -124,6 +125,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       gameKeyboard
     );
 
+    this.localCarObject.setCanvas(this.canvas);
     this.localCarObject.setCenterPosition();
     this.localCarObject.setPlayerObject(playerObject);
 

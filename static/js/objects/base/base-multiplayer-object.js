@@ -9,6 +9,9 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     setSyncableId(syncableId) {
         this.syncableId = syncableId;
     }
+    static getObjectTypeId() {
+        throw new Error("Method not implemented.");
+    }
     getObjectTypeId() {
         return this.objectTypeId;
     }
@@ -27,7 +30,7 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     static deserialize(id, data) {
         throw new Error("Method not implemented.");
     }
-    sendSyncableDataToPeer(webrtcPeer, data) {
+    sendSyncableData(webrtcPeer, data) {
         throw new Error("Method not implemented.");
     }
     synchronize(data) {

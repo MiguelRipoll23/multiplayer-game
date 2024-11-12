@@ -144,7 +144,7 @@ export class MatchmakingService {
     gameMatch.addPlayer(localGamePlayer);
   }
 
-  public handlePlayerConnectionState(
+  public handlePlayerConnection(
     peer: WebRTCPeerService,
     payload: ArrayBuffer | null
   ): void {

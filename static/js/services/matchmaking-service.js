@@ -87,7 +87,7 @@ export class MatchmakingService {
         const localGamePlayer = this.gameState.getGamePlayer();
         gameMatch.addPlayer(localGamePlayer);
     }
-    handlePlayerConnectionState(peer, payload) {
+    handlePlayerConnection(peer, payload) {
         if (payload === null || payload.byteLength < 40) {
             return console.warn("Invalid player connection state payload", payload);
         }

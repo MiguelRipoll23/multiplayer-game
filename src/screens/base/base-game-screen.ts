@@ -1,6 +1,5 @@
 import { GameController } from "../../models/game-controller.js";
 import { GamePointer } from "../../models/game-pointer.js";
-import { BaseAnimatedGameObject } from "../../objects/base/base-animated-object.js";
 import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
@@ -47,6 +46,15 @@ export class BaseGameScreen implements GameScreen {
 
   public hasLoaded(): boolean {
     return this.loaded;
+  }
+
+  public addSceneObject(object: GameObject): void {
+    object.setDebug(this.gameController.isDebugging());
+
+    // TODO: do this in the update loop?
+    object.load();
+
+    this.sceneObjects.push(object);
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {

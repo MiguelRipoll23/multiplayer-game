@@ -1,5 +1,6 @@
 import { GameKeyboard } from "../models/game-keyboard.js";
 import { GamePointer } from "../models/game-pointer.js";
+import { ObjectType } from "../models/object-types.js";
 import { CarObject } from "./car-object.js";
 import { GearStickObject } from "./gear-stick-object.js";
 import { JoystickObject } from "./joystick-object.js";
@@ -16,7 +17,8 @@ export class LocalCarObject extends CarObject {
     gamePointer: GamePointer,
     gameKeyboard: GameKeyboard
   ) {
-    super(x, y, angle, false, canvas);
+    super(x, y, angle);
+    this.setSyncableValues();
     this.joystickObject = new JoystickObject(canvas, gamePointer, gameKeyboard);
     this.gearStickObject = new GearStickObject(
       canvas,
@@ -33,17 +35,22 @@ export class LocalCarObject extends CarObject {
     return this.gearStickObject;
   }
 
-  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     this.handleControls();
 
     super.update(deltaTimeStamp);
   }
 
-  public render(context: CanvasRenderingContext2D): void {
+  public override render(context: CanvasRenderingContext2D): void {
     // Debug
     this.renderDebugInformation(context);
 
     super.render(context);
+  }
+
+  private setSyncableValues() {
+    this.setSyncableId(crypto.randomUUID());
+    this.setObjectTypeId(ObjectType.RemoteCar);
   }
 
   private handleControls(): void {

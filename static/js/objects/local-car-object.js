@@ -1,3 +1,4 @@
+import { ObjectType } from "../models/object-types.js";
 import { CarObject } from "./car-object.js";
 import { GearStickObject } from "./gear-stick-object.js";
 import { JoystickObject } from "./joystick-object.js";
@@ -6,8 +7,9 @@ export class LocalCarObject extends CarObject {
     joystickObject;
     gearStickObject;
     constructor(x, y, angle, canvas, gamePointer, gameKeyboard) {
-        super(x, y, angle, false, canvas);
+        super(x, y, angle);
         this.canvas = canvas;
+        this.setSyncableValues();
         this.joystickObject = new JoystickObject(canvas, gamePointer, gameKeyboard);
         this.gearStickObject = new GearStickObject(canvas, gamePointer, gameKeyboard);
     }
@@ -25,6 +27,10 @@ export class LocalCarObject extends CarObject {
         // Debug
         this.renderDebugInformation(context);
         super.render(context);
+    }
+    setSyncableValues() {
+        this.setSyncableId(crypto.randomUUID());
+        this.setObjectTypeId(ObjectType.RemoteCar);
     }
     handleControls() {
         if (!this.joystickObject || !this.gearStickObject)

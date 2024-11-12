@@ -30,6 +30,10 @@ export class BallObject
     this.setSyncableValues();
   }
 
+  public static override getObjectTypeId(): ObjectType {
+    return ObjectType.RemoteCar;
+  }
+
   public override load(): void {
     this.createHitbox();
     super.load();
@@ -94,7 +98,7 @@ export class BallObject
     super.render(context);
   }
 
-  public override sendSyncableDataToPeer(
+  public override sendSyncableData(
     webrtcPeer: WebRTCPeer,
     data: ArrayBuffer
   ): void {
@@ -113,7 +117,7 @@ export class BallObject
     // inactive (1 byte)
     dataView.setUint8(8, this.inactive ? 1 : 0);
 
-    return dataView.buffer;
+    return arrayBuffer;
   }
 
   public override synchronize(data: ArrayBuffer): void {

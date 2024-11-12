@@ -71,12 +71,10 @@ export class ObjectOrchestrator {
     }
     delete(multiplayerScreen, syncableId) {
         const object = multiplayerScreen.getSyncableObject(syncableId);
-        if (!object) {
-            console.error(`Object not found with id ${syncableId}`);
-            return;
+        if (object === null) {
+            return console.warn(`Object not found with id ${syncableId}`);
         }
-        // TODO: delete object from the screen if necessary
-        console.log(`Deleted object ${syncableId}`);
+        multiplayerScreen.removeSceneObject(object);
     }
     sendObjectData(multiplayerObject) {
         const dataBuffer = this.createObjectDataBuffer(multiplayerObject);

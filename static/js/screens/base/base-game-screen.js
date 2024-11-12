@@ -30,23 +30,6 @@ export class BaseGameScreen {
     hasLoaded() {
         return this.loaded;
     }
-    addSceneObject(object) {
-        object.setDebug(this.gameController.isDebugging());
-        // TODO: do this in the update loop?
-        object.load();
-        this.sceneObjects.push(object);
-    }
-    update(deltaTimeStamp) {
-        this.updateObjects(this.sceneObjects, deltaTimeStamp);
-        this.updateObjects(this.uiObjects, deltaTimeStamp);
-        this.handlePointerEvent();
-    }
-    render(context) {
-        context.globalAlpha = this.opacity;
-        this.renderObjects(this.sceneObjects, context);
-        this.renderObjects(this.uiObjects, context);
-        context.globalAlpha = 1;
-    }
     getOpacity() {
         return this.opacity;
     }
@@ -62,6 +45,39 @@ export class BaseGameScreen {
     getLoadedObjectsCount() {
         return (this.sceneObjects.filter((object) => object.hasLoaded()).length +
             this.uiObjects.filter((object) => object.hasLoaded()).length);
+    }
+    addUiObject(object) {
+        object.setDebug(this.gameController.isDebugging());
+        object.load();
+        this.uiObjects.push(object);
+    }
+    removeUiObject(object) {
+        const index = this.uiObjects.indexOf(object);
+        if (index > -1) {
+            this.uiObjects.splice(index, 1);
+        }
+    }
+    addSceneObject(object) {
+        object.setDebug(this.gameController.isDebugging());
+        object.load();
+        this.sceneObjects.push(object);
+    }
+    removeSceneObject(object) {
+        const index = this.sceneObjects.indexOf(object);
+        if (index > -1) {
+            this.sceneObjects.splice(index, 1);
+        }
+    }
+    update(deltaTimeStamp) {
+        this.updateObjects(this.sceneObjects, deltaTimeStamp);
+        this.updateObjects(this.uiObjects, deltaTimeStamp);
+        this.handlePointerEvent();
+    }
+    render(context) {
+        context.globalAlpha = this.opacity;
+        this.renderObjects(this.sceneObjects, context);
+        this.renderObjects(this.uiObjects, context);
+        context.globalAlpha = 1;
     }
     setDebugToChildObjects() {
         const debug = this.gameController.isDebugging();

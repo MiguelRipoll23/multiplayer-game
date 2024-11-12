@@ -48,31 +48,6 @@ export class BaseGameScreen implements GameScreen {
     return this.loaded;
   }
 
-  public addSceneObject(object: GameObject): void {
-    object.setDebug(this.gameController.isDebugging());
-
-    // TODO: do this in the update loop?
-    object.load();
-
-    this.sceneObjects.push(object);
-  }
-
-  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    this.updateObjects(this.sceneObjects, deltaTimeStamp);
-    this.updateObjects(this.uiObjects, deltaTimeStamp);
-
-    this.handlePointerEvent();
-  }
-
-  public render(context: CanvasRenderingContext2D): void {
-    context.globalAlpha = this.opacity;
-
-    this.renderObjects(this.sceneObjects, context);
-    this.renderObjects(this.uiObjects, context);
-
-    context.globalAlpha = 1;
-  }
-
   public getOpacity(): number {
     return this.opacity;
   }
@@ -94,6 +69,52 @@ export class BaseGameScreen implements GameScreen {
       this.sceneObjects.filter((object) => object.hasLoaded()).length +
       this.uiObjects.filter((object) => object.hasLoaded()).length
     );
+  }
+
+  public addUiObject(object: GameObject): void {
+    object.setDebug(this.gameController.isDebugging());
+    object.load();
+
+    this.uiObjects.push(object);
+  }
+
+  public removeUiObject(object: GameObject): void {
+    const index = this.uiObjects.indexOf(object);
+
+    if (index > -1) {
+      this.uiObjects.splice(index, 1);
+    }
+  }
+
+  public addSceneObject(object: GameObject): void {
+    object.setDebug(this.gameController.isDebugging());
+    object.load();
+
+    this.sceneObjects.push(object);
+  }
+
+  public removeSceneObject(object: GameObject): void {
+    const index = this.sceneObjects.indexOf(object);
+
+    if (index > -1) {
+      this.sceneObjects.splice(index, 1);
+    }
+  }
+
+  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.updateObjects(this.sceneObjects, deltaTimeStamp);
+    this.updateObjects(this.uiObjects, deltaTimeStamp);
+
+    this.handlePointerEvent();
+  }
+
+  public render(context: CanvasRenderingContext2D): void {
+    context.globalAlpha = this.opacity;
+
+    this.renderObjects(this.sceneObjects, context);
+    this.renderObjects(this.uiObjects, context);
+
+    context.globalAlpha = 1;
   }
 
   private setDebugToChildObjects(): void {

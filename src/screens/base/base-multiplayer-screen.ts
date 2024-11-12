@@ -1,9 +1,6 @@
 import { ObjectType } from "../../models/object-types.js";
 import { BaseMultiplayerGameObject } from "../../objects/base/base-multiplayer-object.js";
-import {
-  StaticMultiplayerGameObject,
-  MultiplayerGameObject,
-} from "../../objects/interfaces/multiplayer-game-object.js";
+import { StaticMultiplayerGameObject } from "../../objects/interfaces/multiplayer-game-object.js";
 import { BaseGameScreen } from "../../screens/base/base-game-screen.js";
 
 export class BaseMultiplayerScreen extends BaseGameScreen {
@@ -21,8 +18,8 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
     return this.syncableObjectTypes.get(typeId) ?? null;
   }
 
-  public getSyncableObjects(): MultiplayerGameObject[] {
-    const result: MultiplayerGameObject[] = [];
+  public getSyncableObjects(): BaseMultiplayerGameObject[] {
+    const result: BaseMultiplayerGameObject[] = [];
 
     for (const object of this.uiObjects) {
       if (
@@ -45,7 +42,7 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
     return result;
   }
 
-  public getSyncableObject(id: string): MultiplayerGameObject | null {
+  public getSyncableObject(id: string): BaseMultiplayerGameObject | null {
     for (const object of this.uiObjects) {
       if (
         object instanceof BaseMultiplayerGameObject &&

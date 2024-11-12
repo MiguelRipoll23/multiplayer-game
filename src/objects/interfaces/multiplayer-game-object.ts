@@ -1,5 +1,5 @@
 import { ObjectState } from "../../models/object-state.js";
-import { ObjectType } from "../../models/object-types.js";
+import { ObjectType } from "../../models/object-type.js";
 import { WebRTCPeer } from "../../services/interfaces/webrtc-peer.js";
 import { GameObject } from "./game-object.js";
 

@@ -1,4 +1,4 @@
-import { ObjectType } from "../models/object-types.js";
+import { ObjectType } from "../models/object-type.js";
 import { CarObject } from "./car-object.js";
 export class RemoteCarObject extends CarObject {
     constructor(syncableId, x, y, angle, speed) {

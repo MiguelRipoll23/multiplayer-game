@@ -6,6 +6,9 @@ import { MultiplayerGameObject } from "../objects/interfaces/multiplayer-game-ob
 import { WebRTCService } from "./webrtc-service.js";
 import { GameState } from "../models/game-state.js";
 import { ObjectState } from "../models/object-state.js";
+import { BaseMultiplayerGameObject } from "../objects/base/base-multiplayer-object.js";
+import { ObjectLayer } from "../models/object-layer.js";
+import { ObjectType } from "../models/object-type.js";
 
 export class ObjectOrchestrator {
   private webrtcService: WebRTCService;
@@ -33,9 +36,8 @@ export class ObjectOrchestrator {
   }
 
   public handleRemoteData(data: ArrayBuffer | null): void {
-    if (!data || data.byteLength < 38) {
-      console.warn("Invalid data received for object synchronization");
-      return;
+    if (data === null || data.byteLength < 39) {
+      return console.warn("Invalid data received for object synchronization");
     }
 
     const multiplayerScreen = this.getMultiplayerScreen();
@@ -45,14 +47,16 @@ export class ObjectOrchestrator {
     }
 
     const dataView = new DataView(data);
-    const objectStateId = dataView.getUint8(0);
-    const objectTypeId = dataView.getUint8(1);
-    const syncableId = new TextDecoder().decode(data.slice(2, 38));
-    const syncableCustomData = data.slice(38);
+    const objectLayer = dataView.getUint8(0);
+    const objectStateId = dataView.getUint8(1);
+    const objectTypeId = dataView.getUint8(2);
+    const syncableId = new TextDecoder().decode(data.slice(3, 39));
+    const syncableCustomData = data.slice(39);
 
     if (objectStateId === ObjectState.Active) {
       this.createOrSynchronize(
         multiplayerScreen,
+        objectLayer,
         syncableId,
         objectTypeId,
         syncableCustomData
@@ -76,6 +80,7 @@ export class ObjectOrchestrator {
 
   private createOrSynchronize(
     multiplayerScreen: BaseMultiplayerScreen,
+    objectLayer: number,
     syncableId: string,
     objectTypeId: number,
     syncableCustomData: ArrayBuffer
@@ -85,6 +90,7 @@ export class ObjectOrchestrator {
     if (object === null) {
       this.create(
         multiplayerScreen,
+        objectLayer,
         objectTypeId,
         syncableId,
         syncableCustomData
@@ -96,7 +102,8 @@ export class ObjectOrchestrator {
 
   private create(
     multiplayerScreen: BaseMultiplayerScreen,
-    objectTypeId: number,
+    objectLayer: ObjectLayer,
+    objectTypeId: ObjectType,
     syncableId: string,
     syncableCustomData: ArrayBuffer
   ): void {
@@ -112,8 +119,11 @@ export class ObjectOrchestrator {
       syncableCustomData
     );
 
-    multiplayerScreen?.addSceneObject(instance);
-    console.log("Created syncable object", instance);
+    multiplayerScreen?.addObjectToLayer(objectLayer, instance);
+    console.log(
+      `Created syncable object for layer id ${objectLayer}`,
+      instance
+    );
   }
 
   private delete(
@@ -126,11 +136,24 @@ export class ObjectOrchestrator {
       return console.warn(`Object not found with id ${syncableId}`);
     }
 
-    multiplayerScreen.removeSceneObject(object);
+    object.setState(ObjectState.Inactive);
   }
 
-  private sendObjectData(multiplayerObject: MultiplayerGameObject): void {
-    const dataBuffer = this.createObjectDataBuffer(multiplayerObject);
+  private sendObjectData(multiplayerObject: BaseMultiplayerGameObject): void {
+    const objectLayer =
+      this.getMultiplayerScreen()?.getObjectLayer(multiplayerObject) ?? null;
+
+    if (objectLayer === null) {
+      return console.warn(
+        "Object layer id not found for object",
+        multiplayerObject
+      );
+    }
+
+    const dataBuffer = this.createObjectDataBuffer(
+      objectLayer,
+      multiplayerObject
+    );
 
     if (dataBuffer === null) {
       return;
@@ -144,7 +167,8 @@ export class ObjectOrchestrator {
   }
 
   private createObjectDataBuffer(
-    multiplayerObject: MultiplayerGameObject
+    objectLayer: ObjectLayer,
+    multiplayerObject: BaseMultiplayerGameObject
   ): ArrayBuffer | null {
     const objectTypeId = multiplayerObject.getObjectTypeId();
     const syncableId = multiplayerObject.getSyncableId();
@@ -155,17 +179,18 @@ export class ObjectOrchestrator {
       return null;
     }
 
-    const arrayBuffer = new ArrayBuffer(3 + 36 + syncableCustomData.byteLength);
+    const arrayBuffer = new ArrayBuffer(4 + 36 + syncableCustomData.byteLength);
     const dataView = new DataView(arrayBuffer);
 
     dataView.setUint8(0, OBJECT_DATA_ID);
-    dataView.setUint8(1, ObjectState.Active);
-    dataView.setUint8(2, objectTypeId);
+    dataView.setUint8(1, objectLayer);
+    dataView.setUint8(2, ObjectState.Active);
+    dataView.setUint8(3, objectTypeId);
 
     const syncableIdBytes = new TextEncoder().encode(syncableId);
+    new Uint8Array(arrayBuffer, 4, syncableIdBytes.length).set(syncableIdBytes);
 
-    new Uint8Array(arrayBuffer, 3, syncableIdBytes.length).set(syncableIdBytes);
-    new Uint8Array(arrayBuffer, 39, syncableCustomData.byteLength).set(
+    new Uint8Array(arrayBuffer, 40, syncableCustomData.byteLength).set(
       new Uint8Array(syncableCustomData)
     );
 

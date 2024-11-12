@@ -24,21 +24,21 @@ export class ObjectOrchestrator {
         });
     }
     handleRemoteData(data) {
-        if (!data || data.byteLength < 38) {
-            console.warn("Invalid data received for object synchronization");
-            return;
+        if (data === null || data.byteLength < 39) {
+            return console.warn("Invalid data received for object synchronization");
         }
         const multiplayerScreen = this.getMultiplayerScreen();
         if (multiplayerScreen === null) {
             return;
         }
         const dataView = new DataView(data);
-        const objectStateId = dataView.getUint8(0);
-        const objectTypeId = dataView.getUint8(1);
-        const syncableId = new TextDecoder().decode(data.slice(2, 38));
-        const syncableCustomData = data.slice(38);
+        const objectLayer = dataView.getUint8(0);
+        const objectStateId = dataView.getUint8(1);
+        const objectTypeId = dataView.getUint8(2);
+        const syncableId = new TextDecoder().decode(data.slice(3, 39));
+        const syncableCustomData = data.slice(39);
         if (objectStateId === ObjectState.Active) {
-            this.createOrSynchronize(multiplayerScreen, syncableId, objectTypeId, syncableCustomData);
+            this.createOrSynchronize(multiplayerScreen, objectLayer, syncableId, objectTypeId, syncableCustomData);
         }
         else {
             this.delete(multiplayerScreen, syncableId);
@@ -51,33 +51,37 @@ export class ObjectOrchestrator {
         }
         return false;
     }
-    createOrSynchronize(multiplayerScreen, syncableId, objectTypeId, syncableCustomData) {
+    createOrSynchronize(multiplayerScreen, objectLayer, syncableId, objectTypeId, syncableCustomData) {
         const object = multiplayerScreen.getSyncableObject(syncableId);
         if (object === null) {
-            this.create(multiplayerScreen, objectTypeId, syncableId, syncableCustomData);
+            this.create(multiplayerScreen, objectLayer, objectTypeId, syncableId, syncableCustomData);
         }
         else {
             object.synchronize(syncableCustomData);
         }
     }
-    create(multiplayerScreen, objectTypeId, syncableId, syncableCustomData) {
+    create(multiplayerScreen, objectLayer, objectTypeId, syncableId, syncableCustomData) {
         const syncableObjectClass = multiplayerScreen.getSyncableObjectClass(objectTypeId);
         if (syncableObjectClass === null) {
             return console.warn(`Syncable class not found for type ${objectTypeId}`);
         }
         const instance = syncableObjectClass.deserialize(syncableId, syncableCustomData);
-        multiplayerScreen?.addSceneObject(instance);
-        console.log("Created syncable object", instance);
+        multiplayerScreen?.addObjectToLayer(objectLayer, instance);
+        console.log(`Created syncable object for layer id ${objectLayer}`, instance);
     }
     delete(multiplayerScreen, syncableId) {
         const object = multiplayerScreen.getSyncableObject(syncableId);
         if (object === null) {
             return console.warn(`Object not found with id ${syncableId}`);
         }
-        multiplayerScreen.removeSceneObject(object);
+        object.setState(ObjectState.Inactive);
     }
     sendObjectData(multiplayerObject) {
-        const dataBuffer = this.createObjectDataBuffer(multiplayerObject);
+        const objectLayer = this.getMultiplayerScreen()?.getObjectLayer(multiplayerObject) ?? null;
+        if (objectLayer === null) {
+            return console.warn("Object layer id not found for object", multiplayerObject);
+        }
+        const dataBuffer = this.createObjectDataBuffer(objectLayer, multiplayerObject);
         if (dataBuffer === null) {
             return;
         }
@@ -87,7 +91,7 @@ export class ObjectOrchestrator {
             }
         });
     }
-    createObjectDataBuffer(multiplayerObject) {
+    createObjectDataBuffer(objectLayer, multiplayerObject) {
         const objectTypeId = multiplayerObject.getObjectTypeId();
         const syncableId = multiplayerObject.getSyncableId();
         const syncableCustomData = multiplayerObject.serialize();
@@ -95,14 +99,15 @@ export class ObjectOrchestrator {
             console.error("Invalid syncable object data");
             return null;
         }
-        const arrayBuffer = new ArrayBuffer(3 + 36 + syncableCustomData.byteLength);
+        const arrayBuffer = new ArrayBuffer(4 + 36 + syncableCustomData.byteLength);
         const dataView = new DataView(arrayBuffer);
         dataView.setUint8(0, OBJECT_DATA_ID);
-        dataView.setUint8(1, ObjectState.Active);
-        dataView.setUint8(2, objectTypeId);
+        dataView.setUint8(1, objectLayer);
+        dataView.setUint8(2, ObjectState.Active);
+        dataView.setUint8(3, objectTypeId);
         const syncableIdBytes = new TextEncoder().encode(syncableId);
-        new Uint8Array(arrayBuffer, 3, syncableIdBytes.length).set(syncableIdBytes);
-        new Uint8Array(arrayBuffer, 39, syncableCustomData.byteLength).set(new Uint8Array(syncableCustomData));
+        new Uint8Array(arrayBuffer, 4, syncableIdBytes.length).set(syncableIdBytes);
+        new Uint8Array(arrayBuffer, 40, syncableCustomData.byteLength).set(new Uint8Array(syncableCustomData));
         return arrayBuffer;
     }
     getMultiplayerScreen() {

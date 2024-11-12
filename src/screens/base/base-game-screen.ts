@@ -1,5 +1,6 @@
 import { GameController } from "../../models/game-controller.js";
 import { GamePointer } from "../../models/game-pointer.js";
+import { ObjectLayer } from "../../models/object-layer.js";
 import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
@@ -71,33 +72,33 @@ export class BaseGameScreen implements GameScreen {
     );
   }
 
-  public addUiObject(object: GameObject): void {
-    object.setDebug(this.gameController.isDebugging());
-    object.load();
-
-    this.uiObjects.push(object);
-  }
-
-  public removeUiObject(object: GameObject): void {
-    const index = this.uiObjects.indexOf(object);
-
-    if (index > -1) {
-      this.uiObjects.splice(index, 1);
+  public getObjectLayer(object: GameObject): ObjectLayer {
+    if (this.sceneObjects.includes(object)) {
+      return ObjectLayer.Scene;
     }
+
+    if (this.uiObjects.includes(object)) {
+      return ObjectLayer.UI;
+    }
+
+    throw new Error("Object not found in any layer");
   }
 
-  public addSceneObject(object: GameObject): void {
+  public addObjectToLayer(layerId: ObjectLayer, object: GameObject): void {
     object.setDebug(this.gameController.isDebugging());
     object.load();
 
-    this.sceneObjects.push(object);
-  }
+    switch (layerId) {
+      case ObjectLayer.UI:
+        this.uiObjects.push(object);
+        break;
 
-  public removeSceneObject(object: GameObject): void {
-    const index = this.sceneObjects.indexOf(object);
+      case ObjectLayer.Scene:
+        this.sceneObjects.push(object);
+        break;
 
-    if (index > -1) {
-      this.sceneObjects.splice(index, 1);
+      default:
+        console.warn(`Unknown layer id ${layerId} for object`, object);
     }
   }
 

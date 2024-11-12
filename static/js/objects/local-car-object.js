@@ -1,4 +1,4 @@
-import { ObjectType } from "../models/object-types.js";
+import { ObjectType } from "../models/object-type.js";
 import { CarObject } from "./car-object.js";
 import { GearStickObject } from "./gear-stick-object.js";
 import { JoystickObject } from "./joystick-object.js";

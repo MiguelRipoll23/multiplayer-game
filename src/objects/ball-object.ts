@@ -4,7 +4,7 @@ import { PlayerObject } from "./player-object.js";
 import { CarObject } from "./car-object.js";
 import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
-import { ObjectType } from "../models/object-types.js";
+import { ObjectType } from "../models/object-type.js";
 
 export class BallObject
   extends BaseDynamicCollidableGameObject

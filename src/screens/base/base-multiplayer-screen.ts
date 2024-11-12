@@ -1,4 +1,4 @@
-import { ObjectType } from "../../models/object-types.js";
+import { ObjectType } from "../../models/object-type.js";
 import { BaseMultiplayerGameObject } from "../../objects/base/base-multiplayer-object.js";
 import { StaticMultiplayerGameObject } from "../../objects/interfaces/multiplayer-game-object.js";
 import { BaseGameScreen } from "../../screens/base/base-game-screen.js";

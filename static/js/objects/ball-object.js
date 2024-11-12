@@ -1,7 +1,7 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
 import { CarObject } from "./car-object.js";
-import { ObjectType } from "../models/object-types.js";
+import { ObjectType } from "../models/object-type.js";
 export class BallObject extends BaseDynamicCollidableGameObject {
     canvas;
     MASS = 1;

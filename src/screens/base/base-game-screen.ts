@@ -1,6 +1,7 @@
 import { GameController } from "../../models/game-controller.js";
 import { GamePointer } from "../../models/game-pointer.js";
 import { ObjectLayer } from "../../models/object-layer.js";
+import { BaseGameObject } from "../../objects/base/base-game-object.js";
 import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";

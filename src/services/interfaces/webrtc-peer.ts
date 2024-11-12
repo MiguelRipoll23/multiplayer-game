@@ -1,4 +1,7 @@
+import { GamePlayer } from "../../models/game-player.js";
+
 export interface WebRTCPeer {
+  getPlayer(): GamePlayer | null;
   hasJoined(): boolean;
   createOffer(): Promise<RTCSessionDescriptionInit>;
   createAnswer(

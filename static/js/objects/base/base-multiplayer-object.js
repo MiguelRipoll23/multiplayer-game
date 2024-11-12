@@ -3,6 +3,7 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     syncableId = null;
     objectTypeId = null;
     syncableByHost = false;
+    owner = null;
     getSyncableId() {
         return this.syncableId;
     }
@@ -35,5 +36,11 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     }
     synchronize(data) {
         throw new Error("Method not implemented.");
+    }
+    getOwner() {
+        return this.owner;
+    }
+    setOwner(playerOwner) {
+        this.owner = playerOwner;
     }
 }

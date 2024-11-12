@@ -23,7 +23,7 @@ export class ObjectOrchestrator {
             this.sendObjectData(object);
         });
     }
-    handleRemoteData(data) {
+    handleRemoteData(webrtcPeer, data) {
         if (data === null || data.byteLength < 39) {
             return console.warn("Invalid data received for object synchronization");
         }
@@ -38,7 +38,7 @@ export class ObjectOrchestrator {
         const syncableId = new TextDecoder().decode(data.slice(3, 39));
         const syncableCustomData = data.slice(39);
         if (objectStateId === ObjectState.Active) {
-            this.createOrSynchronize(multiplayerScreen, objectLayer, syncableId, objectTypeId, syncableCustomData);
+            this.createOrSynchronize(webrtcPeer, multiplayerScreen, objectLayer, syncableId, objectTypeId, syncableCustomData);
         }
         else {
             this.delete(multiplayerScreen, syncableId);
@@ -51,21 +51,22 @@ export class ObjectOrchestrator {
         }
         return false;
     }
-    createOrSynchronize(multiplayerScreen, objectLayer, syncableId, objectTypeId, syncableCustomData) {
-        const object = multiplayerScreen.getSyncableObject(syncableId);
-        if (object === null) {
-            this.create(multiplayerScreen, objectLayer, objectTypeId, syncableId, syncableCustomData);
+    createOrSynchronize(webrtcPeer, multiplayerScreen, objectLayer, syncableId, objectTypeId, syncableCustomData) {
+        const multiplayerObject = multiplayerScreen.getSyncableObject(syncableId);
+        if (multiplayerObject === null) {
+            this.create(webrtcPeer, multiplayerScreen, objectLayer, objectTypeId, syncableId, syncableCustomData);
         }
         else {
-            object.synchronize(syncableCustomData);
+            multiplayerObject.synchronize(syncableCustomData);
         }
     }
-    create(multiplayerScreen, objectLayer, objectTypeId, syncableId, syncableCustomData) {
+    create(webrtcPeer, multiplayerScreen, objectLayer, objectTypeId, syncableId, syncableCustomData) {
         const syncableObjectClass = multiplayerScreen.getSyncableObjectClass(objectTypeId);
         if (syncableObjectClass === null) {
             return console.warn(`Syncable class not found for type ${objectTypeId}`);
         }
         const instance = syncableObjectClass.deserialize(syncableId, syncableCustomData);
+        instance.setOwner(webrtcPeer.getPlayer());
         multiplayerScreen?.addObjectToLayer(objectLayer, instance);
         console.log(`Created syncable object for layer id ${objectLayer}`, instance);
     }
@@ -86,10 +87,20 @@ export class ObjectOrchestrator {
             return;
         }
         this.webrtcService.getPeers().forEach((peer) => {
-            if (peer.hasJoined()) {
-                multiplayerObject.sendSyncableData(peer, dataBuffer);
+            if (this.skipWebRTCPeer(peer, multiplayerObject)) {
+                return;
             }
+            multiplayerObject.sendSyncableData(peer, dataBuffer);
         });
+    }
+    skipWebRTCPeer(webrtcPeer, multiplayerObject) {
+        if (webrtcPeer.hasJoined() === false) {
+            return true;
+        }
+        if (webrtcPeer.getPlayer() === multiplayerObject.getOwner()) {
+            return true;
+        }
+        return false;
     }
     createObjectDataBuffer(objectLayer, multiplayerObject) {
         const objectTypeId = multiplayerObject.getObjectTypeId();

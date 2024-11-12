@@ -32,6 +32,9 @@ export class WebRTCPeerService {
     getToken() {
         return this.token;
     }
+    getPlayer() {
+        return this.player;
+    }
     setPlayer(player) {
         this.player = player;
     }
@@ -205,6 +208,9 @@ export class WebRTCPeerService {
         const dataView = new DataView(arrayBuffer);
         const id = dataView.getUint8(0);
         const payload = dataView.buffer.byteLength > 1 ? arrayBuffer.slice(1) : null;
+        if (this.isInvalidStateForId(id)) {
+            return console.warn("Invalid player state for message", id);
+        }
         switch (id) {
             case JOIN_REQUEST_ID:
                 return this.matchmakingService.handleJoinRequest(this, payload);
@@ -217,10 +223,16 @@ export class WebRTCPeerService {
             case INITIAL_DATA_ACK_ID:
                 return this.matchmakingService.handleInitialDataACK(this);
             case OBJECT_DATA_ID:
-                return this.objectOrchestrator.handleRemoteData(payload);
+                return this.objectOrchestrator.handleRemoteData(this, payload);
             default: {
                 this.logger.warn("Unknown message identifier", id);
             }
         }
+    }
+    isInvalidStateForId(id) {
+        if (this.joined) {
+            return false;
+        }
+        return id > INITIAL_DATA_ACK_ID;
     }
 }

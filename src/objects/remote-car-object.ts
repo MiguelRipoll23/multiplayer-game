@@ -1,6 +1,7 @@
 import { ObjectType } from "../models/object-type.js";
 import { CarObject } from "./car-object.js";
 import { GameObject } from "./interfaces/game-object.js";
+import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
 
 export class RemoteCarObject extends CarObject {
   constructor(
@@ -19,7 +20,10 @@ export class RemoteCarObject extends CarObject {
     return ObjectType.RemoteCar;
   }
 
-  public static deserialize(syncableId: string, data: ArrayBuffer): GameObject {
+  public static deserialize(
+    syncableId: string,
+    data: ArrayBuffer
+  ): MultiplayerGameObject {
     const dataView = new DataView(data);
     const x = dataView.getFloat32(0);
     const y = dataView.getFloat32(2);

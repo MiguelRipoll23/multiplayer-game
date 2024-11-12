@@ -1,12 +1,14 @@
+import { GamePlayer } from "../../models/game-player.js";
 import { ObjectType } from "../../models/object-type.js";
 import { WebRTCPeer } from "../../services/interfaces/webrtc-peer.js";
-import { GameObject } from "../interfaces/game-object.js";
+import { MultiplayerGameObject } from "../interfaces/multiplayer-game-object.js";
 import { BaseGameObject } from "./base-game-object.js";
 
 export class BaseMultiplayerGameObject extends BaseGameObject {
   protected syncableId: string | null = null;
   protected objectTypeId: ObjectType | null = null;
   protected syncableByHost: boolean = false;
+  protected owner: GamePlayer | null = null;
 
   public getSyncableId(): string | null {
     return this.syncableId;
@@ -40,7 +42,10 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     throw new Error("Method not implemented.");
   }
 
-  public static deserialize(id: string, data: ArrayBuffer): GameObject {
+  public static deserialize(
+    id: string,
+    data: ArrayBuffer
+  ): MultiplayerGameObject {
     throw new Error("Method not implemented.");
   }
 
@@ -50,5 +55,13 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
 
   public synchronize(data: ArrayBuffer): void {
     throw new Error("Method not implemented.");
+  }
+
+  public getOwner(): GamePlayer | null {
+    return this.owner;
+  }
+
+  public setOwner(playerOwner: GamePlayer | null): void {
+    this.owner = playerOwner;
   }
 }

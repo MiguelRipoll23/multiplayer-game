@@ -9,6 +9,7 @@ import { ObjectState } from "../models/object-state.js";
 import { BaseMultiplayerGameObject } from "../objects/base/base-multiplayer-object.js";
 import { ObjectLayer } from "../models/object-layer.js";
 import { ObjectType } from "../models/object-type.js";
+import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 
 export class ObjectOrchestrator {
   private webrtcService: WebRTCService;
@@ -35,7 +36,10 @@ export class ObjectOrchestrator {
     });
   }
 
-  public handleRemoteData(data: ArrayBuffer | null): void {
+  public handleRemoteData(
+    webrtcPeer: WebRTCPeer,
+    data: ArrayBuffer | null
+  ): void {
     if (data === null || data.byteLength < 39) {
       return console.warn("Invalid data received for object synchronization");
     }
@@ -55,6 +59,7 @@ export class ObjectOrchestrator {
 
     if (objectStateId === ObjectState.Active) {
       this.createOrSynchronize(
+        webrtcPeer,
         multiplayerScreen,
         objectLayer,
         syncableId,
@@ -79,16 +84,18 @@ export class ObjectOrchestrator {
   }
 
   private createOrSynchronize(
+    webrtcPeer: WebRTCPeer,
     multiplayerScreen: BaseMultiplayerScreen,
     objectLayer: number,
     syncableId: string,
     objectTypeId: number,
     syncableCustomData: ArrayBuffer
   ): void {
-    const object = multiplayerScreen.getSyncableObject(syncableId);
+    const multiplayerObject = multiplayerScreen.getSyncableObject(syncableId);
 
-    if (object === null) {
+    if (multiplayerObject === null) {
       this.create(
+        webrtcPeer,
         multiplayerScreen,
         objectLayer,
         objectTypeId,
@@ -96,11 +103,12 @@ export class ObjectOrchestrator {
         syncableCustomData
       );
     } else {
-      object.synchronize(syncableCustomData);
+      multiplayerObject.synchronize(syncableCustomData);
     }
   }
 
   private create(
+    webrtcPeer: WebRTCPeer,
     multiplayerScreen: BaseMultiplayerScreen,
     objectLayer: ObjectLayer,
     objectTypeId: ObjectType,
@@ -118,6 +126,8 @@ export class ObjectOrchestrator {
       syncableId,
       syncableCustomData
     );
+
+    instance.setOwner(webrtcPeer.getPlayer());
 
     multiplayerScreen?.addObjectToLayer(objectLayer, instance);
     console.log(
@@ -160,10 +170,27 @@ export class ObjectOrchestrator {
     }
 
     this.webrtcService.getPeers().forEach((peer) => {
-      if (peer.hasJoined()) {
-        multiplayerObject.sendSyncableData(peer, dataBuffer);
+      if (this.skipWebRTCPeer(peer, multiplayerObject)) {
+        return;
       }
+
+      multiplayerObject.sendSyncableData(peer, dataBuffer);
     });
+  }
+
+  private skipWebRTCPeer(
+    webrtcPeer: WebRTCPeer,
+    multiplayerObject: BaseMultiplayerGameObject
+  ): boolean {
+    if (webrtcPeer.hasJoined() === false) {
+      return true;
+    }
+
+    if (webrtcPeer.getPlayer() === multiplayerObject.getOwner()) {
+      return true;
+    }
+
+    return false;
   }
 
   private createObjectDataBuffer(

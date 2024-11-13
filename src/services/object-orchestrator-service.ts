@@ -57,17 +57,19 @@ export class ObjectOrchestrator {
     const syncableId = new TextDecoder().decode(data.slice(3, 39));
     const syncableCustomData = data.slice(39);
 
-    if (objectStateId === ObjectState.Active) {
-      this.createOrSynchronize(
-        webrtcPeer,
-        multiplayerScreen,
-        objectLayer,
-        syncableId,
-        objectTypeId,
-        syncableCustomData
-      );
-    } else {
-      this.delete(multiplayerScreen, syncableId);
+    switch (objectStateId) {
+      case ObjectState.Active:
+        return this.createOrSynchronize(
+          webrtcPeer,
+          multiplayerScreen,
+          objectLayer,
+          syncableId,
+          objectTypeId,
+          syncableCustomData
+        );
+
+      case ObjectState.Inactive:
+        return this.delete(multiplayerScreen, syncableId);
     }
   }
 
@@ -94,7 +96,7 @@ export class ObjectOrchestrator {
     const multiplayerObject = multiplayerScreen.getSyncableObject(syncableId);
 
     if (multiplayerObject === null) {
-      this.create(
+      return this.create(
         webrtcPeer,
         multiplayerScreen,
         objectLayer,
@@ -102,9 +104,13 @@ export class ObjectOrchestrator {
         syncableId,
         syncableCustomData
       );
-    } else {
-      multiplayerObject.synchronize(syncableCustomData);
     }
+
+    if (this.isInvalidOwner(webrtcPeer, multiplayerObject)) {
+      return console.warn("Invalid owner for object", multiplayerObject);
+    }
+
+    multiplayerObject.synchronize(syncableCustomData);
   }
 
   private create(
@@ -134,6 +140,17 @@ export class ObjectOrchestrator {
       `Created syncable object for layer id ${objectLayer}`,
       instance
     );
+  }
+
+  private isInvalidOwner(
+    webrtcPeer: WebRTCPeer,
+    multiplayerObject: BaseMultiplayerGameObject
+  ): boolean {
+    if (multiplayerObject.getOwner() === null) {
+      return false;
+    }
+
+    return webrtcPeer.getPlayer() !== multiplayerObject.getOwner();
   }
 
   private delete(

@@ -37,11 +37,11 @@ export class ObjectOrchestrator {
         const objectTypeId = dataView.getUint8(2);
         const syncableId = new TextDecoder().decode(data.slice(3, 39));
         const syncableCustomData = data.slice(39);
-        if (objectStateId === ObjectState.Active) {
-            this.createOrSynchronize(webrtcPeer, multiplayerScreen, objectLayer, syncableId, objectTypeId, syncableCustomData);
-        }
-        else {
-            this.delete(multiplayerScreen, syncableId);
+        switch (objectStateId) {
+            case ObjectState.Active:
+                return this.createOrSynchronize(webrtcPeer, multiplayerScreen, objectLayer, syncableId, objectTypeId, syncableCustomData);
+            case ObjectState.Inactive:
+                return this.delete(multiplayerScreen, syncableId);
         }
     }
     skipSyncableObject(multiplayerObject) {
@@ -54,11 +54,12 @@ export class ObjectOrchestrator {
     createOrSynchronize(webrtcPeer, multiplayerScreen, objectLayer, syncableId, objectTypeId, syncableCustomData) {
         const multiplayerObject = multiplayerScreen.getSyncableObject(syncableId);
         if (multiplayerObject === null) {
-            this.create(webrtcPeer, multiplayerScreen, objectLayer, objectTypeId, syncableId, syncableCustomData);
+            return this.create(webrtcPeer, multiplayerScreen, objectLayer, objectTypeId, syncableId, syncableCustomData);
         }
-        else {
-            multiplayerObject.synchronize(syncableCustomData);
+        if (this.isInvalidOwner(webrtcPeer, multiplayerObject)) {
+            return console.warn("Invalid owner for object", multiplayerObject);
         }
+        multiplayerObject.synchronize(syncableCustomData);
     }
     create(webrtcPeer, multiplayerScreen, objectLayer, objectTypeId, syncableId, syncableCustomData) {
         const syncableObjectClass = multiplayerScreen.getSyncableObjectClass(objectTypeId);
@@ -69,6 +70,12 @@ export class ObjectOrchestrator {
         instance.setOwner(webrtcPeer.getPlayer());
         multiplayerScreen?.addObjectToLayer(objectLayer, instance);
         console.log(`Created syncable object for layer id ${objectLayer}`, instance);
+    }
+    isInvalidOwner(webrtcPeer, multiplayerObject) {
+        if (multiplayerObject.getOwner() === null) {
+            return false;
+        }
+        return webrtcPeer.getPlayer() !== multiplayerObject.getOwner();
     }
     delete(multiplayerScreen, syncableId) {
         const object = multiplayerScreen.getSyncableObject(syncableId);

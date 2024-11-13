@@ -18,6 +18,9 @@ export class BaseGameObject {
     }
     setState(state) {
         this.state = state;
+        if (this.state === ObjectState.Inactive) {
+            console.log(`${this.constructor.name} set to inactive`);
+        }
     }
     setDebug(debug) {
         this.debug = debug;

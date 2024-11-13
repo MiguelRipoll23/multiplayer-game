@@ -40,4 +40,20 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
         }
         return null;
     }
+    getObjectsByOwner(player) {
+        const result = [];
+        this.uiObjects.forEach((object) => {
+            if (object instanceof BaseMultiplayerGameObject &&
+                object.getOwner() === player) {
+                result.push(object);
+            }
+        });
+        this.sceneObjects.forEach((object) => {
+            if (object instanceof BaseMultiplayerGameObject &&
+                object.getOwner() === player) {
+                result.push(object);
+            }
+        });
+        return result;
+    }
 }

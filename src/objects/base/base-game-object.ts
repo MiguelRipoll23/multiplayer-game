@@ -25,6 +25,10 @@ export class BaseGameObject implements GameObject {
 
   public setState(state: ObjectState): void {
     this.state = state;
+
+    if (this.state === ObjectState.Inactive) {
+      console.log(`${this.constructor.name} set to inactive`);
+    }
   }
 
   public setDebug(debug: boolean): void {

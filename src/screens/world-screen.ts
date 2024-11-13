@@ -16,9 +16,11 @@ import { ToastObject } from "../objects/common/toast-object.js";
 import {
   MATCH_ADVERTISED_EVENT,
   PLAYER_CONNECTED_EVENT,
+  PLAYER_DISCONNECTED_EVENT,
 } from "../constants/events-constants.js";
 import { Team } from "../models/game-teams.js";
 import { RemoteCarObject } from "../objects/remote-car-object.js";
+import { ObjectState } from "../models/object-state.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -36,8 +38,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     super(gameController);
     this.gameState = gameController.getGameState();
     this.addCustomEventListeners();
-    this.addSyncableObject(BallObject);
-    this.addSyncableObject(RemoteCarObject);
+    this.addSyncableObjects();
   }
 
   public override loadObjects(): void {
@@ -64,6 +65,11 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.gameController.getObjectOrchestrator().sendLocalData(this);
   }
 
+  private addSyncableObjects(): void {
+    this.addSyncableObject(BallObject);
+    this.addSyncableObject(RemoteCarObject);
+  }
+
   private createBackgroundObject() {
     const backgroundObject = new WorldBackgroundObject(this.canvas);
     this.sceneObjects.push(backgroundObject);
@@ -80,6 +86,18 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     window.addEventListener(PLAYER_CONNECTED_EVENT, (event) => {
       this.toastObject?.hide();
+    });
+
+    window.addEventListener(PLAYER_DISCONNECTED_EVENT, (event) => {
+      this.handlePlayerDisconnection(event as CustomEvent<any>);
+    });
+  }
+
+  private handlePlayerDisconnection(event: CustomEvent<any>): void {
+    const player = event.detail.player;
+
+    this.getObjectsByOwner(player).forEach((object) => {
+      object.setState(ObjectState.Inactive);
     });
   }
 

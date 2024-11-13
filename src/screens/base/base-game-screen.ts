@@ -1,6 +1,7 @@
 import { GameController } from "../../models/game-controller.js";
 import { GamePointer } from "../../models/game-pointer.js";
 import { ObjectLayer } from "../../models/object-layer.js";
+import { ObjectState } from "../../models/object-state.js";
 import { BaseGameObject } from "../../objects/base/base-game-object.js";
 import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
@@ -107,6 +108,14 @@ export class BaseGameScreen implements GameScreen {
     this.updateObjects(this.sceneObjects, deltaTimeStamp);
     this.updateObjects(this.uiObjects, deltaTimeStamp);
 
+    this.uiObjects.forEach((object) => {
+      this.removeObjectIfInactive(this.uiObjects, object);
+    });
+
+    this.sceneObjects.forEach((object) => {
+      this.removeObjectIfInactive(this.sceneObjects, object);
+    });
+
     this.handlePointerEvent();
   }
 
@@ -124,6 +133,16 @@ export class BaseGameScreen implements GameScreen {
 
     this.sceneObjects.forEach((object) => object.setDebug(debug));
     this.uiObjects.forEach((object) => object.setDebug(debug));
+  }
+
+  private removeObjectIfInactive(
+    layer: GameObject[],
+    object: GameObject
+  ): void {
+    if (object.getState() === ObjectState.Inactive) {
+      const index = layer.indexOf(object);
+      layer.splice(index, 1);
+    }
   }
 
   private handlePointerEvent(): void {

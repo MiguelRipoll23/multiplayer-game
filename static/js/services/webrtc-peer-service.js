@@ -199,8 +199,12 @@ export class WebRTCPeerService {
         if (channel === undefined) {
             return this.logger.warn(`Data channel not found for key: ${channelKey}`);
         }
-        channel.send(arrayBuffer);
-        //this.logger.debug(`Sent ${channelKey} message`, arrayBuffer);
+        try {
+            channel.send(arrayBuffer);
+        }
+        catch (error) {
+            this.logger.error(`Error sending ${channelKey} message`, error);
+        }
     }
     handleMessage(arrayBuffer) {
         //this.logger.info("Received message from peer", new Uint8Array(arrayBuffer));

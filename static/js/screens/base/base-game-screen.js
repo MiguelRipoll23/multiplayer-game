@@ -1,4 +1,5 @@
 import { ObjectLayer } from "../../models/object-layer.js";
+import { ObjectState } from "../../models/object-state.js";
 import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 export class BaseGameScreen {
     gameController;
@@ -73,6 +74,12 @@ export class BaseGameScreen {
     update(deltaTimeStamp) {
         this.updateObjects(this.sceneObjects, deltaTimeStamp);
         this.updateObjects(this.uiObjects, deltaTimeStamp);
+        this.uiObjects.forEach((object) => {
+            this.removeObjectIfInactive(this.uiObjects, object);
+        });
+        this.sceneObjects.forEach((object) => {
+            this.removeObjectIfInactive(this.sceneObjects, object);
+        });
         this.handlePointerEvent();
     }
     render(context) {
@@ -85,6 +92,12 @@ export class BaseGameScreen {
         const debug = this.gameController.isDebugging();
         this.sceneObjects.forEach((object) => object.setDebug(debug));
         this.uiObjects.forEach((object) => object.setDebug(debug));
+    }
+    removeObjectIfInactive(layer, object) {
+        if (object.getState() === ObjectState.Inactive) {
+            const index = layer.indexOf(object);
+            layer.splice(index, 1);
+        }
     }
     handlePointerEvent() {
         const pressableObjects = this.uiObjects

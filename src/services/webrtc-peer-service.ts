@@ -288,8 +288,11 @@ export class WebRTCPeerService {
       return this.logger.warn(`Data channel not found for key: ${channelKey}`);
     }
 
-    channel.send(arrayBuffer);
-    //this.logger.debug(`Sent ${channelKey} message`, arrayBuffer);
+    try {
+      channel.send(arrayBuffer);
+    } catch (error) {
+      this.logger.error(`Error sending ${channelKey} message`, error);
+    }
   }
 
   private handleMessage(arrayBuffer: ArrayBuffer): void {

@@ -1,3 +1,4 @@
+import { GamePlayer } from "../../models/game-player.js";
 import { ObjectType } from "../../models/object-type.js";
 import { BaseMultiplayerGameObject } from "../../objects/base/base-multiplayer-object.js";
 import { StaticMultiplayerGameObject } from "../../objects/interfaces/multiplayer-game-object.js";
@@ -62,5 +63,29 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
     }
 
     return null;
+  }
+
+  public getObjectsByOwner(player: GamePlayer): BaseMultiplayerGameObject[] {
+    const result: BaseMultiplayerGameObject[] = [];
+
+    this.uiObjects.forEach((object) => {
+      if (
+        object instanceof BaseMultiplayerGameObject &&
+        object.getOwner() === player
+      ) {
+        result.push(object);
+      }
+    });
+
+    this.sceneObjects.forEach((object) => {
+      if (
+        object instanceof BaseMultiplayerGameObject &&
+        object.getOwner() === player
+      ) {
+        result.push(object);
+      }
+    });
+
+    return result;
   }
 }

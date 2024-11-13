@@ -9,9 +9,10 @@ import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constant
 import { LocalPlayerObject } from "../objects/local-player-object.js";
 import { AlertObject } from "../objects/alert-object.js";
 import { ToastObject } from "../objects/common/toast-object.js";
-import { MATCH_ADVERTISED_EVENT, PLAYER_CONNECTED_EVENT, } from "../constants/events-constants.js";
+import { MATCH_ADVERTISED_EVENT, PLAYER_CONNECTED_EVENT, PLAYER_DISCONNECTED_EVENT, } from "../constants/events-constants.js";
 import { Team } from "../models/game-teams.js";
 import { RemoteCarObject } from "../objects/remote-car-object.js";
+import { ObjectState } from "../models/object-state.js";
 export class WorldScreen extends BaseCollidingGameScreen {
     gameController;
     gameState;
@@ -28,8 +29,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.gameController = gameController;
         this.gameState = gameController.getGameState();
         this.addCustomEventListeners();
-        this.addSyncableObject(BallObject);
-        this.addSyncableObject(RemoteCarObject);
+        this.addSyncableObjects();
     }
     loadObjects() {
         this.createBackgroundObject();
@@ -51,6 +51,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.detectScores();
         this.gameController.getObjectOrchestrator().sendLocalData(this);
     }
+    addSyncableObjects() {
+        this.addSyncableObject(BallObject);
+        this.addSyncableObject(RemoteCarObject);
+    }
     createBackgroundObject() {
         const backgroundObject = new WorldBackgroundObject(this.canvas);
         this.sceneObjects.push(backgroundObject);
@@ -64,6 +68,15 @@ export class WorldScreen extends BaseCollidingGameScreen {
         });
         window.addEventListener(PLAYER_CONNECTED_EVENT, (event) => {
             this.toastObject?.hide();
+        });
+        window.addEventListener(PLAYER_DISCONNECTED_EVENT, (event) => {
+            this.handlePlayerDisconnection(event);
+        });
+    }
+    handlePlayerDisconnection(event) {
+        const player = event.detail.player;
+        this.getObjectsByOwner(player).forEach((object) => {
+            object.setState(ObjectState.Inactive);
         });
     }
     createScoreboardObject() {

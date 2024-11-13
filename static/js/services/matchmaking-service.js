@@ -108,13 +108,14 @@ export class MatchmakingService {
         if (host) {
             peer.setPlayer(gamePlayer);
         }
-        dispatchEvent(new CustomEvent(PLAYER_CONNECTED_EVENT, { detail: { name } }));
     }
     handleInitialDataEnd(peer) {
         const playerName = peer.getName();
         console.log("Received end of initial data from", playerName);
         peer.setJoined(true);
-        dispatchEvent(new CustomEvent(PLAYER_CONNECTED_EVENT, { detail: { playerName } }));
+        dispatchEvent(new CustomEvent(PLAYER_CONNECTED_EVENT, {
+            detail: { player: peer.getPlayer() },
+        }));
         this.sendInitialDataAck(peer);
     }
     handleInitialDataACK(peer) {
@@ -131,7 +132,7 @@ export class MatchmakingService {
         console.log(`Player ${peer.getName()} disconnected`);
         this.gameState.getGameMatch()?.removePlayer(peerId);
         dispatchEvent(new CustomEvent(PLAYER_DISCONNECTED_EVENT, {
-            detail: { playerName: peer.getName() },
+            detail: { player: peer.getPlayer() },
         }));
     }
     handleHostDisconnected(peer) {

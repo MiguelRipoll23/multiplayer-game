@@ -174,10 +174,6 @@ export class MatchmakingService {
     if (host) {
       peer.setPlayer(gamePlayer);
     }
-
-    dispatchEvent(
-      new CustomEvent(PLAYER_CONNECTED_EVENT, { detail: { name } })
-    );
   }
 
   public handleInitialDataEnd(peer: WebRTCPeerService): void {
@@ -187,7 +183,9 @@ export class MatchmakingService {
     peer.setJoined(true);
 
     dispatchEvent(
-      new CustomEvent(PLAYER_CONNECTED_EVENT, { detail: { playerName } })
+      new CustomEvent(PLAYER_CONNECTED_EVENT, {
+        detail: { player: peer.getPlayer() },
+      })
     );
 
     this.sendInitialDataAck(peer);
@@ -222,7 +220,7 @@ export class MatchmakingService {
 
     dispatchEvent(
       new CustomEvent(PLAYER_DISCONNECTED_EVENT, {
-        detail: { playerName: peer.getName() },
+        detail: { player: peer.getPlayer() },
       })
     );
   }

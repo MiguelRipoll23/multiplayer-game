@@ -189,12 +189,6 @@ export class ObjectOrchestrator {
     objectTypeId: ObjectType,
     multiplayerObject: BaseMultiplayerGameObject
   ): void {
-    const state = multiplayerObject.getState();
-
-    if (state === ObjectState.Inactive) {
-      return multiplayerObject.setRemoved(true);
-    }
-
     const layer =
       this.getMultiplayerScreen()?.getObjectLayer(multiplayerObject) ?? null;
 
@@ -203,6 +197,12 @@ export class ObjectOrchestrator {
         "Object layer id not found for object",
         multiplayerObject
       );
+    }
+
+    const state = multiplayerObject.getState();
+
+    if (state === ObjectState.Inactive) {
+      multiplayerObject.setRemoved(true);
     }
 
     const dataBuffer = this.createObjectDataBuffer(

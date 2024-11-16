@@ -191,6 +191,10 @@ export class WebRTCPeerService {
   }
 
   private handleDisconnection(): void {
+    if (this.connectionState === ConnectionState.Disconnected) {
+      return;
+    }
+
     this.logger.info("Peer connection closed");
     this.connectionState = ConnectionState.Disconnected;
     this.gameController.getWebRTCService().removePeer(this.token);

@@ -2,9 +2,15 @@ import {
   BLUE_TEAM_COLOR,
   RED_TEAM_COLOR,
 } from "../constants/colors-constants.js";
-import { BaseGameObject } from "./base/base-game-object.js";
+import { BasePositionableGameObject } from "./base/base-positionable-game-object.js";
+import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
+import { ObjectType } from "../models/object-type.js";
+import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
 
-export class ScoreboardObject extends BaseGameObject {
+export class ScoreboardObject
+  extends BasePositionableGameObject
+  implements MultiplayerGameObject
+{
   private readonly SQUARE_SIZE: number = 50;
   private readonly SPACE_BETWEEN: number = 10;
   private readonly TIME_BOX_WIDTH: number = 120;
@@ -36,6 +42,7 @@ export class ScoreboardObject extends BaseGameObject {
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
     this.x = this.canvas.width / 2 - this.SPACE_BETWEEN / 2;
+    this.setSyncableValues();
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -171,5 +178,30 @@ export class ScoreboardObject extends BaseGameObject {
 
   public resetCountdown(): void {
     this.elapsedMilliseconds = 0;
+  }
+
+  public serialize(): ArrayBuffer {
+    const arrayBuffer = new ArrayBuffer(12);
+    const dataView = new DataView(arrayBuffer);
+
+    dataView.setUint32(0, this.blueScore);
+    dataView.setUint32(4, this.redScore);
+    dataView.setUint32(8, Math.ceil((this.durationMilliseconds - this.elapsedMilliseconds) / 1000));
+
+    return arrayBuffer;
+  }
+
+  public synchronize(data: ArrayBuffer): void {
+    const dataView = new DataView(data);
+
+    this.blueScore = dataView.getUint32(0);
+    this.redScore = dataView.getUint32(4);
+    this.elapsedMilliseconds = this.durationMilliseconds - (dataView.getUint32(8) * 1000);
+  }
+
+  private setSyncableValues() {
+    this.setSyncableId("scoreboard-unique-id");
+    this.setObjectTypeId(ObjectType.Scoreboard);
+    this.setSyncableByHost(true);
   }
 }

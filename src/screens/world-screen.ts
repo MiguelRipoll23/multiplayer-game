@@ -66,6 +66,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private addSyncableObjects(): void {
     this.addSyncableObject(BallObject);
     this.addSyncableObject(RemoteCarObject);
+    this.addSyncableObject(ScoreboardObject);
   }
 
   private createBackgroundObject() {
@@ -229,6 +230,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.goalTimerService = this.gameController.addTimer(5, () =>
       this.handleGoalTimerEnd()
     );
+
+    // Synchronize scoreboard
+    if (this.gameState.getGamePlayer().isHost()) {
+      const data = this.scoreboardObject?.serialize();
+      if (data) {
+        this.gameController.getObjectOrchestrator().sendSyncableData(data);
+      }
+    }
   }
 
   private handlePlayerScore(player: GamePlayer) {

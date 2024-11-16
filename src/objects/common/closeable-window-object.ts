@@ -1,4 +1,4 @@
-import { RED_TEAM_COLOR } from "../../constants/colors-constants.js";
+import { LIGHT_GREEN_COLOR } from "../../constants/colors-constants.js";
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 import { BackdropObject } from "./backdrop-object.js";
 
@@ -156,7 +156,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
   }
 
   private renderTitleBar(context: CanvasRenderingContext2D): void {
-    context.fillStyle = RED_TEAM_COLOR;
+    context.fillStyle = LIGHT_GREEN_COLOR;
     context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
   }
 

@@ -1,4 +1,4 @@
-import { RED_TEAM_COLOR } from "../../constants/colors-constants.js";
+import { LIGHT_GREEN_COLOR } from "../../constants/colors-constants.js";
 import { BaseGameObject } from "../base/base-game-object.js";
 
 export class ProgressBarObject extends BaseGameObject {
@@ -57,7 +57,7 @@ export class ProgressBarObject extends BaseGameObject {
       this.PROGRESS_BAR_HEIGHT
     );
 
-    context.fillStyle = RED_TEAM_COLOR;
+    context.fillStyle = LIGHT_GREEN_COLOR;
     context.fillRect(
       this.rectX,
       this.progressBarY,

@@ -306,7 +306,7 @@ export class WebRTCPeerService {
     try {
       channel.send(arrayBuffer);
 
-      if (channel.label === "reliable-ordered") {
+      if (channel.label.startsWith("reliable")) {
         this.logger.info("Sent message", new Uint8Array(arrayBuffer));
       }
     } catch (error) {

@@ -295,6 +295,10 @@ export class WebRTCPeerService {
       return this.logger.warn(`Data channel not found for key: ${channelKey}`);
     }
 
+    if (channel.readyState !== "open") {
+      return;
+    }
+
     try {
       channel.send(arrayBuffer);
 

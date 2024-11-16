@@ -109,7 +109,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       this.toastObject?.show(`${player.getName()} joined`);
     }
 
-    this.gameController.addTimer(1.5, () => this.toastObject?.hide());
+    this.gameController.addTimer(2, () => this.toastObject?.hide());
   }
 
   private handlePlayerDisconnection(event: CustomEvent<any>): void {
@@ -118,6 +118,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.getObjectsByOwner(player).forEach((object) => {
       object.setState(ObjectState.Inactive);
     });
+
+    this.toastObject?.show(`${player.getName()} left`);
   }
 
   private createScoreboardObject() {

@@ -128,7 +128,7 @@ export class WebSocketService {
   }
 
   private handleTunnelMessage(payload: ArrayBuffer | null) {
-    if (payload === null) {ñ
+    if (payload === null) {
       return console.warn("Received empty tunnel message");
     } else if (payload.byteLength < 33) {
       return console.warn("Invalid tunnel message length", payload);

@@ -2,8 +2,6 @@ name: Deploy page
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   build:

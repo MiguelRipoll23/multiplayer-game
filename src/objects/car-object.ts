@@ -114,11 +114,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     this.x = this.canvas.width / 2 - this.WIDTH / 2;
     this.y = this.canvas.height / 2 - this.HEIGHT / 2;
 
-    if (this.playerObject?.getTeam() === Team.Orange) {
-      this.y -= this.DISTANCE_CENTER;
-    } else {
-      this.y += this.DISTANCE_CENTER;
-    }
+    this.y += this.DISTANCE_CENTER;
   }
 
   private createHitbox(): void {

@@ -1,15 +1,12 @@
-import { Team } from "./game-teams.js";
 export class GamePlayer {
     id;
     host;
     name;
-    team;
     score;
-    constructor(id = self.crypto.randomUUID(), host = false, name = "Unknown", team = Team.Blue, score = 0) {
+    constructor(id = self.crypto.randomUUID(), host = false, name = "Unknown", score = 0) {
         this.id = id;
         this.host = host;
         this.name = name;
-        this.team = team;
         this.score = score;
     }
     getId() {
@@ -23,9 +20,6 @@ export class GamePlayer {
     }
     getName() {
         return this.name;
-    }
-    getTeam() {
-        return this.team;
     }
     getScore() {
         return this.score;

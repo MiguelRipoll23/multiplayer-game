@@ -95,15 +95,14 @@ export class MatchmakingService {
         const connected = dataView.getUint8(1);
         const id = new TextDecoder().decode(payload.slice(1, 37));
         const host = dataView.getUint8(37) === 1;
-        const team = dataView.getUint8(38);
-        const score = dataView.getUint8(39);
-        const nameBytes = payload.slice(40);
+        const score = dataView.getUint8(38);
+        const nameBytes = payload.slice(39);
         const name = new TextDecoder().decode(nameBytes);
         if (connected === 0) {
             // TODO
             return console.warn("Player disconnected", name);
         }
-        const gamePlayer = new GamePlayer(id, host, name, team, score);
+        const gamePlayer = new GamePlayer(id, host, name, score);
         this.gameState.getGameMatch()?.addPlayer(gamePlayer);
         if (host) {
             peer.setPlayer(gamePlayer);
@@ -216,7 +215,6 @@ export class MatchmakingService {
         const connected = 1;
         const id = player.getId();
         const host = player.isHost() ? 1 : 0;
-        const team = player.getTeam();
         const score = player.getScore();
         const name = player.getName();
         const idBytes = new TextEncoder().encode(id);
@@ -226,7 +224,6 @@ export class MatchmakingService {
             connected,
             ...idBytes,
             host,
-            team,
             score,
             ...nameBytes,
         ]);

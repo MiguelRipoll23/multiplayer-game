@@ -27,8 +27,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private scoreboardObject: ScoreboardObject | null = null;
   private localCarObject: LocalCarObject | null = null;
   private ballObject: BallObject | null = null;
-  private orangeGoalObject: GoalObject | null = null;
-  private blueGoalObject: GoalObject | null = null;
+  private goalObject: GoalObject | null = null;
   private alertObject: AlertObject | null = null;
   private toastObject: ToastObject | null = null;
 
@@ -46,7 +45,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.createScoreboardObject();
     this.createPlayerAndLocalCarObjects();
     this.createBallObject();
-    this.createGoalObjects();
+    this.createGoalObject();
     this.createAlertObject();
     this.createToastObject();
     super.loadObjects();
@@ -120,12 +119,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.sceneObjects.push(this.ballObject);
   }
 
-  private createGoalObjects() {
-    this.orangeGoalObject = new GoalObject(true, this.canvas);
-    this.blueGoalObject = new GoalObject(false, this.canvas);
-
-    this.sceneObjects.push(this.orangeGoalObject);
-    this.sceneObjects.push(this.blueGoalObject);
+  private createGoalObject() {
+    this.goalObject = new GoalObject(this.canvas);
+    this.sceneObjects.push(this.goalObject);
   }
 
   private createPlayerAndLocalCarObjects() {
@@ -179,20 +175,12 @@ export class WorldScreen extends BaseCollidingGameScreen {
       return;
     }
 
-    const orangeGoal = this.orangeGoalObject
+    const goalScored = this.goalObject
       ?.getCollidingObjects()
       .includes(this.ballObject);
 
-    if (orangeGoal) {
+    if (goalScored) {
       this.handleGoalScored(Team.Orange);
-    }
-
-    const blueGoal = this.blueGoalObject
-      ?.getCollidingObjects()
-      .includes(this.ballObject);
-
-    if (blueGoal) {
-      this.handleGoalScored(Team.Blue);
     }
   }
 
@@ -224,12 +212,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private handlePlayerScore(playerObject: PlayerObject, goalTeam: Team) {
-    const playerTeam = playerObject?.getTeam();
-
-    if (playerTeam === goalTeam) {
-      return console.warn("Own goal detected, score not counted");
-    }
-
     playerObject.sumScore(1);
 
     if (playerObject instanceof LocalPlayerObject) {

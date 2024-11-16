@@ -1,6 +1,5 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
-import { Team } from "../models/game-teams.js";
 export class CarObject extends BaseDynamicCollidableGameObject {
     TOP_SPEED = 4;
     ACCELERATION = 0.4;
@@ -79,12 +78,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
         }
         this.x = this.canvas.width / 2 - this.WIDTH / 2;
         this.y = this.canvas.height / 2 - this.HEIGHT / 2;
-        if (this.playerObject?.getTeam() === Team.Orange) {
-            this.y -= this.DISTANCE_CENTER;
-        }
-        else {
-            this.y += this.DISTANCE_CENTER;
-        }
+        this.y += this.DISTANCE_CENTER;
     }
     createHitbox() {
         this.setHitboxObjects([

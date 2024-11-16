@@ -19,8 +19,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     scoreboardObject = null;
     localCarObject = null;
     ballObject = null;
-    orangeGoalObject = null;
-    blueGoalObject = null;
+    goalObject = null;
     alertObject = null;
     toastObject = null;
     goalTimerService = null;
@@ -36,7 +35,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.createScoreboardObject();
         this.createPlayerAndLocalCarObjects();
         this.createBallObject();
-        this.createGoalObjects();
+        this.createGoalObject();
         this.createAlertObject();
         this.createToastObject();
         super.loadObjects();
@@ -90,11 +89,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.ballObject.setCenterPosition();
         this.sceneObjects.push(this.ballObject);
     }
-    createGoalObjects() {
-        this.orangeGoalObject = new GoalObject(true, this.canvas);
-        this.blueGoalObject = new GoalObject(false, this.canvas);
-        this.sceneObjects.push(this.orangeGoalObject);
-        this.sceneObjects.push(this.blueGoalObject);
+    createGoalObject() {
+        this.goalObject = new GoalObject(this.canvas);
+        this.sceneObjects.push(this.goalObject);
     }
     createPlayerAndLocalCarObjects() {
         const gamePointer = this.gameController.getGamePointer();
@@ -128,17 +125,11 @@ export class WorldScreen extends BaseCollidingGameScreen {
         if (this.ballObject === null || this.ballObject?.isInactive()) {
             return;
         }
-        const orangeGoal = this.orangeGoalObject
+        const goalScored = this.goalObject
             ?.getCollidingObjects()
             .includes(this.ballObject);
-        if (orangeGoal) {
+        if (goalScored) {
             this.handleGoalScored(Team.Orange);
-        }
-        const blueGoal = this.blueGoalObject
-            ?.getCollidingObjects()
-            .includes(this.ballObject);
-        if (blueGoal) {
-            this.handleGoalScored(Team.Blue);
         }
     }
     handleGoalScored(goalTeam) {
@@ -162,10 +153,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
         this.goalTimerService = this.gameController.addTimer(5, () => this.handleGoalTimerEnd());
     }
     handlePlayerScore(playerObject, goalTeam) {
-        const playerTeam = playerObject?.getTeam();
-        if (playerTeam === goalTeam) {
-            return console.warn("Own goal detected, score not counted");
-        }
         playerObject.sumScore(1);
         if (playerObject instanceof LocalPlayerObject) {
             this.gameController.getGameState().getGamePlayer().sumScore(1);

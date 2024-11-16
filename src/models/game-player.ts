@@ -4,20 +4,17 @@ export class GamePlayer {
   private id: string;
   private host: boolean;
   private name: string;
-  private team: Team;
   private score: number;
 
   constructor(
     id: string = self.crypto.randomUUID(),
     host: boolean = false,
     name = "Unknown",
-    team = Team.Blue,
     score = 0
   ) {
     this.id = id;
     this.host = host;
     this.name = name;
-    this.team = team;
     this.score = score;
   }
 
@@ -35,10 +32,6 @@ export class GamePlayer {
 
   public getName(): string {
     return this.name;
-  }
-
-  public getTeam(): Team {
-    return this.team;
   }
 
   public getScore(): number {

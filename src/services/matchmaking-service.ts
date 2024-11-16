@@ -164,7 +164,7 @@ export class MatchmakingService {
     const name = new TextDecoder().decode(nameBytes);
 
     if (state === ConnectionState.Disconnected) {
-      return this.handlePlayerDisconnectedGracefully(id);
+      return this.handlePlayerDisconnectedById(id);
     }
 
     const gamePlayer = new GamePlayer(id, host, name, score);
@@ -260,7 +260,7 @@ export class MatchmakingService {
     dispatchEvent(new CustomEvent(HOST_DISCONNECTED_EVENT));
   }
 
-  private handlePlayerDisconnectedGracefully(playerId: string) {
+  private handlePlayerDisconnectedById(playerId: string) {
     const gameMatch = this.gameState.getGameMatch();
 
     if (gameMatch === null) {

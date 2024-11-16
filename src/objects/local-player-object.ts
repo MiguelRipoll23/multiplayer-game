@@ -3,7 +3,7 @@ import { PlayerObject } from "./player-object.js";
 
 export class LocalPlayerObject extends PlayerObject {
   constructor(protected gamePlayer: GamePlayer) {
-    super(gamePlayer.getName());
+    super(gamePlayer);
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {}

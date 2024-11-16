@@ -2,7 +2,7 @@ import { PlayerObject } from "./player-object.js";
 export class LocalPlayerObject extends PlayerObject {
     gamePlayer;
     constructor(gamePlayer) {
-        super(gamePlayer.getName());
+        super(gamePlayer);
         this.gamePlayer = gamePlayer;
     }
     update(deltaTimeStamp) { }

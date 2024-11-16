@@ -1,13 +1,13 @@
 import { BaseGameObject } from "./base/base-game-object.js";
 export class PlayerObject extends BaseGameObject {
-    name;
+    gamePlayer;
     score = 0;
-    constructor(name) {
+    constructor(gamePlayer) {
         super();
-        this.name = name;
+        this.gamePlayer = gamePlayer;
     }
     getName() {
-        return this.name;
+        return this.gamePlayer.getName();
     }
     getScore() {
         return this.score;

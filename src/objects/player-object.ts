@@ -1,16 +1,17 @@
+import { GamePlayer } from "../models/game-player.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 
 export class PlayerObject extends BaseGameObject {
-  protected name: string;
+  protected gamePlayer: GamePlayer;
   protected score: number = 0;
 
-  constructor(name: string) {
+  constructor(gamePlayer: GamePlayer) {
     super();
-    this.name = name;
+    this.gamePlayer = gamePlayer;
   }
 
   public getName(): string {
-    return this.name;
+    return this.gamePlayer.getName();
   }
 
   public getScore(): number {

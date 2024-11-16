@@ -120,7 +120,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
     });
 
     this.toastObject?.show(`${player.getName()} left`);
-    this.gameController.addTimer(2, () => this.toastObject?.hide());
+
+    if ((this.gameState.getGameMatch()?.getPlayers().length ?? 0) > 1) {
+      this.gameController.addTimer(2, () => this.toastObject?.hide());
+    }
   }
 
   private createScoreboardObject() {

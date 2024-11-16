@@ -14,9 +14,9 @@ import { WebRTCService } from "./webrtc-service.js";
 import {
   JOIN_REQUEST_ID,
   JOIN_RESPONSE_ID,
-  INITIAL_DATA_END_ID,
+  SNAPSHOT_ID,
   PLAYER_CONNECTION_STATE_ID,
-  INITIAL_DATA_ACK_ID,
+  SNAPSHOT_ACK_ID,
 } from "../constants/webrtc-constants.js";
 import { GameMatch } from "../models/game-match.js";
 import {
@@ -175,8 +175,8 @@ export class MatchmakingService {
     }
   }
 
-  public handleInitialDataEnd(peer: WebRTCPeer): void {
-    console.log("Received end of initial data from", peer.getName());
+  public handleSnapshot(peer: WebRTCPeer): void {
+    console.log("Received snapshot from", peer.getName());
 
     peer.setJoined(true);
 
@@ -192,11 +192,11 @@ export class MatchmakingService {
       })
     );
 
-    this.sendInitialDataAck(peer);
+    this.sentSnapshotACK(peer);
   }
 
-  public handleInitialDataACK(peer: WebRTCPeer): void {
-    console.log("Received initial data ACK from", peer.getName());
+  public handleSnapshotACK(peer: WebRTCPeer): void {
+    console.log("Received snapshot ACK from", peer.getName());
 
     peer.setJoined(true);
 
@@ -219,6 +219,8 @@ export class MatchmakingService {
         detail: { player },
       })
     );
+
+    this.advertiseMatch();
   }
 
   private handleAlreadyJoinedMatch(peer: WebRTCPeer): void {
@@ -251,6 +253,8 @@ export class MatchmakingService {
     dispatchEvent(
       new CustomEvent(PLAYER_DISCONNECTED_EVENT, { detail: { player } })
     );
+
+    this.advertiseMatch();
   }
 
   private handlePlayerDisconnectedById(playerId: string) {
@@ -294,15 +298,8 @@ export class MatchmakingService {
   }
 
   private async createAndAdvertiseMatch(): Promise<void> {
-    const body: AdvertiseMatchRequest = {
-      version: this.gameController.getVersion(),
-      total_slots: TOTAL_SLOTS,
-      available_slots: TOTAL_SLOTS - 1,
-      attributes: MATCH_ATTRIBUTES,
-    };
-
     // Create game match
-    const gameMatch = new GameMatch(true, 4, body.attributes);
+    const gameMatch = new GameMatch(true, 4, MATCH_ATTRIBUTES);
     this.gameState.setGameMatch(gameMatch);
 
     // Update local player
@@ -311,7 +308,26 @@ export class MatchmakingService {
 
     gameMatch.addPlayer(gamePlayer);
 
+    // Advertise match
+    await this.advertiseMatch();
+  }
+
+  private async advertiseMatch(): Promise<void> {
+    const gameMatch = this.gameState.getGameMatch();
+
+    if (gameMatch === null) {
+      return console.warn("Game match is null");
+    }
+
+    const body: AdvertiseMatchRequest = {
+      version: this.gameController.getVersion(),
+      total_slots: gameMatch.getTotalSlots(),
+      available_slots: gameMatch.getAvailableSlots(),
+      attributes: gameMatch.getAttributes(),
+    };
+
     console.log("Advertising match...");
+
     await this.apiService.advertiseMatch(body);
 
     dispatchEvent(new CustomEvent(MATCH_ADVERTISED_EVENT));
@@ -355,7 +371,7 @@ export class MatchmakingService {
     peer.sendReliableOrderedMessage(payload);
 
     this.sendPlayerList(peer);
-    this.sendEndOfInitialData(peer);
+    this.sendSnapshot(peer);
   }
 
   private sendPlayerList(peer: WebRTCPeer): void {
@@ -401,16 +417,16 @@ export class MatchmakingService {
     peer.sendReliableOrderedMessage(payload);
   }
 
-  private sendEndOfInitialData(peer: WebRTCPeer): void {
-    console.log("Sending end of initial data to", peer.getName());
+  private sendSnapshot(peer: WebRTCPeer): void {
+    console.log("Sending snapshot to", peer.getName());
 
-    const payload = new Uint8Array([INITIAL_DATA_END_ID]);
+    const payload = new Uint8Array([SNAPSHOT_ID]);
     peer.sendReliableOrderedMessage(payload);
   }
 
-  private sendInitialDataAck(peer: WebRTCPeer): void {
-    console.log("Sending initial data ACK to", peer.getName());
-    const payload = new Uint8Array([INITIAL_DATA_ACK_ID]);
+  private sentSnapshotACK(peer: WebRTCPeer): void {
+    console.log("Sending snapshot ACK to", peer.getName());
+    const payload = new Uint8Array([SNAPSHOT_ACK_ID]);
     peer.sendReliableOrderedMessage(payload);
   }
 }

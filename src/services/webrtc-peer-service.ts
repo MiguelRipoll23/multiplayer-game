@@ -1,6 +1,6 @@
 import {
-  INITIAL_DATA_ACK_ID,
-  INITIAL_DATA_END_ID,
+  SNAPSHOT_ACK_ID,
+  SNAPSHOT_ID,
   JOIN_REQUEST_ID,
   JOIN_RESPONSE_ID,
   OBJECT_DATA_ID,
@@ -326,11 +326,11 @@ export class WebRTCPeerService {
       case PLAYER_CONNECTION_STATE_ID:
         return this.matchmakingService.handlePlayerConnection(this, payload);
 
-      case INITIAL_DATA_END_ID:
-        return this.matchmakingService.handleInitialDataEnd(this);
+      case SNAPSHOT_ID:
+        return this.matchmakingService.handleSnapshot(this);
 
-      case INITIAL_DATA_ACK_ID:
-        return this.matchmakingService.handleInitialDataACK(this);
+      case SNAPSHOT_ACK_ID:
+        return this.matchmakingService.handleSnapshotACK(this);
 
       case OBJECT_DATA_ID:
         return this.objectOrchestrator.handleRemoteData(this, payload);
@@ -346,6 +346,6 @@ export class WebRTCPeerService {
       return false;
     }
 
-    return id > INITIAL_DATA_ACK_ID;
+    return id > SNAPSHOT_ACK_ID;
   }
 }

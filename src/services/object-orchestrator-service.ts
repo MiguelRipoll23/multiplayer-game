@@ -27,12 +27,19 @@ export class ObjectOrchestrator {
       return;
     }
 
-    multiplayerScreen.getSyncableObjects().forEach((object) => {
-      if (this.skipSyncableObject(object)) {
+    multiplayerScreen.getSyncableObjects().forEach((multiplayerObject) => {
+      if (this.skipSyncableObject(multiplayerObject)) {
         return;
       }
 
-      this.sendObjectData(object);
+      const syncableId = multiplayerObject.getSyncableId();
+      const objectTypeId = multiplayerObject.getObjectTypeId();
+
+      if (syncableId === null || objectTypeId === null) {
+        return;
+      }
+
+      this.sendObjectData(syncableId, objectTypeId, multiplayerObject);
     });
   }
 
@@ -177,11 +184,21 @@ export class ObjectOrchestrator {
     object.setRemoved(true);
   }
 
-  private sendObjectData(multiplayerObject: BaseMultiplayerGameObject): void {
-    const objectLayer =
+  private sendObjectData(
+    syncableId: string,
+    objectTypeId: ObjectType,
+    multiplayerObject: BaseMultiplayerGameObject
+  ): void {
+    const state = multiplayerObject.getState();
+
+    if (state === ObjectState.Inactive) {
+      return multiplayerObject.setRemoved(true);
+    }
+
+    const layer =
       this.getMultiplayerScreen()?.getObjectLayer(multiplayerObject) ?? null;
 
-    if (objectLayer === null) {
+    if (layer === null) {
       return console.warn(
         "Object layer id not found for object",
         multiplayerObject
@@ -189,27 +206,23 @@ export class ObjectOrchestrator {
     }
 
     const dataBuffer = this.createObjectDataBuffer(
-      objectLayer,
+      layer,
+      syncableId,
+      objectTypeId,
       multiplayerObject
     );
-
-    if (dataBuffer === null) {
-      return;
-    }
 
     this.webrtcService.getPeers().forEach((peer) => {
       if (this.skipWebRTCPeer(peer, multiplayerObject)) {
         return;
       }
 
-      if (multiplayerObject.getState() === ObjectState.Inactive) {
+      if (multiplayerObject.isRemoved()) {
         return peer.sendReliableUnorderedMessage(dataBuffer);
       }
 
       multiplayerObject.sendSyncableData(peer, dataBuffer);
     });
-
-    multiplayerObject.setRemoved(true);
   }
 
   private skipWebRTCPeer(
@@ -229,17 +242,12 @@ export class ObjectOrchestrator {
 
   private createObjectDataBuffer(
     objectLayer: ObjectLayer,
+    syncableId: string,
+    objectTypeId: ObjectType,
     multiplayerObject: BaseMultiplayerGameObject
-  ): ArrayBuffer | null {
+  ): ArrayBuffer {
     const objectState = multiplayerObject.getState();
-    const objectTypeId = multiplayerObject.getObjectTypeId();
-    const syncableId = multiplayerObject.getSyncableId();
     const syncableCustomData = multiplayerObject.serialize();
-
-    if (objectTypeId === null || syncableId === null) {
-      console.error("Invalid syncable object data");
-      return null;
-    }
 
     const arrayBuffer = new ArrayBuffer(4 + 36 + syncableCustomData.byteLength);
     const dataView = new DataView(arrayBuffer);

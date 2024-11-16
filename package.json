@@ -5,9 +5,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npm-run-all --parallel http-server tsc",
+    "build": "cd static && tsc",
+    "dev": "npm-run-all --parallel http-server tsc-watch",
     "http-server": "http-server -c-1 ./static",
-    "tsc": "cd static && tsc --watch"
+    "tsc-watch": "cd static && tsc --watch"
   },
   "author": "",
   "license": "ISC",

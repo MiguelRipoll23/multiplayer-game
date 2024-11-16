@@ -128,14 +128,24 @@ export class ObjectOrchestrator {
       return console.warn(`Syncable class not found for type ${objectTypeId}`);
     }
 
-    const instance = syncableObjectClass.deserialize(
-      syncableId,
-      syncableCustomData
-    );
+    let instance: MultiplayerGameObject;
+
+    try {
+      instance = syncableObjectClass.deserialize(
+        syncableId,
+        syncableCustomData
+      );
+    } catch (error) {
+      return console.warn(
+        "Cannot deserialize object with id",
+        syncableId,
+        error
+      );
+    }
 
     instance.setOwner(webrtcPeer.getPlayer());
-
     multiplayerScreen?.addObjectToLayer(objectLayer, instance);
+
     console.log(
       `Created syncable object for layer id ${objectLayer}`,
       instance

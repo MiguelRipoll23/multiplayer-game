@@ -5,12 +5,14 @@ export class GameRegistration {
   private sessionKey: string;
   private userId: string;
   private publicIp: string;
+  private iceServers: RTCIceServer[];
 
   constructor(registrationResponse: RegistrationResponse) {
     this.authenticationToken = registrationResponse.authentication_token;
     this.sessionKey = registrationResponse.session_key;
     this.userId = registrationResponse.user_id;
     this.publicIp = registrationResponse.public_ip;
+    this.iceServers = registrationResponse.ice_servers;
   }
 
   public getAuthenticationToken(): string {
@@ -27,5 +29,9 @@ export class GameRegistration {
 
   public getPublicIp(): string {
     return this.publicIp;
+  }
+
+  public getIceServers(): RTCIceServer[] {
+    return this.iceServers;
   }
 }

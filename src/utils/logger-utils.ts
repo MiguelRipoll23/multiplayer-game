@@ -3,6 +3,7 @@ export class LoggerUtils {
 
   constructor(category: string) {
     this.category = category;
+    this.info("Logger initialized");
   }
 
   public info(message: string, ...args: any[]): void {

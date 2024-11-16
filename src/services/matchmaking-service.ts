@@ -188,7 +188,7 @@ export class MatchmakingService {
 
     dispatchEvent(
       new CustomEvent(PLAYER_CONNECTED_EVENT, {
-        detail: { player },
+        detail: { player, matchmaking: true },
       })
     );
 
@@ -216,7 +216,7 @@ export class MatchmakingService {
 
     dispatchEvent(
       new CustomEvent(PLAYER_CONNECTED_EVENT, {
-        detail: { player },
+        detail: { player, matchmaking: false },
       })
     );
 

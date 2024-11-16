@@ -79,16 +79,37 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
   private addCustomEventListeners(): void {
     window.addEventListener(MATCH_ADVERTISED_EVENT, (event) => {
-      this.toastObject?.show("Waiting for players...");
+      this.handleMatchAdvertised();
     });
 
     window.addEventListener(PLAYER_CONNECTED_EVENT, (event) => {
-      this.toastObject?.hide();
+      this.handlePlayerConnection(event as CustomEvent<any>);
     });
 
     window.addEventListener(PLAYER_DISCONNECTED_EVENT, (event) => {
       this.handlePlayerDisconnection(event as CustomEvent<any>);
     });
+  }
+
+  private handleMatchAdvertised(): void {
+    if (this.gameState.getGameMatch()?.getPlayers().length === 1) {
+      this.toastObject?.show("Waiting for players...");
+    }
+  }
+
+  private handlePlayerConnection(event: CustomEvent<any>): void {
+    const player = event.detail.player;
+    const matchmaking = event.detail.matchmaking;
+
+    this.toastObject?.hide();
+
+    if (matchmaking) {
+      this.toastObject?.show(`Joined to ${player.getName()}`);
+    } else {
+      this.toastObject?.show(`${player.getName()} joined`);
+    }
+
+    this.gameController.addTimer(1.5, () => this.toastObject?.hide());
   }
 
   private handlePlayerDisconnection(event: CustomEvent<any>): void {

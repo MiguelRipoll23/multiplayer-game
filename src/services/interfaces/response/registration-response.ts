@@ -3,4 +3,5 @@ export interface RegistrationResponse {
   session_key: string;
   user_id: string;
   public_ip: string;
+  ice_servers: RTCIceServer[];
 }

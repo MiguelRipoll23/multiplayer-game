@@ -13,8 +13,9 @@ export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {
         return this.rigidBody;
     }
     isColliding() {
-        return this.collidingObjects.some((collidingObject) => collidingObject.hasRigidBody() &&
-            this.isCollisionClassIncluded(collidingObject.constructor));
+        return this.collidingObjects
+            .filter((object) => this.isCollisionClassIncluded(object.constructor))
+            .some((object) => object.hasRigidBody());
     }
     getHitboxObjects() {
         return this.hitboxObjects;

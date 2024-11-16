@@ -23,13 +23,13 @@ export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {
   }
 
   public isColliding(): boolean {
-    return this.collidingObjects.some(
-      (collidingObject) =>
-        collidingObject.hasRigidBody() &&
+    return this.collidingObjects
+      .filter((object) =>
         this.isCollisionClassIncluded(
-          collidingObject.constructor as CollidableGameObjectConstructor
+          object.constructor as CollidableGameObjectConstructor
         )
-    );
+      )
+      .some((object) => object.hasRigidBody());
   }
 
   public getHitboxObjects(): HitboxObject[] {

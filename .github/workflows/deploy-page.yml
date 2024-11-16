@@ -7,6 +7,7 @@ on:
 
 jobs:
   build:
+    name: Build package
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +30,7 @@ jobs:
           path: static
 
   deploy:
+    name: Deploy package
     needs: build
     runs-on: ubuntu-latest
 

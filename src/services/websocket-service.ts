@@ -71,7 +71,7 @@ export class WebSocketService {
     });
 
     webSocket.addEventListener("message", (event) => {
-      this.handleMessage(new Uint8Array(event.data));
+      this.handleMessage(event.data);
     });
   }
 
@@ -95,11 +95,12 @@ export class WebSocketService {
     this.gameState.getGameServer().setConnected(false);
   }
 
-  private handleMessage(data: Uint8Array) {
-    console.log("Received message from server", data);
+  private handleMessage(data: ArrayBuffer) {
+    console.log("Received message from server", new Uint8Array(data));
 
-    const id = data[0];
-    const payload = data.length > 1 ? data.slice(1) : null;
+    const dataView = new DataView(data);
+    const id = dataView.getUint8(0);
+    const payload = data.byteLength > 1 ? data.slice(1) : null;
 
     switch (id) {
       case NOTIFICATION_ID:
@@ -114,7 +115,7 @@ export class WebSocketService {
     }
   }
 
-  private handleNotification(payload: Uint8Array | null) {
+  private handleNotification(payload: ArrayBuffer | null) {
     if (payload === null) {
       return console.warn("Received empty notification");
     }
@@ -126,15 +127,16 @@ export class WebSocketService {
     );
   }
 
-  private handleTunnelMessage(payload: Uint8Array | null) {
-    if (payload === null) {
+  private handleTunnelMessage(payload: ArrayBuffer | null) {
+    if (payload === null) {ñ
       return console.warn("Received empty tunnel message");
-    } else if (payload.length < 33) {
+    } else if (payload.byteLength < 33) {
       return console.warn("Invalid tunnel message length", payload);
     }
 
-    const originTokenBytes = payload.slice(0, 32);
-    const webrtcType = payload[32];
+    const dataView = new DataView(payload);
+    const originTokenBytes = new Uint8Array(payload.slice(0, 32));
+    const webrtcType = dataView.getUint8(32);
     const webrtcDataBytes = payload.slice(33);
 
     const originToken = btoa(String.fromCharCode(...originTokenBytes));

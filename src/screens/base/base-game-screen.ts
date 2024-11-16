@@ -109,11 +109,11 @@ export class BaseGameScreen implements GameScreen {
     this.updateObjects(this.uiObjects, deltaTimeStamp);
 
     this.uiObjects.forEach((object) => {
-      this.removeObjectIfInactive(this.uiObjects, object);
+      this.deleteObjectIfRemoved(this.uiObjects, object);
     });
 
     this.sceneObjects.forEach((object) => {
-      this.removeObjectIfInactive(this.sceneObjects, object);
+      this.deleteObjectIfRemoved(this.sceneObjects, object);
     });
 
     this.handlePointerEvent();
@@ -135,11 +135,8 @@ export class BaseGameScreen implements GameScreen {
     this.uiObjects.forEach((object) => object.setDebug(debug));
   }
 
-  private removeObjectIfInactive(
-    layer: GameObject[],
-    object: GameObject
-  ): void {
-    if (object.getState() === ObjectState.Inactive) {
+  private deleteObjectIfRemoved(layer: GameObject[], object: GameObject): void {
+    if (object.isRemoved()) {
       const index = layer.indexOf(object);
       layer.splice(index, 1);
     }

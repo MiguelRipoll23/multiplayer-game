@@ -155,7 +155,7 @@ export class MatchmakingService {
 
     const dataView = new DataView(payload);
 
-    const state = dataView.getUint8(1);
+    const state = dataView.getUint8(0);
     const id = new TextDecoder().decode(payload.slice(1, 37));
     const host = dataView.getUint8(37) === 1;
     const score = dataView.getUint8(38);
@@ -164,7 +164,7 @@ export class MatchmakingService {
     const name = new TextDecoder().decode(nameBytes);
 
     if (state === ConnectionState.Disconnected) {
-      return this.handleRemotePlayerDisconnected(id);
+      return this.handlePlayerDisconnectedGracefully(id);
     }
 
     const gamePlayer = new GamePlayer(id, host, name, score);
@@ -180,9 +180,15 @@ export class MatchmakingService {
 
     peer.setJoined(true);
 
+    const player = peer.getPlayer();
+
+    if (player === null) {
+      return console.warn("Player is null");
+    }
+
     dispatchEvent(
       new CustomEvent(PLAYER_CONNECTED_EVENT, {
-        detail: { player: peer.getPlayer() },
+        detail: { player },
       })
     );
 
@@ -194,9 +200,23 @@ export class MatchmakingService {
 
     peer.setJoined(true);
 
+    const player = peer.getPlayer();
+
+    if (player === null) {
+      return console.warn("Player is null");
+    }
+
+    this.webrtcService
+      .getPeers()
+      .filter((matchPeer) => matchPeer !== peer)
+      .forEach((peer) => {
+        console.log("Sending player connection to", peer.getName());
+        this.sendPlayerConnection(peer, player, ConnectionState.Connected);
+      });
+
     dispatchEvent(
       new CustomEvent(PLAYER_CONNECTED_EVENT, {
-        detail: { player: peer.getPlayer() },
+        detail: { player },
       })
     );
   }
@@ -221,9 +241,12 @@ export class MatchmakingService {
 
     this.gameState.getGameMatch()?.removePlayer(player);
 
-    this.webrtcService.getPeers().forEach((peer) => {
-      this.sendPlayerConnection(peer, player, ConnectionState.Disconnected);
-    });
+    this.webrtcService
+      .getPeers()
+      .filter((matchPeer) => matchPeer !== peer)
+      .forEach((peer) => {
+        this.sendPlayerConnection(peer, player, ConnectionState.Disconnected);
+      });
 
     dispatchEvent(
       new CustomEvent(PLAYER_DISCONNECTED_EVENT, { detail: { player } })
@@ -237,7 +260,7 @@ export class MatchmakingService {
     dispatchEvent(new CustomEvent(HOST_DISCONNECTED_EVENT));
   }
 
-  private handleRemotePlayerDisconnected(playerId: string) {
+  private handlePlayerDisconnectedGracefully(playerId: string) {
     const gameMatch = this.gameState.getGameMatch();
 
     if (gameMatch === null) {
@@ -251,7 +274,6 @@ export class MatchmakingService {
     }
 
     console.log(`Player ${player.getName()} disconnected`);
-
     gameMatch.removePlayer(player);
 
     dispatchEvent(
@@ -347,9 +369,11 @@ export class MatchmakingService {
 
     const players = gameMatch.getPlayers();
 
-    players.forEach((player) => {
-      this.sendPlayerConnection(peer, player);
-    });
+    players
+      .filter((matchPlayer) => matchPlayer !== peer.getPlayer())
+      .forEach((player) => {
+        this.sendPlayerConnection(peer, player);
+      });
   }
 
   private sendPlayerConnection(
@@ -357,10 +381,6 @@ export class MatchmakingService {
     player: GamePlayer,
     connectionState = ConnectionState.Connected
   ): void {
-    if (peer.getPlayer()?.getId() == player.getId()) {
-      return;
-    }
-
     const id = player.getId();
     const host = player.isHost() ? 1 : 0;
     const score = player.getScore();

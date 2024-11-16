@@ -7,6 +7,9 @@ export interface GameObject {
   getState(): ObjectState;
   setState(state: ObjectState): void;
 
+  isRemoved(): boolean;
+  setRemoved(removed: boolean): void;
+
   setDebug(debug: boolean): void;
 
   update(deltaTimeStamp: DOMHighResTimeStamp): void;

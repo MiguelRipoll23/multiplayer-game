@@ -69,7 +69,7 @@ export class ObjectOrchestrator {
         );
 
       case ObjectState.Inactive:
-        return this.delete(multiplayerScreen, syncableId);
+        return this.remove(multiplayerScreen, syncableId);
     }
   }
 
@@ -163,7 +163,7 @@ export class ObjectOrchestrator {
     return webrtcPeer.getPlayer() !== multiplayerObject.getOwner();
   }
 
-  private delete(
+  private remove(
     multiplayerScreen: BaseMultiplayerScreen,
     syncableId: string
   ): void {
@@ -174,6 +174,7 @@ export class ObjectOrchestrator {
     }
 
     object.setState(ObjectState.Inactive);
+    object.setRemoved(true);
   }
 
   private sendObjectData(multiplayerObject: BaseMultiplayerGameObject): void {
@@ -201,6 +202,11 @@ export class ObjectOrchestrator {
         return;
       }
 
+      if (multiplayerObject.getState() === ObjectState.Inactive) {
+        peer.sendReliableUnorderedMessage(dataBuffer);
+        return multiplayerObject.setRemoved(true);
+      }
+
       multiplayerObject.sendSyncableData(peer, dataBuffer);
     });
   }
@@ -224,6 +230,7 @@ export class ObjectOrchestrator {
     objectLayer: ObjectLayer,
     multiplayerObject: BaseMultiplayerGameObject
   ): ArrayBuffer | null {
+    const objectState = multiplayerObject.getState();
     const objectTypeId = multiplayerObject.getObjectTypeId();
     const syncableId = multiplayerObject.getSyncableId();
     const syncableCustomData = multiplayerObject.serialize();
@@ -238,7 +245,7 @@ export class ObjectOrchestrator {
 
     dataView.setUint8(0, OBJECT_DATA_ID);
     dataView.setUint8(1, objectLayer);
-    dataView.setUint8(2, ObjectState.Active);
+    dataView.setUint8(2, objectState);
     dataView.setUint8(3, objectTypeId);
 
     const syncableIdBytes = new TextEncoder().encode(syncableId);

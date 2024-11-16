@@ -190,8 +190,8 @@ export class WebRTCPeerService {
   private handleDisconnection(): void {
     this.logger.info("Peer connection closed");
     this.connectionState = ConnectionState.Disconnected;
-    this.matchmakingService.hasPeerDisconnected(this);
     this.gameController.getWebRTCService().removePeer(this.token);
+    this.matchmakingService.hasPeerDisconnected(this);
   }
 
   private addIceListeners(): void {
@@ -294,6 +294,10 @@ export class WebRTCPeerService {
 
     try {
       channel.send(arrayBuffer);
+
+      if (channel.label === "reliable-ordered") {
+        this.logger.info("Sent message", new Uint8Array(arrayBuffer));
+      }
     } catch (error) {
       this.logger.error(`Error sending ${channelKey} message`, error);
     }

@@ -4,6 +4,7 @@ import { GameObject } from "../interfaces/game-object.js";
 export class BaseGameObject implements GameObject {
   protected loaded: boolean = false;
   protected state: ObjectState = ObjectState.Active;
+  protected removed: boolean = false;
   protected debug: boolean = false;
 
   constructor() {
@@ -28,6 +29,18 @@ export class BaseGameObject implements GameObject {
 
     if (this.state === ObjectState.Inactive) {
       console.log(`${this.constructor.name} set to inactive`);
+    }
+  }
+
+  public isRemoved(): boolean {
+    return this.removed;
+  }
+
+  public setRemoved(removed: boolean): void {
+    this.removed = removed;
+
+    if (this.removed) {
+      console.log(`${this.constructor.name} to be removed from screen`);
     }
   }
 

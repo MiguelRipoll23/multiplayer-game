@@ -253,13 +253,6 @@ export class MatchmakingService {
     );
   }
 
-  private handleHostDisconnected(peer: WebRTCPeer): void {
-    console.log(`Host ${peer.getName()} disconnected`);
-
-    this.gameState.setGameMatch(null);
-    dispatchEvent(new CustomEvent(HOST_DISCONNECTED_EVENT));
-  }
-
   private handlePlayerDisconnectedById(playerId: string) {
     const gameMatch = this.gameState.getGameMatch();
 
@@ -279,6 +272,13 @@ export class MatchmakingService {
     dispatchEvent(
       new CustomEvent(PLAYER_DISCONNECTED_EVENT, { detail: { player } })
     );
+  }
+
+  private handleHostDisconnected(peer: WebRTCPeer): void {
+    console.log(`Host ${peer.getName()} disconnected`);
+
+    this.gameState.setGameMatch(null);
+    dispatchEvent(new CustomEvent(HOST_DISCONNECTED_EVENT));
   }
 
   private async findMatches(): Promise<FindMatchesResponse[]> {

@@ -20,14 +20,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build the project
+      - name: Build project
         run: npm run build
 
-      - name: Upload package
-        uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
-          path: static
+          path: static/
 
   deploy:
     name: Deploy package

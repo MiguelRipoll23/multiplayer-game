@@ -1,4 +1,4 @@
-import { ORANGE_TEAM_COLOR } from "../../constants/colors-constants.js";
+import { RED_TEAM_COLOR } from "../../constants/colors-constants.js";
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 import { BackdropObject } from "./backdrop-object.js";
 
@@ -122,7 +122,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
   private wrapText(
     context: CanvasRenderingContext2D,
     text: string,
-    maxWidth: number,
+    maxWidth: number
   ): string[] {
     const words = text.split(" ");
     const lines: string[] = [];
@@ -156,7 +156,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
   }
 
   private renderTitleBar(context: CanvasRenderingContext2D): void {
-    context.fillStyle = ORANGE_TEAM_COLOR;
+    context.fillStyle = RED_TEAM_COLOR;
     context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
   }
 
@@ -181,14 +181,14 @@ export class CloseableWindowObject extends BasePressableGameObject {
     const lines = this.wrapText(
       context,
       this.content,
-      this.contentTextMaxWidth,
+      this.contentTextMaxWidth
     );
 
     for (let i = 0; i < lines.length; i++) {
       context.fillText(
         lines[i],
         this.contentTextX,
-        this.contentTextY + (i * this.TEXT_LINE_HEIGHT),
+        this.contentTextY + i * this.TEXT_LINE_HEIGHT
       );
     }
   }

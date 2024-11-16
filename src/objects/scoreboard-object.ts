@@ -1,6 +1,6 @@
 import {
   BLUE_TEAM_COLOR,
-  ORANGE_TEAM_COLOR,
+  RED_TEAM_COLOR,
 } from "../constants/colors-constants.js";
 import { BaseGameObject } from "./base/base-game-object.js";
 
@@ -19,7 +19,7 @@ export class ScoreboardObject extends BaseGameObject {
   private readonly TIME_FONT_SIZE: string = "32px";
 
   private readonly BLUE_SHAPE_COLOR: string = BLUE_TEAM_COLOR;
-  private readonly ORANGE_SHAPE_COLOR: string = ORANGE_TEAM_COLOR;
+  private readonly RED_SHAPE_COLOR: string = RED_TEAM_COLOR;
   private readonly SHAPE_FILL_COLOR: string = "white";
   private readonly TIME_BOX_FILL_COLOR: string = "#4caf50"; // Added property for time box fill color
 
@@ -27,7 +27,7 @@ export class ScoreboardObject extends BaseGameObject {
   private y: number = 90;
 
   private blueScore: number = 0;
-  private orangeScore: number = 0;
+  private redScore: number = 0;
 
   private active: boolean = false;
   private elapsedMilliseconds: number = 0;
@@ -68,26 +68,21 @@ export class ScoreboardObject extends BaseGameObject {
       formattedTime
     );
 
-    const orangeScoreX =
+    const redScoreX =
       startX +
       this.SQUARE_SIZE +
       this.SPACE_BETWEEN +
       this.TIME_BOX_WIDTH +
       this.SPACE_BETWEEN;
-    this.renderSquare(
-      context,
-      orangeScoreX,
-      this.ORANGE_SHAPE_COLOR,
-      this.orangeScore
-    );
+    this.renderSquare(context, redScoreX, this.RED_SHAPE_COLOR, this.redScore);
   }
 
   public incrementBlueScore(): void {
     this.blueScore++;
   }
 
-  public incrementOrangeScore(): void {
-    this.orangeScore++;
+  public incrementRedScore(): void {
+    this.redScore++;
   }
 
   private renderSquare(

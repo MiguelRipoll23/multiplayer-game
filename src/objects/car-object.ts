@@ -1,8 +1,7 @@
 import { HitboxObject } from "./common/hitbox-object.js";
-import { PlayerObject } from "./player-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
-import { Team } from "../models/game-teams.js";
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
+import { GamePlayer } from "../models/game-player.js";
 
 export class CarObject extends BaseDynamicCollidableGameObject {
   protected readonly TOP_SPEED: number = 4;
@@ -10,7 +9,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   protected readonly HANDLING: number = 6;
   protected canvas: HTMLCanvasElement | null = null;
   protected speed: number = 0;
-  protected playerObject: PlayerObject | null = null;
+  protected gamePlayer: GamePlayer | null = null;
 
   private readonly IMAGE_BLUE_PATH = "./images/car-blue.png";
   private readonly IMAGE_RED_PATH = "./images/car-red.png";
@@ -94,12 +93,12 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     super.render(context);
   }
 
-  public getPlayerObject(): PlayerObject | null {
-    return this.playerObject;
+  public getPlayer(): GamePlayer | null {
+    return this.gamePlayer ?? this.owner;
   }
 
-  public setPlayerObject(playerObject: PlayerObject): void {
-    this.playerObject = playerObject;
+  public setPlayer(player: GamePlayer): void {
+    this.gamePlayer = player;
   }
 
   public setCanvas(canvas: HTMLCanvasElement): void {

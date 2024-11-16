@@ -1,5 +1,3 @@
-import { Team } from "./game-teams.js";
-
 export class GamePlayer {
   private id: string;
   private host: boolean;

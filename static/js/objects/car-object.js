@@ -6,7 +6,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     HANDLING = 6;
     canvas = null;
     speed = 0;
-    playerObject = null;
+    gamePlayer = null;
     IMAGE_BLUE_PATH = "./images/car-blue.png";
     IMAGE_RED_PATH = "./images/car-red.png";
     MASS = 500;
@@ -63,11 +63,11 @@ export class CarObject extends BaseDynamicCollidableGameObject {
         // Hitbox debug
         super.render(context);
     }
-    getPlayerObject() {
-        return this.playerObject;
+    getPlayer() {
+        return this.gamePlayer ?? this.owner;
     }
-    setPlayerObject(playerObject) {
-        this.playerObject = playerObject;
+    setPlayer(player) {
+        this.gamePlayer = player;
     }
     setCanvas(canvas) {
         this.canvas = canvas;

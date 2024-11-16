@@ -1,4 +1,4 @@
-import { ORANGE_TEAM_COLOR } from "../../constants/colors-constants.js";
+import { RED_TEAM_COLOR } from "../../constants/colors-constants.js";
 import { BasePressableGameObject } from "../base/base-pressable-game-object.js";
 import { BackdropObject } from "./backdrop-object.js";
 export class CloseableWindowObject extends BasePressableGameObject {
@@ -120,7 +120,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
         context.fillRect(this.x, this.y, this.width, this.height);
     }
     renderTitleBar(context) {
-        context.fillStyle = ORANGE_TEAM_COLOR;
+        context.fillStyle = RED_TEAM_COLOR;
         context.fillRect(this.x, this.y, this.width, this.TITLE_BAR_HEIGHT);
     }
     renderWindowTitle(context) {
@@ -140,7 +140,7 @@ export class CloseableWindowObject extends BasePressableGameObject {
         context.textAlign = "left";
         const lines = this.wrapText(context, this.content, this.contentTextMaxWidth);
         for (let i = 0; i < lines.length; i++) {
-            context.fillText(lines[i], this.contentTextX, this.contentTextY + (i * this.TEXT_LINE_HEIGHT));
+            context.fillText(lines[i], this.contentTextX, this.contentTextY + i * this.TEXT_LINE_HEIGHT);
         }
     }
 }

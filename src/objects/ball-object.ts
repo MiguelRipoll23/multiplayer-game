@@ -1,10 +1,10 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
-import { PlayerObject } from "./player-object.js";
 import { CarObject } from "./car-object.js";
 import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
 import { ObjectType } from "../models/object-type.js";
+import { GamePlayer } from "../models/game-player.js";
 
 export class BallObject
   extends BaseDynamicCollidableGameObject
@@ -16,7 +16,7 @@ export class BallObject
   private radius: number = this.RADIUS;
 
   private inactive: boolean = false;
-  private lastPlayerObject: PlayerObject | null = null;
+  private lastPlayer: GamePlayer | null = null;
 
   constructor(
     x: number,
@@ -63,8 +63,8 @@ export class BallObject
     this.vy = -this.vy * 2;
   }
 
-  public getLastPlayerObject(): PlayerObject | null {
-    return this.lastPlayerObject;
+  public getLastPlayer(): GamePlayer | null {
+    return this.lastPlayer;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -210,7 +210,7 @@ export class BallObject
   private handlePlayerCollision(): void {
     this.getCollidingObjects().forEach((object) => {
       if (object instanceof CarObject) {
-        this.lastPlayerObject = object.getPlayerObject();
+        this.lastPlayer = object.getPlayer();
       }
     });
   }
@@ -220,7 +220,7 @@ export class BallObject
   }
 
   private renderLastPlayerTouched(context: CanvasRenderingContext2D) {
-    const playerName = this.lastPlayerObject?.getName() ?? "none";
+    const playerName = this.lastPlayer?.getName() ?? "none";
 
     context.fillStyle = "rgba(255, 255, 255, 0.6)";
     context.fillRect(24, 96, 160, 20);

@@ -1,4 +1,4 @@
-import { BLUE_TEAM_COLOR, ORANGE_TEAM_COLOR, } from "../constants/colors-constants.js";
+import { BLUE_TEAM_COLOR, RED_TEAM_COLOR, } from "../constants/colors-constants.js";
 import { BaseAnimatedGameObject } from "./base/base-animated-object.js";
 export class AlertObject extends BaseAnimatedGameObject {
     canvas;
@@ -11,11 +11,11 @@ export class AlertObject extends BaseAnimatedGameObject {
     }
     show(text, color = "white") {
         this.multilineText = text;
-        if (color === "orange") {
-            this.color = ORANGE_TEAM_COLOR;
-        }
-        else if (color === "blue") {
+        if (color === "blue") {
             this.color = BLUE_TEAM_COLOR;
+        }
+        else if (color === "red") {
+            this.color = RED_TEAM_COLOR;
         }
         else {
             this.color = color;

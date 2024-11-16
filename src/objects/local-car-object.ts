@@ -83,6 +83,7 @@ export class LocalCarObject extends CarObject {
 
     this.renderDebugPositionInformation(context);
     this.renderDebugAngleInformation(context);
+    this.renderDebugScoreInformation(context);
   }
 
   private renderDebugPositionInformation(context: CanvasRenderingContext2D) {
@@ -110,5 +111,16 @@ export class LocalCarObject extends CarObject {
     context.font = "12px system-ui";
     context.textAlign = "left";
     context.fillText(text, 30, 62);
+  }
+
+  private renderDebugScoreInformation(context: CanvasRenderingContext2D) {
+    const score = this.gamePlayer?.getScore() ?? "Unknown";
+
+    context.fillStyle = "rgba(0, 0, 0, 0.6)";
+    context.fillRect(24, 72, 80, 20);
+    context.fillStyle = "#FFFF00";
+    context.font = "12px system-ui";
+    context.textAlign = "left";
+    context.fillText(`Score: ${score}`, 30, 86);
   }
 }

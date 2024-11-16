@@ -1,4 +1,4 @@
-import { ORANGE_TEAM_COLOR } from "../../constants/colors-constants.js";
+import { RED_TEAM_COLOR } from "../../constants/colors-constants.js";
 import { BaseGameObject } from "../base/base-game-object.js";
 export class ProgressBarObject extends BaseGameObject {
     canvas;
@@ -35,7 +35,7 @@ export class ProgressBarObject extends BaseGameObject {
         context.fillText(text, this.textX, this.textY);
         context.fillStyle = "rgba(66, 135, 245, 0.5)";
         context.fillRect(this.rectX, this.progressBarY, this.rectWidth, this.PROGRESS_BAR_HEIGHT);
-        context.fillStyle = ORANGE_TEAM_COLOR;
+        context.fillStyle = RED_TEAM_COLOR;
         context.fillRect(this.rectX, this.progressBarY, this.progressBarWidth, this.PROGRESS_BAR_HEIGHT);
         context.restore();
     }

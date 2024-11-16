@@ -6,11 +6,10 @@ import { ScoreboardObject } from "../objects/scoreboard-object.js";
 import { BaseCollidingGameScreen } from "./base/base-colliding-game-screen.js";
 import { getConfigurationKey } from "../utils/configuration-utils.js";
 import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
-import { LocalPlayerObject } from "../objects/local-player-object.js";
 import { AlertObject } from "../objects/alert-object.js";
 import { ToastObject } from "../objects/common/toast-object.js";
 import { MATCH_ADVERTISED_EVENT, PLAYER_CONNECTED_EVENT, PLAYER_DISCONNECTED_EVENT, } from "../constants/events-constants.js";
-import { Team } from "../models/game-teams.js";
+import { Team } from "../models/game-team.js";
 import { RemoteCarObject } from "../objects/remote-car-object.js";
 import { ObjectState } from "../models/object-state.js";
 export class WorldScreen extends BaseCollidingGameScreen {
@@ -96,22 +95,15 @@ export class WorldScreen extends BaseCollidingGameScreen {
     createPlayerAndLocalCarObjects() {
         const gamePointer = this.gameController.getGamePointer();
         const gameKeyboard = this.gameController.getGameKeyboard();
-        const playerObject = this.createAndGetPlayerObject();
         this.localCarObject = new LocalCarObject(0, 0, 90, this.canvas, gamePointer, gameKeyboard);
+        this.localCarObject.setPlayer(this.gameState.getGamePlayer());
         this.localCarObject.setCanvas(this.canvas);
         this.localCarObject.setCenterPosition();
-        this.localCarObject.setPlayerObject(playerObject);
         // Scene
         this.sceneObjects.push(this.localCarObject);
         // UI
         this.uiObjects.push(this.localCarObject.getGearStickObject());
         this.uiObjects.push(this.localCarObject.getJoystickObject());
-    }
-    createAndGetPlayerObject() {
-        const player = this.gameState.getGamePlayer();
-        const playerObject = new LocalPlayerObject(player);
-        this.sceneObjects.push(playerObject);
-        return playerObject;
     }
     createAlertObject() {
         this.alertObject = new AlertObject(this.canvas);
@@ -129,43 +121,43 @@ export class WorldScreen extends BaseCollidingGameScreen {
             ?.getCollidingObjects()
             .includes(this.ballObject);
         if (goalScored) {
-            this.handleGoalScored(Team.Orange);
+            this.handleGoalScored();
         }
     }
-    handleGoalScored(goalTeam) {
+    handleGoalScored() {
         // Ball
         this.ballObject?.setInactive();
         // Scoreboard
-        if (goalTeam === Team.Orange) {
+        const player = this.ballObject?.getLastPlayer();
+        const goalTeam = player === this.gameController.getGameState().getGamePlayer()
+            ? Team.Blue
+            : Team.Red;
+        if (goalTeam === Team.Blue) {
             this.scoreboardObject?.incrementBlueScore();
         }
-        else if (goalTeam === Team.Blue) {
-            this.scoreboardObject?.incrementOrangeScore();
+        else if (goalTeam === Team.Red) {
+            this.scoreboardObject?.incrementRedScore();
         }
-        const playerObject = this.ballObject?.getLastPlayerObject();
         // Score
-        if (playerObject) {
-            this.handlePlayerScore(playerObject, goalTeam);
+        if (player) {
+            this.handlePlayerScore(player);
         }
         // Alert
-        this.showGoalAlert(playerObject, goalTeam);
+        this.showGoalAlert(player, goalTeam);
         // Timer
         this.goalTimerService = this.gameController.addTimer(5, () => this.handleGoalTimerEnd());
     }
-    handlePlayerScore(playerObject, goalTeam) {
-        playerObject.sumScore(1);
-        if (playerObject instanceof LocalPlayerObject) {
-            this.gameController.getGameState().getGamePlayer().sumScore(1);
-        }
+    handlePlayerScore(player) {
+        player.sumScore(1);
     }
-    showGoalAlert(playerObject, goalTeam) {
-        const playerName = playerObject?.getName().toUpperCase() || "UNKNOWN";
+    showGoalAlert(player, goalTeam) {
+        const playerName = player?.getName().toUpperCase() || "UNKNOWN";
         let color = "white";
-        if (goalTeam === Team.Orange) {
+        if (goalTeam === Team.Blue) {
             color = "blue";
         }
-        else if (goalTeam === Team.Blue) {
-            color = "orange";
+        else if (goalTeam === Team.Red) {
+            color = "red";
         }
         this.alertObject?.show([playerName, "SCORED!"], color);
     }

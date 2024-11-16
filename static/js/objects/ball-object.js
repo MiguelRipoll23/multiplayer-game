@@ -9,7 +9,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     FRICTION = 0.01;
     radius = this.RADIUS;
     inactive = false;
-    lastPlayerObject = null;
+    lastPlayer = null;
     constructor(x, y, canvas) {
         super();
         this.canvas = canvas;
@@ -45,8 +45,8 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         this.vx = -this.vx * 2;
         this.vy = -this.vy * 2;
     }
-    getLastPlayerObject() {
-        return this.lastPlayerObject;
+    getLastPlayer() {
+        return this.lastPlayer;
     }
     update(deltaTimeStamp) {
         this.applyFriction();
@@ -151,7 +151,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
     handlePlayerCollision() {
         this.getCollidingObjects().forEach((object) => {
             if (object instanceof CarObject) {
-                this.lastPlayerObject = object.getPlayerObject();
+                this.lastPlayer = object.getPlayer();
             }
         });
     }
@@ -159,7 +159,7 @@ export class BallObject extends BaseDynamicCollidableGameObject {
         this.renderLastPlayerTouched(context);
     }
     renderLastPlayerTouched(context) {
-        const playerName = this.lastPlayerObject?.getName() ?? "none";
+        const playerName = this.lastPlayer?.getName() ?? "none";
         context.fillStyle = "rgba(255, 255, 255, 0.6)";
         context.fillRect(24, 96, 160, 20);
         context.fillStyle = "blue";

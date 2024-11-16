@@ -64,7 +64,6 @@ export class MatchmakingService {
 
     console.log("Connected to host", peer);
 
-    this.findMatchesTimerService?.stop(false);
     this.sendJoinRequest(peer);
   }
 
@@ -178,6 +177,7 @@ export class MatchmakingService {
   public handleSnapshot(peer: WebRTCPeer): void {
     console.log("Received snapshot from", peer.getName());
 
+    this.findMatchesTimerService?.stop(false);
     peer.setJoined(true);
 
     const player = peer.getPlayer();

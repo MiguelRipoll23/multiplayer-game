@@ -1,23 +1,20 @@
 import { BaseAnimatedGameObject } from "./base-animated-object.js";
 export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {
     rigidBody = true;
-    hitboxObjects;
-    collidingObjects;
+    hitboxObjects = [];
+    collidingObjects = [];
     avoidingCollision = false;
-    constructor() {
-        super();
-        this.hitboxObjects = [];
-        this.collidingObjects = [];
-    }
+    excludedCollisionClasses = [];
     load() {
-        this.getHitboxObjects().forEach((object) => object.setDebug(this.debug));
+        this.hitboxObjects.forEach((object) => object.setDebug(this.debug));
         super.load();
     }
     hasRigidBody() {
         return this.rigidBody;
     }
     isColliding() {
-        return this.collidingObjects.some((collidingObject) => collidingObject.hasRigidBody());
+        return this.collidingObjects.some((collidingObject) => collidingObject.hasRigidBody() &&
+            this.isCollisionClassIncluded(collidingObject.constructor));
     }
     getHitboxObjects() {
         return this.hitboxObjects;
@@ -42,7 +39,19 @@ export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {
     setAvoidingCollision(avoidingCollision) {
         this.avoidingCollision = avoidingCollision;
     }
+    addCollisionExclusion(classType) {
+        if (!this.excludedCollisionClasses.includes(classType)) {
+            this.excludedCollisionClasses.push(classType);
+        }
+    }
+    removeCollisionExclusion(classType) {
+        this.excludedCollisionClasses = this.excludedCollisionClasses.filter((type) => type !== classType);
+    }
     render(context) {
         this.hitboxObjects.forEach((object) => object.render(context));
+    }
+    isCollisionClassIncluded(classType) {
+        return !this.excludedCollisionClasses.some((excludedType) => classType.prototype instanceof excludedType ||
+            classType === excludedType);
     }
 }

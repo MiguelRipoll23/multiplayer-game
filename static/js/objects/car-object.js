@@ -25,6 +25,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
         if (remote) {
             this.imagePath = this.IMAGE_RED_PATH;
         }
+        this.addCollisionExclusion(CarObject);
     }
     load() {
         this.createHitbox();

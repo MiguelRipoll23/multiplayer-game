@@ -1,21 +1,20 @@
 import { HitboxObject } from "../common/hitbox-object.js";
 import { BaseAnimatedGameObject } from "./base-animated-object.js";
 
+type CollidableGameObjectConstructor = new (
+  ...args: any[]
+) => BaseStaticCollidableGameObject;
+
 export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {
-  protected rigidBody: boolean = true;
-  protected hitboxObjects: HitboxObject[];
+  protected rigidBody = true;
+  protected hitboxObjects: HitboxObject[] = [];
 
-  private collidingObjects: BaseStaticCollidableGameObject[];
-  private avoidingCollision: boolean = false;
-
-  constructor() {
-    super();
-    this.hitboxObjects = [];
-    this.collidingObjects = [];
-  }
+  private collidingObjects: BaseStaticCollidableGameObject[] = [];
+  private avoidingCollision = false;
+  private excludedCollisionClasses: CollidableGameObjectConstructor[] = [];
 
   public override load(): void {
-    this.getHitboxObjects().forEach((object) => object.setDebug(this.debug));
+    this.hitboxObjects.forEach((object) => object.setDebug(this.debug));
     super.load();
   }
 
@@ -24,8 +23,12 @@ export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {
   }
 
   public isColliding(): boolean {
-    return this.collidingObjects.some((collidingObject) =>
-      collidingObject.hasRigidBody()
+    return this.collidingObjects.some(
+      (collidingObject) =>
+        collidingObject.hasRigidBody() &&
+        this.isCollisionClassIncluded(
+          collidingObject.constructor as CollidableGameObjectConstructor
+        )
     );
   }
 
@@ -65,7 +68,33 @@ export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {
     this.avoidingCollision = avoidingCollision;
   }
 
+  public addCollisionExclusion(
+    classType: CollidableGameObjectConstructor
+  ): void {
+    if (!this.excludedCollisionClasses.includes(classType)) {
+      this.excludedCollisionClasses.push(classType);
+    }
+  }
+
+  public removeCollisionExclusion(
+    classType: CollidableGameObjectConstructor
+  ): void {
+    this.excludedCollisionClasses = this.excludedCollisionClasses.filter(
+      (type) => type !== classType
+    );
+  }
+
   public render(context: CanvasRenderingContext2D): void {
     this.hitboxObjects.forEach((object) => object.render(context));
+  }
+
+  private isCollisionClassIncluded(
+    classType: CollidableGameObjectConstructor
+  ): boolean {
+    return !this.excludedCollisionClasses.some(
+      (excludedType) =>
+        classType.prototype instanceof excludedType ||
+        classType === excludedType
+    );
   }
 }

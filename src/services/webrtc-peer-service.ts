@@ -8,6 +8,7 @@ import {
 } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GamePlayer } from "../models/game-player.js";
+import { ConnectionState } from "../models/player-state.js";
 import { LoggerUtils } from "../utils/logger-utils.js";
 import { MatchmakingService } from "./matchmaking-service.js";
 import { ObjectOrchestrator } from "./object-orchestrator-service.js";
@@ -21,6 +22,7 @@ export class WebRTCPeerService {
   private matchmakingService: MatchmakingService;
   private objectOrchestrator: ObjectOrchestrator;
 
+  private connectionState: ConnectionState = ConnectionState.Disconnected;
   private host: boolean = false;
   private player: GamePlayer | null = null;
   private joined: boolean = false;
@@ -46,8 +48,16 @@ export class WebRTCPeerService {
     this.addEventListeners();
   }
 
+  public getConnectionState(): ConnectionState {
+    return this.connectionState;
+  }
+
   public getToken(): string {
     return this.token;
+  }
+
+  public getName(): string {
+    return this.player?.getName() ?? this.token;
   }
 
   public getPlayer(): GamePlayer | null {
@@ -56,14 +66,6 @@ export class WebRTCPeerService {
 
   public setPlayer(player: GamePlayer): void {
     this.player = player;
-  }
-
-  public getId(): string | null {
-    return this.player?.getId() ?? null;
-  }
-
-  public getName(): string {
-    return this.player?.getName() ?? this.token;
   }
 
   public hasJoined() {
@@ -182,10 +184,12 @@ export class WebRTCPeerService {
 
   private handleConnection(): void {
     this.logger.info("Peer connection established");
+    this.connectionState = ConnectionState.Connected;
   }
 
   private handleDisconnection(): void {
     this.logger.info("Peer connection closed");
+    this.connectionState = ConnectionState.Disconnected;
     this.matchmakingService.hasPeerDisconnected(this);
     this.gameController.getWebRTCService().removePeer(this.token);
   }

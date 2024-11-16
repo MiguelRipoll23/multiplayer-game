@@ -47,7 +47,16 @@ export class GameMatch {
     );
   }
 
-  public removePlayer(id: string): void {
+  public removePlayer(player: GamePlayer): void {
+    this.players.delete(player.getId());
+
+    console.log(
+      `Removed player ${player.getName()} from match, total players`,
+      this.players
+    );
+  }
+
+  public removePlayerById(id: string): void {
     this.players.delete(id);
 
     console.log(

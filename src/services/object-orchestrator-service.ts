@@ -203,12 +203,13 @@ export class ObjectOrchestrator {
       }
 
       if (multiplayerObject.getState() === ObjectState.Inactive) {
-        peer.sendReliableUnorderedMessage(dataBuffer);
-        return multiplayerObject.setRemoved(true);
+        return peer.sendReliableUnorderedMessage(dataBuffer);
       }
 
       multiplayerObject.sendSyncableData(peer, dataBuffer);
     });
+
+    multiplayerObject.setRemoved(true);
   }
 
   private skipWebRTCPeer(

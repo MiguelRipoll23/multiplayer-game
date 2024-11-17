@@ -2,9 +2,12 @@ import {
   BLUE_TEAM_COLOR,
   RED_TEAM_COLOR,
 } from "../constants/colors-constants.js";
-import { BaseGameObject } from "./base/base-game-object.js";
+import { BaseMultiplayerGameObject } from "./base/base-multiplayer-object.js";
+import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
+import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
+import { ObjectType } from "../models/object-type.js";
 
-export class ScoreboardObject extends BaseGameObject {
+export class ScoreboardObject extends BaseMultiplayerGameObject implements MultiplayerGameObject {
   private readonly SQUARE_SIZE: number = 50;
   private readonly SPACE_BETWEEN: number = 10;
   private readonly TIME_BOX_WIDTH: number = 120;
@@ -36,6 +39,11 @@ export class ScoreboardObject extends BaseGameObject {
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
     this.x = this.canvas.width / 2 - this.SPACE_BETWEEN / 2;
+    this.setSyncableValues();
+  }
+
+  public static getObjectTypeId(): ObjectType {
+    return ObjectType.Scoreboard;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -171,5 +179,34 @@ export class ScoreboardObject extends BaseGameObject {
 
   public resetCountdown(): void {
     this.elapsedMilliseconds = 0;
+  }
+
+  public serialize(): ArrayBuffer {
+    const arrayBuffer = new ArrayBuffer(12);
+    const dataView = new DataView(arrayBuffer);
+
+    dataView.setUint32(0, this.elapsedMilliseconds);
+    dataView.setUint32(4, this.blueScore);
+    dataView.setUint32(8, this.redScore);
+
+    return arrayBuffer;
+  }
+
+  public synchronize(data: ArrayBuffer): void {
+    const dataView = new DataView(data);
+
+    this.elapsedMilliseconds = dataView.getUint32(0);
+    this.blueScore = dataView.getUint32(4);
+    this.redScore = dataView.getUint32(8);
+  }
+
+  public sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void {
+    webrtcPeer.sendUnreliableOrderedMessage(data);
+  }
+
+  private setSyncableValues() {
+    this.setSyncableId("94c58aa0-41c3-4b22-825a-15a3834be240");
+    this.setObjectTypeId(ObjectType.Scoreboard);
+    this.setSyncableByHost(true);
   }
 }

@@ -15,6 +15,7 @@ export class ObjectOrchestrator {
   private webrtcService: WebRTCService;
   private gameFrame: GameFrame;
   private gameState: GameState;
+  private elapsedTime: number = 0;
 
   constructor(private gameController: GameController) {
     this.webrtcService = gameController.getWebRTCService();
@@ -22,10 +23,12 @@ export class ObjectOrchestrator {
     this.gameState = gameController.getGameState();
   }
 
-  public sendLocalData(multiplayerScreen: BaseMultiplayerScreen): void {
+  public sendLocalData(multiplayerScreen: BaseMultiplayerScreen, deltaTimeStamp: number): void {
     if (this.gameState.getGameMatch() === null) {
       return;
     }
+
+    this.elapsedTime += deltaTimeStamp;
 
     multiplayerScreen.getSyncableObjects().forEach((multiplayerObject) => {
       if (this.skipSyncableObject(multiplayerObject)) {
@@ -39,8 +42,14 @@ export class ObjectOrchestrator {
         return;
       }
 
-      this.sendObjectData(syncableId, objectTypeId, multiplayerObject);
+      if (this.elapsedTime >= 1000 || multiplayerObject.mustSync()) {
+        this.sendObjectData(syncableId, objectTypeId, multiplayerObject);
+      }
     });
+
+    if (this.elapsedTime >= 1000) {
+      this.elapsedTime = 0;
+    }
   }
 
   public handleRemoteData(

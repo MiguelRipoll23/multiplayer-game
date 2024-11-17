@@ -1,4 +1,5 @@
 import { BaseAnimatedGameObject } from "../base/base-animated-object.js";
+import { RED_TEAM_COLOR } from "../../constants/colors-constants.js";
 
 export class ToastObject extends BaseAnimatedGameObject {
   private text: string = "Unknown";
@@ -17,7 +18,7 @@ export class ToastObject extends BaseAnimatedGameObject {
   }
 
   public show(text: string): void {
-    this.text = text;
+    this.text = this.parseText(text);
     this.reset();
     this.fadeIn(0.2);
     this.scaleTo(1, 0.2);
@@ -117,14 +118,40 @@ export class ToastObject extends BaseAnimatedGameObject {
   }
 
   private drawToastText(context: CanvasRenderingContext2D): void {
-    context.fillStyle = "white";
-    context.font = "16px system-ui";
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillText(
-      this.text,
-      this.x + this.width / 2,
-      this.y + this.height / 2
-    );
+    const lines = this.text.split("\n");
+    const lineHeight = 20;
+    const textY = this.y + this.height / 2 - (lines.length - 1) * lineHeight / 2;
+
+    lines.forEach((line, index) => {
+      const emMatch = line.match(/<em>(.*?)<\/em>/);
+      if (emMatch) {
+        const [fullMatch, emText] = emMatch;
+        const parts = line.split(fullMatch);
+
+        context.font = "16px Arial";
+        context.fillStyle = "white";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+
+        const textX = this.x + this.width / 2;
+        context.fillText(parts[0], textX, textY + index * lineHeight);
+
+        context.font = "bold 16px Arial";
+        context.fillStyle = RED_TEAM_COLOR;
+        context.fillText(emText, textX + context.measureText(parts[0]).width / 2, textY + index * lineHeight);
+
+        context.fillText(parts[1], textX + context.measureText(parts[0] + emText).width / 2, textY + index * lineHeight);
+      } else {
+        context.font = "16px Arial";
+        context.fillStyle = "white";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(line, this.x + this.width / 2, textY + index * lineHeight);
+      }
+    });
+  }
+
+  private parseText(text: string): string {
+    return text.replace(/<em>(.*?)<\/em>/g, "\n<em>$1</em>\n");
   }
 }

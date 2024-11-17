@@ -112,9 +112,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.toastObject?.hide();
 
     if (matchmaking) {
-      this.toastObject?.show(`Joined to ${player.getName()}`);
+      this.toastObject?.show(`Joined to <em>${player.getName()}</em>`);
     } else {
-      this.toastObject?.show(`${player.getName()} joined`);
+      this.toastObject?.show(`<em>${player.getName()}</em> joined`);
 
       if (this.scoreboardObject?.isActive() === false) {
         this.scoreboardObject?.startCountdown();
@@ -131,7 +131,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       object.setState(ObjectState.Inactive);
     });
 
-    this.toastObject?.show(`${player.getName()} left`);
+    this.toastObject?.show(`<em>${player.getName()}</em> left`);
 
     const playersCount =
       this.gameState.getGameMatch()?.getPlayers().length ?? 0;

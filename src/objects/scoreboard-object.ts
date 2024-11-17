@@ -32,6 +32,7 @@ export class ScoreboardObject extends BaseGameObject {
   private active: boolean = false;
   private elapsedMilliseconds: number = 0;
   private durationMilliseconds: number = 0;
+  private remainingSeconds: number = 0;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
@@ -44,6 +45,9 @@ export class ScoreboardObject extends BaseGameObject {
       if (this.elapsedMilliseconds >= this.durationMilliseconds) {
         this.stopCountdown();
       }
+      this.remainingSeconds = Math.ceil(
+        (this.durationMilliseconds - this.elapsedMilliseconds) / 1000
+      );
     }
   }
 
@@ -53,10 +57,7 @@ export class ScoreboardObject extends BaseGameObject {
     const startX = this.x - totalWidth / 2;
 
     this.renderSquare(context, startX, this.BLUE_SHAPE_COLOR, this.blueScore);
-    const remainingTimeSeconds = Math.ceil(
-      (this.durationMilliseconds - this.elapsedMilliseconds) / 1000
-    );
-    const formattedTime = this.formatTime(remainingTimeSeconds);
+    const formattedTime = this.formatTime(this.remainingSeconds);
     const timeX = startX + this.SQUARE_SIZE + this.SPACE_BETWEEN;
     const timeY = this.y + (this.SQUARE_SIZE - this.TIME_BOX_HEIGHT) / 2;
     this.renderTimeBox(

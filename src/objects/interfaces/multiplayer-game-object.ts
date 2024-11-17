@@ -9,8 +9,14 @@ export interface MultiplayerGameObject extends GameObject {
   getOwner(): GamePlayer | null;
   setOwner(player: GamePlayer | null): void;
   isSyncableByHost(): boolean;
+  mustSync(): boolean;
+  setSync(sync: boolean): void;
   serialize(): ArrayBuffer;
-  sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void;
+  sendSyncableData(
+    webrtcPeer: WebRTCPeer,
+    data: ArrayBuffer,
+    periodicUpdate: boolean
+  ): void;
   synchronize(data: ArrayBuffer): void;
 }
 

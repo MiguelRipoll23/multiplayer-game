@@ -59,7 +59,11 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
-    this.detectScores();
+
+    if (this.gameState.getGameMatch()?.isHost()) {
+      this.detectScores();
+    }
+
     this.gameController
       .getObjectOrchestrator()
       .sendLocalData(this, deltaTimeStamp);
@@ -69,6 +73,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.addSyncableObject(BallObject);
     this.addSyncableObject(RemoteCarObject);
     this.addSyncableObject(ScoreboardObject);
+    this.addSyncableObject(AlertObject);
   }
 
   private createBackgroundObject() {

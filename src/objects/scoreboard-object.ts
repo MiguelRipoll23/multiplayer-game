@@ -2,9 +2,12 @@ import {
   BLUE_TEAM_COLOR,
   RED_TEAM_COLOR,
 } from "../constants/colors-constants.js";
-import { BaseGameObject } from "./base/base-game-object.js";
+import { BaseMultiplayerGameObject } from "./base/base-multiplayer-object.js";
+import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
+import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
+import { ObjectType } from "../models/object-type.js";
 
-export class ScoreboardObject extends BaseGameObject {
+export class ScoreboardObject extends BaseMultiplayerGameObject implements MultiplayerGameObject {
   private readonly SQUARE_SIZE: number = 50;
   private readonly SPACE_BETWEEN: number = 10;
   private readonly TIME_BOX_WIDTH: number = 120;
@@ -37,6 +40,11 @@ export class ScoreboardObject extends BaseGameObject {
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
     this.x = this.canvas.width / 2 - this.SPACE_BETWEEN / 2;
+    this.setSyncableValues();
+  }
+
+  public static getObjectTypeId(): ObjectType {
+    return ObjectType.Scoreboard;
   }
 
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -172,5 +180,30 @@ export class ScoreboardObject extends BaseGameObject {
 
   public resetCountdown(): void {
     this.elapsedMilliseconds = 0;
+  }
+
+  public serialize(): ArrayBuffer {
+    const arrayBuffer = new ArrayBuffer(4);
+    const dataView = new DataView(arrayBuffer);
+
+    dataView.setUint32(0, this.remainingSeconds);
+
+    return arrayBuffer;
+  }
+
+  public synchronize(data: ArrayBuffer): void {
+    const dataView = new DataView(data);
+
+    this.remainingSeconds = dataView.getUint32(0);
+  }
+
+  public sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void {
+    webrtcPeer.sendUnreliableOrderedMessage(data);
+  }
+
+  private setSyncableValues() {
+    this.setSyncableId("d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a");
+    this.setObjectTypeId(ObjectType.Scoreboard);
+    this.setSyncableByHost(true);
   }
 }

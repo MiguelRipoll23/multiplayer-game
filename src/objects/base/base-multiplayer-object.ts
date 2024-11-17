@@ -9,6 +9,7 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
   protected objectTypeId: ObjectType | null = null;
   protected syncableByHost: boolean = false;
   protected owner: GamePlayer | null = null;
+  protected sync: boolean = false;
 
   public getSyncableId(): string | null {
     return this.syncableId;
@@ -49,7 +50,11 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     throw new Error("Method not implemented.");
   }
 
-  public sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void {
+  public sendSyncableData(
+    webrtcPeer: WebRTCPeer,
+    data: ArrayBuffer,
+    periodicUpdate: boolean
+  ): void {
     throw new Error("Method not implemented.");
   }
 
@@ -66,8 +71,10 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
   }
 
   public mustSync(): boolean {
-    // Implement logic to determine if the object must be synced immediately
-    // For example, you can check if the object is moving or has changed state
-    return false;
+    return this.sync;
+  }
+
+  public setSync(sync: boolean): void {
+    this.sync = sync;
   }
 }

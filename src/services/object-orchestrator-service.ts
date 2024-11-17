@@ -15,7 +15,9 @@ export class ObjectOrchestrator {
   private webrtcService: WebRTCService;
   private gameFrame: GameFrame;
   private gameState: GameState;
-  private elapsedTime: number = 0;
+
+  private elapsedMilliseconds: number = 0;
+  private periodicUpdate: boolean = false;
 
   constructor(private gameController: GameController) {
     this.webrtcService = gameController.getWebRTCService();
@@ -23,12 +25,16 @@ export class ObjectOrchestrator {
     this.gameState = gameController.getGameState();
   }
 
-  public sendLocalData(multiplayerScreen: BaseMultiplayerScreen, deltaTimeStamp: number): void {
+  public sendLocalData(
+    multiplayerScreen: BaseMultiplayerScreen,
+    deltaTimeStamp: number
+  ): void {
     if (this.gameState.getGameMatch() === null) {
       return;
     }
 
-    this.elapsedTime += deltaTimeStamp;
+    this.elapsedMilliseconds += deltaTimeStamp;
+    this.periodicUpdate = this.elapsedMilliseconds >= 500;
 
     multiplayerScreen.getSyncableObjects().forEach((multiplayerObject) => {
       if (this.skipSyncableObject(multiplayerObject)) {
@@ -42,13 +48,13 @@ export class ObjectOrchestrator {
         return;
       }
 
-      if (this.elapsedTime >= 1000 || multiplayerObject.mustSync()) {
+      if (multiplayerObject.mustSync() || this.periodicUpdate) {
         this.sendObjectData(syncableId, objectTypeId, multiplayerObject);
       }
     });
 
-    if (this.elapsedTime >= 1000) {
-      this.elapsedTime = 0;
+    if (this.elapsedMilliseconds >= 1000) {
+      this.elapsedMilliseconds = 0;
     }
   }
 
@@ -230,7 +236,8 @@ export class ObjectOrchestrator {
         return peer.sendReliableUnorderedMessage(dataBuffer);
       }
 
-      multiplayerObject.sendSyncableData(peer, dataBuffer);
+      multiplayerObject.sendSyncableData(peer, dataBuffer, this.periodicUpdate);
+      multiplayerObject.setSync(false);
     });
   }
 

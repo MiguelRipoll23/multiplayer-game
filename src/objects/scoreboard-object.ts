@@ -7,7 +7,10 @@ import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
 import { ObjectType } from "../models/object-type.js";
 
-export class ScoreboardObject extends BaseMultiplayerGameObject implements MultiplayerGameObject {
+export class ScoreboardObject
+  extends BaseMultiplayerGameObject
+  implements MultiplayerGameObject
+{
   private readonly SQUARE_SIZE: number = 50;
   private readonly SPACE_BETWEEN: number = 10;
   private readonly TIME_BOX_WIDTH: number = 120;
@@ -186,15 +189,14 @@ export class ScoreboardObject extends BaseMultiplayerGameObject implements Multi
     const arrayBuffer = new ArrayBuffer(4);
     const dataView = new DataView(arrayBuffer);
 
-    dataView.setUint32(0, this.remainingSeconds);
+    dataView.setInt32(0, this.elapsedMilliseconds);
 
     return arrayBuffer;
   }
 
   public synchronize(data: ArrayBuffer): void {
     const dataView = new DataView(data);
-
-    this.remainingSeconds = dataView.getUint32(0);
+    this.elapsedMilliseconds = dataView.getInt32(0);
   }
 
   public sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void {

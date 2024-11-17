@@ -172,4 +172,8 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     this.x -= this.vx;
     this.y -= this.vy;
   }
+
+  public override mustSync(): boolean {
+    return this.speed !== 0;
+  }
 }

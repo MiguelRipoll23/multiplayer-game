@@ -229,4 +229,8 @@ export class BallObject
     context.textAlign = "left";
     context.fillText(`Last Touch: ${playerName}`, 30, 110);
   }
+
+  public override mustSync(): boolean {
+    return this.vx !== 0 || this.vy !== 0;
+  }
 }

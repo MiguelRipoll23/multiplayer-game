@@ -3,5 +3,6 @@ export enum AnimationType {
   FadeOut,
   MoveX,
   MoveY,
+  Rotate,
   Scale,
 }

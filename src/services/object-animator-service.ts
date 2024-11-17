@@ -53,6 +53,10 @@ export class ObjectAnimationService {
         this.object.setY(newValue);
         break;
 
+      case AnimationType.Rotate:
+        this.object.setAngle(newValue);
+        break;
+
       case AnimationType.Scale:
         this.object.setScale(newValue);
         break;

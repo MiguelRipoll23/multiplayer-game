@@ -23,6 +23,7 @@ export class ToastObject extends BaseAnimatedGameObject {
     this.reset();
     this.fadeIn(0.2);
     this.scaleTo(1, 0.2);
+    this.rotateTo(-2, 0.2);
   }
 
   public hide(): void {
@@ -32,6 +33,7 @@ export class ToastObject extends BaseAnimatedGameObject {
 
   public override reset(): void {
     this.opacity = 0;
+    this.angle = 6;
     this.scale = 0;
 
     this.measureDimensions();
@@ -87,6 +89,7 @@ export class ToastObject extends BaseAnimatedGameObject {
 
   private applyTransformations(context: CanvasRenderingContext2D): void {
     context.translate(this.x + this.width / 2, this.y + this.height / 2);
+    context.rotate((this.angle * Math.PI) / 180);
     context.scale(this.scale, this.scale);
     context.translate(-(this.x + this.width / 2), -(this.y + this.height / 2));
   }

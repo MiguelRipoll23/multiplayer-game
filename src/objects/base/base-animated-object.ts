@@ -64,6 +64,18 @@ export class BaseAnimatedGameObject extends BasePositionableGameObject {
     );
   }
 
+  public rotateTo(newAngle: number, seconds: number) {
+    this.animations.push(
+      new ObjectAnimationService(
+        this,
+        AnimationType.Rotate,
+        this.angle,
+        newAngle,
+        seconds
+      )
+    );
+  }
+
   public scaleTo(newScale: number, seconds: number) {
     this.animations.push(
       new ObjectAnimationService(

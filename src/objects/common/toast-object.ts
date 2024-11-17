@@ -5,9 +5,10 @@ export class ToastObject extends BaseAnimatedGameObject {
   private width: number = 0;
   private height: number = 0;
   private readonly padding: number = 10;
-  private readonly topMargin: number = 160; // Changed bottomMargin to topMargin
+  private readonly topMargin: number = 160; // Top margin
   private readonly cornerRadius: number = 10; // Corner radius for rounded corners
-
+  private emColor: string = "#7ed321"; // Color for text inside <em> tags
+  private parsedTextSegments: { text: string; isEm: boolean }[] = [];
   private context: CanvasRenderingContext2D;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
@@ -18,6 +19,7 @@ export class ToastObject extends BaseAnimatedGameObject {
 
   public show(text: string): void {
     this.text = text;
+    this.parseTextSegments();
     this.reset();
     this.fadeIn(0.2);
     this.scaleTo(1, 0.2);
@@ -47,10 +49,29 @@ export class ToastObject extends BaseAnimatedGameObject {
     context.restore();
   }
 
+  private parseTextSegments(): void {
+    // Regex to match all <em> tags and text outside them
+    const regex = /<em>(.*?)<\/em>|([^<]+)/g;
+    this.parsedTextSegments = [];
+
+    let match;
+
+    while ((match = regex.exec(this.text)) !== null) {
+      if (match[1]) {
+        // Matched <em> tag
+        this.parsedTextSegments.push({ text: match[1], isEm: true });
+      } else if (match[2]) {
+        // Matched regular text
+        this.parsedTextSegments.push({ text: match[2], isEm: false });
+      }
+    }
+  }
+
   private measureDimensions(): void {
     this.context.font = "16px Arial";
-    const textWidth = this.context.measureText(this.text).width;
-    this.width = textWidth + this.padding * 2;
+    this.width = this.parsedTextSegments.reduce((totalWidth, segment) => {
+      return totalWidth + this.context.measureText(segment.text).width;
+    }, this.padding * 2);
     this.height = 30; // Fixed height for simplicity
   }
 
@@ -117,14 +138,16 @@ export class ToastObject extends BaseAnimatedGameObject {
   }
 
   private drawToastText(context: CanvasRenderingContext2D): void {
-    context.fillStyle = "white";
-    context.font = "16px system-ui";
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillText(
-      this.text,
-      this.x + this.width / 2,
-      this.y + this.height / 2
-    );
+    let currentX = this.x + this.padding;
+
+    this.parsedTextSegments.forEach((segment) => {
+      context.fillStyle = segment.isEm ? this.emColor : "white";
+      context.font = "16px system-ui";
+      context.textAlign = "left";
+      context.textBaseline = "middle";
+      context.fillText(segment.text, currentX, this.y + this.height / 2);
+
+      currentX += this.context.measureText(segment.text).width;
+    });
   }
 }

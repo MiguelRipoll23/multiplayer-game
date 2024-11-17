@@ -60,7 +60,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
     this.detectScores();
-    this.gameController.getObjectOrchestrator().sendLocalData(this, deltaTimeStamp);
+    this.gameController
+      .getObjectOrchestrator()
+      .sendLocalData(this, deltaTimeStamp);
   }
 
   private addSyncableObjects(): void {
@@ -108,6 +110,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
       this.toastObject?.show(`Joined to ${player.getName()}`);
     } else {
       this.toastObject?.show(`${player.getName()} joined`);
+
+      if (this.scoreboardObject?.isActive() === false) {
+        this.scoreboardObject?.startCountdown();
+      }
     }
 
     this.gameController.addTimer(2, () => this.toastObject?.hide());
@@ -122,8 +128,13 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     this.toastObject?.show(`${player.getName()} left`);
 
-    if ((this.gameState.getGameMatch()?.getPlayers().length ?? 0) > 1) {
+    const playersCount =
+      this.gameState.getGameMatch()?.getPlayers().length ?? 0;
+
+    if ((playersCount ?? 0) > 1) {
       this.gameController.addTimer(2, () => this.toastObject?.hide());
+    } else {
+      this.scoreboardObject?.stopCountdown();
     }
   }
 
@@ -135,7 +146,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     );
 
     this.scoreboardObject = new ScoreboardObject(this.canvas);
-    this.scoreboardObject.startCountdown(durationSeconds);
+    this.scoreboardObject.setCountdownDuration(durationSeconds);
     this.sceneObjects.push(this.scoreboardObject);
   }
 

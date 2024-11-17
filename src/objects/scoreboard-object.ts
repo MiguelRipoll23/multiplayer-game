@@ -50,16 +50,64 @@ export class ScoreboardObject
     return ObjectType.Scoreboard;
   }
 
+  public isActive(): boolean {
+    return this.active;
+  }
+
+  public setCountdownDuration(durationSeconds: number): void {
+    this.durationMilliseconds = durationSeconds * 1000;
+  }
+
+  public startCountdown(): void {
+    this.active = true;
+  }
+
+  public stopCountdown(): void {
+    this.active = false;
+  }
+
+  public resetCountdown(): void {
+    this.elapsedMilliseconds = 0;
+  }
+
+  public incrementBlueScore(): void {
+    this.blueScore++;
+  }
+
+  public incrementRedScore(): void {
+    this.redScore++;
+  }
+
+  public serialize(): ArrayBuffer {
+    const arrayBuffer = new ArrayBuffer(4);
+    const dataView = new DataView(arrayBuffer);
+
+    dataView.setInt32(0, this.elapsedMilliseconds);
+
+    return arrayBuffer;
+  }
+
+  public synchronize(data: ArrayBuffer): void {
+    const dataView = new DataView(data);
+    this.elapsedMilliseconds = dataView.getInt32(0);
+  }
+
+  public sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void {
+    webrtcPeer.sendUnreliableOrderedMessage(data);
+  }
+
   public update(deltaTimeStamp: DOMHighResTimeStamp): void {
     if (this.active) {
       this.elapsedMilliseconds += deltaTimeStamp;
+
       if (this.elapsedMilliseconds >= this.durationMilliseconds) {
         this.stopCountdown();
       }
-      this.remainingSeconds = Math.ceil(
-        (this.durationMilliseconds - this.elapsedMilliseconds) / 1000
-      );
     }
+
+    this.remainingSeconds = Math.ceil(
+      (this.durationMilliseconds - this.elapsedMilliseconds) / 1000
+    );
   }
 
   public render(context: CanvasRenderingContext2D): void {
@@ -89,12 +137,10 @@ export class ScoreboardObject
     this.renderSquare(context, redScoreX, this.RED_SHAPE_COLOR, this.redScore);
   }
 
-  public incrementBlueScore(): void {
-    this.blueScore++;
-  }
-
-  public incrementRedScore(): void {
-    this.redScore++;
+  private setSyncableValues() {
+    this.setSyncableId("d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a");
+    this.setObjectTypeId(ObjectType.Scoreboard);
+    this.setSyncableByHost(true);
   }
 
   private renderSquare(
@@ -170,42 +216,5 @@ export class ScoreboardObject
     return `${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
       .padStart(2, "0")}`;
-  }
-
-  public startCountdown(durationSeconds: number): void {
-    this.durationMilliseconds = durationSeconds * 1000;
-    this.active = true;
-  }
-
-  public stopCountdown(): void {
-    this.active = false;
-  }
-
-  public resetCountdown(): void {
-    this.elapsedMilliseconds = 0;
-  }
-
-  public serialize(): ArrayBuffer {
-    const arrayBuffer = new ArrayBuffer(4);
-    const dataView = new DataView(arrayBuffer);
-
-    dataView.setInt32(0, this.elapsedMilliseconds);
-
-    return arrayBuffer;
-  }
-
-  public synchronize(data: ArrayBuffer): void {
-    const dataView = new DataView(data);
-    this.elapsedMilliseconds = dataView.getInt32(0);
-  }
-
-  public sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void {
-    webrtcPeer.sendUnreliableOrderedMessage(data);
-  }
-
-  private setSyncableValues() {
-    this.setSyncableId("d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a");
-    this.setObjectTypeId(ObjectType.Scoreboard);
-    this.setSyncableByHost(true);
   }
 }

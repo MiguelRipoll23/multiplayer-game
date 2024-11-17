@@ -15,8 +15,8 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   private readonly IMAGE_RED_PATH = "./images/car-red.png";
 
   private readonly MASS: number = 500;
-  private readonly WIDTH: number = 50;
-  private readonly HEIGHT: number = 50;
+  protected readonly WIDTH: number = 50;
+  protected readonly HEIGHT: number = 50;
   private readonly DISTANCE_CENTER: number = 220;
   private readonly FRICTION: number = 0.1;
 

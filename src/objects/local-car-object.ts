@@ -1,3 +1,4 @@
+import { BLUE_TEAM_COLOR } from "../constants/colors-constants.js";
 import { GameKeyboard } from "../models/game-keyboard.js";
 import { GamePointer } from "../models/game-pointer.js";
 import { ObjectType } from "../models/object-type.js";
@@ -42,6 +43,8 @@ export class LocalCarObject extends CarObject {
   }
 
   public override render(context: CanvasRenderingContext2D): void {
+    this.renderPlayerName(context);
+
     // Debug
     this.renderDebugInformation(context);
 
@@ -74,6 +77,23 @@ export class LocalCarObject extends CarObject {
       this.HANDLING *
       (this.speed / this.TOP_SPEED) *
       this.joystickObject.getControlX();
+  }
+
+  private renderPlayerName(context: CanvasRenderingContext2D): void {
+    if (this.gamePlayer === null) {
+      return;
+    }
+
+    context.font = "20px system-ui";
+    context.fillStyle = BLUE_TEAM_COLOR;
+    context.textAlign = "center";
+    context.fillText(
+      this.gamePlayer.getName(),
+      this.x + this.WIDTH / 2,
+      this.y - 10
+    );
+
+    context.restore();
   }
 
   private renderDebugInformation(context: CanvasRenderingContext2D) {

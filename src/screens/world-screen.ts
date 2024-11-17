@@ -60,7 +60,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
     this.detectScores();
-    this.gameController.getObjectOrchestrator().sendLocalData(this);
+    this.gameController.getObjectOrchestrator().sendLocalData(this, deltaTimeStamp);
   }
 
   private addSyncableObjects(): void {

@@ -64,4 +64,10 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
   public setOwner(playerOwner: GamePlayer | null): void {
     this.owner = playerOwner;
   }
+
+  public mustSync(): boolean {
+    // Implement logic to determine if the object must be synced immediately
+    // For example, you can check if the object is moving or has changed state
+    return false;
+  }
 }

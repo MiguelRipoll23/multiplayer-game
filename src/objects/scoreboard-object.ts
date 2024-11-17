@@ -182,12 +182,12 @@ export class ScoreboardObject extends BaseMultiplayerGameObject implements Multi
   }
 
   public serialize(): ArrayBuffer {
-    const arrayBuffer = new ArrayBuffer(12);
+    const arrayBuffer = new ArrayBuffer(5);
     const dataView = new DataView(arrayBuffer);
 
-    dataView.setUint32(0, this.elapsedMilliseconds);
-    dataView.setUint32(4, this.blueScore);
-    dataView.setUint32(8, this.redScore);
+    dataView.setFloat32(0, this.elapsedMilliseconds);
+    dataView.setUint8(2, this.blueScore);
+    dataView.setUint8(3, this.redScore);
 
     return arrayBuffer;
   }
@@ -195,9 +195,9 @@ export class ScoreboardObject extends BaseMultiplayerGameObject implements Multi
   public synchronize(data: ArrayBuffer): void {
     const dataView = new DataView(data);
 
-    this.elapsedMilliseconds = dataView.getUint32(0);
-    this.blueScore = dataView.getUint32(4);
-    this.redScore = dataView.getUint32(8);
+    this.elapsedMilliseconds = dataView.getFloat32(0);
+    this.blueScore = dataView.getUint8(2);
+    this.redScore = dataView.getUint8(3);
   }
 
   public sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void {

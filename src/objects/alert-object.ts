@@ -3,14 +3,23 @@ import {
   RED_TEAM_COLOR,
 } from "../constants/colors-constants.js";
 import { BaseAnimatedGameObject } from "./base/base-animated-object.js";
+import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
+import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
+import { ObjectType } from "../models/object-type.js";
+import { convertColorToHex } from "../utils/color-utils.js";
 
-export class AlertObject extends BaseAnimatedGameObject {
+export class AlertObject extends BaseAnimatedGameObject implements MultiplayerGameObject {
   private multilineText: string[] = ["Unknown", "message"];
   private color: string = "white";
 
   constructor(protected readonly canvas: HTMLCanvasElement) {
     super();
     this.setInitialValues();
+    this.setSyncableValues();
+  }
+
+  public static getObjectTypeId(): ObjectType {
+    return ObjectType.Alert;
   }
 
   public show(text: string[], color = "white"): void {
@@ -42,6 +51,44 @@ export class AlertObject extends BaseAnimatedGameObject {
     this.renderMultilineText(context);
 
     context.restore();
+  }
+
+  public override sendSyncableData(webrtcPeer: WebRTCPeer, data: ArrayBuffer): void {
+    webrtcPeer.sendReliableOrderedMessage(data);
+  }
+
+  public override serialize(): ArrayBuffer {
+    const textEncoder = new TextEncoder();
+    const colorHex = convertColorToHex(this.color);
+    const colorBuffer = textEncoder.encode(colorHex);
+    const textBuffer = textEncoder.encode(this.multilineText.join("\n"));
+
+    const arrayBuffer = new ArrayBuffer(4 + colorBuffer.length + textBuffer.length);
+    const dataView = new DataView(arrayBuffer);
+
+    dataView.setUint32(0, colorBuffer.length);
+    new Uint8Array(arrayBuffer, 4, colorBuffer.length).set(colorBuffer);
+    new Uint8Array(arrayBuffer, 4 + colorBuffer.length, textBuffer.length).set(textBuffer);
+
+    return arrayBuffer;
+  }
+
+  public override synchronize(data: ArrayBuffer): void {
+    const dataView = new DataView(data);
+    const colorLength = dataView.getUint32(0);
+
+    const colorBuffer = new Uint8Array(data.slice(4, 4 + colorLength));
+    const textBuffer = new Uint8Array(data.slice(4 + colorLength));
+
+    const textDecoder = new TextDecoder();
+    this.color = textDecoder.decode(colorBuffer);
+    this.multilineText = textDecoder.decode(textBuffer).split("\n");
+  }
+
+  private setSyncableValues() {
+    this.setSyncableId("d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a");
+    this.setObjectTypeId(ObjectType.Alert);
+    this.setSyncableByHost(true);
   }
 
   private setTransformOrigin(context: CanvasRenderingContext2D): void {

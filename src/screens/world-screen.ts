@@ -69,6 +69,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.addSyncableObject(BallObject);
     this.addSyncableObject(RemoteCarObject);
     this.addSyncableObject(ScoreboardObject);
+    this.addSyncableObject(AlertObject);
   }
 
   private createBackgroundObject() {

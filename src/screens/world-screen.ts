@@ -219,6 +219,13 @@ export class WorldScreen extends BaseCollidingGameScreen {
       return;
     }
 
+    const playersCount =
+      this.gameState.getGameMatch()?.getPlayers().length ?? 0;
+
+    if (playersCount < 2) {
+      return console.warn("Goal detection is disabled due to players count");
+    }
+
     const goalScored = this.goalObject
       ?.getCollidingObjects()
       .includes(this.ballObject);

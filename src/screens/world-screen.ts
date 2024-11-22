@@ -20,6 +20,8 @@ import { Team } from "../models/game-team.js";
 import { RemoteCarObject } from "../objects/remote-car-object.js";
 import { ObjectState } from "../models/object-state.js";
 import { GamePlayer } from "../models/game-player.js";
+import { EventType } from "../models/event-type.js";
+import { GameEvent } from "../models/game-event.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -63,6 +65,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
     if (this.gameState.getGameMatch()?.isHost()) {
       this.detectScores();
     }
+
+    this.gameController
+      .getEventsProcessorService()
+      .listenEvent(EventType.GoalStart, this.handleRemoteGoal.bind(this));
+
+    this.gameController
+      .getEventsProcessorService()
+      .listenEvent(EventType.GoalEnd, () => this.handleGoalTimerEnd());
 
     this.gameController
       .getObjectOrchestrator()
@@ -112,6 +122,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     if (matchmaking) {
       this.toastObject?.show(`Joined to <em>${player.getName()}</em>`);
+      this.updateScoreboard();
     } else {
       this.toastObject?.show(`<em>${player.getName()}</em> joined`);
 
@@ -140,6 +151,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
     } else {
       this.scoreboardObject?.stopCountdown();
     }
+
+    this.updateScoreboard();
   }
 
   private createScoreboardObject() {
@@ -216,12 +229,22 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private handleGoalScored() {
+    const player = this.ballObject?.getLastPlayer() ?? null;
+
+    if (player === null) {
+      return console.warn("Player is null");
+    }
+
     // Ball
     this.ballObject?.setInactive();
 
-    // Scoreboard
-    const player = this.ballObject?.getLastPlayer();
+    // Score
+    player.sumScore(1);
 
+    // Event
+    this.sendGoalEvent(player);
+
+    // Scoreboard
     const goalTeam =
       player === this.gameController.getGameState().getGamePlayer()
         ? Team.Blue
@@ -233,11 +256,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
       this.scoreboardObject?.incrementRedScore();
     }
 
-    // Score
-    if (player) {
-      this.handlePlayerScore(player);
-    }
-
     // Alert
     this.showGoalAlert(player, goalTeam);
 
@@ -247,8 +265,34 @@ export class WorldScreen extends BaseCollidingGameScreen {
     );
   }
 
-  private handlePlayerScore(player: GamePlayer) {
-    player.sumScore(1);
+  private sendGoalEvent(player: GamePlayer) {
+    const playerId: string = player.getId();
+    const playerScore: number = player.getScore();
+
+    const arrayBuffer = new ArrayBuffer(36 + 4);
+
+    new Uint8Array(arrayBuffer).set(new TextEncoder().encode(playerId), 0);
+    new DataView(arrayBuffer).setInt32(36, playerScore);
+
+    const goalEvent = new GameEvent(EventType.GoalStart, arrayBuffer);
+    this.gameController.getEventsProcessorService().sendEvent(goalEvent);
+  }
+
+  private updateScoreboard() {
+    const players = this.gameState.getGameMatch()?.getPlayers() ?? [];
+
+    let totalScore = 0;
+
+    players.forEach((player) => {
+      const score = player.getScore();
+      if (player === this.gameState.getGamePlayer()) {
+        return this.scoreboardObject?.setBlueTeamScore(score);
+      }
+
+      totalScore += score;
+    });
+
+    this.scoreboardObject?.setRedTeamScore(totalScore);
   }
 
   private showGoalAlert(player: GamePlayer | null | undefined, goalTeam: Team) {
@@ -265,9 +309,49 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.alertObject?.show([playerName, "SCORED!"], color);
   }
 
+  private handleRemoteGoal(arrayBuffer: ArrayBuffer | null) {
+    if (arrayBuffer === null) {
+      return console.warn("Array buffer is null");
+    }
+
+    // Ball
+    this.ballObject?.setInactive();
+
+    // Score
+    const playerId = new TextDecoder().decode(arrayBuffer.slice(0, 36));
+    const playerScore = new DataView(arrayBuffer).getInt32(36);
+
+    const player = this.gameState.getGameMatch()?.getPlayer(playerId) ?? null;
+    player?.setScore(playerScore);
+
+    // Score
+    this.updateScoreboard();
+
+    // Alert
+    let team = Team.Red;
+
+    if (player === this.gameController.getGameState().getGamePlayer()) {
+      team = Team.Blue;
+    }
+
+    this.showGoalAlert(player, team);
+  }
+
   private handleGoalTimerEnd(): void {
+    if (this.gameState.getGameMatch()?.isHost()) {
+      this.sendGoalTimerEndEvent();
+    }
+
     this.ballObject?.reset();
     this.localCarObject?.reset();
     this.alertObject?.hide();
+  }
+
+  private sendGoalTimerEndEvent() {
+    const goalTimerEndEvent = new GameEvent(EventType.GoalEnd, null);
+
+    this.gameController
+      .getEventsProcessorService()
+      .sendEvent(goalTimerEndEvent);
   }
 }

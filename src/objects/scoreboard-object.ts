@@ -78,6 +78,14 @@ export class ScoreboardObject
     this.redScore++;
   }
 
+  public setBlueTeamScore(score: number): void {
+    this.blueScore = score;
+  }
+
+  public setRedTeamScore(score: number): void {
+    this.redScore = score;
+  }
+
   public serialize(): ArrayBuffer {
     const arrayBuffer = new ArrayBuffer(4);
     const dataView = new DataView(arrayBuffer);

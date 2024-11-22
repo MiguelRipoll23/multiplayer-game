@@ -49,6 +49,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     this.angle = 90;
     this.speed = 0;
     this.setCenterPosition();
+    super.reset();
   }
 
   public override serialize(): ArrayBuffer {

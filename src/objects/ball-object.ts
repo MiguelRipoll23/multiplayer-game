@@ -39,12 +39,13 @@ export class BallObject
     super.load();
   }
 
-  public reset() {
+  public override reset() {
     this.vx = 0;
     this.vy = 0;
     this.radius = this.RADIUS;
     this.setCenterPosition();
     this.inactive = false;
+    super.reset();
   }
 
   public setCenterPosition(): void {
@@ -114,9 +115,6 @@ export class BallObject
     dataView.setFloat32(4, this.vx);
     dataView.setFloat32(6, this.vy);
 
-    // inactive (1 byte)
-    dataView.setUint8(8, this.inactive ? 1 : 0);
-
     return arrayBuffer;
   }
 
@@ -127,7 +125,6 @@ export class BallObject
     this.y = dataView.getFloat32(2);
     this.vx = dataView.getFloat32(4);
     this.vy = dataView.getFloat32(6);
-    this.inactive = dataView.getUint8(8) === 1;
 
     this.updateHitbox();
   }

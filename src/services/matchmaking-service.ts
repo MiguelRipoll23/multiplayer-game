@@ -15,7 +15,7 @@ import {
   JOIN_REQUEST_ID,
   JOIN_RESPONSE_ID,
   SNAPSHOT_ID,
-  PLAYER_CONNECTION_STATE_ID,
+  PLAYER_ID,
   SNAPSHOT_ACK_ID,
 } from "../constants/webrtc-constants.js";
 import { GameMatch } from "../models/game-match.js";
@@ -25,7 +25,7 @@ import {
 } from "../constants/matchmaking-constants.js";
 import { GamePlayer } from "../models/game-player.js";
 import { GameState } from "../models/game-state.js";
-import { ConnectionState } from "../models/player-state.js";
+import { ConnectionState } from "../models/connection-state.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 
 export class MatchmakingService {
@@ -405,7 +405,7 @@ export class MatchmakingService {
     const nameBytes = new TextEncoder().encode(name);
 
     const payload = new Uint8Array([
-      PLAYER_CONNECTION_STATE_ID,
+      PLAYER_ID,
       connectionState,
       ...idBytes,
       host,

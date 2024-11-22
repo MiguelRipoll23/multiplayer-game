@@ -1,6 +1,7 @@
 import { GAME_VERSION } from "../constants/game-constants.js";
 import { ApiService } from "../services/api-service.js";
 import { CryptoService } from "../services/crypto-service.js";
+import { EventsProcessorService } from "../services/events-processor-service.js";
 import { MatchmakingService } from "../services/matchmaking-service.js";
 import { ObjectOrchestrator } from "../services/object-orchestrator-service.js";
 import { ScreenTransitionService } from "../services/screen-transition-service.js";
@@ -24,9 +25,10 @@ export class GameController {
   private readonly apiService: ApiService;
   private readonly cryptoService: CryptoService;
   private readonly webSocketService: WebSocketService;
-  private readonly matchMakingService: MatchmakingService;
+  private readonly matchmakingService: MatchmakingService;
   private webRTCService: WebRTCService;
   private objectOrchestrator: ObjectOrchestrator;
+  private eventsProcessorService: EventsProcessorService;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -42,8 +44,9 @@ export class GameController {
     this.cryptoService = new CryptoService(this.gameState.getGameServer());
     this.webSocketService = new WebSocketService(this);
     this.webRTCService = new WebRTCService(this);
-    this.matchMakingService = new MatchmakingService(this);
+    this.matchmakingService = new MatchmakingService(this);
     this.objectOrchestrator = new ObjectOrchestrator(this);
+    this.eventsProcessorService = new EventsProcessorService(this);
   }
 
   public getVersion(): string {
@@ -118,7 +121,7 @@ export class GameController {
   }
 
   public getMatchmakingService(): MatchmakingService {
-    return this.matchMakingService;
+    return this.matchmakingService;
   }
 
   public getWebRTCService(): WebRTCService {
@@ -127,5 +130,9 @@ export class GameController {
 
   public getObjectOrchestrator(): ObjectOrchestrator {
     return this.objectOrchestrator;
+  }
+
+  public getEventsProcessorService(): EventsProcessorService {
+    return this.eventsProcessorService;
   }
 }

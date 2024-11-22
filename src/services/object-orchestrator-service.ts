@@ -1,4 +1,4 @@
-import { OBJECT_DATA_ID } from "../constants/webrtc-constants.js";
+import { OBJECT_ID } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
 import { MultiplayerGameObject } from "../objects/interfaces/multiplayer-game-object.js";
@@ -148,7 +148,7 @@ export class ObjectOrchestrator {
 
     // Write fixed-length fields
     let offset = 0;
-    dataView.setInt8(offset++, OBJECT_DATA_ID);
+    dataView.setInt8(offset++, OBJECT_ID);
     dataView.setInt8(offset++, screenId);
     dataView.setInt8(offset++, stateId);
     dataView.setInt8(offset++, layerId);

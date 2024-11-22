@@ -1,5 +1,5 @@
 import { GamePlayer } from "../../models/game-player.js";
-import { ConnectionState } from "../../models/player-state.js";
+import { ConnectionState } from "../../models/connection-state.js";
 
 export interface WebRTCPeer {
   getConnectionState(): ConnectionState;

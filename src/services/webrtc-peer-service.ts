@@ -3,15 +3,17 @@ import {
   SNAPSHOT_ID,
   JOIN_REQUEST_ID,
   JOIN_RESPONSE_ID,
-  OBJECT_DATA_ID,
-  PLAYER_CONNECTION_STATE_ID,
+  OBJECT_ID,
+  PLAYER_ID,
+  EVENT_ID,
 } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GamePlayer } from "../models/game-player.js";
-import { ConnectionState } from "../models/player-state.js";
+import { ConnectionState } from "../models/connection-state.js";
 import { LoggerUtils } from "../utils/logger-utils.js";
 import { MatchmakingService } from "./matchmaking-service.js";
 import { ObjectOrchestrator } from "./object-orchestrator-service.js";
+import { EventsProcessorService } from "./events-processor-service.js";
 
 export class WebRTCPeerService {
   public peerConnection: RTCPeerConnection;
@@ -21,6 +23,7 @@ export class WebRTCPeerService {
   private logger: LoggerUtils;
   private matchmakingService: MatchmakingService;
   private objectOrchestrator: ObjectOrchestrator;
+  private eventsProcessorService: EventsProcessorService;
 
   private connectionState: ConnectionState = ConnectionState.Disconnected;
   private host: boolean = false;
@@ -32,6 +35,8 @@ export class WebRTCPeerService {
 
     this.matchmakingService = this.gameController.getMatchmakingService();
     this.objectOrchestrator = this.gameController.getObjectOrchestrator();
+    this.eventsProcessorService =
+      this.gameController.getEventsProcessorService();
 
     this.host =
       this.gameController.getGameState().getGameMatch()?.isHost() ?? false;
@@ -319,7 +324,7 @@ export class WebRTCPeerService {
     //this.logger.info(new TextDecoder().decode(arrayBuffer));
 
     const dataView = new DataView(arrayBuffer);
-    const id = dataView.getUint8(0);
+    const id = dataView.getInt8(0);
     const payload =
       dataView.buffer.byteLength > 1 ? arrayBuffer.slice(1) : null;
 
@@ -334,7 +339,7 @@ export class WebRTCPeerService {
       case JOIN_RESPONSE_ID:
         return this.matchmakingService.handleJoinResponse(this, payload);
 
-      case PLAYER_CONNECTION_STATE_ID:
+      case PLAYER_ID:
         return this.matchmakingService.handlePlayerConnection(this, payload);
 
       case SNAPSHOT_ID:
@@ -343,8 +348,11 @@ export class WebRTCPeerService {
       case SNAPSHOT_ACK_ID:
         return this.matchmakingService.handleSnapshotACK(this);
 
-      case OBJECT_DATA_ID:
+      case OBJECT_ID:
         return this.objectOrchestrator.handleRemoteData(this, payload);
+
+      case EVENT_ID:
+        return this.eventsProcessorService.handleRemoteEvent(this, payload);
 
       default: {
         this.logger.warn("Unknown message identifier", id);

@@ -65,6 +65,10 @@ export class BaseMultiplayerGameObject
     this.sync = sync;
   }
 
+  public reset(): void {
+    this.sync = true;
+  }
+
   public serialize(): ArrayBuffer {
     throw new Error("Method not implemented.");
   }

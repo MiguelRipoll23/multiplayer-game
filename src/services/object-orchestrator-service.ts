@@ -1,17 +1,18 @@
 import { OBJECT_DATA_ID } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
-import { BaseMultiplayerScreen } from "../screens/base/base-multiplayer-screen.js";
 import { MultiplayerGameObject } from "../objects/interfaces/multiplayer-game-object.js";
 import { WebRTCService } from "./webrtc-service.js";
 import { GameState } from "../models/game-state.js";
-import { ObjectState } from "../models/object-state.js";
-import { BaseMultiplayerGameObject } from "../objects/base/base-multiplayer-object.js";
-import { ObjectLayer } from "../models/object-layer.js";
-import { ObjectType } from "../models/object-type.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
+import { ObjectUtils } from "../utils/object-utils.js";
+import { MultiplayerScreen } from "../screens/interfaces/multiplayer-screen.js";
+import { ObjectState } from "../models/object-state.js";
+import { ScreenUtils } from "../utils/screen-utils.js";
 
 export class ObjectOrchestrator {
+  private readonly PERIODIC_MILLISECONDS = 500;
+
   private webrtcService: WebRTCService;
   private gameFrame: GameFrame;
   private gameState: GameState;
@@ -26,34 +27,20 @@ export class ObjectOrchestrator {
   }
 
   public sendLocalData(
-    multiplayerScreen: BaseMultiplayerScreen,
+    multiplayerScreen: MultiplayerScreen,
     deltaTimeStamp: number
   ): void {
-    if (this.gameState.getGameMatch() === null) {
-      return;
-    }
-
     this.elapsedMilliseconds += deltaTimeStamp;
-    this.periodicUpdate = this.elapsedMilliseconds >= 500;
+    this.periodicUpdate =
+      this.elapsedMilliseconds >= this.PERIODIC_MILLISECONDS;
 
     multiplayerScreen.getSyncableObjects().forEach((multiplayerObject) => {
-      if (this.skipSyncableObject(multiplayerObject)) {
-        return;
-      }
-
-      const syncableId = multiplayerObject.getSyncableId();
-      const objectTypeId = multiplayerObject.getObjectTypeId();
-
-      if (syncableId === null || objectTypeId === null) {
-        return;
-      }
-
       if (multiplayerObject.mustSync() || this.periodicUpdate) {
-        this.sendObjectData(syncableId, objectTypeId, multiplayerObject);
+        this.sendLocalObjectData(multiplayerScreen, multiplayerObject);
       }
     });
 
-    if (this.elapsedMilliseconds >= 1000) {
+    if (this.elapsedMilliseconds >= this.PERIODIC_MILLISECONDS) {
       this.elapsedMilliseconds = 0;
     }
   }
@@ -62,229 +49,212 @@ export class ObjectOrchestrator {
     webrtcPeer: WebRTCPeer,
     data: ArrayBuffer | null
   ): void {
-    if (data === null || data.byteLength < 39) {
-      return console.warn("Invalid data received for object synchronization");
-    }
-
-    const multiplayerScreen = this.getMultiplayerScreen();
-
-    if (multiplayerScreen === null) {
-      return;
+    if (data === null) {
+      return console.warn("Received null data from peer");
     }
 
     const dataView = new DataView(data);
-    const objectLayer = dataView.getUint8(0);
-    const objectStateId = dataView.getUint8(1);
-    const objectTypeId = dataView.getUint8(2);
-    const syncableId = new TextDecoder().decode(data.slice(3, 39));
-    const syncableCustomData = data.slice(39);
+    const screenId = dataView.getInt8(0);
+    const stateId = dataView.getInt8(1);
+    const ownerId = new TextDecoder().decode(new Uint8Array(data, 4, 36));
 
-    switch (objectStateId) {
+    if (ObjectUtils.isInvalidOwner(webrtcPeer, ownerId)) {
+      return console.warn(
+        "Received object data from unauthorized player",
+        ownerId
+      );
+    }
+
+    const multiplayerScreen = ScreenUtils.getScreenById(
+      this.gameFrame,
+      screenId
+    );
+
+    if (multiplayerScreen === null) {
+      return console.warn(`Screen not found with id ${screenId}`);
+    }
+
+    switch (stateId) {
       case ObjectState.Active:
-        return this.createOrSynchronize(
-          webrtcPeer,
-          multiplayerScreen,
-          objectLayer,
-          syncableId,
-          objectTypeId,
-          syncableCustomData
-        );
+        return this.createOrSynchronizeObject(multiplayerScreen, data);
 
       case ObjectState.Inactive:
-        return this.remove(multiplayerScreen, syncableId);
+        return this.removeObject(multiplayerScreen, data);
+
+      default:
+        console.warn(`Unknown object state: ${stateId}`);
     }
   }
 
-  private skipSyncableObject(
+  // Local
+  private sendLocalObjectData(
+    multiplayerScreen: MultiplayerScreen,
     multiplayerObject: MultiplayerGameObject
-  ): boolean {
-    const gameMatch = this.gameState.getGameMatch();
-
-    if (multiplayerObject.isSyncableByHost()) {
-      return gameMatch?.isHost() ? false : true;
-    }
-
-    return false;
-  }
-
-  private createOrSynchronize(
-    webrtcPeer: WebRTCPeer,
-    multiplayerScreen: BaseMultiplayerScreen,
-    objectLayer: number,
-    syncableId: string,
-    objectTypeId: number,
-    syncableCustomData: ArrayBuffer
   ): void {
-    const multiplayerObject = multiplayerScreen.getSyncableObject(syncableId);
-
-    if (multiplayerObject === null) {
-      return this.create(
-        webrtcPeer,
-        multiplayerScreen,
-        objectLayer,
-        objectTypeId,
-        syncableId,
-        syncableCustomData
-      );
+    if (ObjectUtils.skipLocalObject(multiplayerObject)) {
+      return;
     }
 
-    if (this.isInvalidOwner(webrtcPeer, multiplayerObject)) {
-      return console.warn("Invalid owner for object", multiplayerObject);
-    }
+    ObjectUtils.handleInactiveObject(multiplayerObject);
+    ObjectUtils.updateOwnerIfHost(this.gameState, multiplayerObject);
 
-    multiplayerObject.synchronize(syncableCustomData);
-  }
-
-  private create(
-    webrtcPeer: WebRTCPeer,
-    multiplayerScreen: BaseMultiplayerScreen,
-    objectLayer: ObjectLayer,
-    objectTypeId: ObjectType,
-    syncableId: string,
-    syncableCustomData: ArrayBuffer
-  ): void {
-    const syncableObjectClass =
-      multiplayerScreen.getSyncableObjectClass(objectTypeId);
-
-    if (syncableObjectClass === null) {
-      return console.warn(`Syncable class not found for type ${objectTypeId}`);
-    }
-
-    let instance: MultiplayerGameObject;
-
-    try {
-      instance = syncableObjectClass.deserialize(
-        syncableId,
-        syncableCustomData
-      );
-    } catch (error) {
-      return console.warn(
-        "Cannot deserialize object with id",
-        syncableId,
-        error
-      );
-    }
-
-    instance.setOwner(webrtcPeer.getPlayer());
-    multiplayerScreen?.addObjectToLayer(objectLayer, instance);
-
-    console.log(
-      `Created syncable object for layer id ${objectLayer}`,
-      instance
-    );
-  }
-
-  private isInvalidOwner(
-    webrtcPeer: WebRTCPeer,
-    multiplayerObject: BaseMultiplayerGameObject
-  ): boolean {
-    if (multiplayerObject.getOwner() === null) {
-      return false;
-    }
-
-    return webrtcPeer.getPlayer() !== multiplayerObject.getOwner();
-  }
-
-  private remove(
-    multiplayerScreen: BaseMultiplayerScreen,
-    syncableId: string
-  ): void {
-    const object = multiplayerScreen.getSyncableObject(syncableId);
-
-    if (object === null) {
-      return console.warn(`Object not found with id ${syncableId}`);
-    }
-
-    object.setState(ObjectState.Inactive);
-    object.setRemoved(true);
-  }
-
-  private sendObjectData(
-    syncableId: string,
-    objectTypeId: ObjectType,
-    multiplayerObject: BaseMultiplayerGameObject
-  ): void {
-    const layer =
-      this.getMultiplayerScreen()?.getObjectLayer(multiplayerObject) ?? null;
-
-    if (layer === null) {
-      return console.warn(
-        "Object layer id not found for object",
-        multiplayerObject
-      );
-    }
-
-    const state = multiplayerObject.getState();
-
-    if (state === ObjectState.Inactive) {
-      multiplayerObject.setRemoved(true);
-    }
-
-    const dataBuffer = this.createObjectDataBuffer(
-      layer,
-      syncableId,
-      objectTypeId,
+    const arrayBuffer = this.getObjectDataArrayBuffer(
+      multiplayerScreen,
       multiplayerObject
     );
 
-    this.webrtcService.getPeers().forEach((peer) => {
-      if (this.skipWebRTCPeer(peer, multiplayerObject)) {
-        return;
+    this.webrtcService.getPeers().forEach((webrtcPeer) => {
+      if (webrtcPeer.hasJoined()) {
+        this.sendLocalObjectDataToPeer(
+          multiplayerObject,
+          webrtcPeer,
+          arrayBuffer
+        );
       }
-
-      if (multiplayerObject.isRemoved()) {
-        return peer.sendReliableUnorderedMessage(dataBuffer);
-      }
-
-      multiplayerObject.sendSyncableData(peer, dataBuffer, this.periodicUpdate);
-      multiplayerObject.setSync(false);
     });
+
+    multiplayerObject.setSync(false);
   }
 
-  private skipWebRTCPeer(
-    webrtcPeer: WebRTCPeer,
-    multiplayerObject: BaseMultiplayerGameObject
-  ): boolean {
-    if (webrtcPeer.hasJoined() === false) {
-      return true;
-    }
-
-    if (webrtcPeer.getPlayer() === multiplayerObject.getOwner()) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private createObjectDataBuffer(
-    objectLayer: ObjectLayer,
-    syncableId: string,
-    objectTypeId: ObjectType,
-    multiplayerObject: BaseMultiplayerGameObject
+  private getObjectDataArrayBuffer(
+    multiplayerScreen: MultiplayerScreen,
+    multiplayerObject: MultiplayerGameObject
   ): ArrayBuffer {
-    const objectState = multiplayerObject.getState();
-    const syncableCustomData = multiplayerObject.serialize();
+    const screenId = multiplayerScreen.getId();
+    const stateId = multiplayerObject.getState();
+    const layerId = multiplayerScreen?.getObjectLayer(multiplayerObject);
+    const typeId = multiplayerObject.getTypeId();
+    const ownerId = multiplayerObject.getOwner()?.getId();
+    const objectId = multiplayerObject.getId();
+    const serializedData = multiplayerObject.serialize();
 
-    const arrayBuffer = new ArrayBuffer(4 + 36 + syncableCustomData.byteLength);
+    if (objectId === null || typeId === null || ownerId === null) {
+      throw new Error("Invalid object data for object id " + objectId);
+    }
+
+    const ownerIdBytes = new TextEncoder().encode(ownerId);
+    const objectIdBytes = new TextEncoder().encode(objectId);
+    const serializedBytes = new Uint8Array(serializedData);
+
+    // Calculate total buffer size
+    const bufferSize =
+      5 + // Fixed-length fields (screenId, stateId, layerId, typeId, OBJECT_DATA_ID)
+      ownerIdBytes.length +
+      objectIdBytes.length +
+      serializedBytes.byteLength;
+
+    const arrayBuffer = new ArrayBuffer(bufferSize);
     const dataView = new DataView(arrayBuffer);
 
-    dataView.setUint8(0, OBJECT_DATA_ID);
-    dataView.setUint8(1, objectLayer);
-    dataView.setUint8(2, objectState);
-    dataView.setUint8(3, objectTypeId);
+    // Write fixed-length fields
+    let offset = 0;
+    dataView.setInt8(offset++, OBJECT_DATA_ID);
+    dataView.setInt8(offset++, screenId);
+    dataView.setInt8(offset++, stateId);
+    dataView.setInt8(offset++, layerId);
+    dataView.setInt8(offset++, typeId);
 
-    const syncableIdBytes = new TextEncoder().encode(syncableId);
-    new Uint8Array(arrayBuffer, 4, syncableIdBytes.length).set(syncableIdBytes);
+    // Write ownerId
+    new Uint8Array(arrayBuffer, offset, ownerIdBytes.length).set(ownerIdBytes);
+    offset += ownerIdBytes.length;
 
-    new Uint8Array(arrayBuffer, 40, syncableCustomData.byteLength).set(
-      new Uint8Array(syncableCustomData)
+    // Write id
+    new Uint8Array(arrayBuffer, offset, objectIdBytes.length).set(
+      objectIdBytes
+    );
+    offset += objectIdBytes.length;
+
+    // Write serialized data
+    new Uint8Array(arrayBuffer, offset, serializedBytes.length).set(
+      serializedBytes
     );
 
     return arrayBuffer;
   }
 
-  private getMultiplayerScreen(): BaseMultiplayerScreen | null {
-    const screen = this.gameFrame.getCurrentScreen();
-    return screen instanceof BaseMultiplayerScreen ? screen : null;
+  private sendLocalObjectDataToPeer(
+    multiplayerObject: MultiplayerGameObject,
+    webrtcPeer: WebRTCPeer,
+    dataBuffer: ArrayBuffer
+  ): void {
+    // Don't send data to the owner
+    if (webrtcPeer.getPlayer() === multiplayerObject.getOwner()) {
+      return;
+    }
+
+    // Send reliable message if object is removed
+    if (multiplayerObject.isRemoved()) {
+      return webrtcPeer.sendReliableUnorderedMessage(dataBuffer);
+    }
+
+    webrtcPeer.sendUnreliableOrderedMessage(dataBuffer);
+  }
+
+  // Remote
+  private createOrSynchronizeObject(
+    multiplayerScreen: MultiplayerScreen,
+    data: ArrayBuffer
+  ) {
+    const objectid = new TextDecoder().decode(new Uint8Array(data, 40, 36));
+    const serializedData = data.slice(76);
+
+    const object = multiplayerScreen.getSyncableObject(objectid);
+
+    if (object === null) {
+      return this.createObject(multiplayerScreen, data);
+    }
+
+    object.synchronize(serializedData);
+  }
+
+  private createObject(
+    multiplayerScreen: MultiplayerScreen,
+    data: ArrayBuffer
+  ) {
+    const dataView = new DataView(data);
+    const layerId = dataView.getInt8(2);
+    const typeId = dataView.getInt8(3);
+    const ownerId = new TextDecoder().decode(new Uint8Array(data, 4, 36));
+    const objectid = new TextDecoder().decode(new Uint8Array(data, 40, 36));
+    const serializedData = data.slice(76);
+
+    const objectClass = multiplayerScreen.getSyncableObjectClass(typeId);
+
+    if (objectClass === null) {
+      return console.warn(`Object class not found for type ${typeId}`);
+    }
+
+    let objectInstance: MultiplayerGameObject;
+
+    try {
+      objectInstance = objectClass.deserialize(objectid, serializedData);
+    } catch (error) {
+      return console.warn("Cannot deserialize object with id", objectid, error);
+    }
+
+    const player = this.gameState.getGameMatch()?.getPlayer(ownerId) ?? null;
+
+    if (player === null) {
+      return console.warn("Cannot find player with id", ownerId);
+    }
+
+    objectInstance.setOwner(player);
+    multiplayerScreen?.addObjectToLayer(layerId, objectInstance);
+    console.log(`Created object for layer id ${layerId}`, objectInstance);
+  }
+
+  private removeObject(
+    multiplayerScreen: MultiplayerScreen,
+    data: ArrayBuffer
+  ): void {
+    const objectId = new TextDecoder().decode(new Uint8Array(data, 40, 36));
+    const object = multiplayerScreen.getSyncableObject(objectId);
+
+    if (object === null) {
+      return console.warn(`Object not found with id ${objectId}`);
+    }
+
+    object.setState(ObjectState.Inactive);
+    object.setRemoved(true);
   }
 }

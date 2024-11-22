@@ -4,42 +4,17 @@ import { WebRTCPeer } from "../../services/interfaces/webrtc-peer.js";
 import { MultiplayerGameObject } from "../interfaces/multiplayer-game-object.js";
 import { BaseGameObject } from "./base-game-object.js";
 
-export class BaseMultiplayerGameObject extends BaseGameObject {
-  protected syncableId: string | null = null;
-  protected objectTypeId: ObjectType | null = null;
+export class BaseMultiplayerGameObject
+  extends BaseGameObject
+  implements MultiplayerGameObject
+{
+  protected id: string | null = null;
+  protected typeId: ObjectType | null = null;
   protected syncableByHost: boolean = false;
   protected owner: GamePlayer | null = null;
   protected sync: boolean = false;
 
-  public getSyncableId(): string | null {
-    return this.syncableId;
-  }
-
-  public setSyncableId(syncableId: string): void {
-    this.syncableId = syncableId;
-  }
-
-  public static getObjectTypeId(): ObjectType {
-    throw new Error("Method not implemented.");
-  }
-
-  public getObjectTypeId(): ObjectType | null {
-    return this.objectTypeId;
-  }
-
-  public setObjectTypeId(objectTypeId: ObjectType): void {
-    this.objectTypeId = objectTypeId;
-  }
-
-  public isSyncableByHost(): boolean {
-    return this.syncableByHost;
-  }
-
-  public setSyncableByHost(syncableByHost: boolean): void {
-    this.syncableByHost = syncableByHost;
-  }
-
-  public serialize(): ArrayBuffer {
+  public static getTypeId(): ObjectType {
     throw new Error("Method not implemented.");
   }
 
@@ -50,16 +25,28 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
     throw new Error("Method not implemented.");
   }
 
-  public sendSyncableData(
-    webrtcPeer: WebRTCPeer,
-    data: ArrayBuffer,
-    periodicUpdate: boolean
-  ): void {
-    throw new Error("Method not implemented.");
+  public getId(): string | null {
+    return this.id;
   }
 
-  public synchronize(data: ArrayBuffer): void {
-    throw new Error("Method not implemented.");
+  public setId(syncableId: string): void {
+    this.id = syncableId;
+  }
+
+  public getTypeId(): ObjectType | null {
+    return this.typeId;
+  }
+
+  public setTypeId(objectTypeId: ObjectType): void {
+    this.typeId = objectTypeId;
+  }
+
+  public isSyncableByHost(): boolean {
+    return this.syncableByHost;
+  }
+
+  public setSyncableByHost(syncableByHost: boolean): void {
+    this.syncableByHost = syncableByHost;
   }
 
   public getOwner(): GamePlayer | null {
@@ -76,5 +63,21 @@ export class BaseMultiplayerGameObject extends BaseGameObject {
 
   public setSync(sync: boolean): void {
     this.sync = sync;
+  }
+
+  public serialize(): ArrayBuffer {
+    throw new Error("Method not implemented.");
+  }
+
+  public sendSyncableData(
+    webrtcPeer: WebRTCPeer,
+    data: ArrayBuffer,
+    periodicUpdate: boolean
+  ): void {
+    throw new Error("Method not implemented.");
+  }
+
+  public synchronize(data: ArrayBuffer): void {
+    throw new Error("Method not implemented.");
   }
 }

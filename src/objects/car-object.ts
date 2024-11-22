@@ -2,6 +2,10 @@ import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
 import { GamePlayer } from "../models/game-player.js";
+import {
+  BLUE_TEAM_COLOR,
+  RED_TEAM_COLOR,
+} from "../constants/colors-constants.js";
 
 export class CarObject extends BaseDynamicCollidableGameObject {
   protected readonly TOP_SPEED: number = 4;
@@ -9,7 +13,6 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   protected readonly HANDLING: number = 6;
   protected canvas: HTMLCanvasElement | null = null;
   protected speed: number = 0;
-  protected gamePlayer: GamePlayer | null = null;
 
   private readonly IMAGE_BLUE_PATH = "./images/car-blue.png";
   private readonly IMAGE_RED_PATH = "./images/car-red.png";
@@ -23,7 +26,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   private carImage: HTMLImageElement | null = null;
   private imagePath = this.IMAGE_BLUE_PATH;
 
-  constructor(x: number, y: number, angle: number, remote = false) {
+  constructor(x: number, y: number, angle: number, private remote = false) {
     super();
     this.x = x;
     this.y = y;
@@ -91,16 +94,14 @@ export class CarObject extends BaseDynamicCollidableGameObject {
 
     context.restore();
 
+    this.renderPlayerName(context);
+
     // Hitbox debug
     super.render(context);
   }
 
   public getPlayer(): GamePlayer | null {
-    return this.gamePlayer ?? this.owner;
-  }
-
-  public setPlayer(player: GamePlayer): void {
-    this.gamePlayer = player;
+    return this.owner;
   }
 
   public setCanvas(canvas: HTMLCanvasElement): void {
@@ -175,5 +176,24 @@ export class CarObject extends BaseDynamicCollidableGameObject {
 
   public override mustSync(): boolean {
     return this.speed !== 0;
+  }
+
+  private renderPlayerName(context: CanvasRenderingContext2D): void {
+    context.font = "20px system-ui";
+
+    if (this.remote) {
+      context.fillStyle = RED_TEAM_COLOR;
+    } else {
+      context.fillStyle = BLUE_TEAM_COLOR;
+    }
+
+    context.textAlign = "center";
+    context.fillText(
+      this.owner?.getName() ?? "Unknown",
+      this.x + this.WIDTH / 2,
+      this.y - 10
+    );
+
+    context.restore();
   }
 }

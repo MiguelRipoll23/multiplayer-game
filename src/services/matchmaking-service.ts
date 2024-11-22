@@ -233,14 +233,13 @@ export class MatchmakingService {
   }
 
   private handlePlayerDisconnection(peer: WebRTCPeer): void {
-    console.log(`Player ${peer.getName()} disconnected`);
-
     const player = peer.getPlayer();
 
     if (player === null) {
       return console.warn("Player is null");
     }
 
+    console.log(`Player ${player.getName()} disconnected`);
     this.gameState.getGameMatch()?.removePlayer(player);
 
     this.webrtcService
@@ -266,7 +265,7 @@ export class MatchmakingService {
 
     const player = gameMatch.getPlayer(playerId);
 
-    if (player === undefined) {
+    if (player === null) {
       return console.warn("Player not found", playerId);
     }
 

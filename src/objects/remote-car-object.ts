@@ -16,7 +16,7 @@ export class RemoteCarObject extends CarObject {
     this.setSyncableValues(syncableId);
   }
 
-  public static override getObjectTypeId(): ObjectType {
+  public static override getTypeId(): ObjectType {
     return ObjectType.RemoteCar;
   }
 
@@ -45,8 +45,8 @@ export class RemoteCarObject extends CarObject {
   }
 
   private setSyncableValues(syncableId: string) {
-    this.syncableId = syncableId;
-    this.objectTypeId = ObjectType.RemoteCar;
+    this.id = syncableId;
+    this.typeId = ObjectType.RemoteCar;
     this.syncableByHost = true;
   }
 }

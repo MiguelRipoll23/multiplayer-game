@@ -1,15 +1,26 @@
 import { GamePlayer } from "../../models/game-player.js";
 import { ObjectType } from "../../models/object-type.js";
 import { BaseMultiplayerGameObject } from "../../objects/base/base-multiplayer-object.js";
-import { StaticMultiplayerGameObject } from "../../objects/interfaces/multiplayer-game-object.js";
+import {
+  MultiplayerGameObject,
+  StaticMultiplayerGameObject,
+} from "../../objects/interfaces/multiplayer-game-object.js";
 import { BaseGameScreen } from "../../screens/base/base-game-screen.js";
+import { MultiplayerScreen } from "../interfaces/multiplayer-screen.js";
 
-export class BaseMultiplayerScreen extends BaseGameScreen {
+export class BaseMultiplayerScreen
+  extends BaseGameScreen
+  implements MultiplayerScreen
+{
   protected syncableObjectTypes: Map<ObjectType, StaticMultiplayerGameObject> =
     new Map();
 
+  public getId() {
+    return 0;
+  }
+
   public addSyncableObject(objectClass: StaticMultiplayerGameObject): void {
-    const typeId = objectClass.getObjectTypeId();
+    const typeId = objectClass.getTypeId();
     this.syncableObjectTypes.set(typeId, objectClass);
   }
 
@@ -19,13 +30,13 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
     return this.syncableObjectTypes.get(typeId) ?? null;
   }
 
-  public getSyncableObjects(): BaseMultiplayerGameObject[] {
-    const result: BaseMultiplayerGameObject[] = [];
+  public getSyncableObjects(): MultiplayerGameObject[] {
+    const result: MultiplayerGameObject[] = [];
 
     for (const object of this.uiObjects) {
       if (
         object instanceof BaseMultiplayerGameObject &&
-        object.getSyncableId() !== null
+        object.getId() !== null
       ) {
         result.push(object);
       }
@@ -34,7 +45,7 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
     for (const object of this.sceneObjects) {
       if (
         object instanceof BaseMultiplayerGameObject &&
-        object.getSyncableId() !== null
+        object.getId() !== null
       ) {
         result.push(object);
       }
@@ -47,7 +58,7 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
     for (const object of this.uiObjects) {
       if (
         object instanceof BaseMultiplayerGameObject &&
-        object.getSyncableId() === id
+        object.getId() === id
       ) {
         return object;
       }
@@ -56,7 +67,7 @@ export class BaseMultiplayerScreen extends BaseGameScreen {
     for (const object of this.sceneObjects) {
       if (
         object instanceof BaseMultiplayerGameObject &&
-        object.getSyncableId() === id
+        object.getId() === id
       ) {
         return object;
       }

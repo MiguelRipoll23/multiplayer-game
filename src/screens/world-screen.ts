@@ -180,7 +180,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       gameKeyboard
     );
 
-    this.localCarObject.setPlayer(this.gameState.getGamePlayer());
+    this.localCarObject.setOwner(this.gameState.getGamePlayer());
     this.localCarObject.setCanvas(this.canvas);
     this.localCarObject.setCenterPosition();
 

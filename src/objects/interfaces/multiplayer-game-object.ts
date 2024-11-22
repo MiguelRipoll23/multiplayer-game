@@ -4,8 +4,8 @@ import { WebRTCPeer } from "../../services/interfaces/webrtc-peer.js";
 import { GameObject } from "./game-object.js";
 
 export interface MultiplayerGameObject extends GameObject {
-  getSyncableId(): string | null;
-  getObjectTypeId(): ObjectType | null;
+  getId(): string | null;
+  getTypeId(): ObjectType | null;
   getOwner(): GamePlayer | null;
   setOwner(player: GamePlayer | null): void;
   isSyncableByHost(): boolean;
@@ -22,6 +22,6 @@ export interface MultiplayerGameObject extends GameObject {
 
 export interface StaticMultiplayerGameObject {
   new (...args: any[]): MultiplayerGameObject;
-  getObjectTypeId(): ObjectType;
+  getTypeId(): ObjectType;
   deserialize(id: string, data: ArrayBuffer): MultiplayerGameObject;
 }

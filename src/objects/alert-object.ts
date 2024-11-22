@@ -21,10 +21,10 @@ export class AlertObject
   constructor(protected readonly canvas: HTMLCanvasElement) {
     super();
     this.setInitialValues();
-    this.setSyncableValues();
+    //this.setSyncableValues();
   }
 
-  public static getObjectTypeId(): ObjectType {
+  public static getTypeId(): ObjectType {
     return ObjectType.Alert;
   }
 
@@ -146,8 +146,8 @@ export class AlertObject
   }
 
   private setSyncableValues() {
-    this.setSyncableId("e08fcd5c-4dd1-4efa-8a24-ac6ec1de0ae6");
-    this.setObjectTypeId(ObjectType.Alert);
+    this.setId("e08fcd5c-4dd1-4efa-8a24-ac6ec1de0ae6");
+    this.setTypeId(ObjectType.Alert);
     this.setSyncableByHost(true);
   }
 

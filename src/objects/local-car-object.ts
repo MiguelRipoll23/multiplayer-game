@@ -43,8 +43,6 @@ export class LocalCarObject extends CarObject {
   }
 
   public override render(context: CanvasRenderingContext2D): void {
-    this.renderPlayerName(context);
-
     // Debug
     this.renderDebugInformation(context);
 
@@ -52,8 +50,8 @@ export class LocalCarObject extends CarObject {
   }
 
   private setSyncableValues() {
-    this.setSyncableId(crypto.randomUUID());
-    this.setObjectTypeId(ObjectType.RemoteCar);
+    this.setId(crypto.randomUUID());
+    this.setTypeId(ObjectType.RemoteCar);
   }
 
   private handleControls(): void {
@@ -77,23 +75,6 @@ export class LocalCarObject extends CarObject {
       this.HANDLING *
       (this.speed / this.TOP_SPEED) *
       this.joystickObject.getControlX();
-  }
-
-  private renderPlayerName(context: CanvasRenderingContext2D): void {
-    if (this.gamePlayer === null) {
-      return;
-    }
-
-    context.font = "20px system-ui";
-    context.fillStyle = BLUE_TEAM_COLOR;
-    context.textAlign = "center";
-    context.fillText(
-      this.gamePlayer.getName(),
-      this.x + this.WIDTH / 2,
-      this.y - 10
-    );
-
-    context.restore();
   }
 
   private renderDebugInformation(context: CanvasRenderingContext2D) {
@@ -134,7 +115,7 @@ export class LocalCarObject extends CarObject {
   }
 
   private renderDebugScoreInformation(context: CanvasRenderingContext2D) {
-    const score = this.gamePlayer?.getScore() ?? "Unknown";
+    const score = this.owner?.getScore() ?? "Unknown";
 
     context.fillStyle = "rgba(0, 0, 0, 0.6)";
     context.fillRect(24, 72, 80, 20);

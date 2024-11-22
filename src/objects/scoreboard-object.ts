@@ -46,7 +46,7 @@ export class ScoreboardObject
     this.setSyncableValues();
   }
 
-  public static getObjectTypeId(): ObjectType {
+  public static getTypeId(): ObjectType {
     return ObjectType.Scoreboard;
   }
 
@@ -138,8 +138,8 @@ export class ScoreboardObject
   }
 
   private setSyncableValues() {
-    this.setSyncableId("d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a");
-    this.setObjectTypeId(ObjectType.Scoreboard);
+    this.setId("d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a");
+    this.setTypeId(ObjectType.Scoreboard);
     this.setSyncableByHost(true);
   }
 

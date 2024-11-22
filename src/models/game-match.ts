@@ -34,8 +34,8 @@ export class GameMatch {
     return Array.from(this.players.values());
   }
 
-  public getPlayer(id: string): GamePlayer | undefined {
-    return this.players.get(id);
+  public getPlayer(id: string): GamePlayer | null {
+    return this.players.get(id) ?? null;
   }
 
   public addPlayer(player: GamePlayer): void {
@@ -63,5 +63,15 @@ export class GameMatch {
       `Removed player ${id} from match, total players`,
       this.players.size
     );
+  }
+
+  public getHost(): GamePlayer | null {
+    for (const player of this.players.values()) {
+      if (player.isHost()) {
+        return player;
+      }
+    }
+
+    return null;
   }
 }

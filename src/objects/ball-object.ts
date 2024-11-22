@@ -30,7 +30,7 @@ export class BallObject
     this.setSyncableValues();
   }
 
-  public static override getObjectTypeId(): ObjectType {
+  public static override getTypeId(): ObjectType {
     return ObjectType.RemoteCar;
   }
 
@@ -133,8 +133,8 @@ export class BallObject
   }
 
   private setSyncableValues() {
-    this.setSyncableId("94c58aa0-41c3-4b22-825a-15a3834be240");
-    this.setObjectTypeId(ObjectType.Ball);
+    this.setId("94c58aa0-41c3-4b22-825a-15a3834be240");
+    this.setTypeId(ObjectType.Ball);
     this.setSyncableByHost(true);
   }
 

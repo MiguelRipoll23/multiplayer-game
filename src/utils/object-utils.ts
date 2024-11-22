@@ -26,8 +26,6 @@ export class ObjectUtils {
       return false;
     }
 
-    return false;
-
     return webrtcPeer.getPlayer()?.getId() !== ownerId;
   }
 

@@ -67,6 +67,7 @@ export class BaseMultiplayerGameObject
 
   public reset(): void {
     this.sync = true;
+    console.log("Forced sync for object", this);
   }
 
   public serialize(): ArrayBuffer {

@@ -30,6 +30,11 @@ export class ObjectOrchestrator {
     multiplayerScreen: MultiplayerScreen,
     deltaTimeStamp: number
   ): void {
+    if (this.gameState.getGameMatch() === null) {
+      this.elapsedMilliseconds = 0;
+      return;
+    }
+
     this.elapsedMilliseconds += deltaTimeStamp;
     this.periodicUpdate =
       this.elapsedMilliseconds >= this.PERIODIC_MILLISECONDS;

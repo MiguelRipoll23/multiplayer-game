@@ -90,6 +90,7 @@ export class BaseAnimatedGameObject extends BasePositionableGameObject {
 
   public reset(): void {
     this.animations.length = 0;
+    super.reset();
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {

@@ -13,6 +13,7 @@ import {
   SERVER_CONNECTED_EVENT,
   SERVER_DISCONNECTED_EVENT,
 } from "../../constants/events-constants.js";
+import { PlayerUtils } from "../../utils/player-utils.js";
 
 export class LoginScreen extends BaseGameScreen {
   private gameState: GameState;
@@ -112,7 +113,7 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private registerUser(): void {
-    const name = prompt("Player name:", "player1");
+    const name = prompt("Player name:", PlayerUtils.getRandomName());
 
     if (name === null) {
       return this.registerUser();

@@ -4,13 +4,18 @@ import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
 import { GamePlayer } from "../models/game-player.js";
 import {
   BLUE_TEAM_COLOR,
+  BLUE_TEAM_TRANSPARENCY_COLOR,
   RED_TEAM_COLOR,
+  RED_TEAM_TRANSPARENCY_COLOR,
 } from "../constants/colors-constants.js";
 
 export class CarObject extends BaseDynamicCollidableGameObject {
   protected readonly TOP_SPEED: number = 4;
   protected readonly ACCELERATION: number = 0.4;
   protected readonly HANDLING: number = 6;
+  protected readonly WIDTH: number = 50;
+  protected readonly HEIGHT: number = 50;
+
   protected canvas: HTMLCanvasElement | null = null;
   protected speed: number = 0;
 
@@ -18,10 +23,12 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   private readonly IMAGE_RED_PATH = "./images/car-red.png";
 
   private readonly MASS: number = 500;
-  protected readonly WIDTH: number = 50;
-  protected readonly HEIGHT: number = 50;
   private readonly DISTANCE_CENTER: number = 220;
   private readonly FRICTION: number = 0.1;
+
+  private PLAYER_NAME_PADDING = 10;
+  private PLAYER_NAME_RECT_HEIGHT = 24;
+  private PLAYER_NAME_BORDER_RADIUS = 10;
 
   private carImage: HTMLImageElement | null = null;
   private imagePath = this.IMAGE_BLUE_PATH;
@@ -180,19 +187,85 @@ export class CarObject extends BaseDynamicCollidableGameObject {
   }
 
   private renderPlayerName(context: CanvasRenderingContext2D): void {
-    context.font = "20px system-ui";
+    context.save();
 
+    // Retrieve the player's name or a default value
+    const playerName = this.owner?.getName() ?? "Unknown";
+
+    // Set font for measurement and rendering
+    context.font = "16px system-ui";
+
+    // Measure the text width
+    const textWidth = context.measureText(playerName).width;
+
+    // Calculate the width of the rounded rectangle
+    const rectWidth = textWidth + this.PLAYER_NAME_PADDING * 1.8;
+
+    // Set the border radius for corners
+    const borderRadius = 10;
+
+    // Set the rectangle's top-left corner position
+    const rectX = this.x + this.WIDTH / 2 - rectWidth / 2;
+    const rectY = this.y - this.PLAYER_NAME_RECT_HEIGHT - 10;
+
+    // Set fill style for the rectangle
     if (this.remote) {
-      context.fillStyle = RED_TEAM_COLOR;
+      context.fillStyle = RED_TEAM_TRANSPARENCY_COLOR;
     } else {
-      context.fillStyle = BLUE_TEAM_COLOR;
+      context.fillStyle = BLUE_TEAM_TRANSPARENCY_COLOR;
     }
 
+    // Draw the rounded rectangle
+    context.beginPath();
+    context.moveTo(rectX + borderRadius, rectY); // Move to the top-left arc start
+    context.lineTo(rectX + rectWidth - borderRadius, rectY); // Top side
+    context.arcTo(
+      rectX + rectWidth,
+      rectY, // Top-right corner
+      rectX + rectWidth,
+      rectY + borderRadius,
+      borderRadius
+    );
+    context.lineTo(
+      rectX + rectWidth,
+      rectY + this.PLAYER_NAME_RECT_HEIGHT - borderRadius
+    ); // Right side
+    context.arcTo(
+      rectX + rectWidth,
+      rectY + this.PLAYER_NAME_RECT_HEIGHT, // Bottom-right corner
+      rectX + rectWidth - borderRadius,
+      rectY + this.PLAYER_NAME_RECT_HEIGHT,
+      borderRadius
+    );
+    context.lineTo(rectX + borderRadius, rectY + this.PLAYER_NAME_RECT_HEIGHT); // Bottom side
+    context.arcTo(
+      rectX,
+      rectY + this.PLAYER_NAME_RECT_HEIGHT, // Bottom-left corner
+      rectX,
+      rectY + this.PLAYER_NAME_RECT_HEIGHT - borderRadius,
+      borderRadius
+    );
+    context.lineTo(rectX, rectY + borderRadius); // Left side
+    context.arcTo(
+      rectX,
+      rectY, // Top-left corner
+      rectX + borderRadius,
+      rectY,
+      borderRadius
+    );
+    context.closePath();
+    context.fill();
+
+    // Set fill style for the text
+    context.fillStyle = "white";
     context.textAlign = "center";
+    context.textBaseline = "middle";
+
+    // Draw the text inside the rectangle
     context.fillText(
-      this.owner?.getName() ?? "Unknown",
-      this.x + this.WIDTH / 2,
-      this.y - 10
+      playerName,
+      rectX + rectWidth / 2,
+      rectY + this.PLAYER_NAME_RECT_HEIGHT / 2 + 1
     );
 
     context.restore();

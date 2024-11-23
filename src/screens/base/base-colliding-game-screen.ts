@@ -124,7 +124,7 @@ export class BaseCollidingGameScreen extends BaseMultiplayerScreen {
     let vx = -dynamicCollidableObject.getVX();
     let vy = -dynamicCollidableObject.getVY();
 
-    // Impulse to avoid becaming stuck
+    // Impulse to avoid becoming stuck
     if (vx > -1 && vx < 1) {
       vx = vx < 0 ? -1 : 1;
     }

@@ -223,6 +223,14 @@ export class MatchmakingService {
     this.advertiseMatch();
   }
 
+  public handleGameOver(): void {
+    this.webrtcService
+      .getPeers()
+      .forEach((peer) => peer.disconnectGracefully());
+
+    this.gameState.setGameMatch(null);
+  }
+
   private handleAlreadyJoinedMatch(peer: WebRTCPeer): void {
     console.warn(
       "Already joined a match, disconnecting peer...",

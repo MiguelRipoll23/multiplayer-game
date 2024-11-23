@@ -10,6 +10,7 @@ export interface WebRTCPeer {
   hasJoined(): boolean;
   setJoined(joined: boolean): void;
   disconnect(): void;
+  disconnectGracefully(): void;
   createOffer(): Promise<RTCSessionDescriptionInit>;
   createAnswer(
     offer: RTCSessionDescriptionInit

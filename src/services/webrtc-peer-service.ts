@@ -6,6 +6,7 @@ import {
   OBJECT_ID,
   PLAYER_ID,
   EVENT_ID,
+  DISCONNECT_ID,
 } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GamePlayer } from "../models/game-player.js";
@@ -29,6 +30,8 @@ export class WebRTCPeerService {
   private host: boolean = false;
   private player: GamePlayer | null = null;
   private joined: boolean = false;
+
+  private gracefulDisconnect: boolean = false;
 
   constructor(private gameController: GameController, private token: string) {
     this.logger = new LoggerUtils(`WebRTC(${this.token})`);
@@ -121,6 +124,11 @@ export class WebRTCPeerService {
     this.iceCandidateQueue = [];
   }
 
+  public disconnectGracefully(): void {
+    this.sendDisconnectMessage();
+    this.gracefulDisconnect = true;
+  }
+
   public disconnect(): void {
     this.peerConnection.close();
   }
@@ -203,6 +211,11 @@ export class WebRTCPeerService {
     this.logger.info("Peer connection closed");
     this.connectionState = ConnectionType.Disconnected;
     this.gameController.getWebRTCService().removePeer(this.token);
+
+    if (this.gracefulDisconnect) {
+      return this.matchmakingService.handleGameOver();
+    }
+
     this.matchmakingService.hasPeerDisconnected(this);
   }
 
@@ -354,6 +367,9 @@ export class WebRTCPeerService {
       case EVENT_ID:
         return this.eventsProcessorService.handleRemoteEvent(this, payload);
 
+      case DISCONNECT_ID:
+        return this.handleGracefulDisconnect();
+
       default: {
         this.logger.warn("Unknown message identifier", id);
       }
@@ -366,5 +382,21 @@ export class WebRTCPeerService {
     }
 
     return id > SNAPSHOT_ACK_ID;
+  }
+
+  private sendDisconnectMessage(): void {
+    const arrayBuffer = new ArrayBuffer(1);
+
+    const dataView = new DataView(arrayBuffer);
+    dataView.setInt8(0, DISCONNECT_ID);
+
+    this.sendReliableOrderedMessage(arrayBuffer);
+    console.log("Disconnect message sent");
+  }
+
+  private handleGracefulDisconnect(): void {
+    console.log("Received graceful disconnect message");
+    this.gracefulDisconnect = true;
+    this.disconnect();
   }
 }

@@ -471,6 +471,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private handleGameOverEnd() {
     console.log("Game over end");
 
+    if (this.gameState.getGameMatch()?.isHost()) {
+      this.gameController.getMatchmakingService().handleGameOver();
+    }
+
     const mainScreen = new MainScreen(this.gameController);
     const mainMenuScreen = new MainMenuScreen(this.gameController, false);
 

@@ -10,6 +10,9 @@ export interface GameObject {
   isRemoved(): boolean;
   setRemoved(removed: boolean): void;
 
+  getOpacity(): number;
+  setOpacity(opacity: number): void;
+
   setDebug(debug: boolean): void;
 
   update(deltaTimeStamp: DOMHighResTimeStamp): void;

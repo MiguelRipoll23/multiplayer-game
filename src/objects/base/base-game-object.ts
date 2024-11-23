@@ -5,6 +5,7 @@ export class BaseGameObject implements GameObject {
   protected loaded: boolean = false;
   protected state: StateType = StateType.Active;
   protected removed: boolean = false;
+  protected opacity: number = 1;
   protected debug: boolean = false;
 
   constructor() {
@@ -42,6 +43,14 @@ export class BaseGameObject implements GameObject {
     if (this.removed) {
       console.log(`${this.constructor.name} to be removed from screen`);
     }
+  }
+
+  public getOpacity(): number {
+    return this.opacity;
+  }
+
+  public setOpacity(opacity: number): void {
+    this.opacity = opacity;
   }
 
   public setDebug(debug: boolean): void {

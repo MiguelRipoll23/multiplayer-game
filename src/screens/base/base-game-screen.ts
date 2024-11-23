@@ -168,9 +168,19 @@ export class BaseGameScreen implements GameScreen {
   ): void {
     objects.forEach((object) => {
       if (object.hasLoaded()) {
+        this.updateObjectOpacity(object);
         object.update(deltaTimeStamp);
       }
     });
+  }
+
+  private updateObjectOpacity(gameObject: GameObject): void {
+    const objectOpacity = gameObject.getOpacity();
+
+    // If screen is transitioning in, update object opacity
+    if (objectOpacity > this.opacity) {
+      gameObject.setOpacity(this.opacity);
+    }
   }
 
   private renderObjects(

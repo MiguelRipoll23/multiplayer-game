@@ -23,6 +23,8 @@ import { GamePlayer } from "../models/game-player.js";
 import { EventType } from "../types/event-type.js";
 import { GameEvent } from "../models/game-event.js";
 import { ScreenType } from "../types/screen-type.js";
+import { MainScreen } from "./main-screen.js";
+import { MainMenuScreen } from "./main-screen/main-menu-screen.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -72,13 +74,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       this.detectGameEnd();
     }
 
-    this.gameController
-      .getEventsProcessorService()
-      .listenEvent(EventType.GoalStart, this.handleRemoteGoal.bind(this));
-
-    this.gameController
-      .getEventsProcessorService()
-      .listenEvent(EventType.GoalEnd, () => this.handleGoalTimerEnd());
+    this.listenForEvents();
 
     this.gameController
       .getObjectOrchestrator()
@@ -89,6 +85,23 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.addSyncableObject(BallObject);
     this.addSyncableObject(RemoteCarObject);
     this.addSyncableObject(ScoreboardObject);
+  }
+
+  private listenForEvents(): void {
+    this.gameController
+      .getEventsProcessorService()
+      .listenEvent(EventType.GoalStart, this.handleRemoteGoal.bind(this));
+
+    this.gameController
+      .getEventsProcessorService()
+      .listenEvent(EventType.GoalEnd, () => this.handleGoalTimerEnd());
+
+    this.gameController
+      .getEventsProcessorService()
+      .listenEvent(
+        EventType.GameOverStart,
+        this.handleGameOverStartEvent.bind(this)
+      );
   }
 
   private createBackgroundObject() {
@@ -385,24 +398,85 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private handleTimerEnd(): void {
+    // Get all players and find the best player
+    const players = this.gameState.getGameMatch()?.getPlayers() || [];
+
+    // Find the player with the highest score
+    let winner = this.gameState.getGamePlayer();
+
+    for (const player of players) {
+      if (player.getScore() > winner.getScore()) {
+        winner = player;
+      }
+    }
+
+    // Check for a tie among all players
+    const isTie = players.every(
+      (player) => player.getScore() === winner.getScore()
+    );
+    if (isTie) return;
+
+    this.sendGameOverStartEvent(winner);
+    this.handleGameOverStart(winner);
+  }
+
+  private sendGameOverStartEvent(winner: GamePlayer): void {
+    const playerId: string = winner.getId();
+
+    const arrayBuffer = new ArrayBuffer(36);
+    new Uint8Array(arrayBuffer).set(new TextEncoder().encode(playerId), 0);
+
+    const gameOverStartEvent = new GameEvent(
+      EventType.GameOverStart,
+      arrayBuffer
+    );
+
+    this.gameController
+      .getEventsProcessorService()
+      .sendEvent(gameOverStartEvent);
+  }
+
+  private handleGameOverStartEvent(arrayBuffer: ArrayBuffer | null): void {
+    if (arrayBuffer === null) {
+      return console.warn("Array buffer is null");
+    }
+
+    this.gameState.getGameMatch()?.setState(1);
+    this.ballObject?.setInactive();
+
+    const playerId = new TextDecoder().decode(arrayBuffer);
+    const player = this.gameState.getGameMatch()?.getPlayer(playerId) ?? null;
+
+    this.handleGameOverStart(player);
+  }
+
+  private handleGameOverStart(winner: GamePlayer | null) {
+    // Pause ball and countdown
     this.ballObject?.setInactive();
     this.gameState.getGameMatch()?.setState(1);
 
-    let bestPlayer = this.gameState.getGamePlayer();
-
-    this.gameState
-      .getGameMatch()
-      ?.getPlayers()
-      .forEach((player) => {
-        if (player.getScore() > bestPlayer.getScore()) {
-          bestPlayer = player;
-        }
-      });
-
-    const playerName = bestPlayer.getName().toUpperCase();
+    // Determine winner details and show alert
+    const playerName = winner?.getName().toUpperCase() ?? "UNKNOWN";
     const playerTeam =
-      bestPlayer === this.gameState.getGamePlayer() ? "blue" : "red";
+      winner === this.gameState.getGamePlayer() ? "blue" : "red";
 
     this.alertObject?.show([playerName, "WINS!"], playerTeam);
+
+    // Timer
+    this.gameController.addTimer(5, () => {
+      this.handleGameOverEnd();
+    });
+  }
+
+  private handleGameOverEnd() {
+    console.log("Game over end");
+
+    const mainScreen = new MainScreen(this.gameController);
+    const mainMenuScreen = new MainMenuScreen(this.gameController, false);
+
+    mainScreen.setScreen(mainMenuScreen);
+    mainScreen.loadObjects();
+
+    this.gameController.getTransitionService().fadeOutAndIn(mainScreen, 1, 1);
   }
 }

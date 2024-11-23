@@ -3,21 +3,12 @@ import { ObjectAnimationService } from "../../services/object-animator-service.j
 import { BasePositionableGameObject } from "./base-positionable-game-object.js";
 
 export class BaseAnimatedGameObject extends BasePositionableGameObject {
-  protected opacity: number = 1;
   protected scale: number = 1;
 
   protected animations: ObjectAnimationService[] = [];
 
   constructor() {
     super();
-  }
-
-  public getOpacity(): number {
-    return this.opacity;
-  }
-
-  public setOpacity(opacity: number): void {
-    this.opacity = opacity;
   }
 
   public getScale(): number {

@@ -265,7 +265,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
     context.fillText(
       playerName,
       rectX + rectWidth / 2,
-      rectY + this.PLAYER_NAME_RECT_HEIGHT / 2 + 1
+      rectY + this.PLAYER_NAME_RECT_HEIGHT / 2
     );
 
     context.restore();

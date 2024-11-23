@@ -64,6 +64,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     if (this.gameState.getGameMatch()?.isHost()) {
       this.detectScores();
+      this.detectGameEnd();
     }
 
     this.gameController
@@ -242,8 +243,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
       return console.warn("Player is null");
     }
 
-    // Ball
+    // Pause ball and countdown
     this.ballObject?.setInactive();
+    this.scoreboardObject?.stopCountdown();
 
     // Score
     player.sumScore(1);
@@ -321,8 +323,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
       return console.warn("Array buffer is null");
     }
 
-    // Ball
+    // Pause ball and countdown
     this.ballObject?.setInactive();
+    this.scoreboardObject?.stopCountdown();
 
     // Score
     const playerId = new TextDecoder().decode(arrayBuffer.slice(0, 36));
@@ -352,6 +355,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.ballObject?.reset();
     this.localCarObject?.reset();
     this.alertObject?.hide();
+    this.scoreboardObject?.startCountdown();
   }
 
   private sendGoalTimerEndEvent() {
@@ -360,5 +364,37 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.gameController
       .getEventsProcessorService()
       .sendEvent(goalTimerEndEvent);
+  }
+
+  private detectGameEnd() {
+    if (this.gameState.getGameMatch()?.getState() === 1) {
+      return;
+    }
+
+    if (this.scoreboardObject?.hasTimerFinished() === true) {
+      this.handleTimerEnd();
+    }
+  }
+
+  private handleTimerEnd(): void {
+    this.ballObject?.setInactive();
+    this.gameState.getGameMatch()?.setState(1);
+
+    let bestPlayer = this.gameState.getGamePlayer();
+
+    this.gameState
+      .getGameMatch()
+      ?.getPlayers()
+      .forEach((player) => {
+        if (player.getScore() > bestPlayer.getScore()) {
+          bestPlayer = player;
+        }
+      });
+
+    const playerName = bestPlayer.getName().toUpperCase();
+    const playerTeam =
+      bestPlayer === this.gameState.getGamePlayer() ? "blue" : "red";
+
+    this.alertObject?.show([playerName, "WINS!"], playerTeam);
   }
 }

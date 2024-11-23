@@ -86,6 +86,10 @@ export class ScoreboardObject
     this.redScore = score;
   }
 
+  public hasTimerFinished(): boolean {
+    return this.elapsedMilliseconds >= this.durationMilliseconds;
+  }
+
   public serialize(): ArrayBuffer {
     const arrayBuffer = new ArrayBuffer(4);
     const dataView = new DataView(arrayBuffer);

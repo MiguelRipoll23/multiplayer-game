@@ -7,6 +7,7 @@ export class GameMatch {
   private attributes: MatchAttributes;
 
   private players: Map<string, GamePlayer> = new Map();
+  private state: number = 0;
 
   constructor(host: boolean, totalSlots: number, attributes: MatchAttributes) {
     this.host = host;
@@ -73,5 +74,13 @@ export class GameMatch {
     }
 
     return null;
+  }
+
+  public getState(): number {
+    return this.state;
+  }
+
+  public setState(state: number): void {
+    this.state = state;
   }
 }

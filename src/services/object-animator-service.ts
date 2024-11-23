@@ -1,4 +1,4 @@
-import { AnimationType } from "../models/game-animation.js";
+import { AnimationType } from "../types/animation-type.js";
 import { BaseAnimatedGameObject } from "../objects/base/base-animated-object.js";
 
 export class ObjectAnimationService {

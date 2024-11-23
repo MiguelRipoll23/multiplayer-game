@@ -1,8 +1,8 @@
 import { GamePlayer } from "../../models/game-player.js";
-import { ConnectionState } from "../../models/connection-state.js";
+import { ConnectionType } from "../../types/connection-type.js";
 
 export interface WebRTCPeer {
-  getConnectionState(): ConnectionState;
+  getConnectionState(): ConnectionType;
   getToken(): string;
   getName(): string;
   getPlayer(): GamePlayer | null;

@@ -25,7 +25,7 @@ import {
 } from "../constants/matchmaking-constants.js";
 import { GamePlayer } from "../models/game-player.js";
 import { GameState } from "../models/game-state.js";
-import { ConnectionState } from "../models/connection-state.js";
+import { ConnectionType } from "../types/connection-type.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 
 export class MatchmakingService {
@@ -162,7 +162,7 @@ export class MatchmakingService {
 
     const name = new TextDecoder().decode(nameBytes);
 
-    if (state === ConnectionState.Disconnected) {
+    if (state === ConnectionType.Disconnected) {
       return this.handlePlayerDisconnectedById(id);
     }
 
@@ -211,7 +211,7 @@ export class MatchmakingService {
       .filter((matchPeer) => matchPeer !== peer)
       .forEach((peer) => {
         console.log("Sending player connection to", peer.getName());
-        this.sendPlayerConnection(peer, player, ConnectionState.Connected);
+        this.sendPlayerConnection(peer, player, ConnectionType.Connected);
       });
 
     dispatchEvent(
@@ -246,7 +246,7 @@ export class MatchmakingService {
       .getPeers()
       .filter((matchPeer) => matchPeer !== peer)
       .forEach((peer) => {
-        this.sendPlayerConnection(peer, player, ConnectionState.Disconnected);
+        this.sendPlayerConnection(peer, player, ConnectionType.Disconnected);
       });
 
     dispatchEvent(
@@ -394,7 +394,7 @@ export class MatchmakingService {
   private sendPlayerConnection(
     peer: WebRTCPeer,
     player: GamePlayer,
-    connectionState = ConnectionState.Connected
+    connectionState = ConnectionType.Connected
   ): void {
     const id = player.getId();
     const host = player.isHost() ? 1 : 0;

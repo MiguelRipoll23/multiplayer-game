@@ -1,5 +1,5 @@
 import { GamePlayer } from "../../models/game-player.js";
-import { ObjectType } from "../../models/object-type.js";
+import { ObjectType } from "../../types/object-type.js";
 import { BaseMultiplayerGameObject } from "../../objects/base/base-multiplayer-object.js";
 import {
   MultiplayerGameObject,
@@ -7,6 +7,7 @@ import {
 } from "../../objects/interfaces/multiplayer-game-object.js";
 import { BaseGameScreen } from "../../screens/base/base-game-screen.js";
 import { MultiplayerScreen } from "../interfaces/multiplayer-screen.js";
+import { ScreenType } from "../../types/screen-type.js";
 
 export class BaseMultiplayerScreen
   extends BaseGameScreen
@@ -15,8 +16,8 @@ export class BaseMultiplayerScreen
   protected syncableObjectTypes: Map<ObjectType, StaticMultiplayerGameObject> =
     new Map();
 
-  public getId() {
-    return 0;
+  public getTypeId(): ScreenType {
+    return ScreenType.Unknown;
   }
 
   public addSyncableObject(objectClass: StaticMultiplayerGameObject): void {

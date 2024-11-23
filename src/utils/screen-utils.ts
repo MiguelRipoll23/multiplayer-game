@@ -10,13 +10,13 @@ export class ScreenUtils {
     const currentScreen = gameFrame.getCurrentScreen();
 
     if (currentScreen instanceof BaseMultiplayerScreen) {
-      return currentScreen.getId() === screenId ? currentScreen : null;
+      return currentScreen.getTypeId() === screenId ? currentScreen : null;
     }
 
     const nextScreen = gameFrame.getNextScreen();
 
     if (nextScreen instanceof BaseMultiplayerScreen) {
-      return nextScreen.getId() === screenId ? nextScreen : null;
+      return nextScreen.getTypeId() === screenId ? nextScreen : null;
     }
 
     return null;

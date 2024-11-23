@@ -7,7 +7,7 @@ import { GameState } from "../models/game-state.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { ObjectUtils } from "../utils/object-utils.js";
 import { MultiplayerScreen } from "../screens/interfaces/multiplayer-screen.js";
-import { ObjectState } from "../models/object-state.js";
+import { StateType } from "../types/state-type.js";
 import { ScreenUtils } from "../utils/screen-utils.js";
 
 export class ObjectOrchestrator {
@@ -80,10 +80,10 @@ export class ObjectOrchestrator {
     }
 
     switch (stateId) {
-      case ObjectState.Active:
+      case StateType.Active:
         return this.createOrSynchronizeObject(multiplayerScreen, data);
 
-      case ObjectState.Inactive:
+      case StateType.Inactive:
         return this.removeObject(multiplayerScreen, data);
 
       default:
@@ -125,7 +125,7 @@ export class ObjectOrchestrator {
     multiplayerScreen: MultiplayerScreen,
     multiplayerObject: MultiplayerGameObject
   ): ArrayBuffer {
-    const screenId = multiplayerScreen.getId();
+    const screenId = multiplayerScreen.getTypeId();
     const stateId = multiplayerObject.getState();
     const layerId = multiplayerScreen?.getObjectLayer(multiplayerObject);
     const typeId = multiplayerObject.getTypeId();
@@ -259,7 +259,7 @@ export class ObjectOrchestrator {
       return console.warn(`Object not found with id ${objectId}`);
     }
 
-    object.setState(ObjectState.Inactive);
+    object.setState(StateType.Inactive);
     object.setRemoved(true);
   }
 }

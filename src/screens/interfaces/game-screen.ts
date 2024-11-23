@@ -1,4 +1,4 @@
-import { ObjectLayer } from "../../models/object-layer.js";
+import { LayerType } from "../../types/layer-type.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
 
@@ -10,8 +10,8 @@ export interface GameScreen {
   loadObjects(): void;
   hasLoaded(): boolean;
 
-  getObjectLayer(object: GameObject): ObjectLayer;
-  addObjectToLayer(layerId: ObjectLayer, object: GameObject): void;
+  getObjectLayer(object: GameObject): LayerType;
+  addObjectToLayer(layerId: LayerType, object: GameObject): void;
 
   update(deltaTimeStamp: number): void;
   render(context: CanvasRenderingContext2D): void;

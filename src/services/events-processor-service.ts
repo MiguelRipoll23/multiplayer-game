@@ -1,5 +1,5 @@
 import { EVENT_ID } from "../constants/webrtc-constants.js";
-import { EventType } from "../models/event-type.js";
+import { EventType } from "../types/event-type.js";
 import { GameController } from "../models/game-controller.js";
 import { GameEvent } from "../models/game-event.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";

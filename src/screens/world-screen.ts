@@ -16,12 +16,13 @@ import {
   PLAYER_CONNECTED_EVENT,
   PLAYER_DISCONNECTED_EVENT,
 } from "../constants/events-constants.js";
-import { Team } from "../models/game-team.js";
+import { TeamType } from "../types/team-type.js";
 import { RemoteCarObject } from "../objects/remote-car-object.js";
-import { ObjectState } from "../models/object-state.js";
+import { StateType } from "../types/state-type.js";
 import { GamePlayer } from "../models/game-player.js";
-import { EventType } from "../models/event-type.js";
+import { EventType } from "../types/event-type.js";
 import { GameEvent } from "../models/game-event.js";
+import { ScreenType } from "../types/screen-type.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -50,6 +51,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.createAlertObject();
     this.createToastObject();
     super.loadObjects();
+  }
+
+  public override getTypeId(): ScreenType {
+    return ScreenType.World;
   }
 
   public override hasTransitionFinished(): void {
@@ -139,7 +144,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const player = event.detail.player;
 
     this.getObjectsByOwner(player).forEach((object) => {
-      object.setState(ObjectState.Inactive);
+      object.setState(StateType.Inactive);
     });
 
     this.toastObject?.show(`<em>${player.getName()}</em> left`);
@@ -256,12 +261,12 @@ export class WorldScreen extends BaseCollidingGameScreen {
     // Scoreboard
     const goalTeam =
       player === this.gameController.getGameState().getGamePlayer()
-        ? Team.Blue
-        : Team.Red;
+        ? TeamType.Blue
+        : TeamType.Red;
 
-    if (goalTeam === Team.Blue) {
+    if (goalTeam === TeamType.Blue) {
       this.scoreboardObject?.incrementBlueScore();
-    } else if (goalTeam === Team.Red) {
+    } else if (goalTeam === TeamType.Red) {
       this.scoreboardObject?.incrementRedScore();
     }
 
@@ -304,14 +309,17 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.scoreboardObject?.setRedTeamScore(totalScore);
   }
 
-  private showGoalAlert(player: GamePlayer | null | undefined, goalTeam: Team) {
+  private showGoalAlert(
+    player: GamePlayer | null | undefined,
+    goalTeam: TeamType
+  ) {
     const playerName = player?.getName().toUpperCase() || "UNKNOWN";
 
     let color = "white";
 
-    if (goalTeam === Team.Blue) {
+    if (goalTeam === TeamType.Blue) {
       color = "blue";
-    } else if (goalTeam === Team.Red) {
+    } else if (goalTeam === TeamType.Red) {
       color = "red";
     }
 
@@ -338,10 +346,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.updateScoreboard();
 
     // Alert
-    let team = Team.Red;
+    let team = TeamType.Red;
 
     if (player === this.gameController.getGameState().getGamePlayer()) {
-      team = Team.Blue;
+      team = TeamType.Blue;
     }
 
     this.showGoalAlert(player, team);

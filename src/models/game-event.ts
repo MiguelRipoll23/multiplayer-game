@@ -1,4 +1,4 @@
-import { EventType } from "./event-type.js";
+import { EventType } from "../types/event-type.js";
 
 export class GameEvent {
   private id: EventType;

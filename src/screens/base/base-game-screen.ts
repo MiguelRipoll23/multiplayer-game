@@ -1,7 +1,7 @@
 import { GameController } from "../../models/game-controller.js";
 import { GamePointer } from "../../models/game-pointer.js";
-import { ObjectLayer } from "../../models/object-layer.js";
-import { ObjectState } from "../../models/object-state.js";
+import { LayerType } from "../../types/layer-type.js";
+import { StateType } from "../../types/state-type.js";
 import { BaseGameObject } from "../../objects/base/base-game-object.js";
 import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
@@ -74,28 +74,28 @@ export class BaseGameScreen implements GameScreen {
     );
   }
 
-  public getObjectLayer(object: GameObject): ObjectLayer {
+  public getObjectLayer(object: GameObject): LayerType {
     if (this.sceneObjects.includes(object)) {
-      return ObjectLayer.Scene;
+      return LayerType.Scene;
     }
 
     if (this.uiObjects.includes(object)) {
-      return ObjectLayer.UI;
+      return LayerType.UI;
     }
 
     throw new Error("Object not found in any layer");
   }
 
-  public addObjectToLayer(layerId: ObjectLayer, object: GameObject): void {
+  public addObjectToLayer(layerId: LayerType, object: GameObject): void {
     object.setDebug(this.gameController.isDebugging());
     object.load();
 
     switch (layerId) {
-      case ObjectLayer.UI:
+      case LayerType.UI:
         this.uiObjects.push(object);
         break;
 
-      case ObjectLayer.Scene:
+      case LayerType.Scene:
         this.sceneObjects.push(object);
         break;
 

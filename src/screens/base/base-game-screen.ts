@@ -177,8 +177,7 @@ export class BaseGameScreen implements GameScreen {
   private updateObjectOpacity(gameObject: GameObject): void {
     const objectOpacity = gameObject.getOpacity();
 
-    // If screen is transitioning in, update object opacity
-    if (objectOpacity > this.opacity) {
+    if (objectOpacity > 0 && objectOpacity > this.opacity) {
       gameObject.setOpacity(this.opacity);
     }
   }

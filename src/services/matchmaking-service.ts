@@ -438,4 +438,25 @@ export class MatchmakingService {
     const payload = new Uint8Array([SNAPSHOT_ACK_ID]);
     peer.sendReliableOrderedMessage(payload);
   }
+
+  private async handleGameOverEnd() {
+    console.log("Game over end");
+
+    const gamePlayer = this.gameState.getGamePlayer();
+    const score = gamePlayer.getScore();
+    const hash = crypto.randomUUID();
+
+    await this.apiService.saveScore(score, hash);
+
+    this.gameController.getMatchmakingService().handleGameOver();
+    this.gameState.getGamePlayer().setScore(0);
+
+    const mainScreen = new MainScreen(this.gameController);
+    const mainMenuScreen = new MainMenuScreen(this.gameController, false);
+
+    mainScreen.setScreen(mainMenuScreen);
+    mainScreen.loadObjects();
+
+    this.gameController.getTransitionService().fadeOutAndIn(mainScreen, 1, 1);
+  }
 }

@@ -18,3 +18,6 @@ export const MESSAGES_ENDPOINT = "/messages";
 export const MATCHES_FIND_ENDPOINT = "/matches/find";
 export const MATCHES_ADVERTISE_ENDPOINT = "/matches/advertise";
 export const MATCHES_REMOVE_ENDPOINT = "/matches/remove";
+
+export const SCOREBOARD_PATH = "/scoreboard";
+export const SCOREBOARD_SAVE_SCORE_PATH = `${SCOREBOARD_PATH}/saveScore`;

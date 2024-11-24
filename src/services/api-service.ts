@@ -7,6 +7,7 @@ import {
   MESSAGES_ENDPOINT,
   REGISTER_ENDPOINT,
   VERSION_ENDPOINT,
+  SCOREBOARD_SAVE_SCORE_PATH,
 } from "../constants/api-constants.js";
 import { AdvertiseMatchRequest } from "./interfaces/request/advertise-match-request.js";
 import { FindMatchRequest as FindMatchesRequest } from "./interfaces/request/find-matches-request.js";
@@ -14,6 +15,8 @@ import { FindMatchesResponse as FindMatchesResponse } from "./interfaces/respons
 import { MessagesResponse } from "./interfaces/response/messages-response.js";
 import { RegistrationResponse } from "./interfaces/response/registration-response.js";
 import { VersionResponse } from "./interfaces/response/version-response.js";
+import { SaveScoreRequest } from "../models/save-score-request.ts";
+import { CryptoService } from "./crypto-service.ts";
 
 export class ApiService {
   private authenticationToken: string | null = null;
@@ -167,5 +170,34 @@ export class ApiService {
     }
 
     console.log("Match removed");
+  }
+
+  public async saveScore(saveScoreRequest: SaveScoreRequest): Promise<void> {
+    if (this.authenticationToken === null) {
+      throw new Error("Authentication token not found");
+    }
+
+    const encryptedRequest = await new CryptoService().encryptRequest(
+      JSON.stringify(saveScoreRequest)
+    );
+
+    const response = await fetch(API_BASE_URL + SCOREBOARD_SAVE_SCORE_PATH, {
+      method: "POST",
+      headers: {
+        Authorization: this.authenticationToken,
+        "Content-Type": "application/octet-stream",
+      },
+      body: encryptedRequest,
+    });
+
+    if (response.ok === false) {
+      throw new Error("Failed to save score");
+    }
+
+    if (response.status !== 204) {
+      throw new Error("Failed to save score");
+    }
+
+    console.log("Score saved");
   }
 }

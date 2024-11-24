@@ -2,6 +2,7 @@ import {
   BLUE_TEAM_COLOR,
   RED_TEAM_COLOR,
 } from "../constants/colors-constants.js";
+import { TimerService } from "../services/timer-service.js";
 import { BaseAnimatedGameObject } from "./base/base-animated-object.js";
 import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
 
@@ -12,12 +13,18 @@ export class AlertObject
   private multilineText: string[] = ["Unknown", "message"];
   private color: string = "white";
 
+  private timer: TimerService | null = null;
+
   constructor(protected readonly canvas: HTMLCanvasElement) {
     super();
     this.setInitialValues();
   }
 
-  public show(text: string[], color = "white"): void {
+  public show(text: string[], color = "white", duration = 0): void {
+    if (this.timer !== null) {
+      this.timer.stop(false);
+    }
+
     this.multilineText = text;
 
     if (color === "blue") {
@@ -30,11 +37,20 @@ export class AlertObject
 
     this.fadeIn(0.3);
     this.scaleTo(1, 0.3);
+
+    if (duration > 0) {
+      this.timer = new TimerService(duration, this.hide.bind(this));
+    }
   }
 
   public hide(): void {
     this.fadeOut(0.3);
     this.scaleTo(0, 0.3);
+  }
+
+  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.timer?.update(deltaTimeStamp);
+    super.update(deltaTimeStamp);
   }
 
   public override render(context: CanvasRenderingContext2D): void {

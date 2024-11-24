@@ -141,17 +141,15 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.toastObject?.hide();
 
     if (matchmaking) {
-      this.toastObject?.show(`Joined to <em>${player.getName()}</em>`);
+      this.toastObject?.show(`Joined to <em>${player.getName()}</em>`, 2);
       this.updateScoreboard();
     } else {
-      this.toastObject?.show(`<em>${player.getName()}</em> joined`);
+      this.toastObject?.show(`<em>${player.getName()}</em> joined`, 2);
 
       if (this.scoreboardObject?.isActive() === false) {
         this.scoreboardObject?.startCountdown();
       }
     }
-
-    this.gameController.addTimer(2, () => this.toastObject?.hide());
   }
 
   private handlePlayerDisconnection(event: CustomEvent<any>): void {
@@ -161,14 +159,12 @@ export class WorldScreen extends BaseCollidingGameScreen {
       object.setState(ObjectStateType.Inactive);
     });
 
-    this.toastObject?.show(`<em>${player.getName()}</em> left`);
+    this.toastObject?.show(`<em>${player.getName()}</em> left`, 2);
 
     const playersCount =
       this.gameState.getGameMatch()?.getPlayers().length ?? 0;
 
-    if ((playersCount ?? 0) > 1) {
-      this.gameController.addTimer(2, () => this.toastObject?.hide());
-    } else {
+    if (playersCount === 1) {
       this.scoreboardObject?.stopCountdown();
     }
 

@@ -1,3 +1,4 @@
+import { TimerService } from "../../services/timer-service.js";
 import { BaseAnimatedGameObject } from "../base/base-animated-object.js";
 
 export class ToastObject extends BaseAnimatedGameObject {
@@ -11,19 +12,27 @@ export class ToastObject extends BaseAnimatedGameObject {
   private parsedTextSegments: { text: string; isEm: boolean }[] = [];
   private context: CanvasRenderingContext2D;
 
+  private timer: TimerService | null = null;
+
   constructor(private readonly canvas: HTMLCanvasElement) {
     super();
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
     this.reset();
   }
 
-  public show(text: string): void {
+  public show(text: string, duration = 0): void {
     this.text = text;
     this.parseTextSegments();
     this.reset();
     this.fadeIn(0.2);
     this.scaleTo(1, 0.2);
     this.rotateTo(-2, 0.2);
+    console.log(this);
+
+    if (duration > 0) {
+      console.log("Creating timer");
+      this.timer = new TimerService(duration, this.hide.bind(this));
+    }
   }
 
   public hide(): void {
@@ -38,6 +47,11 @@ export class ToastObject extends BaseAnimatedGameObject {
 
     this.measureDimensions();
     this.setPosition();
+  }
+
+  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.timer?.update(deltaTimeStamp);
+    super.update(deltaTimeStamp);
   }
 
   public override render(context: CanvasRenderingContext2D): void {

@@ -36,8 +36,8 @@ export class AlertObject
       this.color = color;
     }
 
-    // If number of characters is less than 5, set font size to 64
-    if (text.join("").length < 5) {
+    // If number of characters is less than 4, set font size to 64
+    if (text.join("").length < 4) {
       this.fontSize = 74;
     }
 

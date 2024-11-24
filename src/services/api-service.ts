@@ -15,8 +15,8 @@ import { FindMatchesResponse as FindMatchesResponse } from "./interfaces/respons
 import { MessagesResponse } from "./interfaces/response/messages-response.js";
 import { RegistrationResponse } from "./interfaces/response/registration-response.js";
 import { VersionResponse } from "./interfaces/response/version-response.js";
-import { SaveScoreRequest } from "../models/save-score-request.ts";
-import { CryptoService } from "./crypto-service.ts";
+import { SaveScoreRequest } from "./interfaces/request/save-score-request.js";
+import { CryptoService } from "./crypto-service.js";
 
 export class ApiService {
   private authenticationToken: string | null = null;

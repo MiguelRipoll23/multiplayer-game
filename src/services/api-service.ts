@@ -7,6 +7,7 @@ import {
   MESSAGES_ENDPOINT,
   REGISTER_ENDPOINT,
   VERSION_ENDPOINT,
+  SCOREBOARD_SAVE_SCORE_PATH,
 } from "../constants/api-constants.js";
 import { AdvertiseMatchRequest } from "./interfaces/request/advertise-match-request.js";
 import { FindMatchRequest as FindMatchesRequest } from "./interfaces/request/find-matches-request.js";
@@ -14,9 +15,17 @@ import { FindMatchesResponse as FindMatchesResponse } from "./interfaces/respons
 import { MessagesResponse } from "./interfaces/response/messages-response.js";
 import { RegistrationResponse } from "./interfaces/response/registration-response.js";
 import { VersionResponse } from "./interfaces/response/version-response.js";
+import { SaveScoreRequest } from "./interfaces/request/save-score-request.js";
+import { CryptoService } from "./crypto-service.js";
+import { GameController } from "../models/game-controller.js";
 
 export class ApiService {
   private authenticationToken: string | null = null;
+  private cryptoService: CryptoService;
+
+  constructor(gameController: GameController) {
+    this.cryptoService = gameController.getCryptoService();
+  }
 
   public async checkForUpdates(): Promise<boolean> {
     const response = await fetch(API_BASE_URL + VERSION_ENDPOINT);
@@ -167,5 +176,34 @@ export class ApiService {
     }
 
     console.log("Match removed");
+  }
+
+  public async saveScore(saveScoreRequest: SaveScoreRequest): Promise<void> {
+    if (this.authenticationToken === null) {
+      throw new Error("Authentication token not found");
+    }
+
+    const encryptedRequest = await this.cryptoService.encryptRequest(
+      JSON.stringify(saveScoreRequest)
+    );
+
+    const response = await fetch(API_BASE_URL + SCOREBOARD_SAVE_SCORE_PATH, {
+      method: "POST",
+      headers: {
+        Authorization: this.authenticationToken,
+        "Content-Type": "application/json",
+      },
+      body: encryptedRequest,
+    });
+
+    if (response.ok === false) {
+      throw new Error("Failed to save score");
+    }
+
+    if (response.status !== 204) {
+      throw new Error("Failed to save score");
+    }
+
+    console.log("Score saved");
   }
 }

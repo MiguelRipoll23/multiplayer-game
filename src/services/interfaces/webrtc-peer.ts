@@ -18,8 +18,8 @@ export interface WebRTCPeer {
   connect(answer: RTCSessionDescriptionInit): Promise<void>;
   getQueuedIceCandidates(): RTCIceCandidateInit[];
   addRemoteIceCandidate(iceCandidate: RTCIceCandidateInit): void;
-  sendReliableOrderedMessage(arrayBuffer: ArrayBuffer): void;
-  sendReliableUnorderedMessage(arrayBuffer: ArrayBuffer): void;
-  sendUnreliableOrderedMessage(arrayBuffer: ArrayBuffer): void;
-  sendUnreliableUnorderedMessage(arrayBuffer: ArrayBuffer): void;
+  sendReliableOrderedMessage(arrayBuffer: ArrayBuffer, skipQueue?: boolean): void;
+  sendReliableUnorderedMessage(arrayBuffer: ArrayBuffer, skipQueue?: boolean): void;
+  sendUnreliableOrderedMessage(arrayBuffer: ArrayBuffer, skipQueue?: boolean): void;
+  sendUnreliableUnorderedMessage(arrayBuffer: ArrayBuffer, skipQueue?: boolean): void;
 }

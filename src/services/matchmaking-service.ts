@@ -221,11 +221,13 @@ export class MatchmakingService {
     this.advertiseMatch();
   }
 
-  public handleGameOver(): void {
+  public async handleGameOver(): Promise<void> {
     if (this.gameState.getGameMatch()?.isHost()) {
       this.webrtcService
         .getPeers()
         .forEach((peer) => peer.disconnectGracefully());
+
+      await this.apiService.removeMatch();
     }
 
     this.gameController.getGameState().setGameMatch(null);

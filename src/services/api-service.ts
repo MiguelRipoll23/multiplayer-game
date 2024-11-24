@@ -3,6 +3,7 @@ import {
   CONFIGURATION_ENDPOINT,
   MATCHES_ADVERTISE_ENDPOINT,
   MATCHES_FIND_ENDPOINT,
+  MATCHES_REMOVE_ENDPOINT,
   MESSAGES_ENDPOINT,
   REGISTER_ENDPOINT,
   VERSION_ENDPOINT,
@@ -143,5 +144,28 @@ export class ApiService {
     }
 
     console.log("Match advertised");
+  }
+
+  public async removeMatch(): Promise<void> {
+    if (this.authenticationToken === null) {
+      throw new Error("Authentication token not found");
+    }
+
+    const response = await fetch(API_BASE_URL + MATCHES_REMOVE_ENDPOINT, {
+      method: "DELETE",
+      headers: {
+        Authorization: this.authenticationToken,
+      },
+    });
+
+    if (response.ok === false) {
+      throw new Error("Failed to remove match");
+    }
+
+    if (response.status !== 204) {
+      throw new Error("Failed to remove match");
+    }
+
+    console.log("Match removed");
   }
 }

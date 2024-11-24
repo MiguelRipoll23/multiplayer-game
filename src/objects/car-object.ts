@@ -12,7 +12,7 @@ import {
 export class CarObject extends BaseDynamicCollidableGameObject {
   protected readonly TOP_SPEED: number = 4;
   protected readonly ACCELERATION: number = 0.4;
-  protected readonly HANDLING: number = 6;
+  protected readonly HANDLING: number = 4;
   protected readonly WIDTH: number = 50;
   protected readonly HEIGHT: number = 50;
 

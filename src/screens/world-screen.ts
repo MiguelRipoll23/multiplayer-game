@@ -234,7 +234,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.sceneObjects.push(this.toastObject);
   }
 
-  private detectScores() {
+  private detectScores(): void {
     if (this.ballObject === null || this.ballObject?.isInactive()) {
       return;
     }
@@ -253,6 +253,22 @@ export class WorldScreen extends BaseCollidingGameScreen {
     if (goalScored) {
       this.handleGoalScored();
     }
+  }
+
+  private sendCountdownStartEvent() {
+    const countdownStartEvent = new GameEvent(EventType.CountdownStart, null);
+
+    this.gameController
+      .getEventsProcessorService()
+      .sendEvent(countdownStartEvent);
+  }
+
+  private sendCountdownEndEvent() {
+    const countdownEndEvent = new GameEvent(EventType.CountdownEnd, null);
+
+    this.gameController
+      .getEventsProcessorService()
+      .sendEvent(countdownEndEvent);
   }
 
   private handleGoalScored() {

@@ -213,7 +213,7 @@ export class WebRTCPeerService {
     this.gameController.getWebRTCService().removePeer(this.token);
 
     if (this.gracefulDisconnect) {
-      return this.matchmakingService.handleGameOver();
+      return;
     }
 
     this.matchmakingService.hasPeerDisconnected(this);

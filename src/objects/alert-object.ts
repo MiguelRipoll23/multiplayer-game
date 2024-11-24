@@ -10,7 +10,7 @@ export class AlertObject
   extends BaseAnimatedGameObject
   implements MultiplayerGameObject
 {
-  private multilineText: string[] = ["Unknown", "message"];
+  private textLines: string[] = ["Unknown", "message"];
   private color: string = "white";
   private fontSize: number = 44;
 
@@ -21,12 +21,12 @@ export class AlertObject
     this.setInitialValues();
   }
 
-  public show(text: string[], color = "white", duration = 0): void {
+  public show(textLines: string[], color = "white", duration = 0): void {
     if (this.timer !== null) {
       this.timer.stop(false);
     }
 
-    this.multilineText = text;
+    this.textLines = textLines;
 
     if (color === "blue") {
       this.color = BLUE_TEAM_COLOR;
@@ -36,8 +36,7 @@ export class AlertObject
       this.color = color;
     }
 
-    // If number of characters is less than 5, set font size to 64
-    if (text.join("").length < 5) {
+    if (textLines.length === 2) {
       this.fontSize = 74;
     }
 
@@ -90,9 +89,9 @@ export class AlertObject
   }
 
   private renderMultilineText(context: CanvasRenderingContext2D): void {
-    const lineHeight = this.fontSize;
+    const lineHeight = this.fontSize - 2;
 
-    this.multilineText.forEach((line, index) => {
+    this.textLines.forEach((line, index) => {
       const yPosition = this.y + index * lineHeight;
       this.drawText(context, line, this.x, yPosition);
     });

@@ -33,6 +33,7 @@ export class WebRTCPeerService {
   private joined: boolean = false;
 
   private gracefulDisconnect: boolean = false;
+  private messageQueue: Array<{ channelKey: string; arrayBuffer: ArrayBuffer }> = [];
 
   constructor(private gameController: GameController, private token: string) {
     this.logger = new LoggerUtils(`WebRTC(${this.token})`);
@@ -86,6 +87,9 @@ export class WebRTCPeerService {
 
   public setJoined(joined: boolean) {
     this.joined = joined;
+    if (joined) {
+      this.sendQueuedMessages();
+    }
   }
 
   public getQueuedIceCandidates(): RTCIceCandidateInit[] {
@@ -134,20 +138,20 @@ export class WebRTCPeerService {
     this.peerConnection.close();
   }
 
-  public sendReliableOrderedMessage(arrayBuffer: ArrayBuffer): void {
-    this.sendMessage("reliable-ordered", arrayBuffer);
+  public sendReliableOrderedMessage(arrayBuffer: ArrayBuffer, skipQueue = false): void {
+    this.sendMessage("reliable-ordered", arrayBuffer, skipQueue);
   }
 
-  public sendReliableUnorderedMessage(arrayBuffer: ArrayBuffer): void {
-    this.sendMessage("reliable-unordered", arrayBuffer);
+  public sendReliableUnorderedMessage(arrayBuffer: ArrayBuffer, skipQueue = false): void {
+    this.sendMessage("reliable-unordered", arrayBuffer, skipQueue);
   }
 
-  public sendUnreliableOrderedMessage(arrayBuffer: ArrayBuffer): void {
-    this.sendMessage("unreliable-ordered", arrayBuffer);
+  public sendUnreliableOrderedMessage(arrayBuffer: ArrayBuffer, skipQueue = false): void {
+    this.sendMessage("unreliable-ordered", arrayBuffer, skipQueue);
   }
 
-  public sendUnreliableUnorderedMessage(arrayBuffer: ArrayBuffer): void {
-    this.sendMessage("unreliable-unordered", arrayBuffer);
+  public sendUnreliableUnorderedMessage(arrayBuffer: ArrayBuffer, skipQueue = false): void {
+    this.sendMessage("unreliable-unordered", arrayBuffer, skipQueue);
   }
 
   private initializeDataChannels(): void {
@@ -311,7 +315,12 @@ export class WebRTCPeerService {
     }
   }
 
-  private sendMessage(channelKey: string, arrayBuffer: ArrayBuffer): void {
+  private sendMessage(channelKey: string, arrayBuffer: ArrayBuffer, skipQueue = false): void {
+    if (!this.joined && !skipQueue) {
+      this.messageQueue.push({ channelKey, arrayBuffer });
+      return;
+    }
+
     const channel = this.dataChannels[channelKey];
 
     if (channel === undefined) {
@@ -330,6 +339,13 @@ export class WebRTCPeerService {
       }
     } catch (error) {
       this.logger.error(`Error sending ${channelKey} message`, error);
+    }
+  }
+
+  private sendQueuedMessages(): void {
+    while (this.messageQueue.length > 0) {
+      const { channelKey, arrayBuffer } = this.messageQueue.shift()!;
+      this.sendMessage(channelKey, arrayBuffer, true);
     }
   }
 

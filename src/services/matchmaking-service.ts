@@ -389,7 +389,7 @@ export class MatchmakingService {
       ...playerNameBytes,
     ]);
 
-    peer.sendReliableUnorderedMessage(payload);
+    peer.sendReliableUnorderedMessage(payload, true);
   }
 
   private handleUnavailableSlots(peer: WebRTCPeer): void {
@@ -403,7 +403,7 @@ export class MatchmakingService {
     const payload = new Uint8Array([JOIN_RESPONSE_ID, state, totalSlots]);
 
     console.log("Sending join response to", peer.getName());
-    peer.sendReliableOrderedMessage(payload);
+    peer.sendReliableOrderedMessage(payload, true);
 
     this.sendPlayerList(peer);
     this.sendSnapshot(peer);
@@ -449,19 +449,19 @@ export class MatchmakingService {
       ...nameBytes,
     ]);
 
-    peer.sendReliableOrderedMessage(payload);
+    peer.sendReliableOrderedMessage(payload, true);
   }
 
   private sendSnapshot(peer: WebRTCPeer): void {
     console.log("Sending snapshot to", peer.getName());
 
     const payload = new Uint8Array([SNAPSHOT_ID]);
-    peer.sendReliableOrderedMessage(payload);
+    peer.sendReliableOrderedMessage(payload, true);
   }
 
   private sentSnapshotACK(peer: WebRTCPeer): void {
     console.log("Sending snapshot ACK to", peer.getName());
     const payload = new Uint8Array([SNAPSHOT_ACK_ID]);
-    peer.sendReliableOrderedMessage(payload);
+    peer.sendReliableOrderedMessage(payload, true);
   }
 }

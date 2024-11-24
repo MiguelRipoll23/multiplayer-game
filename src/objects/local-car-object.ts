@@ -10,6 +10,8 @@ export class LocalCarObject extends CarObject {
   private readonly joystickObject: JoystickObject;
   private readonly gearStickObject: GearStickObject;
 
+  private active: boolean = true;
+
   constructor(
     x: number,
     y: number,
@@ -28,6 +30,10 @@ export class LocalCarObject extends CarObject {
     );
   }
 
+  public setActive(active: boolean): void {
+    this.active = active;
+  }
+
   public getJoystickObject(): JoystickObject {
     return this.joystickObject;
   }
@@ -37,7 +43,9 @@ export class LocalCarObject extends CarObject {
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    this.handleControls();
+    if (this.active) {
+      this.handleControls();
+    }
 
     super.update(deltaTimeStamp);
   }

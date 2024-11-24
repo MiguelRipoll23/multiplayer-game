@@ -9,7 +9,6 @@ import { getConfigurationKey } from "../utils/configuration-utils.js";
 import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { AlertObject } from "../objects/alert-object.js";
-import { TimerService } from "../services/timer-service.js";
 import { ToastObject } from "../objects/common/toast-object.js";
 import {
   MATCH_ADVERTISED_EVENT,
@@ -36,7 +35,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private alertObject: AlertObject | null = null;
   private toastObject: ToastObject | null = null;
 
-  private goalTimerService: TimerService | null = null;
+  private countdownNumber = 4;
 
   constructor(protected gameController: GameController) {
     super(gameController);
@@ -91,17 +90,21 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private listenForEvents(): void {
     this.gameController
       .getEventsProcessorService()
+      .listenEvent(EventType.Countdown, this.handleRemoteCountdown.bind(this));
+
+    this.gameController
+      .getEventsProcessorService()
       .listenEvent(EventType.GoalStart, this.handleRemoteGoal.bind(this));
 
     this.gameController
       .getEventsProcessorService()
-      .listenEvent(EventType.GoalEnd, this.handleGoalTimerEnd.bind(this));
+      .listenEvent(EventType.GoalEnd, this.handleRemoteGoalTimerEnd.bind(this));
 
     this.gameController
       .getEventsProcessorService()
       .listenEvent(
         EventType.GameOverStart,
-        this.handleGameOverStartEvent.bind(this)
+        this.handleRemoteGameOverStartEvent.bind(this)
       );
   }
 
@@ -146,8 +149,10 @@ export class WorldScreen extends BaseCollidingGameScreen {
     } else {
       this.toastObject?.show(`<em>${player.getName()}</em> joined`, 2);
 
-      if (this.scoreboardObject?.isActive() === false) {
-        this.scoreboardObject?.startCountdown();
+      const matchState = this.gameState.getGameMatch()?.getState();
+
+      if (matchState === MatchStateType.WaitingPlayers) {
+        this.showCountdown();
       }
     }
   }
@@ -230,6 +235,83 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.sceneObjects.push(this.toastObject);
   }
 
+  private showCountdown() {
+    this.gameState.getGameMatch()?.setState(MatchStateType.Countdown);
+
+    if (this.gameState.getGameMatch()?.isHost()) {
+      this.sendCountdownEvent();
+    }
+
+    // Decrement countdown number
+    this.countdownNumber -= 1;
+
+    // Reset local objects
+    if (this.countdownNumber === 3) {
+      this.resetForCountdown();
+    }
+
+    // Countdown text
+    let text = this.countdownNumber.toString();
+
+    if (this.countdownNumber < 1) {
+      text = "GO!";
+    }
+
+    // Only show for 3, 2, 1 and GO!
+    if (this.countdownNumber > -1) {
+      this.alertObject?.show([text], "#4a90e2");
+    }
+
+    // If 2 seconds since GO! start the game
+    if (this.countdownNumber === -1) {
+      return this.handleCountdownEnd();
+    }
+
+    // Add timer for next countdown if host
+    if (this.gameState.getGameMatch()?.isHost()) {
+      this.gameController.addTimer(1, this.showCountdown.bind(this));
+    }
+  }
+
+  private resetForCountdown() {
+    if (this.gameState.getGameMatch()?.isHost()) {
+      this.ballObject?.reset();
+    }
+
+    this.localCarObject?.reset();
+    this.localCarObject?.setActive(false);
+  }
+
+  private handleRemoteCountdown(arrayBuffer: ArrayBuffer | null) {
+    if (arrayBuffer === null) {
+      return console.warn("Array buffer is null");
+    }
+
+    const countdownNumber = new DataView(arrayBuffer).getInt32(0);
+
+    this.countdownNumber = countdownNumber;
+    this.showCountdown();
+  }
+
+  private handleCountdownEnd() {
+    this.gameState.getGameMatch()?.setState(MatchStateType.InProgress);
+
+    this.alertObject?.hide();
+    this.scoreboardObject?.startCountdown();
+    this.localCarObject?.setActive(true);
+  }
+
+  private sendCountdownEvent() {
+    const arrayBuffer = new ArrayBuffer(4);
+    new DataView(arrayBuffer).setInt32(0, this.countdownNumber);
+
+    const countdownStartEvent = new GameEvent(EventType.Countdown, arrayBuffer);
+
+    this.gameController
+      .getEventsProcessorService()
+      .sendEvent(countdownStartEvent);
+  }
+
   private detectScores(): void {
     if (this.ballObject === null || this.ballObject?.isInactive()) {
       return;
@@ -249,22 +331,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     if (goalScored) {
       this.handleGoalScored();
     }
-  }
-
-  private sendCountdownStartEvent() {
-    const countdownStartEvent = new GameEvent(EventType.CountdownStart, null);
-
-    this.gameController
-      .getEventsProcessorService()
-      .sendEvent(countdownStartEvent);
-  }
-
-  private sendCountdownEndEvent() {
-    const countdownEndEvent = new GameEvent(EventType.CountdownEnd, null);
-
-    this.gameController
-      .getEventsProcessorService()
-      .sendEvent(countdownEndEvent);
   }
 
   private handleGoalScored() {
@@ -303,10 +369,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.showGoalAlert(player, goalTeam);
 
     // Timer
-    this.goalTimerService = this.gameController.addTimer(
-      5,
-      this.handleGoalTimerEnd.bind(this)
-    );
+    this.gameController.addTimer(5, this.handleRemoteGoalTimerEnd.bind(this));
   }
 
   private sendGoalEvent(player: GamePlayer) {
@@ -388,7 +451,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.showGoalAlert(player, team);
   }
 
-  private handleGoalTimerEnd(): void {
+  private handleRemoteGoalTimerEnd(): void {
     if (this.gameState.getGameMatch()?.isHost()) {
       this.sendGoalTimerEndEvent();
     }
@@ -459,7 +522,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
       .sendEvent(gameOverStartEvent);
   }
 
-  private handleGameOverStartEvent(arrayBuffer: ArrayBuffer | null): void {
+  private handleRemoteGameOverStartEvent(
+    arrayBuffer: ArrayBuffer | null
+  ): void {
     if (arrayBuffer === null) {
       return console.warn("Array buffer is null");
     }

@@ -1,6 +1,6 @@
 export enum MatchStateType {
   WaitingPlayers,
-  CountdownTime,
+  Countdown,
   InProgress,
   GoalTime,
   GameOver,

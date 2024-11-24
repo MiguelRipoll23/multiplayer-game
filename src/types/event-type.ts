@@ -1,6 +1,5 @@
 export enum EventType {
-  CountdownStart,
-  CountdownEnd,
+  Countdown,
   GoalStart,
   GoalEnd,
   GameOverStart,

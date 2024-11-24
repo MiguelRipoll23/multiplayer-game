@@ -1,5 +1,5 @@
 import { GameState } from "../models/game-state.js";
-import { StateType } from "../types/state-type.js";
+import { ObjectStateType } from "../types/object-state-type.js";
 import { MultiplayerGameObject } from "../objects/interfaces/multiplayer-game-object.js";
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
 
@@ -13,7 +13,7 @@ export class ObjectUtils {
   public static handleInactiveObject(
     multiplayerObject: MultiplayerGameObject
   ): void {
-    if (multiplayerObject.getState() === StateType.Inactive) {
+    if (multiplayerObject.getState() === ObjectStateType.Inactive) {
       multiplayerObject.setRemoved(true);
     }
   }

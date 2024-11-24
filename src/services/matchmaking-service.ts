@@ -22,9 +22,10 @@ import { GameMatch } from "../models/game-match.js";
 import { MATCH_ATTRIBUTES } from "../constants/matchmaking-constants.js";
 import { GamePlayer } from "../models/game-player.js";
 import { GameState } from "../models/game-state.js";
-import { ConnectionType } from "../types/connection-type.js";
+import { ConnectionStateType } from "../types/connection-state-type.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { SaveScoreRequest } from "../services/interfaces/request/save-score-request.js";
+import { MatchStateType } from "../types/match-state-type.js";
 
 export class MatchmakingService {
   private apiService: ApiService;
@@ -132,14 +133,17 @@ export class MatchmakingService {
 
     // Data
     const dataView = new DataView(payload);
-    const totalSlots = dataView.getUint8(0);
+    const state = dataView.getUint8(0);
+    const totalSlots = dataView.getUint8(1);
 
     // Create game match
-    const gameMatch = new GameMatch(false, totalSlots, MATCH_ATTRIBUTES);
+    const gameMatch = new GameMatch(false, state, totalSlots, MATCH_ATTRIBUTES);
     this.gameState.setGameMatch(gameMatch);
 
     // Add local player
     const localGamePlayer = this.gameState.getGamePlayer();
+    localGamePlayer.reset();
+
     gameMatch.addPlayer(localGamePlayer);
   }
 
@@ -161,7 +165,7 @@ export class MatchmakingService {
 
     const name = new TextDecoder().decode(nameBytes);
 
-    if (state === ConnectionType.Disconnected) {
+    if (state === ConnectionStateType.Disconnected) {
       return this.handlePlayerDisconnectedById(id);
     }
 
@@ -210,7 +214,7 @@ export class MatchmakingService {
       .filter((matchPeer) => matchPeer !== peer)
       .forEach((peer) => {
         console.log("Sending player connection to", peer.getName());
-        this.sendPlayerConnection(peer, player, ConnectionType.Connected);
+        this.sendPlayerConnection(peer, player, ConnectionStateType.Connected);
       });
 
     dispatchEvent(
@@ -222,6 +226,15 @@ export class MatchmakingService {
     this.advertiseMatch();
   }
 
+  public async savePlayerScore(): Promise<void> {
+    const gamePlayer = this.gameState.getGamePlayer();
+    const score = gamePlayer.getScore();
+    const hash = crypto.randomUUID();
+
+    const saveScoreRequest: SaveScoreRequest = { score, hash };
+    await this.apiService.saveScore(saveScoreRequest);
+  }
+
   public async handleGameOver(): Promise<void> {
     if (this.gameState.getGameMatch()?.isHost()) {
       this.webrtcService
@@ -230,13 +243,6 @@ export class MatchmakingService {
 
       await this.apiService.removeMatch();
     }
-
-    const gamePlayer = this.gameState.getGamePlayer();
-    const score = gamePlayer.getScore();
-    const hash = crypto.randomUUID();
-
-    const saveScoreRequest: SaveScoreRequest = { score, hash };
-    await this.apiService.saveScore(saveScoreRequest);
 
     this.gameController.getGameState().setGameMatch(null);
   }
@@ -264,7 +270,11 @@ export class MatchmakingService {
       .getPeers()
       .filter((matchPeer) => matchPeer !== peer)
       .forEach((peer) => {
-        this.sendPlayerConnection(peer, player, ConnectionType.Disconnected);
+        this.sendPlayerConnection(
+          peer,
+          player,
+          ConnectionStateType.Disconnected
+        );
       });
 
     dispatchEvent(
@@ -316,14 +326,21 @@ export class MatchmakingService {
 
   private async createAndAdvertiseMatch(): Promise<void> {
     // Create game match
-    const gameMatch = new GameMatch(true, 4, MATCH_ATTRIBUTES);
+    const gameMatch = new GameMatch(
+      true,
+      MatchStateType.WaitingPlayers,
+      4,
+      MATCH_ATTRIBUTES
+    );
+
     this.gameState.setGameMatch(gameMatch);
 
     // Update local player
-    const gamePlayer = this.gameState.getGamePlayer();
-    gamePlayer.setHost(true);
+    const localGamePlayer = this.gameState.getGamePlayer();
+    localGamePlayer.reset();
+    localGamePlayer.setHost(true);
 
-    gameMatch.addPlayer(gamePlayer);
+    gameMatch.addPlayer(localGamePlayer);
 
     // Advertise match
     await this.advertiseMatch();
@@ -381,8 +398,9 @@ export class MatchmakingService {
   }
 
   private sendJoinResponse(peer: WebRTCPeer, gameMatch: GameMatch): void {
+    const state = gameMatch.getState();
     const totalSlots = gameMatch.getTotalSlots();
-    const payload = new Uint8Array([JOIN_RESPONSE_ID, totalSlots]);
+    const payload = new Uint8Array([JOIN_RESPONSE_ID, state, totalSlots]);
 
     console.log("Sending join response to", peer.getName());
     peer.sendReliableOrderedMessage(payload);
@@ -412,7 +430,7 @@ export class MatchmakingService {
   private sendPlayerConnection(
     peer: WebRTCPeer,
     player: GamePlayer,
-    connectionState = ConnectionType.Connected
+    connectionState = ConnectionStateType.Connected
   ): void {
     const id = player.getId();
     const host = player.isHost() ? 1 : 0;

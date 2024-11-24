@@ -1,11 +1,11 @@
-import { StateType } from "../../types/state-type.js";
+import { ObjectStateType } from "../../types/object-state-type.js";
 
 export interface GameObject {
   load(): void;
   hasLoaded(): boolean;
 
-  getState(): StateType;
-  setState(state: StateType): void;
+  getState(): ObjectStateType;
+  setState(state: ObjectStateType): void;
 
   isRemoved(): boolean;
   setRemoved(removed: boolean): void;

@@ -47,4 +47,8 @@ export class GamePlayer {
   public setScore(score: number): void {
     this.score = score;
   }
+
+  public reset(): void {
+    this.score = 0;
+  }
 }

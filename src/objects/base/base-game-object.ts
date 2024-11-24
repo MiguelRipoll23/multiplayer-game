@@ -1,9 +1,9 @@
-import { StateType } from "../../types/state-type.js";
+import { ObjectStateType } from "../../types/object-state-type.js";
 import { GameObject } from "../interfaces/game-object.js";
 
 export class BaseGameObject implements GameObject {
   protected loaded: boolean = false;
-  protected state: StateType = StateType.Active;
+  protected state: ObjectStateType = ObjectStateType.Active;
   protected removed: boolean = false;
   protected opacity: number = 1;
   protected debug: boolean = false;
@@ -21,14 +21,14 @@ export class BaseGameObject implements GameObject {
     return this.loaded;
   }
 
-  public getState(): StateType {
+  public getState(): ObjectStateType {
     return this.state;
   }
 
-  public setState(state: StateType): void {
+  public setState(state: ObjectStateType): void {
     this.state = state;
 
-    if (this.state === StateType.Inactive) {
+    if (this.state === ObjectStateType.Inactive) {
       console.log(`${this.constructor.name} set to inactive`);
     }
   }

@@ -1,4 +1,5 @@
 import { MatchAttributes } from "../services/interfaces/match-attributes.js";
+import { MatchStateType } from "../types/match-state-type.js";
 import { GamePlayer } from "./game-player.js";
 
 export class GameMatch {
@@ -9,14 +10,28 @@ export class GameMatch {
   private players: Map<string, GamePlayer> = new Map();
   private state: number = 0;
 
-  constructor(host: boolean, totalSlots: number, attributes: MatchAttributes) {
+  constructor(
+    host: boolean,
+    state: MatchStateType,
+    totalSlots: number,
+    attributes: MatchAttributes
+  ) {
     this.host = host;
+    this.state = state;
     this.totalSlots = totalSlots;
     this.attributes = attributes;
   }
 
   public isHost(): boolean {
     return this.host;
+  }
+
+  public getState(): MatchStateType {
+    return this.state;
+  }
+
+  public setState(state: MatchStateType): void {
+    this.state = state;
   }
 
   public getTotalSlots(): number {
@@ -74,13 +89,5 @@ export class GameMatch {
     }
 
     return null;
-  }
-
-  public getState(): number {
-    return this.state;
-  }
-
-  public setState(state: number): void {
-    this.state = state;
   }
 }

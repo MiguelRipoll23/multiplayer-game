@@ -18,13 +18,14 @@ import {
 } from "../constants/events-constants.js";
 import { TeamType } from "../types/team-type.js";
 import { RemoteCarObject } from "../objects/remote-car-object.js";
-import { StateType } from "../types/state-type.js";
+import { ObjectStateType } from "../types/object-state-type.js";
 import { GamePlayer } from "../models/game-player.js";
 import { EventType } from "../types/event-type.js";
 import { GameEvent } from "../models/game-event.js";
 import { ScreenType } from "../types/screen-type.js";
 import { MainScreen } from "./main-screen.js";
 import { MainMenuScreen } from "./main-screen/main-menu-screen.js";
+import { MatchStateType } from "../types/match-state-type.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -94,7 +95,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     this.gameController
       .getEventsProcessorService()
-      .listenEvent(EventType.GoalEnd, () => this.handleGoalTimerEnd());
+      .listenEvent(EventType.GoalEnd, this.handleGoalTimerEnd.bind(this));
 
     this.gameController
       .getEventsProcessorService()
@@ -157,7 +158,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const player = event.detail.player;
 
     this.getObjectsByOwner(player).forEach((object) => {
-      object.setState(StateType.Inactive);
+      object.setState(ObjectStateType.Inactive);
     });
 
     this.toastObject?.show(`<em>${player.getName()}</em> left`);
@@ -265,6 +266,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.ballObject?.setInactive();
     this.scoreboardObject?.stopCountdown();
 
+    // Update match state
+    this.gameState.getGameMatch()?.setState(MatchStateType.GoalTime);
+
     // Score
     player.sumScore(1);
 
@@ -349,6 +353,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.ballObject?.setInactive();
     this.scoreboardObject?.stopCountdown();
 
+    // Update match state
+    this.gameState.getGameMatch()?.setState(MatchStateType.GoalTime);
+
     // Score
     const playerId = new TextDecoder().decode(arrayBuffer.slice(0, 36));
     const playerScore = new DataView(arrayBuffer).getInt32(36);
@@ -378,6 +385,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.localCarObject?.reset();
     this.alertObject?.hide();
     this.scoreboardObject?.startCountdown();
+
+    // Update match state
+    this.gameState.getGameMatch()?.setState(MatchStateType.InProgress);
   }
 
   private sendGoalTimerEndEvent() {
@@ -389,7 +399,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private detectGameEnd() {
-    if (this.gameState.getGameMatch()?.getState() === 1) {
+    if (this.gameState.getGameMatch()?.getState() === MatchStateType.GameOver) {
       return;
     }
 
@@ -454,7 +464,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private handleGameOverStart(winner: GamePlayer | null) {
     // Pause ball and countdown
     this.ballObject?.setInactive();
-    this.gameState.getGameMatch()?.setState(1);
+    this.gameState.getGameMatch()?.setState(MatchStateType.GameOver);
 
     // Determine winner details and show alert
     const playerName = winner?.getName().toUpperCase() ?? "UNKNOWN";
@@ -465,13 +475,15 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     // Timer
     this.gameController.addTimer(5, this.handleGameOverEnd.bind(this));
+
+    // Save player score
+    this.gameController.getMatchmakingService().savePlayerScore();
   }
 
   private handleGameOverEnd() {
     console.log("Game over end");
 
     this.gameController.getMatchmakingService().handleGameOver();
-    this.gameState.getGamePlayer().setScore(0);
 
     const mainScreen = new MainScreen(this.gameController);
     const mainMenuScreen = new MainMenuScreen(this.gameController, false);

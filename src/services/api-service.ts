@@ -20,6 +20,11 @@ import { CryptoService } from "./crypto-service.js";
 
 export class ApiService {
   private authenticationToken: string | null = null;
+  private cryptoService: CryptoService;
+
+  constructor(cryptoService: CryptoService) {
+    this.cryptoService = cryptoService;
+  }
 
   public async checkForUpdates(): Promise<boolean> {
     const response = await fetch(API_BASE_URL + VERSION_ENDPOINT);
@@ -177,7 +182,7 @@ export class ApiService {
       throw new Error("Authentication token not found");
     }
 
-    const encryptedRequest = await new CryptoService().encryptRequest(
+    const encryptedRequest = await this.cryptoService.encryptRequest(
       JSON.stringify(saveScoreRequest)
     );
 
@@ -185,7 +190,7 @@ export class ApiService {
       method: "POST",
       headers: {
         Authorization: this.authenticationToken,
-        "Content-Type": "application/octet-stream",
+        "Content-Type": "application/json",
       },
       body: encryptedRequest,
     });

@@ -52,9 +52,10 @@ export class MatchmakingService {
 
     await this.joinMatches(matches);
 
-    this.findMatchesTimerService = this.gameController.addTimer(10, () => {
-      this.createAndAdvertiseMatch();
-    });
+    this.findMatchesTimerService = this.gameController.addTimer(
+      10,
+      this.createAndAdvertiseMatch.bind(this)
+    );
   }
 
   public hasPeerConnected(peer: WebRTCPeer): void {

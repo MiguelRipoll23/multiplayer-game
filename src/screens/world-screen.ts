@@ -287,8 +287,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.showGoalAlert(player, goalTeam);
 
     // Timer
-    this.goalTimerService = this.gameController.addTimer(5, () =>
-      this.handleGoalTimerEnd()
+    this.goalTimerService = this.gameController.addTimer(
+      5,
+      this.handleGoalTimerEnd.bind(this)
     );
   }
 
@@ -463,9 +464,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.alertObject?.show([playerName, "WINS!"], playerTeam);
 
     // Timer
-    this.gameController.addTimer(5, () => {
-      this.handleGameOverEnd();
-    });
+    this.gameController.addTimer(5, this.handleGameOverEnd.bind(this));
   }
 
   private handleGameOverEnd() {

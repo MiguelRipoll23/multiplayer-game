@@ -32,7 +32,7 @@ export class GameController {
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
-    private debug = false
+    private debug: boolean
   ) {
     this.gameState = new GameState();
     this.gameFrame = new GameFrame();

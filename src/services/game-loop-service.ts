@@ -14,7 +14,7 @@ import { MainMenuScreen } from "../screens/main-screen/main-menu-screen.js";
 
 export class GameLoopService {
   private context: CanvasRenderingContext2D;
-  private debug: boolean = true;
+  private debug: boolean = false;
 
   private gameController: GameController;
   private gameFrame: GameFrame;

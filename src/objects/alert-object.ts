@@ -36,7 +36,7 @@ export class AlertObject
       this.color = color;
     }
 
-    if (textLines.length === 2) {
+    if (textLines.length === 1) {
       this.fontSize = 74;
     }
 

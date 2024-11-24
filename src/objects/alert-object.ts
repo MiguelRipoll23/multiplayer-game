@@ -12,7 +12,7 @@ export class AlertObject
 {
   private multilineText: string[] = ["Unknown", "message"];
   private color: string = "white";
-  private size: number = 44;
+  private fontSize: number = 44;
 
   private timer: TimerService | null = null;
 
@@ -38,7 +38,7 @@ export class AlertObject
 
     // If number of characters is less than 5, set font size to 64
     if (text.join("").length < 5) {
-      this.size = 74;
+      this.fontSize = 74;
     }
 
     this.fadeIn(0.3);
@@ -77,7 +77,7 @@ export class AlertObject
   }
 
   private setFontStyle(context: CanvasRenderingContext2D): void {
-    context.font = `${this.size}px system-ui`;
+    context.font = `${this.fontSize}px system-ui`;
     context.fillStyle = this.color;
     context.textAlign = "center";
     context.textBaseline = "middle";
@@ -90,7 +90,7 @@ export class AlertObject
   }
 
   private renderMultilineText(context: CanvasRenderingContext2D): void {
-    const lineHeight = 42; // Adjust as needed for line spacing
+    const lineHeight = this.fontSize;
 
     this.multilineText.forEach((line, index) => {
       const yPosition = this.y + index * lineHeight;

@@ -170,7 +170,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       this.gameState.getGameMatch()?.getPlayers().length ?? 0;
 
     if (playersCount === 1) {
-      this.scoreboardObject?.stopCountdown();
+      this.handleWaitingForPlayers();
     }
 
     this.updateScoreboard();
@@ -310,6 +310,11 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.gameController
       .getEventsProcessorService()
       .sendEvent(countdownStartEvent);
+  }
+
+  private handleWaitingForPlayers(): void {
+    this.gameState.getGameMatch()?.setState(MatchStateType.WaitingPlayers);
+    this.scoreboardObject?.stopCountdown();
   }
 
   private detectScores(): void {

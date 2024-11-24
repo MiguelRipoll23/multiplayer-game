@@ -214,7 +214,12 @@ export class MatchmakingService {
       .filter((matchPeer) => matchPeer !== peer)
       .forEach((peer) => {
         console.log("Sending player connection to", peer.getName());
-        this.sendPlayerConnection(peer, player, ConnectionStateType.Connected);
+        this.sendPlayerConnection(
+          peer,
+          player,
+          ConnectionStateType.Connected,
+          false
+        );
       });
 
     dispatchEvent(
@@ -273,7 +278,8 @@ export class MatchmakingService {
         this.sendPlayerConnection(
           peer,
           player,
-          ConnectionStateType.Disconnected
+          ConnectionStateType.Disconnected,
+          false
         );
       });
 
@@ -389,7 +395,7 @@ export class MatchmakingService {
       ...playerNameBytes,
     ]);
 
-    peer.sendReliableUnorderedMessage(payload, true);
+    peer.sendReliableOrderedMessage(payload, true);
   }
 
   private handleUnavailableSlots(peer: WebRTCPeer): void {
@@ -423,14 +429,20 @@ export class MatchmakingService {
     players
       .filter((matchPlayer) => matchPlayer !== peer.getPlayer())
       .forEach((player) => {
-        this.sendPlayerConnection(peer, player);
+        this.sendPlayerConnection(
+          peer,
+          player,
+          ConnectionStateType.Connected,
+          true
+        );
       });
   }
 
   private sendPlayerConnection(
     peer: WebRTCPeer,
     player: GamePlayer,
-    connectionState = ConnectionStateType.Connected
+    connectionState: ConnectionStateType,
+    skipQueue: boolean
   ): void {
     const id = player.getId();
     const host = player.isHost() ? 1 : 0;
@@ -449,7 +461,7 @@ export class MatchmakingService {
       ...nameBytes,
     ]);
 
-    peer.sendReliableOrderedMessage(payload, true);
+    peer.sendReliableOrderedMessage(payload, skipQueue);
   }
 
   private sendSnapshot(peer: WebRTCPeer): void {

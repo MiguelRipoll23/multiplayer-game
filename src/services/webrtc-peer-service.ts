@@ -28,12 +28,15 @@ export class WebRTCPeerService {
 
   private connectionState: ConnectionStateType =
     ConnectionStateType.Disconnected;
+
+  private messageQueue: Array<{
+    channelKey: string;
+    arrayBuffer: ArrayBuffer;
+  }> = [];
+
   private host: boolean = false;
   private player: GamePlayer | null = null;
   private joined: boolean = false;
-
-  private gracefulDisconnect: boolean = false;
-  private messageQueue: Array<{ channelKey: string; arrayBuffer: ArrayBuffer }> = [];
 
   constructor(private gameController: GameController, private token: string) {
     this.logger = new LoggerUtils(`WebRTC(${this.token})`);
@@ -130,33 +133,41 @@ export class WebRTCPeerService {
   }
 
   public disconnectGracefully(): void {
+    this.connectionState = ConnectionStateType.Disconnected;
     this.sendDisconnectMessage();
-    this.gracefulDisconnect = true;
   }
 
   public disconnect(): void {
     this.peerConnection.close();
   }
 
-  public sendReliableOrderedMessage(arrayBuffer: ArrayBuffer, skipQueue = false): void {
+  public sendReliableOrderedMessage(
+    arrayBuffer: ArrayBuffer,
+    skipQueue = false
+  ): void {
     this.sendMessage("reliable-ordered", arrayBuffer, skipQueue);
   }
 
-  public sendReliableUnorderedMessage(arrayBuffer: ArrayBuffer, skipQueue = false): void {
+  public sendReliableUnorderedMessage(
+    arrayBuffer: ArrayBuffer,
+    skipQueue = false
+  ): void {
     this.sendMessage("reliable-unordered", arrayBuffer, skipQueue);
   }
 
   public sendUnreliableOrderedMessage(arrayBuffer: ArrayBuffer): void {
-    if (!this.joined) {
+    if (this.joined === false) {
       return;
     }
+
     this.sendMessage("unreliable-ordered", arrayBuffer, true);
   }
 
   public sendUnreliableUnorderedMessage(arrayBuffer: ArrayBuffer): void {
-    if (!this.joined) {
+    if (this.joined === false) {
       return;
     }
+
     this.sendMessage("unreliable-unordered", arrayBuffer, true);
   }
 
@@ -222,11 +233,6 @@ export class WebRTCPeerService {
     this.logger.info("Peer connection closed");
     this.connectionState = ConnectionStateType.Disconnected;
     this.gameController.getWebRTCService().removePeer(this.token);
-
-    if (this.gracefulDisconnect) {
-      return;
-    }
-
     this.matchmakingService.hasPeerDisconnected(this);
   }
 
@@ -321,9 +327,14 @@ export class WebRTCPeerService {
     }
   }
 
-  private sendMessage(channelKey: string, arrayBuffer: ArrayBuffer, skipQueue = false): void {
-    if (!this.joined && !skipQueue) {
+  private sendMessage(
+    channelKey: string,
+    arrayBuffer: ArrayBuffer,
+    skipQueue = false
+  ): void {
+    if (this.joined === false && skipQueue === false) {
       this.messageQueue.push({ channelKey, arrayBuffer });
+      console.log("Queued message", channelKey, new Uint8Array(arrayBuffer));
       return;
     }
 
@@ -419,7 +430,7 @@ export class WebRTCPeerService {
 
   private handleGracefulDisconnect(): void {
     console.log("Received graceful disconnect message");
-    this.gracefulDisconnect = true;
+    this.connectionState = ConnectionStateType.Disconnected;
     this.disconnect();
   }
 }

@@ -235,7 +235,7 @@ export class MatchmakingService {
     const score = gamePlayer.getScore();
     const hash = crypto.randomUUID();
 
-    const saveScoreRequest = new SaveScoreRequest(score, hash);
+    const saveScoreRequest: SaveScoreRequest = { score, hash };
     await this.apiService.saveScore(saveScoreRequest);
 
     this.gameController.getGameState().setGameMatch(null);

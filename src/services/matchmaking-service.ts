@@ -231,6 +231,13 @@ export class MatchmakingService {
       await this.apiService.removeMatch();
     }
 
+    const gamePlayer = this.gameState.getGamePlayer();
+    const score = gamePlayer.getScore();
+    const hash = crypto.randomUUID();
+
+    const saveScoreRequest = new SaveScoreRequest(score, hash);
+    await this.apiService.saveScore(saveScoreRequest);
+
     this.gameController.getGameState().setGameMatch(null);
   }
 
@@ -438,27 +445,5 @@ export class MatchmakingService {
     console.log("Sending snapshot ACK to", peer.getName());
     const payload = new Uint8Array([SNAPSHOT_ACK_ID]);
     peer.sendReliableOrderedMessage(payload);
-  }
-
-  private async handleGameOverEnd() {
-    console.log("Game over end");
-
-    const gamePlayer = this.gameState.getGamePlayer();
-    const score = gamePlayer.getScore();
-    const hash = crypto.randomUUID();
-
-    const saveScoreRequest = new SaveScoreRequest(score, hash);
-    await this.apiService.saveScore(saveScoreRequest);
-
-    this.gameController.getMatchmakingService().handleGameOver();
-    this.gameState.getGamePlayer().setScore(0);
-
-    const mainScreen = new MainScreen(this.gameController);
-    const mainMenuScreen = new MainMenuScreen(this.gameController, false);
-
-    mainScreen.setScreen(mainMenuScreen);
-    mainScreen.loadObjects();
-
-    this.gameController.getTransitionService().fadeOutAndIn(mainScreen, 1, 1);
   }
 }

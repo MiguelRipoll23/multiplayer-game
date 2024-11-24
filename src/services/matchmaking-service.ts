@@ -19,10 +19,7 @@ import {
   SNAPSHOT_ACK_ID,
 } from "../constants/webrtc-constants.js";
 import { GameMatch } from "../models/game-match.js";
-import {
-  MATCH_ATTRIBUTES,
-  TOTAL_SLOTS,
-} from "../constants/matchmaking-constants.js";
+import { MATCH_ATTRIBUTES } from "../constants/matchmaking-constants.js";
 import { GamePlayer } from "../models/game-player.js";
 import { GameState } from "../models/game-state.js";
 import { ConnectionType } from "../types/connection-type.js";
@@ -127,7 +124,7 @@ export class MatchmakingService {
     }
 
     if (this.gameState.getGameMatch() !== null) {
-      this.handleAlreadyJoinedMatch(peer);
+      return this.handleAlreadyJoinedMatch(peer);
     }
 
     console.log("Received join response from", peer.getToken());
@@ -225,11 +222,13 @@ export class MatchmakingService {
   }
 
   public handleGameOver(): void {
-    this.webrtcService
-      .getPeers()
-      .forEach((peer) => peer.disconnectGracefully());
+    if (this.gameState.getGameMatch()?.isHost()) {
+      this.webrtcService
+        .getPeers()
+        .forEach((peer) => peer.disconnectGracefully());
+    }
 
-    this.gameState.setGameMatch(null);
+    this.gameController.getGameState().setGameMatch(null);
   }
 
   private handleAlreadyJoinedMatch(peer: WebRTCPeer): void {

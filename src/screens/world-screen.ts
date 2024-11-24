@@ -242,7 +242,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       this.gameState.getGameMatch()?.getPlayers().length ?? 0;
 
     if (playersCount < 2) {
-      return console.warn("Goal detection is disabled due to players count");
+      return;
     }
 
     const goalScored = this.goalObject
@@ -470,9 +470,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private handleGameOverEnd() {
     console.log("Game over end");
 
-    if (this.gameState.getGameMatch()?.isHost()) {
-      this.gameController.getMatchmakingService().handleGameOver();
-    }
+    this.gameController.getMatchmakingService().handleGameOver();
+    this.gameState.getGamePlayer().setScore(0);
 
     const mainScreen = new MainScreen(this.gameController);
     const mainMenuScreen = new MainMenuScreen(this.gameController, false);

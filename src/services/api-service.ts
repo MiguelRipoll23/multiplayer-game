@@ -17,13 +17,14 @@ import { RegistrationResponse } from "./interfaces/response/registration-respons
 import { VersionResponse } from "./interfaces/response/version-response.js";
 import { SaveScoreRequest } from "./interfaces/request/save-score-request.js";
 import { CryptoService } from "./crypto-service.js";
+import { GameController } from "../models/game-controller.js";
 
 export class ApiService {
   private authenticationToken: string | null = null;
   private cryptoService: CryptoService;
 
-  constructor(cryptoService: CryptoService) {
-    this.cryptoService = cryptoService;
+  constructor(gameController: GameController) {
+    this.cryptoService = gameController.getCryptoService();
   }
 
   public async checkForUpdates(): Promise<boolean> {

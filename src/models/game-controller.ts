@@ -40,7 +40,7 @@ export class GameController {
     this.gameKeyboard = new GameKeyboard();
 
     this.transitionService = new ScreenTransitionService(this.gameFrame);
-    this.apiService = new ApiService();
+    this.apiService = new ApiService(this);
     this.cryptoService = new CryptoService(this.gameState.getGameServer());
     this.webSocketService = new WebSocketService(this);
     this.webRTCService = new WebRTCService(this);

@@ -24,7 +24,7 @@ import { GamePlayer } from "../models/game-player.js";
 import { GameState } from "../models/game-state.js";
 import { ConnectionType } from "../types/connection-type.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
-import { SaveScoreRequest } from "../models/save-score-request.js";
+import { SaveScoreRequest } from "../services/interfaces/request/save-score-request.js";
 
 export class MatchmakingService {
   private apiService: ApiService;

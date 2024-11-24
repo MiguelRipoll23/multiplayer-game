@@ -259,7 +259,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     // Only show for 3, 2, 1 and GO!
     if (this.countdownNumber > -1) {
-      this.alertObject?.show([text], "#4a90e2");
+      this.alertObject?.show([text], "#FFFF00");
     }
 
     // If 2 seconds since GO! start the game

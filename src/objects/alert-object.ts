@@ -12,6 +12,7 @@ export class AlertObject
 {
   private multilineText: string[] = ["Unknown", "message"];
   private color: string = "white";
+  private size: number = 44;
 
   private timer: TimerService | null = null;
 
@@ -33,6 +34,11 @@ export class AlertObject
       this.color = RED_TEAM_COLOR;
     } else {
       this.color = color;
+    }
+
+    // If number of characters is less than 5, set font size to 64
+    if (text.join("").length < 5) {
+      this.size = 74;
     }
 
     this.fadeIn(0.3);
@@ -71,7 +77,7 @@ export class AlertObject
   }
 
   private setFontStyle(context: CanvasRenderingContext2D): void {
-    context.font = "44px system-ui";
+    context.font = `${this.size}px system-ui`;
     context.fillStyle = this.color;
     context.textAlign = "center";
     context.textBaseline = "middle";

@@ -146,12 +146,18 @@ export class WebRTCPeerService {
     this.sendMessage("reliable-unordered", arrayBuffer, skipQueue);
   }
 
-  public sendUnreliableOrderedMessage(arrayBuffer: ArrayBuffer, skipQueue = false): void {
-    this.sendMessage("unreliable-ordered", arrayBuffer, skipQueue);
+  public sendUnreliableOrderedMessage(arrayBuffer: ArrayBuffer): void {
+    if (!this.joined) {
+      return;
+    }
+    this.sendMessage("unreliable-ordered", arrayBuffer, true);
   }
 
-  public sendUnreliableUnorderedMessage(arrayBuffer: ArrayBuffer, skipQueue = false): void {
-    this.sendMessage("unreliable-unordered", arrayBuffer, skipQueue);
+  public sendUnreliableUnorderedMessage(arrayBuffer: ArrayBuffer): void {
+    if (!this.joined) {
+      return;
+    }
+    this.sendMessage("unreliable-unordered", arrayBuffer, true);
   }
 
   private initializeDataChannels(): void {

@@ -100,8 +100,6 @@ export class ScoreboardObject
   }
 
   public synchronize(data: ArrayBuffer): void {
-    this.active = true;
-
     const dataView = new DataView(data);
     this.elapsedMilliseconds = dataView.getInt32(0);
   }

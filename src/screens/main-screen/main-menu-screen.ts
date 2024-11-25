@@ -7,7 +7,7 @@ import { ApiService } from "../../services/api-service.js";
 import { MessagesResponse } from "../../services/interfaces/response/messages-response.js";
 import { ScreenTransitionService } from "../../services/screen-transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
-import { LoadingScreen } from "./loading-screen.js";
+import { LoadingScreen } from "../loading-screen.js";
 import { ScoreboardScreen } from "./scoreboard-screen.js";
 
 export class MainMenuScreen extends BaseGameScreen {

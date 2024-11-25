@@ -32,6 +32,7 @@ export class GameMatch {
 
   public setState(state: MatchStateType): void {
     this.state = state;
+    console.log("Match state changed to", MatchStateType[state]);
   }
 
   public getTotalSlots(): number {

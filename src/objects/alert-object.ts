@@ -37,7 +37,7 @@ export class AlertObject
     }
 
     if (textLines.length === 1) {
-      this.fontSize = 28;
+      this.fontSize = 74;
     } else {
       this.fontSize = 44;
     }

@@ -62,7 +62,7 @@ export class ScoreboardScreen extends BaseGameScreen {
     this.ranking.forEach((player, index) => {
       context.fillStyle = index % 2 === 0 ? "white" : "lightgray";
       context.fillText(player.player_name, startX, startY);
-      context.fillText(player.total_score.toString(), this.canvas.width - 20, startY);
+      context.fillText(player.total_score.toString(), this.canvas.width - 40, startY);
       startY += 30;
     });
   }

@@ -191,6 +191,6 @@ export class MainMenuScreen extends BaseGameScreen {
     const scoreboardScreen = new ScoreboardScreen(this.gameController);
     scoreboardScreen.loadObjects();
 
-    this.transitionService.crossfade(scoreboardScreen, 0.2);
+    this.screenManagerService?.getTransitionService().crossfade(scoreboardScreen, 0.2); // Pab34 // P6d3c
   }
 }

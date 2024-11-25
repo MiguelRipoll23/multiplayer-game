@@ -11,7 +11,7 @@ export class ScoreboardScreen extends BaseGameScreen {
   constructor(gameController: GameController) {
     super(gameController);
     this.titleObject = new TitleObject();
-    this.titleObject.setText("Scoreboard");
+    this.titleObject.setText("SCOREBOARD");
   }
 
   public override loadObjects(): void {

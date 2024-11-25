@@ -24,7 +24,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
 
   private readonly MASS: number = 500;
   private readonly DISTANCE_CENTER: number = 220;
-  private readonly FRICTION: number = 0.1;
+  private readonly FRICTION: number = 0.5;
 
   private PLAYER_NAME_PADDING = 10;
   private PLAYER_NAME_RECT_HEIGHT = 24;

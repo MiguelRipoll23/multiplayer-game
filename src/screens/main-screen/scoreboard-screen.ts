@@ -53,14 +53,14 @@ export class ScoreboardScreen extends BaseGameScreen {
   }
 
   private renderTable(context: CanvasRenderingContext2D): void {
-    context.fillStyle = "white";
-    context.font = "lighter 20px system-ui";
+    context.font = "lighter 24px system-ui";
     context.textAlign = "left";
 
     const startX = 30;
     let startY = 100;
 
-    this.ranking.forEach((player) => {
+    this.ranking.forEach((player, index) => {
+      context.fillStyle = index % 2 === 0 ? "white" : "lightgray";
       context.fillText(player.player_name, startX, startY);
       context.fillText(player.total_score.toString(), startX + 200, startY);
       startY += 30;

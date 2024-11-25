@@ -2,6 +2,7 @@ import { BaseGameScreen } from "./base/base-game-screen.js";
 import { TitleObject } from "../objects/common/title-object.js";
 import { ApiService } from "../services/api-service.js";
 import { RankingResponse } from "../services/interfaces/response/ranking-response.js";
+import { GameController } from "../models/game-controller.js";
 
 export class ScoreboardScreen extends BaseGameScreen {
   private titleObject: TitleObject;

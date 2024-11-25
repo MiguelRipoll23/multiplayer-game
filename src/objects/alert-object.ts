@@ -37,7 +37,7 @@ export class AlertObject
     }
 
     if (textLines.length === 1) {
-      this.fontSize = 74;
+      this.fontSize = 28;
     }
 
     this.fadeIn(0.3);

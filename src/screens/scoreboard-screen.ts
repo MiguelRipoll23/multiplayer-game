@@ -59,4 +59,9 @@ export class ScoreboardScreen extends BaseGameScreen {
       startY += 30;
     });
   }
+
+  public override render(context: CanvasRenderingContext2D): void {
+    this.renderTable();
+    super.render(context);
+  }
 }

@@ -18,7 +18,7 @@ export class ScoreboardObject
   private readonly CORNER_RADIUS: number = 10;
 
   private readonly TEXT_COLOR: string = "white";
-  private readonly FONT_SIZE: string = "32px";
+  private readonly FONT_SIZE: string = "36px";
   private readonly FONT_FAMILY: string = "monospace";
 
   private readonly TIME_TEXT_COLOR: string = "white";

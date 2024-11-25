@@ -1,21 +1,18 @@
-import { BaseGameScreen } from "./base/base-game-screen.js";
-import { TitleObject } from "../objects/common/title-object.js";
-import { ApiService } from "../services/api-service.js";
-import { RankingResponse } from "../services/interfaces/response/ranking-response.js";
-import { GameController } from "../models/game-controller.js";
+import { GameController } from "../../models/game-controller.js";
+import { TitleObject } from "../../objects/common/title-object.js";
+import { RankingResponse } from "../../services/interfaces/response/ranking-response.js";
+import { BaseGameScreen } from "../base/base-game-screen.js";
 
 export class ScoreboardScreen extends BaseGameScreen {
-  private titleObject: TitleObject;
+  private titleObject: TitleObject | null = null;
   private ranking: RankingResponse[] = [];
 
   constructor(gameController: GameController) {
     super(gameController);
-    this.titleObject = new TitleObject();
-    this.titleObject.setText("SCOREBOARD");
   }
 
   public override loadObjects(): void {
-    this.uiObjects.push(this.titleObject);
+    this.loadTitleObject();
     super.loadObjects();
   }
 
@@ -24,23 +21,25 @@ export class ScoreboardScreen extends BaseGameScreen {
     this.fetchRanking();
   }
 
-  private fetchRanking(): void {
-    const apiService = this.gameController.getApiService();
-    apiService.getRanking().then((ranking) => {
-      this.ranking = ranking;
-      this.renderTable();
-    }).catch((error) => {
-      console.error("Failed to fetch ranking", error);
-    });
+  private loadTitleObject(): void {
+    this.titleObject = new TitleObject();
+    this.titleObject.setText("SCOREBOARD");
+    this.uiObjects.push(this.titleObject);
   }
 
-  private renderTable(): void {
-    const context = this.canvas.getContext("2d");
-    if (!context) return;
+  private fetchRanking(): void {
+    const apiService = this.gameController.getApiService();
+    apiService
+      .getRanking()
+      .then((ranking) => {
+        this.ranking = ranking;
+      })
+      .catch((error) => {
+        console.error("Failed to fetch ranking", error);
+      });
+  }
 
-    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.titleObject.render(context);
-
+  private renderTable(context: CanvasRenderingContext2D): void {
     context.fillStyle = "white";
     context.font = "lighter 20px system-ui";
     context.textAlign = "left";
@@ -61,7 +60,7 @@ export class ScoreboardScreen extends BaseGameScreen {
   }
 
   public override render(context: CanvasRenderingContext2D): void {
-    this.renderTable();
+    this.renderTable(context);
     super.render(context);
   }
 }

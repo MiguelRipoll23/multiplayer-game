@@ -8,7 +8,7 @@ import { MessagesResponse } from "../../services/interfaces/response/messages-re
 import { ScreenTransitionService } from "../../services/screen-transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { LoadingScreen } from "./loading-screen.js";
-import { ScoreboardScreen } from "../scoreboard-screen.js";
+import { ScoreboardScreen } from "./scoreboard-screen.js";
 
 export class MainMenuScreen extends BaseGameScreen {
   private MENU_OPTIONS_TEXT: string[] = ["Join game", "Scoreboard", "Settings"];
@@ -157,8 +157,7 @@ export class MainMenuScreen extends BaseGameScreen {
         break;
 
       case 1:
-        this.transitionToScoreboardScreen();
-        break;
+        return this.transitionToScoreboardScreen();
 
       case 2:
         return this.closeableMessageObject?.show("Not implemented");
@@ -191,6 +190,8 @@ export class MainMenuScreen extends BaseGameScreen {
     const scoreboardScreen = new ScoreboardScreen(this.gameController);
     scoreboardScreen.loadObjects();
 
-    this.screenManagerService?.getTransitionService().crossfade(scoreboardScreen, 0.2); // Pab34 // P6d3c
+    this.screenManagerService
+      ?.getTransitionService()
+      .crossfade(scoreboardScreen, 0.2); // Pab34 // P6d3c
   }
 }

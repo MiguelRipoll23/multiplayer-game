@@ -5,7 +5,6 @@ import { TitleObject } from "../../objects/common/title-object.js";
 import { RankingResponse } from "../../services/interfaces/response/ranking-response.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
-import { BLUE_TEAM_COLOR, RED_TEAM_COLOR } from "../../constants/colors-constants.js";
 
 export class ScoreboardScreen extends BaseGameScreen {
   private titleObject: TitleObject | null = null;
@@ -70,7 +69,7 @@ export class ScoreboardScreen extends BaseGameScreen {
     let startY = 100;
 
     this.ranking.forEach((player, index) => {
-      context.fillStyle = index % 2 === 0 ? BLUE_TEAM_COLOR : RED_TEAM_COLOR;
+      context.fillStyle = index % 2 === 0 ? "white" : "#f0f0f0";
       context.fillText(player.player_name, startX, startY);
       context.fillText(player.total_score.toString(), this.canvas.width - 40, startY);
       startY += 30;

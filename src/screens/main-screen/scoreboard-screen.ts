@@ -4,11 +4,13 @@ import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
 import { RankingResponse } from "../../services/interfaces/response/ranking-response.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
+import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 
 export class ScoreboardScreen extends BaseGameScreen {
   private titleObject: TitleObject | null = null;
   private buttonObject: ButtonObject | null = null;
   private ranking: RankingResponse[] = [];
+  private closeableMessageObject: CloseableMessageObject | null = null;
 
   constructor(gameController: GameController) {
     super(gameController);
@@ -17,6 +19,7 @@ export class ScoreboardScreen extends BaseGameScreen {
   public override loadObjects(): void {
     this.loadTitleObject();
     this.loadButtonObject();
+    this.loadCloseableMessageObject();
     super.loadObjects();
   }
 
@@ -40,6 +43,11 @@ export class ScoreboardScreen extends BaseGameScreen {
     this.uiObjects.push(this.buttonObject);
   }
 
+  private loadCloseableMessageObject(): void {
+    this.closeableMessageObject = new CloseableMessageObject(this.canvas);
+    this.uiObjects.push(this.closeableMessageObject);
+  }
+
   private fetchRanking(): void {
     const apiService = this.gameController.getApiService();
     apiService
@@ -49,6 +57,7 @@ export class ScoreboardScreen extends BaseGameScreen {
       })
       .catch((error) => {
         console.error("Failed to fetch ranking", error);
+        this.closeableMessageObject?.show("Failed to fetch ranking");
       });
   }
 

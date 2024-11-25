@@ -60,11 +60,6 @@ export class ScoreboardScreen extends BaseGameScreen {
     const startX = 30;
     let startY = 100;
 
-    context.fillText("Player Name", startX, startY);
-    context.fillText("Score", startX + 200, startY);
-
-    startY += 30;
-
     this.ranking.forEach((player) => {
       context.fillText(player.player_name, startX, startY);
       context.fillText(player.total_score.toString(), startX + 200, startY);

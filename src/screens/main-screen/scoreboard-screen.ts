@@ -63,7 +63,7 @@ export class ScoreboardScreen extends BaseGameScreen {
   }
 
   private renderTable(context: CanvasRenderingContext2D): void {
-    context.font = "lighter 24px system-ui";
+    context.font = "bold 24px system-ui";
     context.textAlign = "left";
 
     const startX = 30;

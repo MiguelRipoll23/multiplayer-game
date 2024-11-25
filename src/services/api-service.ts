@@ -8,6 +8,7 @@ import {
   REGISTER_ENDPOINT,
   VERSION_ENDPOINT,
   SCOREBOARD_SAVE_SCORE_PATH,
+  SCOREBOARD_GET_RANKING_PATH,
 } from "../constants/api-constants.js";
 import { AdvertiseMatchRequest } from "./interfaces/request/advertise-match-request.js";
 import { FindMatchRequest as FindMatchesRequest } from "./interfaces/request/find-matches-request.js";
@@ -16,6 +17,7 @@ import { MessagesResponse } from "./interfaces/response/messages-response.js";
 import { RegistrationResponse } from "./interfaces/response/registration-response.js";
 import { VersionResponse } from "./interfaces/response/version-response.js";
 import { SaveScoreRequest } from "./interfaces/request/save-score-request.js";
+import { RankingResponse } from "./interfaces/response/ranking-response.js";
 import { CryptoService } from "./crypto-service.js";
 import { GameController } from "../models/game-controller.js";
 
@@ -205,5 +207,26 @@ export class ApiService {
     }
 
     console.log("Score saved");
+  }
+
+  public async getRanking(): Promise<RankingResponse[]> {
+    if (this.authenticationToken === null) {
+      throw new Error("Authentication token not found");
+    }
+
+    const response = await fetch(API_BASE_URL + SCOREBOARD_GET_RANKING_PATH, {
+      headers: {
+        Authorization: this.authenticationToken,
+      },
+    });
+
+    if (response.ok === false) {
+      throw new Error("Failed to fetch ranking");
+    }
+
+    const rankingResponse: RankingResponse[] = await response.json();
+    console.log("Ranking response", rankingResponse);
+
+    return rankingResponse;
   }
 }

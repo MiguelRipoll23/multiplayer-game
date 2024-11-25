@@ -5,6 +5,7 @@ import { TitleObject } from "../../objects/common/title-object.js";
 import { RankingResponse } from "../../services/interfaces/response/ranking-response.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
+import { BLUE_TEAM_COLOR, RED_TEAM_COLOR } from "../../constants/colors-constants.js";
 
 export class ScoreboardScreen extends BaseGameScreen {
   private titleObject: TitleObject | null = null;
@@ -62,14 +63,14 @@ export class ScoreboardScreen extends BaseGameScreen {
   }
 
   private renderTable(context: CanvasRenderingContext2D): void {
-    context.font = "lighter 24px system-ui";
+    context.font = "bold 24px system-ui";
     context.textAlign = "left";
 
     const startX = 30;
     let startY = 100;
 
     this.ranking.forEach((player, index) => {
-      context.fillStyle = index % 2 === 0 ? "white" : "lightgray";
+      context.fillStyle = index % 2 === 0 ? BLUE_TEAM_COLOR : RED_TEAM_COLOR;
       context.fillText(player.player_name, startX, startY);
       context.fillText(player.total_score.toString(), this.canvas.width - 40, startY);
       startY += 30;

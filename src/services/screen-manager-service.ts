@@ -23,7 +23,7 @@ export class ScreenManagerService implements ScreenManager {
       return null;
     }
 
-    const index = this.stack.indexOf(this.currentScreen) - 1;
+    const index = this.stack.indexOf(this.currentScreen);
 
     return this.stack[index - 1] || null;
   }
@@ -40,7 +40,7 @@ export class ScreenManagerService implements ScreenManager {
     this.currentScreen = currentScreen;
   }
 
-  public setNextScreen(nextScreen: GameScreen | null): void {
+  public setNextScreen(nextScreen: GameScreen | null, stack = true): void {
     this.nextScreen = nextScreen;
     this.nextScreen?.setScreenManagerService(this);
 

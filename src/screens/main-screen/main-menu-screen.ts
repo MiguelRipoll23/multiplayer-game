@@ -21,10 +21,11 @@ export class MainMenuScreen extends BaseGameScreen {
   private serverMessageWindowObject: ServerMessageWindowObject | null = null;
   private closeableMessageObject: CloseableMessageObject | null = null;
 
-  constructor(gameController: GameController, private downloadNews = true) {
+  constructor(gameController: GameController, private showNews: boolean) {
     super(gameController);
     this.apiService = gameController.getApiService();
     this.transitionService = gameController.getTransitionService();
+    this.showNews = showNews;
   }
 
   public override loadObjects(): void {
@@ -39,7 +40,7 @@ export class MainMenuScreen extends BaseGameScreen {
   public override hasTransitionFinished(): void {
     super.hasTransitionFinished();
 
-    if (this.downloadNews) {
+    if (this.showNews) {
       this.downloadServerMessages();
     }
   }
@@ -106,6 +107,7 @@ export class MainMenuScreen extends BaseGameScreen {
     }
 
     this.messagesResponse = messages;
+    this.showNews = false;
     this.showMessage(0);
   }
 

@@ -171,7 +171,7 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private transitionToMainMenuScreen(): void {
-    const mainMenuScreen = new MainMenuScreen(this.gameController);
+    const mainMenuScreen = new MainMenuScreen(this.gameController, true);
     mainMenuScreen.loadObjects();
 
     this.screenManagerService

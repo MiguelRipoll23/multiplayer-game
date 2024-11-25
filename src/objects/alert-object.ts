@@ -91,10 +91,12 @@ export class AlertObject
   }
 
   private renderMultilineText(context: CanvasRenderingContext2D): void {
-    const lineHeight = this.fontSize - 2;
+    const lineHeight = this.fontSize;
+    const blockHeight = this.textLines.length * lineHeight;
+    const startY = this.y - blockHeight / 2 + lineHeight / 2; // Center the block
 
     this.textLines.forEach((line, index) => {
-      const yPosition = this.y + index * lineHeight;
+      const yPosition = startY + index * lineHeight;
       this.drawText(context, line, this.x, yPosition);
     });
   }

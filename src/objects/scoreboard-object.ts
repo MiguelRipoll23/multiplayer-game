@@ -66,7 +66,11 @@ export class ScoreboardObject
     this.active = false;
   }
 
-  public resetCountdown(): void {
+  public getElapsedMilliseconds(): number {
+    return this.elapsedMilliseconds;
+  }
+
+  public reset(): void {
     this.elapsedMilliseconds = 0;
   }
 

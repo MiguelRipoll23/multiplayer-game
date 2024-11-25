@@ -206,7 +206,7 @@ export class CarObject extends BaseDynamicCollidableGameObject {
 
     // Set the rectangle's top-left corner position
     const rectX = this.x + this.WIDTH / 2 - rectWidth / 2;
-    const rectY = this.y - this.PLAYER_NAME_RECT_HEIGHT - 10;
+    const rectY = this.y - this.PLAYER_NAME_RECT_HEIGHT - 5;
 
     // Set fill style for the rectangle
     if (this.remote) {

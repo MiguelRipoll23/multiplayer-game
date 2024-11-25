@@ -58,10 +58,14 @@ export class BallObject
     return this.inactive;
   }
 
-  public setInactive(): void {
+  public handleGoalScored(): void {
     this.inactive = true;
     this.vx = -this.vx * 2;
     this.vy = -this.vy * 2;
+  }
+
+  public setInactive(inactive: boolean): void {
+    this.inactive = inactive;
   }
 
   public getLastPlayer(): GamePlayer | null {

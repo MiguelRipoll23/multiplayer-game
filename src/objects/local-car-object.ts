@@ -34,6 +34,11 @@ export class LocalCarObject extends CarObject {
     this.active = active;
   }
 
+  public override reset(): void {
+    super.reset();
+    this.active = true;
+  }
+
   public getJoystickObject(): JoystickObject {
     return this.joystickObject;
   }

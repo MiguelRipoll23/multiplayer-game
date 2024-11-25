@@ -29,7 +29,6 @@ export class ToastObject extends BaseAnimatedGameObject {
     this.rotateTo(-2, 0.2);
 
     if (duration > 0) {
-      console.log("Creating timer");
       this.timer = new TimerService(duration, this.hide.bind(this));
     }
   }

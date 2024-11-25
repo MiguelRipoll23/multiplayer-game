@@ -39,6 +39,7 @@ export class MainMenuScreen extends BaseGameScreen {
 
   public override hasTransitionFinished(): void {
     super.hasTransitionFinished();
+    this.enableMenuButtons();
 
     if (this.showNews) {
       this.downloadServerMessages();
@@ -170,11 +171,7 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private transitionToLoadingScreen(): void {
-    this.uiObjects.forEach((uiObject) => {
-      if (uiObject instanceof MenuOptionObject) {
-        uiObject.setActive(false);
-      }
-    });
+    this.disableMenuButtons();
 
     const loadingScreen = new LoadingScreen(this.gameController);
     loadingScreen.loadObjects();
@@ -183,17 +180,29 @@ export class MainMenuScreen extends BaseGameScreen {
   }
 
   private transitionToScoreboardScreen(): void {
-    this.uiObjects.forEach((uiObject) => {
-      if (uiObject instanceof MenuOptionObject) {
-        uiObject.setActive(false);
-      }
-    });
+    this.disableMenuButtons();
 
     const scoreboardScreen = new ScoreboardScreen(this.gameController);
     scoreboardScreen.loadObjects();
 
     this.screenManagerService
       ?.getTransitionService()
-      .crossfade(scoreboardScreen, 0.2); // Pab34 // P6d3c
+      .crossfade(scoreboardScreen, 0.2);
+  }
+
+  private enableMenuButtons(): void {
+    this.uiObjects.forEach((uiObject) => {
+      if (uiObject instanceof MenuOptionObject) {
+        uiObject.setActive(true);
+      }
+    });
+  }
+
+  private disableMenuButtons(): void {
+    this.uiObjects.forEach((uiObject) => {
+      if (uiObject instanceof MenuOptionObject) {
+        uiObject.setActive(false);
+      }
+    });
   }
 }

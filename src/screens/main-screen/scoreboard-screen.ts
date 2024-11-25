@@ -60,7 +60,7 @@ export class ScoreboardScreen extends BaseGameScreen {
       .getRanking()
       .then((ranking) => {
         this.setRankingData(ranking);
-        this.rankingTableObject?.fadeIn(0.5);
+        this.rankingTableObject?.fadeIn(0.2);
       })
       .catch((error) => {
         console.error("Failed to fetch ranking", error);

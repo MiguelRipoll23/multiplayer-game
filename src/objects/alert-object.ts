@@ -12,7 +12,7 @@ export class AlertObject
 {
   private textLines: string[] = ["Unknown", "message"];
   private color: string = "white";
-  private fontSize: number = 44;
+  private fontSize: number = 28;
 
   private timer: TimerService | null = null;
 

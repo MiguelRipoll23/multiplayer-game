@@ -1,15 +1,15 @@
 import { GameController } from "../../models/game-controller.js";
 import { ButtonObject } from "../../objects/common/button-object.js";
-import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
 import { RankingResponse } from "../../services/interfaces/response/ranking-response.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
+import { RankingTableObject } from "../../objects/ranking-table-object.js";
 
 export class ScoreboardScreen extends BaseGameScreen {
   private titleObject: TitleObject | null = null;
   private buttonObject: ButtonObject | null = null;
-  private ranking: RankingResponse[] = [];
+  private rankingTableObject: RankingTableObject | null = null;
   private closeableMessageObject: CloseableMessageObject | null = null;
 
   constructor(gameController: GameController) {
@@ -19,6 +19,7 @@ export class ScoreboardScreen extends BaseGameScreen {
   public override loadObjects(): void {
     this.loadTitleObject();
     this.loadButtonObject();
+    this.loadRankingTableObject();
     this.loadCloseableMessageObject();
     super.loadObjects();
   }
@@ -43,6 +44,11 @@ export class ScoreboardScreen extends BaseGameScreen {
     this.uiObjects.push(this.buttonObject);
   }
 
+  private loadRankingTableObject(): void {
+    this.rankingTableObject = new RankingTableObject();
+    this.uiObjects.push(this.rankingTableObject);
+  }
+
   private loadCloseableMessageObject(): void {
     this.closeableMessageObject = new CloseableMessageObject(this.canvas);
     this.uiObjects.push(this.closeableMessageObject);
@@ -53,7 +59,8 @@ export class ScoreboardScreen extends BaseGameScreen {
     apiService
       .getRanking()
       .then((ranking) => {
-        this.ranking = ranking;
+        this.setRankingData(ranking);
+        this.rankingTableObject?.fadeIn(0.5);
       })
       .catch((error) => {
         console.error("Failed to fetch ranking", error);
@@ -61,19 +68,8 @@ export class ScoreboardScreen extends BaseGameScreen {
       });
   }
 
-  private renderTable(context: CanvasRenderingContext2D): void {
-    context.font = "bold 24px system-ui";
-    context.textAlign = "left";
-
-    const startX = 30;
-    let startY = 100;
-
-    this.ranking.forEach((player, index) => {
-      context.fillStyle = index % 2 === 0 ? "white" : "#BDBDBD";
-      context.fillText(player.player_name, startX, startY);
-      context.fillText(player.total_score.toString(), this.canvas.width - 40, startY);
-      startY += 30;
-    });
+  private setRankingData(ranking: RankingResponse[]): void {
+    this.rankingTableObject?.setRanking(ranking);
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
@@ -86,7 +82,6 @@ export class ScoreboardScreen extends BaseGameScreen {
 
   public override render(context: CanvasRenderingContext2D): void {
     context.save();
-    this.renderTable(context);
     super.render(context);
     context.restore();
   }

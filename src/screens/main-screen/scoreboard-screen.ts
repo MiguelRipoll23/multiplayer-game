@@ -58,7 +58,7 @@ export class ScoreboardScreen extends BaseGameScreen {
     context.textAlign = "left";
 
     const startX = 30;
-    let startY = 70; // P62db
+    let startY = 100;
 
     this.ranking.forEach((player) => {
       context.fillText(player.player_name, startX, startY);

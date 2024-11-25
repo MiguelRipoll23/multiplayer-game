@@ -64,6 +64,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     this.toastObject?.show("Finding sessions...");
     this.gameController.getMatchmakingService().findOrAdvertiseMatch();
+    this.scoreboardObject?.reset(); // P58a2
   }
 
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {

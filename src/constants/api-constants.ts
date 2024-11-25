@@ -21,3 +21,4 @@ export const MATCHES_REMOVE_ENDPOINT = "/matches/remove";
 
 export const SCOREBOARD_PATH = "/scoreboard";
 export const SCOREBOARD_SAVE_SCORE_PATH = `${SCOREBOARD_PATH}/saveScore`;
+export const SCOREBOARD_GET_RANKING_PATH = `${SCOREBOARD_PATH}/getRanking`;

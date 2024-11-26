@@ -7,7 +7,9 @@ import { WebRTCService } from "./webrtc-service.js";
 
 export class EventsProcessorService {
   private webrtcService: WebRTCService;
-  private events: GameEvent[] = [];
+
+  private localEvents: GameEvent[] = [];
+  private remoteEvents: GameEvent[] = [];
 
   constructor(private gameController: GameController) {
     this.webrtcService = gameController.getWebRTCService();
@@ -27,20 +29,38 @@ export class EventsProcessorService {
     const id = dataView.getInt8(0);
     const payload = data.byteLength > 1 ? data.slice(1) : null;
 
-    const event = new GameEvent(id, payload);
-    this.events.push(event);
+    const event = new GameEvent(id);
+    event.setBuffer(payload);
+
+    this.remoteEvents.push(event);
   }
 
-  public listenEvent(
+  public listenLocalEvent(
+    eventId: EventType,
+    callback: (data: Object | null) => void
+  ) {
+    this.localEvents.forEach((event) => {
+      if (event.getId() === eventId) {
+        callback(event.getData());
+        this.removeEvent(this.localEvents, event);
+      }
+    });
+  }
+
+  public listenRemoteEvent(
     eventId: EventType,
     callback: (data: ArrayBuffer | null) => void
   ) {
-    this.events.forEach((event) => {
+    this.remoteEvents.forEach((event) => {
       if (event.getId() === eventId) {
-        callback(event.getData());
-        this.removeEvent(event);
+        callback(event.getBuffer());
+        this.removeEvent(this.remoteEvents, event);
       }
     });
+  }
+
+  public addLocalEvent(event: GameEvent) {
+    this.localEvents.push(event);
   }
 
   public sendEvent(event: GameEvent) {
@@ -51,17 +71,17 @@ export class EventsProcessorService {
     });
   }
 
-  private removeEvent(event: GameEvent) {
-    const index = this.events.indexOf(event);
+  private removeEvent(list: GameEvent[], event: GameEvent) {
+    const index = list.indexOf(event);
 
     if (index > -1) {
-      this.events.splice(index, 1);
+      list.splice(index, 1);
     }
   }
 
   private sendEventToPeer(webrtcPeer: WebRTCPeer, event: GameEvent) {
     const id = event.getId();
-    const data = event.getData();
+    const data = event.getBuffer();
 
     const dataBytesLength = data?.byteLength ?? 0;
 

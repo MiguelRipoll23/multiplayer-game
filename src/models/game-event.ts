@@ -2,18 +2,30 @@ import { EventType } from "../types/event-type.js";
 
 export class GameEvent {
   private id: EventType;
-  private data: ArrayBuffer | null;
+  private data: Object | null = null;
+  private buffer: ArrayBuffer | null = null;
 
-  constructor(id: EventType, data: ArrayBuffer | null) {
+  constructor(id: EventType) {
     this.id = id;
-    this.data = data;
   }
 
   public getId(): EventType {
     return this.id;
   }
 
-  public getData(): ArrayBuffer | null {
+  public getData(): Object | null {
     return this.data;
+  }
+
+  public setData(data: Object): void {
+    this.data = data;
+  }
+
+  public getBuffer(): ArrayBuffer | null {
+    return this.buffer;
+  }
+
+  public setBuffer(buffer: ArrayBuffer | null): void {
+    this.buffer = buffer;
   }
 }

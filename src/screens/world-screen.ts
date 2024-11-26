@@ -10,11 +10,6 @@ import { SCOREBOARD_SECONDS_DURATION } from "../constants/configuration-constant
 import { GameController } from "../models/game-controller.js";
 import { AlertObject } from "../objects/alert-object.js";
 import { ToastObject } from "../objects/common/toast-object.js";
-import {
-  MATCH_ADVERTISED_EVENT,
-  PLAYER_CONNECTED_EVENT,
-  PLAYER_DISCONNECTED_EVENT,
-} from "../constants/events-constants.js";
 import { TeamType } from "../types/team-type.js";
 import { RemoteCarObject } from "../objects/remote-car-object.js";
 import { ObjectStateType } from "../types/object-state-type.js";
@@ -40,7 +35,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
   constructor(protected gameController: GameController) {
     super(gameController);
     this.gameState = gameController.getGameState();
-    this.addCustomEventListeners();
     this.addSyncableObjects();
   }
 
@@ -70,8 +64,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
   public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
     super.update(deltaTimeStamp);
 
-    this.detectScoresIfHost();
     this.listenForEvents();
+    this.detectScoresIfHost();
 
     this.gameController
       .getObjectOrchestrator()
@@ -84,23 +78,6 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.addSyncableObject(ScoreboardObject);
   }
 
-  private listenForEvents(): void {
-    this.gameController
-      .getEventsProcessorService()
-      .listenEvent(EventType.Countdown, this.handleRemoteCountdown.bind(this));
-
-    this.gameController
-      .getEventsProcessorService()
-      .listenEvent(EventType.GoalStart, this.handleRemoteGoal.bind(this));
-
-    this.gameController
-      .getEventsProcessorService()
-      .listenEvent(
-        EventType.GameOverStart,
-        this.handleRemoteGameOverStartEvent.bind(this)
-      );
-  }
-
   private createBackgroundObject() {
     const backgroundObject = new WorldBackgroundObject(this.canvas);
     this.sceneObjects.push(backgroundObject);
@@ -110,29 +87,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
     });
   }
 
-  private addCustomEventListeners(): void {
-    window.addEventListener(MATCH_ADVERTISED_EVENT, (event) => {
-      this.handleMatchAdvertised();
-    });
-
-    window.addEventListener(PLAYER_CONNECTED_EVENT, (event) => {
-      this.handlePlayerConnection(event as CustomEvent<any>);
-    });
-
-    window.addEventListener(PLAYER_DISCONNECTED_EVENT, (event) => {
-      this.handlePlayerDisconnection(event as CustomEvent<any>);
-    });
-  }
-
   private handleMatchAdvertised(): void {
     if (this.gameState.getGameMatch()?.getPlayers().length === 1) {
       this.toastObject?.show("Waiting for players...");
     }
   }
 
-  private handlePlayerConnection(event: CustomEvent<any>): void {
-    const player = event.detail.player;
-    const matchmaking = event.detail.matchmaking;
+  private handlePlayerConnection(data: any): void {
+    const { player, matchmaking } = data;
 
     this.toastObject?.hide();
 
@@ -145,18 +107,13 @@ export class WorldScreen extends BaseCollidingGameScreen {
       const matchState = this.gameState.getGameMatch()?.getState();
 
       if (matchState === MatchStateType.WaitingPlayers) {
-        if (this.scoreboardObject?.hasTimerFinished()) {
-          console.log("Match is waiting for players and timer finished");
-          this.scoreboardObject.reset();
-        }
-
         this.showCountdown();
       }
     }
   }
 
-  private handlePlayerDisconnection(event: CustomEvent<any>): void {
-    const player = event.detail.player;
+  private handlePlayerDisconnection(data: any): void {
+    const { player } = data;
 
     this.getObjectsByOwner(player).forEach((object) => {
       object.setState(ObjectStateType.Inactive);
@@ -231,6 +188,54 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private createToastObject() {
     this.toastObject = new ToastObject(this.canvas);
     this.sceneObjects.push(this.toastObject);
+  }
+
+  private listenForEvents(): void {
+    this.listenForLocalEvents();
+    this.listenForRemoteEvents();
+  }
+
+  private listenForLocalEvents(): void {
+    this.gameController
+      .getEventsProcessorService()
+      .listenLocalEvent(
+        EventType.MatchAdvertised,
+        this.handleMatchAdvertised.bind(this)
+      );
+
+    this.gameController
+      .getEventsProcessorService()
+      .listenLocalEvent(
+        EventType.PlayerConnected,
+        this.handlePlayerConnection.bind(this)
+      );
+
+    this.gameController
+      .getEventsProcessorService()
+      .listenLocalEvent(
+        EventType.PlayerDisconnected,
+        this.handlePlayerDisconnection.bind(this)
+      );
+  }
+
+  private listenForRemoteEvents(): void {
+    this.gameController
+      .getEventsProcessorService()
+      .listenRemoteEvent(
+        EventType.Countdown,
+        this.handleRemoteCountdown.bind(this)
+      );
+
+    this.gameController
+      .getEventsProcessorService()
+      .listenRemoteEvent(EventType.GoalStart, this.handleRemoteGoal.bind(this));
+
+    this.gameController
+      .getEventsProcessorService()
+      .listenRemoteEvent(
+        EventType.GameOverStart,
+        this.handleRemoteGameOverStartEvent.bind(this)
+      );
   }
 
   private showCountdown() {
@@ -311,7 +316,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const arrayBuffer = new ArrayBuffer(4);
     new DataView(arrayBuffer).setInt32(0, this.countdownNumber);
 
-    const countdownStartEvent = new GameEvent(EventType.Countdown, arrayBuffer);
+    const countdownStartEvent = new GameEvent(EventType.Countdown);
+    countdownStartEvent.setBuffer(arrayBuffer);
 
     this.gameController
       .getEventsProcessorService()
@@ -402,7 +408,9 @@ export class WorldScreen extends BaseCollidingGameScreen {
     new Uint8Array(arrayBuffer).set(new TextEncoder().encode(playerId), 0);
     new DataView(arrayBuffer).setInt32(36, playerScore);
 
-    const goalEvent = new GameEvent(EventType.GoalStart, arrayBuffer);
+    const goalEvent = new GameEvent(EventType.GoalStart);
+    goalEvent.setBuffer(arrayBuffer);
+
     this.gameController.getEventsProcessorService().sendEvent(goalEvent);
   }
 
@@ -522,10 +530,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const arrayBuffer = new ArrayBuffer(36);
     new Uint8Array(arrayBuffer).set(new TextEncoder().encode(playerId), 0);
 
-    const gameOverStartEvent = new GameEvent(
-      EventType.GameOverStart,
-      arrayBuffer
-    );
+    const gameOverStartEvent = new GameEvent(EventType.GameOverStart);
+    gameOverStartEvent.setBuffer(arrayBuffer);
 
     this.gameController
       .getEventsProcessorService()

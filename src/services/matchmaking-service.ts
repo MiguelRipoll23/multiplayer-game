@@ -21,7 +21,6 @@ import { ConnectionStateType } from "../types/connection-state-type.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { SaveScoreRequest } from "../services/interfaces/request/save-score-request.js";
 import { MatchStateType } from "../types/match-state-type.js";
-import { RemoteEvent } from "../models/remote-event.js";
 import { EventType } from "../types/event-type.js";
 import { LocalEvent } from "../models/local-event.js";
 import { PlayerConnectedPayload } from "./interfaces/events/player-connected-payload.js";

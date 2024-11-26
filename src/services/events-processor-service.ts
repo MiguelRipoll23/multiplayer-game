@@ -13,7 +13,7 @@ export class EventsProcessorService {
   private localEvents: LocalEvent[] = [];
   private remoteEvents: RemoteEvent[] = [];
 
-  constructor(private gameController: GameController) {
+  constructor(gameController: GameController) {
     this.webrtcService = gameController.getWebRTCService();
   }
 

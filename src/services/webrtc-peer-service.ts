@@ -17,14 +17,14 @@ import { ObjectOrchestrator } from "./object-orchestrator-service.js";
 import { EventsProcessorService } from "./events-processor-service.js";
 
 export class WebRTCPeerService {
-  public peerConnection: RTCPeerConnection;
-  public iceCandidateQueue: RTCIceCandidateInit[] = [];
-  public dataChannels: Record<string, RTCDataChannel> = {};
-
   private logger: LoggerUtils;
   private matchmakingService: MatchmakingService;
   private objectOrchestrator: ObjectOrchestrator;
   private eventsProcessorService: EventsProcessorService;
+
+  private peerConnection: RTCPeerConnection;
+  private iceCandidateQueue: RTCIceCandidateInit[] = [];
+  private dataChannels: Record<string, RTCDataChannel> = {};
 
   private connectionState: ConnectionStateType =
     ConnectionStateType.Disconnected;

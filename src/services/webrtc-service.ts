@@ -39,6 +39,30 @@ export class WebRTCService {
     console.log("Removed WebRTC peer, updated peers count", this.peers.size);
   }
 
+  public handleSessionDescriptionEvent(
+    originToken: string,
+    rtcSessionDescription: RTCSessionDescriptionInit
+  ): void {
+    if (this.gameController.getGameState().getGameMatch()?.isHost()) {
+      this.handlePeerOffer(originToken, rtcSessionDescription);
+    } else {
+      this.handlePeerAnswer(originToken, rtcSessionDescription);
+    }
+  }
+
+  public handleNewIceCandidate(
+    originToken: string,
+    iceCandidate: RTCIceCandidateInit
+  ): void {
+    const peer = this.getPeer(originToken);
+
+    if (peer === null) {
+      return console.warn("WebRTC peer with token not found", originToken);
+    }
+
+    peer.addRemoteIceCandidate(iceCandidate);
+  }
+
   private addPeer(token: string): WebRTCPeer {
     const peer = new WebRTCPeerService(this.gameController, token);
     this.peers.set(token, peer);
@@ -93,30 +117,6 @@ export class WebRTCService {
 
   private getPeer(token: string): WebRTCPeer | null {
     return this.peers.get(token) ?? null;
-  }
-
-  public handleSessionDescriptionEvent(
-    originToken: string,
-    rtcSessionDescription: RTCSessionDescriptionInit
-  ): void {
-    if (this.gameController.getGameState().getGameMatch()?.isHost()) {
-      this.handlePeerOffer(originToken, rtcSessionDescription);
-    } else {
-      this.handlePeerAnswer(originToken, rtcSessionDescription);
-    }
-  }
-
-  public handleNewIceCandidate(
-    originToken: string,
-    iceCandidate: RTCIceCandidateInit
-  ): void {
-    const peer = this.getPeer(originToken);
-
-    if (peer === null) {
-      return console.warn("WebRTC peer with token not found", originToken);
-    }
-
-    peer.addRemoteIceCandidate(iceCandidate);
   }
 
   private sendIceCandidate(

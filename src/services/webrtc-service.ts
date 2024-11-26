@@ -1,8 +1,4 @@
 import {
-  SERVER_SESSION_DESCRIPTION_EVENT,
-  SERVER_ICE_CANDIDATE_EVENT,
-} from "../constants/events-constants.js";
-import {
   ICE_CANDIDATE_ID,
   SESSION_DESCRIPTION_ID,
 } from "../constants/websocket-constants.js";
@@ -13,9 +9,7 @@ import { WebRTCPeerService } from "./webrtc-peer-service.js";
 export class WebRTCService {
   private peers: Map<string, WebRTCPeer> = new Map();
 
-  constructor(private gameController: GameController) {
-    this.addEventListeners();
-  }
+  constructor(private gameController: GameController) {}
 
   public async sendOffer(token: string): Promise<void> {
     const peer = this.addPeer(token);
@@ -43,16 +37,6 @@ export class WebRTCService {
     this.peers.delete(token);
 
     console.log("Removed WebRTC peer, updated peers count", this.peers.size);
-  }
-
-  private addEventListeners(): void {
-    window.addEventListener(SERVER_SESSION_DESCRIPTION_EVENT, (event) => {
-      this.handleSessionDescriptionEvent(event as CustomEvent<any>);
-    });
-
-    window.addEventListener(SERVER_ICE_CANDIDATE_EVENT, (event) => {
-      this.handleNewIceCandidate(event as CustomEvent<any>);
-    });
   }
 
   private addPeer(token: string): WebRTCPeer {
@@ -111,9 +95,10 @@ export class WebRTCService {
     return this.peers.get(token) ?? null;
   }
 
-  private handleSessionDescriptionEvent(event: CustomEvent<any>): void {
-    const { originToken, rtcSessionDescription } = event.detail;
-
+  public handleSessionDescriptionEvent(
+    originToken: string,
+    rtcSessionDescription: RTCSessionDescriptionInit
+  ): void {
     if (this.gameController.getGameState().getGameMatch()?.isHost()) {
       this.handlePeerOffer(originToken, rtcSessionDescription);
     } else {
@@ -121,8 +106,10 @@ export class WebRTCService {
     }
   }
 
-  private handleNewIceCandidate(event: CustomEvent<any>): void {
-    const { originToken, iceCandidate } = event.detail;
+  public handleNewIceCandidate(
+    originToken: string,
+    iceCandidate: RTCIceCandidateInit
+  ): void {
     const peer = this.getPeer(originToken);
 
     if (peer === null) {

@@ -1,15 +1,11 @@
 import {
-  API_BASE_URL,
-  API_WS_PROTOCOL,
   WEBSOCKET_BASE_URL,
   WEBSOCKET_ENDPOINT,
 } from "../constants/api-constants.js";
 import {
   SERVER_CONNECTED_EVENT,
   SERVER_DISCONNECTED_EVENT,
-  SERVER_ICE_CANDIDATE_EVENT,
   SERVER_NOTIFICATION_EVENT,
-  SERVER_SESSION_DESCRIPTION_EVENT,
 } from "../constants/events-constants.js";
 import {
   NOTIFICATION_ID,
@@ -21,13 +17,17 @@ import {
   ICE_CANDIDATE_ID,
   SESSION_DESCRIPTION_ID,
 } from "../constants/websocket-constants.js";
+import { WebRTCService } from "./webrtc-service.js";
 
 export class WebSocketService {
   private gameState: GameState;
+  private webrtcService: WebRTCService;
+
   private webSocket: WebSocket | null = null;
 
   constructor(gameController: GameController) {
     this.gameState = gameController.getGameState();
+    this.webrtcService = gameController.getWebRTCService();
   }
 
   public connectToServer(): void {
@@ -153,45 +153,26 @@ export class WebSocketService {
   private handleWebRTCMessage(
     originToken: string,
     type: number,
-    webrtcData: any
+    webrtcPayload: any
   ) {
     switch (type) {
       case SESSION_DESCRIPTION_ID: {
-        this.handleSessionDescriptionMessage(originToken, webrtcData);
-        break;
+        return this.webrtcService.handleSessionDescriptionEvent(
+          originToken,
+          webrtcPayload
+        );
       }
 
       case ICE_CANDIDATE_ID: {
-        this.handleIceCandidateMessage(originToken, webrtcData);
-        break;
+        return this.webrtcService.handleNewIceCandidate(
+          originToken,
+          webrtcPayload
+        );
       }
 
       default: {
         console.warn("Unknown WebRTC message type", type);
       }
     }
-  }
-
-  private handleSessionDescriptionMessage(
-    originToken: string,
-    rtcSessionDescription: RTCSessionDescriptionInit
-  ) {
-    dispatchEvent(
-      new CustomEvent(SERVER_SESSION_DESCRIPTION_EVENT, {
-        detail: { originToken, rtcSessionDescription },
-      })
-    );
-  }
-
-  private handleIceCandidateMessage(
-    originToken: string,
-    iceCandidate: RTCIceCandidateInit
-  ) {
-    console.log("Received ICE candidate...", originToken, iceCandidate);
-    dispatchEvent(
-      new CustomEvent(SERVER_ICE_CANDIDATE_EVENT, {
-        detail: { originToken, iceCandidate },
-      })
-    );
   }
 }

@@ -42,8 +42,8 @@ export class GameController {
     this.transitionService = new ScreenTransitionService(this.gameFrame);
     this.cryptoService = new CryptoService(this.gameState.getGameServer());
     this.apiService = new ApiService(this);
-    this.webSocketService = new WebSocketService(this);
     this.webRTCService = new WebRTCService(this);
+    this.webSocketService = new WebSocketService(this);
     this.matchmakingService = new MatchmakingService(this);
     this.objectOrchestrator = new ObjectOrchestrator(this);
     this.eventsProcessorService = new EventsProcessorService(this);

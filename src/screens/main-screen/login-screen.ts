@@ -9,17 +9,17 @@ import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 import { GameState } from "../../models/game-state.js";
-import {
-  SERVER_CONNECTED_EVENT,
-  SERVER_DISCONNECTED_EVENT,
-} from "../../constants/events-constants.js";
+import { SERVER_DISCONNECTED_EVENT } from "../../constants/events-constants.js";
 import { PlayerUtils } from "../../utils/player-utils.js";
+import { EventType } from "../../types/event-type.js";
+import { EventsProcessorService } from "../../services/events-processor-service.js";
 
 export class LoginScreen extends BaseGameScreen {
   private gameState: GameState;
   private apiService: ApiService;
   private cryptoService: CryptoService;
   private webSocketService: WebSocketService;
+  private eventsProcessorService: EventsProcessorService;
 
   private messageObject: MessageObject | null = null;
   private errorCloseableMessageObject: CloseableMessageObject | null = null;
@@ -31,6 +31,7 @@ export class LoginScreen extends BaseGameScreen {
     this.apiService = gameController.getApiService();
     this.cryptoService = gameController.getCryptoService();
     this.webSocketService = gameController.getWebSocketService();
+    this.eventsProcessorService = gameController.getEventsProcessorService();
 
     this.addCustomEventListeners();
   }
@@ -47,18 +48,19 @@ export class LoginScreen extends BaseGameScreen {
     this.checkForUpdates();
   }
 
-  private addCustomEventListeners(): void {
-    window.addEventListener(SERVER_CONNECTED_EVENT, () => {
-      this.handleServerConnectedEvent();
-    });
+  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.listenForEvents();
+    this.handleErrorCloseableMessageObject();
+    super.update(deltaTimeStamp);
+  }
 
+  private addCustomEventListeners(): void {
     window.addEventListener(SERVER_DISCONNECTED_EVENT, () => {
       this.handleServerDisconnectedEvent();
     });
   }
 
   private handleServerConnectedEvent(): void {
-    console.log(`Event ${SERVER_CONNECTED_EVENT} handled`);
     this.messageObject?.hide();
     this.transitionToMainMenuScreen();
   }
@@ -72,14 +74,9 @@ export class LoginScreen extends BaseGameScreen {
     this.uiObjects.push(this.messageObject);
   }
 
-  public loadCloseableMessageObject(): void {
+  private loadCloseableMessageObject(): void {
     this.errorCloseableMessageObject = new CloseableMessageObject(this.canvas);
     this.uiObjects.push(this.errorCloseableMessageObject);
-  }
-
-  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    this.handleErrorCloseableMessageObject();
-    super.update(deltaTimeStamp);
   }
 
   private showError(message: string): void {
@@ -177,5 +174,12 @@ export class LoginScreen extends BaseGameScreen {
     this.screenManagerService
       ?.getTransitionService()
       .crossfade(mainMenuScreen, 0.2);
+  }
+
+  private listenForEvents(): void {
+    this.eventsProcessorService.listenLocalEvent(
+      EventType.ServerConnected,
+      this.handleServerConnectedEvent.bind(this)
+    );
   }
 }

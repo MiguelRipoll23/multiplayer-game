@@ -1,4 +1,5 @@
 export enum EventType {
+  ServerConnected,
   MatchAdvertised,
   PlayerConnected,
   PlayerDisconnected,

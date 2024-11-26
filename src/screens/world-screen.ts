@@ -22,6 +22,7 @@ import { MainMenuScreen } from "./main-screen/main-menu-screen.js";
 import { MatchStateType } from "../types/match-state-type.js";
 import { PlayerConnectedPayload } from "../services/interfaces/events/player-connected-payload.js";
 import { PlayerDisconnectedPayload } from "../services/interfaces/events/player-disconnected-payload.js";
+import { EventsProcessorService } from "../services/events-processor-service.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -32,11 +33,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
   private alertObject: AlertObject | null = null;
   private toastObject: ToastObject | null = null;
 
+  private eventsProcessorService: EventsProcessorService;
+
   private countdownNumber = 4;
 
   constructor(protected gameController: GameController) {
     super(gameController);
     this.gameState = gameController.getGameState();
+    this.eventsProcessorService = gameController.getEventsProcessorService();
     this.addSyncableObjects();
   }
 
@@ -198,46 +202,37 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private listenForLocalEvents(): void {
-    this.gameController
-      .getEventsProcessorService()
-      .listenLocalEvent(
-        EventType.MatchAdvertised,
-        this.handleMatchAdvertised.bind(this)
-      );
+    this.eventsProcessorService.listenLocalEvent(
+      EventType.MatchAdvertised,
+      this.handleMatchAdvertised.bind(this)
+    );
 
-    this.gameController
-      .getEventsProcessorService()
-      .listenLocalEvent<PlayerConnectedPayload>(
-        EventType.PlayerConnected,
-        this.handlePlayerConnection.bind(this)
-      );
+    this.eventsProcessorService.listenLocalEvent<PlayerConnectedPayload>(
+      EventType.PlayerConnected,
+      this.handlePlayerConnection.bind(this)
+    );
 
-    this.gameController
-      .getEventsProcessorService()
-      .listenLocalEvent<PlayerDisconnectedPayload>(
-        EventType.PlayerDisconnected,
-        this.handlePlayerDisconnection.bind(this)
-      );
+    this.eventsProcessorService.listenLocalEvent<PlayerDisconnectedPayload>(
+      EventType.PlayerDisconnected,
+      this.handlePlayerDisconnection.bind(this)
+    );
   }
 
   private listenForRemoteEvents(): void {
-    this.gameController
-      .getEventsProcessorService()
-      .listenRemoteEvent(
-        EventType.Countdown,
-        this.handleRemoteCountdown.bind(this)
-      );
+    this.eventsProcessorService.listenRemoteEvent(
+      EventType.Countdown,
+      this.handleRemoteCountdown.bind(this)
+    );
 
-    this.gameController
-      .getEventsProcessorService()
-      .listenRemoteEvent(EventType.GoalStart, this.handleRemoteGoal.bind(this));
+    this.eventsProcessorService.listenRemoteEvent(
+      EventType.GoalStart,
+      this.handleRemoteGoal.bind(this)
+    );
 
-    this.gameController
-      .getEventsProcessorService()
-      .listenRemoteEvent(
-        EventType.GameOverStart,
-        this.handleRemoteGameOverStartEvent.bind(this)
-      );
+    this.eventsProcessorService.listenRemoteEvent(
+      EventType.GameOverStart,
+      this.handleRemoteGameOverStartEvent.bind(this)
+    );
   }
 
   private showCountdown() {
@@ -321,9 +316,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const countdownStartEvent = new RemoteEvent(EventType.Countdown);
     countdownStartEvent.setBuffer(arrayBuffer);
 
-    this.gameController
-      .getEventsProcessorService()
-      .sendEvent(countdownStartEvent);
+    this.eventsProcessorService.sendEvent(countdownStartEvent);
   }
 
   private handleWaitingForPlayers(): void {
@@ -535,9 +528,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const gameOverStartEvent = new RemoteEvent(EventType.GameOverStart);
     gameOverStartEvent.setBuffer(arrayBuffer);
 
-    this.gameController
-      .getEventsProcessorService()
-      .sendEvent(gameOverStartEvent);
+    this.eventsProcessorService.sendEvent(gameOverStartEvent);
   }
 
   private handleRemoteGameOverStartEvent(

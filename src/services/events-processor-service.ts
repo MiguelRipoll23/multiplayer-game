@@ -40,6 +40,7 @@ export class EventsProcessorService {
   public listenLocalEvent<T>(eventId: EventType, callback: (data: T) => void) {
     this.localEvents.forEach((event) => {
       if (event.getId() === eventId) {
+        console.log("Local event consumed", event);
         callback(event.getPayload());
         this.removeEvent(this.localEvents, event);
       }
@@ -59,10 +60,12 @@ export class EventsProcessorService {
   }
 
   public addLocalEvent(event: LocalEvent) {
+    console.log("Added local event:", event);
     this.localEvents.push(event);
   }
 
   public sendEvent(event: RemoteEvent) {
+    console.log("Sending event:", event);
     this.webrtcService.getPeers().forEach((webrtcPeer) => {
       if (webrtcPeer.hasJoined()) {
         this.sendEventToPeer(webrtcPeer, event);

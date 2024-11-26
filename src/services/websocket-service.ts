@@ -3,7 +3,6 @@ import {
   WEBSOCKET_ENDPOINT,
 } from "../constants/api-constants.js";
 import {
-  SERVER_CONNECTED_EVENT,
   SERVER_DISCONNECTED_EVENT,
   SERVER_NOTIFICATION_EVENT,
 } from "../constants/events-constants.js";
@@ -18,15 +17,20 @@ import {
   SESSION_DESCRIPTION_ID,
 } from "../constants/websocket-constants.js";
 import { WebRTCService } from "./webrtc-service.js";
+import { EventsProcessorService } from "./events-processor-service.js";
+import { LocalEvent } from "../models/local-event.js";
+import { EventType } from "../types/event-type.js";
 
 export class WebSocketService {
   private gameState: GameState;
+  private eventProcessorService: EventsProcessorService;
   private webrtcService: WebRTCService;
 
   private webSocket: WebSocket | null = null;
 
   constructor(gameController: GameController) {
     this.gameState = gameController.getGameState();
+    this.eventProcessorService = gameController.getEventsProcessorService();
     this.webrtcService = gameController.getWebRTCService();
   }
 
@@ -78,7 +82,9 @@ export class WebSocketService {
   private handleConnection(): void {
     console.log("Connected to server");
     this.gameState.getGameServer().setConnected(true);
-    dispatchEvent(new CustomEvent(SERVER_CONNECTED_EVENT));
+    this.eventProcessorService.addLocalEvent(
+      new LocalEvent(EventType.ServerConnected, null)
+    );
   }
 
   private handleDisconnection(event: CloseEvent): void {

@@ -43,10 +43,10 @@ export class GameController {
     this.cryptoService = new CryptoService(this.gameState.getGameServer());
     this.apiService = new ApiService(this);
     this.webRTCService = new WebRTCService(this);
+    this.eventsProcessorService = new EventsProcessorService(this);
     this.webSocketService = new WebSocketService(this);
     this.matchmakingService = new MatchmakingService(this);
     this.objectOrchestrator = new ObjectOrchestrator(this);
-    this.eventsProcessorService = new EventsProcessorService(this);
   }
 
   public getVersion(): string {

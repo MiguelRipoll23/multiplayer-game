@@ -17,6 +17,21 @@ export class EventsProcessorService {
     this.webrtcService = gameController.getWebRTCService();
   }
 
+  public addLocalEvent(event: LocalEvent) {
+    console.log(`Added local event ${EventType[event.getId()]}`, event);
+    this.localEvents.push(event);
+  }
+
+  public listenLocalEvent<T>(eventId: EventType, callback: (data: T) => void) {
+    this.localEvents.forEach((event) => {
+      if (event.getId() === eventId) {
+        console.log(`Local event ${EventType[eventId]} consumed`, event);
+        callback(event.getPayload());
+        this.removeEvent(this.localEvents, event);
+      }
+    });
+  }
+
   public handleRemoteEvent(webrtcPeer: WebRTCPeer, data: ArrayBuffer | null) {
     if (data === null) {
       return console.warn("Received null data from peer");
@@ -37,35 +52,21 @@ export class EventsProcessorService {
     this.remoteEvents.push(event);
   }
 
-  public listenLocalEvent<T>(eventId: EventType, callback: (data: T) => void) {
-    this.localEvents.forEach((event) => {
-      if (event.getId() === eventId) {
-        console.log("Local event consumed", event);
-        callback(event.getPayload());
-        this.removeEvent(this.localEvents, event);
-      }
-    });
-  }
-
   public listenRemoteEvent(
     eventId: EventType,
     callback: (data: ArrayBuffer | null) => void
   ) {
     this.remoteEvents.forEach((event) => {
       if (event.getId() === eventId) {
+        console.log(`Remote event ${EventType[eventId]} consumed`, event);
         callback(event.getBuffer());
         this.removeEvent(this.remoteEvents, event);
       }
     });
   }
 
-  public addLocalEvent(event: LocalEvent) {
-    console.log("Added local event:", event);
-    this.localEvents.push(event);
-  }
-
   public sendEvent(event: RemoteEvent) {
-    console.log("Sending event:", event);
+    console.log(`Sending remote event ${EventType[event.getId()]}`, event);
     this.webrtcService.getPeers().forEach((webrtcPeer) => {
       if (webrtcPeer.hasJoined()) {
         this.sendEventToPeer(webrtcPeer, event);

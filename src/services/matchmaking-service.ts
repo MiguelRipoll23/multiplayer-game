@@ -21,8 +21,11 @@ import { ConnectionStateType } from "../types/connection-state-type.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { SaveScoreRequest } from "../services/interfaces/request/save-score-request.js";
 import { MatchStateType } from "../types/match-state-type.js";
-import { GameEvent } from "../models/game-event.js";
+import { RemoteEvent } from "../models/remote-event.js";
 import { EventType } from "../types/event-type.js";
+import { LocalEvent } from "../models/local-event.js";
+import { PlayerConnectedPayload } from "./interfaces/events/player-connected-payload.js";
+import { PlayerDisconnectedPayload } from "./interfaces/events/player-disconnected-payload.js";
 
 export class MatchmakingService {
   private apiService: ApiService;
@@ -186,12 +189,12 @@ export class MatchmakingService {
       return console.warn("Player is null");
     }
 
-    const playerConnectedEvent = new GameEvent(EventType.PlayerConnected);
-    playerConnectedEvent.setData({ player, matchmaking: true });
+    const localEvent = new LocalEvent<PlayerConnectedPayload>(
+      EventType.PlayerConnected,
+      { player, matchmaking: true }
+    );
 
-    this.gameController
-      .getEventsProcessorService()
-      .addLocalEvent(playerConnectedEvent);
+    this.gameController.getEventsProcessorService().addLocalEvent(localEvent);
 
     this.sentSnapshotACK(peer);
   }
@@ -220,12 +223,12 @@ export class MatchmakingService {
         );
       });
 
-    const playerConnectedEvent = new GameEvent(EventType.PlayerConnected);
-    playerConnectedEvent.setData({ player, matchmaking: false });
+    const localEvent = new LocalEvent<PlayerConnectedPayload>(
+      EventType.PlayerConnected,
+      { player, matchmaking: false }
+    );
 
-    this.gameController
-      .getEventsProcessorService()
-      .addLocalEvent(playerConnectedEvent);
+    this.gameController.getEventsProcessorService().addLocalEvent(localEvent);
 
     this.advertiseMatch();
   }
@@ -282,8 +285,10 @@ export class MatchmakingService {
         );
       });
 
-    const playerDisconnectedEvent = new GameEvent(EventType.PlayerDisconnected);
-    playerDisconnectedEvent.setData({ player });
+    const playerDisconnectedEvent = new LocalEvent<PlayerDisconnectedPayload>(
+      EventType.PlayerDisconnected,
+      { player }
+    );
 
     this.gameController
       .getEventsProcessorService()
@@ -308,12 +313,12 @@ export class MatchmakingService {
     console.log(`Player ${player.getName()} disconnected`);
     gameMatch.removePlayer(player);
 
-    const playerDisconnectedEvent = new GameEvent(EventType.PlayerDisconnected);
-    playerDisconnectedEvent.setData({ player });
+    const localEvent = new LocalEvent<PlayerDisconnectedPayload>(
+      EventType.PlayerDisconnected,
+      { player }
+    );
 
-    this.gameController
-      .getEventsProcessorService()
-      .addLocalEvent(playerDisconnectedEvent);
+    this.gameController.getEventsProcessorService().addLocalEvent(localEvent);
   }
 
   private handleHostDisconnected(peer: WebRTCPeer): void {
@@ -375,9 +380,8 @@ export class MatchmakingService {
 
     await this.apiService.advertiseMatch(body);
 
-    this.gameController
-      .getEventsProcessorService()
-      .addLocalEvent(new GameEvent(EventType.MatchAdvertised));
+    const localEvent = new LocalEvent(EventType.MatchAdvertised, null);
+    this.gameController.getEventsProcessorService().addLocalEvent(localEvent);
   }
 
   private async joinMatches(matches: FindMatchesResponse[]): Promise<void> {

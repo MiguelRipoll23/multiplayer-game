@@ -1,8 +1,8 @@
+import { GameEvent } from "../services/interfaces/game-event.js";
 import { EventType } from "../types/event-type.js";
 
-export class GameEvent {
+export class RemoteEvent implements GameEvent {
   private id: EventType;
-  private data: Object | null = null;
   private buffer: ArrayBuffer | null = null;
 
   constructor(id: EventType) {
@@ -11,14 +11,6 @@ export class GameEvent {
 
   public getId(): EventType {
     return this.id;
-  }
-
-  public getData(): Object | null {
-    return this.data;
-  }
-
-  public setData(data: Object): void {
-    this.data = data;
   }
 
   public getBuffer(): ArrayBuffer | null {

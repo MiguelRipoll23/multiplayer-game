@@ -15,11 +15,13 @@ import { RemoteCarObject } from "../objects/remote-car-object.js";
 import { ObjectStateType } from "../types/object-state-type.js";
 import { GamePlayer } from "../models/game-player.js";
 import { EventType } from "../types/event-type.js";
-import { GameEvent } from "../models/game-event.js";
+import { RemoteEvent } from "../models/remote-event.js";
 import { ScreenType } from "../types/screen-type.js";
 import { MainScreen } from "./main-screen.js";
 import { MainMenuScreen } from "./main-screen/main-menu-screen.js";
 import { MatchStateType } from "../types/match-state-type.js";
+import { PlayerConnectedPayload } from "../services/interfaces/events/player-connected-payload.js";
+import { PlayerDisconnectedPayload } from "../services/interfaces/events/player-disconnected-payload.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;
@@ -93,8 +95,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
   }
 
-  private handlePlayerConnection(data: any): void {
-    const { player, matchmaking } = data;
+  private handlePlayerConnection(payload: PlayerConnectedPayload): void {
+    const { player, matchmaking } = payload;
 
     this.toastObject?.hide();
 
@@ -112,8 +114,8 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
   }
 
-  private handlePlayerDisconnection(data: any): void {
-    const { player } = data;
+  private handlePlayerDisconnection(payload: PlayerDisconnectedPayload): void {
+    const { player } = payload;
 
     this.getObjectsByOwner(player).forEach((object) => {
       object.setState(ObjectStateType.Inactive);
@@ -205,14 +207,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     this.gameController
       .getEventsProcessorService()
-      .listenLocalEvent(
+      .listenLocalEvent<PlayerConnectedPayload>(
         EventType.PlayerConnected,
         this.handlePlayerConnection.bind(this)
       );
 
     this.gameController
       .getEventsProcessorService()
-      .listenLocalEvent(
+      .listenLocalEvent<PlayerDisconnectedPayload>(
         EventType.PlayerDisconnected,
         this.handlePlayerDisconnection.bind(this)
       );
@@ -316,7 +318,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const arrayBuffer = new ArrayBuffer(4);
     new DataView(arrayBuffer).setInt32(0, this.countdownNumber);
 
-    const countdownStartEvent = new GameEvent(EventType.Countdown);
+    const countdownStartEvent = new RemoteEvent(EventType.Countdown);
     countdownStartEvent.setBuffer(arrayBuffer);
 
     this.gameController
@@ -408,7 +410,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     new Uint8Array(arrayBuffer).set(new TextEncoder().encode(playerId), 0);
     new DataView(arrayBuffer).setInt32(36, playerScore);
 
-    const goalEvent = new GameEvent(EventType.GoalStart);
+    const goalEvent = new RemoteEvent(EventType.GoalStart);
     goalEvent.setBuffer(arrayBuffer);
 
     this.gameController.getEventsProcessorService().sendEvent(goalEvent);
@@ -530,7 +532,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     const arrayBuffer = new ArrayBuffer(36);
     new Uint8Array(arrayBuffer).set(new TextEncoder().encode(playerId), 0);
 
-    const gameOverStartEvent = new GameEvent(EventType.GameOverStart);
+    const gameOverStartEvent = new RemoteEvent(EventType.GameOverStart);
     gameOverStartEvent.setBuffer(arrayBuffer);
 
     this.gameController

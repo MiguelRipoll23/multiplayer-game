@@ -1,15 +1,17 @@
 import { EVENT_ID } from "../constants/webrtc-constants.js";
 import { EventType } from "../types/event-type.js";
 import { GameController } from "../models/game-controller.js";
-import { GameEvent } from "../models/game-event.js";
+import { RemoteEvent } from "../models/remote-event.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { WebRTCService } from "./webrtc-service.js";
+import { LocalEvent } from "../models/local-event.js";
+import { GameEvent } from "./interfaces/game-event.js";
 
 export class EventsProcessorService {
   private webrtcService: WebRTCService;
 
-  private localEvents: GameEvent[] = [];
-  private remoteEvents: GameEvent[] = [];
+  private localEvents: LocalEvent[] = [];
+  private remoteEvents: RemoteEvent[] = [];
 
   constructor(private gameController: GameController) {
     this.webrtcService = gameController.getWebRTCService();
@@ -29,19 +31,16 @@ export class EventsProcessorService {
     const id = dataView.getInt8(0);
     const payload = data.byteLength > 1 ? data.slice(1) : null;
 
-    const event = new GameEvent(id);
+    const event = new RemoteEvent(id);
     event.setBuffer(payload);
 
     this.remoteEvents.push(event);
   }
 
-  public listenLocalEvent(
-    eventId: EventType,
-    callback: (data: Object | null) => void
-  ) {
+  public listenLocalEvent<T>(eventId: EventType, callback: (data: T) => void) {
     this.localEvents.forEach((event) => {
       if (event.getId() === eventId) {
-        callback(event.getData());
+        callback(event.getPayload());
         this.removeEvent(this.localEvents, event);
       }
     });
@@ -59,11 +58,11 @@ export class EventsProcessorService {
     });
   }
 
-  public addLocalEvent(event: GameEvent) {
+  public addLocalEvent(event: LocalEvent) {
     this.localEvents.push(event);
   }
 
-  public sendEvent(event: GameEvent) {
+  public sendEvent(event: RemoteEvent) {
     this.webrtcService.getPeers().forEach((webrtcPeer) => {
       if (webrtcPeer.hasJoined()) {
         this.sendEventToPeer(webrtcPeer, event);
@@ -79,7 +78,7 @@ export class EventsProcessorService {
     }
   }
 
-  private sendEventToPeer(webrtcPeer: WebRTCPeer, event: GameEvent) {
+  private sendEventToPeer(webrtcPeer: WebRTCPeer, event: RemoteEvent) {
     const id = event.getId();
     const data = event.getBuffer();
 

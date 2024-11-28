@@ -1,5 +1,5 @@
 import { GamePlayer } from "../../models/game-player.js";
-import { ConnectionStateType } from "../../types/connection-state-type.js";
+import { ConnectionStateType } from "../../enums/connection-state-type.js";
 
 export interface WebRTCPeer {
   getConnectionState(): ConnectionStateType;
@@ -18,8 +18,14 @@ export interface WebRTCPeer {
   connect(answer: RTCSessionDescriptionInit): Promise<void>;
   getQueuedIceCandidates(): RTCIceCandidateInit[];
   addRemoteIceCandidate(iceCandidate: RTCIceCandidateInit): void;
-  sendReliableOrderedMessage(arrayBuffer: ArrayBuffer, skipQueue?: boolean): void;
-  sendReliableUnorderedMessage(arrayBuffer: ArrayBuffer, skipQueue?: boolean): void;
+  sendReliableOrderedMessage(
+    arrayBuffer: ArrayBuffer,
+    skipQueue?: boolean
+  ): void;
+  sendReliableUnorderedMessage(
+    arrayBuffer: ArrayBuffer,
+    skipQueue?: boolean
+  ): void;
   sendUnreliableOrderedMessage(arrayBuffer: ArrayBuffer): void;
   sendUnreliableUnorderedMessage(arrayBuffer: ArrayBuffer): void;
 }

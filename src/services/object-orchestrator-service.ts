@@ -6,9 +6,9 @@ import { GameState } from "../models/game-state.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { ObjectUtils } from "../utils/object-utils.js";
 import { MultiplayerScreen } from "../screens/interfaces/multiplayer-screen.js";
-import { ObjectStateType } from "../types/object-state-type.js";
+import { ObjectStateType } from "../enums/object-state-type.js";
 import { ScreenUtils } from "../utils/screen-utils.js";
-import { WebRTCType } from "../types/webrtc-type.js";
+import { WebRTCType } from "../enums/webrtc-type.js";
 
 export class ObjectOrchestrator {
   private readonly PERIODIC_MILLISECONDS = 500;

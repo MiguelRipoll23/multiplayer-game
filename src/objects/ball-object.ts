@@ -3,7 +3,7 @@ import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-
 import { CarObject } from "./car-object.js";
 import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
-import { ObjectType } from "../types/object-type.js";
+import { ObjectType } from "../enums/object-type.js";
 import { GamePlayer } from "../models/game-player.js";
 
 export class BallObject

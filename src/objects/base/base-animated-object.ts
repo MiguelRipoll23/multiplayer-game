@@ -1,4 +1,4 @@
-import { AnimationType } from "../../types/animation-type.js";
+import { AnimationType } from "../../enums/animation-type.js";
 import { ObjectAnimationService } from "../../services/object-animator-service.js";
 import { BasePositionableGameObject } from "./base-positionable-game-object.js";
 

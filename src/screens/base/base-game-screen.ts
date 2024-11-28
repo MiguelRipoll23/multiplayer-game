@@ -1,7 +1,7 @@
 import { GameController } from "../../models/game-controller.js";
 import { GamePointer } from "../../models/game-pointer.js";
-import { LayerType } from "../../types/layer-type.js";
-import { ObjectStateType } from "../../types/object-state-type.js";
+import { LayerType } from "../../enums/layer-type.js";
+import { ObjectStateType } from "../../enums/object-state-type.js";
 import { BaseGameObject } from "../../objects/base/base-game-object.js";
 import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";

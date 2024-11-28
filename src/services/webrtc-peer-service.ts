@@ -1,11 +1,11 @@
 import { GameController } from "../models/game-controller.js";
 import { GamePlayer } from "../models/game-player.js";
-import { ConnectionStateType } from "../types/connection-state-type.js";
+import { ConnectionStateType } from "../enums/connection-state-type.js";
 import { LoggerUtils } from "../utils/logger-utils.js";
 import { MatchmakingService } from "./matchmaking-service.js";
 import { ObjectOrchestrator } from "./object-orchestrator-service.js";
 import { EventProcessorService } from "./event-processor-service.js";
-import { WebRTCType } from "../types/webrtc-type.js";
+import { WebRTCType } from "../enums/webrtc-type.js";
 
 export class WebRTCPeerService {
   private logger: LoggerUtils;

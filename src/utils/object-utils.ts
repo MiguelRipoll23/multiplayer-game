@@ -1,5 +1,5 @@
 import { GameState } from "../models/game-state.js";
-import { ObjectStateType } from "../types/object-state-type.js";
+import { ObjectStateType } from "../enums/object-state-type.js";
 import { MultiplayerGameObject } from "../objects/interfaces/multiplayer-game-object.js";
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
 

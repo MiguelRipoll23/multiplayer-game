@@ -5,7 +5,7 @@ import {
 import { BaseMultiplayerGameObject } from "./base/base-multiplayer-object.js";
 import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
-import { ObjectType } from "../types/object-type.js";
+import { ObjectType } from "../enums/object-type.js";
 
 export class ScoreboardObject
   extends BaseMultiplayerGameObject

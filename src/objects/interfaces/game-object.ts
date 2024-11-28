@@ -1,4 +1,4 @@
-import { ObjectStateType } from "../../types/object-state-type.js";
+import { ObjectStateType } from "../../enums/object-state-type.js";
 
 export interface GameObject {
   load(): void;

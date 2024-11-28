@@ -1,5 +1,5 @@
 import { GamePlayer } from "../../models/game-player.js";
-import { ObjectType } from "../../types/object-type.js";
+import { ObjectType } from "../../enums/object-type.js";
 import { BaseMultiplayerGameObject } from "../../objects/base/base-multiplayer-object.js";
 import {
   MultiplayerGameObject,
@@ -7,7 +7,7 @@ import {
 } from "../../objects/interfaces/multiplayer-game-object.js";
 import { BaseGameScreen } from "../../screens/base/base-game-screen.js";
 import { MultiplayerScreen } from "../interfaces/multiplayer-screen.js";
-import { ScreenType } from "../../types/screen-type.js";
+import { ScreenType } from "../../enums/screen-type.js";
 
 export class BaseMultiplayerScreen
   extends BaseGameScreen

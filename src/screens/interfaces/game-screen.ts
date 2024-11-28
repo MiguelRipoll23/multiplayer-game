@@ -1,4 +1,4 @@
-import { LayerType } from "../../types/layer-type.js";
+import { LayerType } from "../../enums/layer-type.js";
 import { GameObject } from "../../objects/interfaces/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
 

@@ -10,7 +10,7 @@ import { GameController } from "../../models/game-controller.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 import { GameState } from "../../models/game-state.js";
 import { PlayerUtils } from "../../utils/player-utils.js";
-import { EventType } from "../../types/event-type.js";
+import { EventType } from "../../enums/event-type.js";
 import { EventProcessorService } from "../../services/event-processor-service.js";
 
 export class LoginScreen extends BaseGameScreen {

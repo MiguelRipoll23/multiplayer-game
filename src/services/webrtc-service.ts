@@ -1,5 +1,5 @@
 import { GameController } from "../models/game-controller.js";
-import { TunnelType } from "../types/tunnel-type.js";
+import { TunnelType } from "../enums/tunnel-type.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { WebRTCPeerService } from "./webrtc-peer-service.js";
 

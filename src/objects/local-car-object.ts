@@ -1,7 +1,7 @@
 import { BLUE_TEAM_COLOR } from "../constants/colors-constants.js";
 import { GameKeyboard } from "../models/game-keyboard.js";
 import { GamePointer } from "../models/game-pointer.js";
-import { ObjectType } from "../types/object-type.js";
+import { ObjectType } from "../enums/object-type.js";
 import { CarObject } from "./car-object.js";
 import { GearStickObject } from "./gear-stick-object.js";
 import { JoystickObject } from "./joystick-object.js";

@@ -1,11 +1,11 @@
-import { EventType } from "../types/event-type.js";
+import { EventType } from "../enums/event-type.js";
 import { GameController } from "../models/game-controller.js";
 import { RemoteEvent } from "../models/remote-event.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { WebRTCService } from "./webrtc-service.js";
 import { LocalEvent } from "../models/local-event.js";
 import { GameEvent } from "./interfaces/game-event.js";
-import { WebRTCType } from "../types/webrtc-type.js";
+import { WebRTCType } from "../enums/webrtc-type.js";
 
 export class EventProcessorService {
   private webrtcService: WebRTCService;

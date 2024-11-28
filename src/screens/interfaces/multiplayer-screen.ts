@@ -2,7 +2,7 @@ import {
   MultiplayerGameObject,
   StaticMultiplayerGameObject,
 } from "../../objects/interfaces/multiplayer-game-object.js";
-import { ScreenType } from "../../types/screen-type.js";
+import { ScreenType } from "../../enums/screen-type.js";
 import { GameScreen } from "./game-screen.js";
 
 export interface MultiplayerScreen extends GameScreen {

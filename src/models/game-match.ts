@@ -1,5 +1,5 @@
 import { MatchAttributes } from "../services/interfaces/match-attributes.js";
-import { MatchStateType } from "../types/match-state-type.js";
+import { MatchStateType } from "../enums/match-state-type.js";
 import { GamePlayer } from "./game-player.js";
 
 export class GameMatch {

@@ -9,15 +9,15 @@ import { GameMatch } from "../models/game-match.js";
 import { MATCH_ATTRIBUTES } from "../constants/matchmaking-constants.js";
 import { GamePlayer } from "../models/game-player.js";
 import { GameState } from "../models/game-state.js";
-import { ConnectionStateType } from "../types/connection-state-type.js";
+import { ConnectionStateType } from "../enums/connection-state-type.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { SaveScoreRequest } from "../services/interfaces/request/save-score-request.js";
-import { MatchStateType } from "../types/match-state-type.js";
-import { EventType } from "../types/event-type.js";
+import { MatchStateType } from "../enums/match-state-type.js";
+import { EventType } from "../enums/event-type.js";
 import { LocalEvent } from "../models/local-event.js";
 import { PlayerConnectedPayload } from "./interfaces/events/player-connected-payload.js";
 import { PlayerDisconnectedPayload } from "./interfaces/events/player-disconnected-payload.js";
-import { WebRTCType } from "../types/webrtc-type.js";
+import { WebRTCType } from "../enums/webrtc-type.js";
 
 export class MatchmakingService {
   private apiService: ApiService;

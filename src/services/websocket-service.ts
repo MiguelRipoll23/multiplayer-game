@@ -28,13 +28,13 @@ export class WebSocketService {
 
   public connectToServer(): void {
     const gameServer = this.gameState.getGameServer();
-    const gameRegistration = gameServer.getGameRegistration();
+    const serverRegistration = gameServer.getServerRegistration();
 
-    if (gameRegistration === null) {
+    if (serverRegistration === null) {
       throw new Error("Game registration not found");
     }
 
-    const authenticationToken = gameRegistration.getAuthenticationToken();
+    const authenticationToken = serverRegistration.getAuthenticationToken();
 
     this.webSocket = new WebSocket(
       WEBSOCKET_BASE_URL +

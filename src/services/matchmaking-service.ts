@@ -5,7 +5,7 @@ import { FindMatchRequest as FindMatchesRequest } from "./interfaces/request/fin
 import { FindMatchesResponse } from "./interfaces/response/find-matches-response.js";
 import { TimerService } from "./timer-service.js";
 import { WebRTCService } from "./webrtc-service.js";
-import { GameMatch } from "../models/game-match.js";
+import { Match } from "../models/match.js";
 import { MATCH_ATTRIBUTES } from "../constants/matchmaking-constants.js";
 import { GamePlayer } from "../models/game-player.js";
 import { GameState } from "../models/game-state.js";
@@ -50,7 +50,7 @@ export class MatchmakingService {
   }
 
   public hasPeerConnected(peer: WebRTCPeer): void {
-    if (this.gameState.getGameMatch()?.isHost()) {
+    if (this.gameState.getMatch()?.isHost()) {
       return console.log("Peer connected", peer);
     }
 
@@ -70,7 +70,7 @@ export class MatchmakingService {
       return console.warn("Unknown peer disconnected", peer);
     }
 
-    if (this.gameState.getGameMatch()?.isHost()) {
+    if (this.gameState.getMatch()?.isHost()) {
       this.handlePlayerDisconnection(peer);
     } else {
       this.handleHostDisconnected(peer);
@@ -85,13 +85,13 @@ export class MatchmakingService {
       return console.warn("Received empty join request");
     }
 
-    const gameMatch = this.gameState.getGameMatch();
+    const match = this.gameState.getMatch();
 
-    if (gameMatch === null) {
+    if (match === null) {
       return console.warn("Game match is null");
     }
 
-    if (gameMatch?.getAvailableSlots() === 0) {
+    if (match?.getAvailableSlots() === 0) {
       return this.handleUnavailableSlots(peer);
     }
 
@@ -104,9 +104,9 @@ export class MatchmakingService {
     const gamePlayer = new GamePlayer(playerId, false, playerName);
     peer.setPlayer(gamePlayer);
 
-    gameMatch?.addPlayer(gamePlayer);
+    match?.addPlayer(gamePlayer);
 
-    this.sendJoinResponse(peer, gameMatch);
+    this.sendJoinResponse(peer, match);
   }
 
   public handleJoinResponse(
@@ -117,7 +117,7 @@ export class MatchmakingService {
       return console.warn("Received empty join response");
     }
 
-    if (this.gameState.getGameMatch() !== null) {
+    if (this.gameState.getMatch() !== null) {
       return this.handleAlreadyJoinedMatch(peer);
     }
 
@@ -129,14 +129,14 @@ export class MatchmakingService {
     const totalSlots = dataView.getUint8(1);
 
     // Create game match
-    const gameMatch = new GameMatch(false, state, totalSlots, MATCH_ATTRIBUTES);
-    this.gameState.setGameMatch(gameMatch);
+    const match = new Match(false, state, totalSlots, MATCH_ATTRIBUTES);
+    this.gameState.setMatch(match);
 
     // Add local player
     const localGamePlayer = this.gameState.getGamePlayer();
     localGamePlayer.reset();
 
-    gameMatch.addPlayer(localGamePlayer);
+    match.addPlayer(localGamePlayer);
   }
 
   public handlePlayerConnection(
@@ -162,7 +162,7 @@ export class MatchmakingService {
     }
 
     const gamePlayer = new GamePlayer(id, host, name, score);
-    this.gameState.getGameMatch()?.addPlayer(gamePlayer);
+    this.gameState.getMatch()?.addPlayer(gamePlayer);
 
     if (host) {
       peer.setPlayer(gamePlayer);
@@ -235,7 +235,7 @@ export class MatchmakingService {
   }
 
   public async handleGameOver(): Promise<void> {
-    if (this.gameState.getGameMatch()?.isHost()) {
+    if (this.gameState.getMatch()?.isHost()) {
       this.webrtcService
         .getPeers()
         .forEach((peer) => peer.disconnectGracefully());
@@ -243,7 +243,7 @@ export class MatchmakingService {
       await this.apiService.removeMatch();
     }
 
-    this.gameController.getGameState().setGameMatch(null);
+    this.gameController.getGameState().setMatch(null);
   }
 
   private handleAlreadyJoinedMatch(peer: WebRTCPeer): void {
@@ -263,7 +263,7 @@ export class MatchmakingService {
     }
 
     console.log(`Player ${player.getName()} disconnected`);
-    this.gameState.getGameMatch()?.removePlayer(player);
+    this.gameState.getMatch()?.removePlayer(player);
 
     this.webrtcService
       .getPeers()
@@ -290,20 +290,20 @@ export class MatchmakingService {
   }
 
   private handlePlayerDisconnectedById(playerId: string) {
-    const gameMatch = this.gameState.getGameMatch();
+    const match = this.gameState.getMatch();
 
-    if (gameMatch === null) {
+    if (match === null) {
       return console.warn("Game match is null");
     }
 
-    const player = gameMatch.getPlayer(playerId);
+    const player = match.getPlayer(playerId);
 
     if (player === null) {
       return console.warn("Player not found", playerId);
     }
 
     console.log(`Player ${player.getName()} disconnected`);
-    gameMatch.removePlayer(player);
+    match.removePlayer(player);
 
     const localEvent = new LocalEvent<PlayerDisconnectedPayload>(
       EventType.PlayerDisconnected,
@@ -316,7 +316,7 @@ export class MatchmakingService {
   private handleHostDisconnected(peer: WebRTCPeer): void {
     console.log(`Host ${peer.getName()} disconnected`);
 
-    this.gameState.setGameMatch(null);
+    this.gameState.setMatch(null);
 
     const localEvent = new LocalEvent(EventType.HostDisconnected, null);
     this.gameController.getEventProcessorService().addLocalEvent(localEvent);
@@ -336,38 +336,38 @@ export class MatchmakingService {
 
   private async createAndAdvertiseMatch(): Promise<void> {
     // Create game match
-    const gameMatch = new GameMatch(
+    const match = new Match(
       true,
       MatchStateType.WaitingPlayers,
       4,
       MATCH_ATTRIBUTES
     );
 
-    this.gameState.setGameMatch(gameMatch);
+    this.gameState.setMatch(match);
 
     // Update local player
     const localGamePlayer = this.gameState.getGamePlayer();
     localGamePlayer.reset();
     localGamePlayer.setHost(true);
 
-    gameMatch.addPlayer(localGamePlayer);
+    match.addPlayer(localGamePlayer);
 
     // Advertise match
     await this.advertiseMatch();
   }
 
   private async advertiseMatch(): Promise<void> {
-    const gameMatch = this.gameState.getGameMatch();
+    const match = this.gameState.getMatch();
 
-    if (gameMatch === null) {
+    if (match === null) {
       return console.warn("Game match is null");
     }
 
     const body: AdvertiseMatchRequest = {
       version: this.gameController.getVersion(),
-      total_slots: gameMatch.getTotalSlots(),
-      available_slots: gameMatch.getAvailableSlots(),
-      attributes: gameMatch.getAttributes(),
+      total_slots: match.getTotalSlots(),
+      available_slots: match.getAvailableSlots(),
+      attributes: match.getAttributes(),
     };
 
     console.log("Advertising match...");
@@ -408,9 +408,9 @@ export class MatchmakingService {
     peer.disconnect();
   }
 
-  private sendJoinResponse(peer: WebRTCPeer, gameMatch: GameMatch): void {
-    const state = gameMatch.getState();
-    const totalSlots = gameMatch.getTotalSlots();
+  private sendJoinResponse(peer: WebRTCPeer, match: Match): void {
+    const state = match.getState();
+    const totalSlots = match.getTotalSlots();
     const payload = new Uint8Array([
       WebRTCType.JoinResponse,
       state,
@@ -425,15 +425,15 @@ export class MatchmakingService {
   }
 
   private sendPlayerList(peer: WebRTCPeer): void {
-    const gameMatch = this.gameState.getGameMatch();
+    const match = this.gameState.getMatch();
 
-    if (gameMatch === null) {
+    if (match === null) {
       return console.warn("Game match is null");
     }
 
     console.log("Sending player list to", peer.getName());
 
-    const players = gameMatch.getPlayers();
+    const players = match.getPlayers();
 
     players
       .filter((matchPlayer) => matchPlayer !== peer.getPlayer())

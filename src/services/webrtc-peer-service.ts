@@ -37,13 +37,13 @@ export class WebRTCPeerService {
     this.eventProcessorService = this.gameController.getEventProcessorService();
 
     this.host =
-      this.gameController.getGameState().getGameMatch()?.isHost() ?? false;
+      this.gameController.getGameState().getMatch()?.isHost() ?? false;
 
     this.peerConnection = new RTCPeerConnection({
       iceServers: this.gameController
         ?.getGameState()
         ?.getGameServer()
-        ?.getGameRegistration()
+        ?.getServerRegistration()
         ?.getIceServers(),
     });
 

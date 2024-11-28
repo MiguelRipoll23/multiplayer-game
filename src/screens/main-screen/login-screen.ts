@@ -4,7 +4,7 @@ import { WebSocketService } from "../../services/websocket-service.js";
 import { ApiService } from "../../services/api-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { RegistrationResponse } from "../../services/interfaces/response/registration-response.js";
-import { GameRegistration } from "../../models/game-registration.js";
+import { ServerRegistration } from "../../models/server-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
@@ -114,7 +114,7 @@ export class LoginScreen extends BaseGameScreen {
 
         this.gameState
           .getGameServer()
-          .setGameRegistration(new GameRegistration(registrationResponse));
+          .setServerRegistration(new ServerRegistration(registrationResponse));
 
         this.downloadConfiguration();
       })

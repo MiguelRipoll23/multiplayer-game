@@ -1,11 +1,11 @@
-import { GameMatch } from "./game-match.js";
+import { Match } from "./match.js";
 import { GamePlayer } from "./game-player.js";
 import { GameServer } from "./game-server.js";
 
 export class GameState {
   private gamePlayer: GamePlayer;
   private gameServer: GameServer;
-  private gameMatch: GameMatch | null = null;
+  private match: Match | null = null;
 
   constructor() {
     this.gamePlayer = new GamePlayer();
@@ -20,21 +20,21 @@ export class GameState {
     return this.gameServer;
   }
 
-  public getGameMatch(): GameMatch | null {
-    return this.gameMatch;
+  public getMatch(): Match | null {
+    return this.match;
   }
 
-  public setGameMatch(gameMatch: GameMatch | null): void {
-    this.gameMatch = gameMatch;
+  public setMatch(match: Match | null): void {
+    this.match = match;
 
-    if (gameMatch === null) {
-      return console.log("Game match deleted");
+    if (match === null) {
+      return console.log("Match deleted");
     }
 
-    if (gameMatch.isHost()) {
-      console.log("Game match created", gameMatch);
+    if (match.isHost()) {
+      console.log("Match created", match);
     } else {
-      console.log("Game match set", gameMatch);
+      console.log("Match set", match);
     }
   }
 }

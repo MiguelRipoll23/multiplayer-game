@@ -94,7 +94,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private handleMatchAdvertised(): void {
-    if (this.gameState.getGameMatch()?.getPlayers().length === 1) {
+    if (this.gameState.getMatch()?.getPlayers().length === 1) {
       this.toastObject?.show("Waiting for players...");
     }
   }
@@ -110,7 +110,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     } else {
       this.toastObject?.show(`<em>${player.getName()}</em> joined`, 2);
 
-      const matchState = this.gameState.getGameMatch()?.getState();
+      const matchState = this.gameState.getMatch()?.getState();
 
       if (matchState === MatchStateType.WaitingPlayers) {
         this.showCountdown();
@@ -127,8 +127,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
     this.toastObject?.show(`<em>${player.getName()}</em> left`, 2);
 
-    const playersCount =
-      this.gameState.getGameMatch()?.getPlayers().length ?? 0;
+    const playersCount = this.gameState.getMatch()?.getPlayers().length ?? 0;
 
     if (playersCount === 1) {
       this.handleWaitingForPlayers();
@@ -236,14 +235,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private showCountdown() {
-    this.gameState.getGameMatch()?.setState(MatchStateType.Countdown);
+    this.gameState.getMatch()?.setState(MatchStateType.Countdown);
     console.log("Countdown number", this.countdownNumber);
 
     if (this.countdownNumber === -1) {
       this.countdownNumber = 4;
     }
 
-    if (this.gameState.getGameMatch()?.isHost()) {
+    if (this.gameState.getMatch()?.isHost()) {
       this.sendCountdownEvent();
     }
 
@@ -273,13 +272,13 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
 
     // Add timer for next countdown if host
-    if (this.gameState.getGameMatch()?.isHost()) {
+    if (this.gameState.getMatch()?.isHost()) {
       this.gameController.addTimer(1, this.showCountdown.bind(this));
     }
   }
 
   private resetForCountdown() {
-    if (this.gameState.getGameMatch()?.isHost()) {
+    if (this.gameState.getMatch()?.isHost()) {
       this.ballObject?.reset();
     }
 
@@ -301,7 +300,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
   private handleCountdownEnd() {
     console.log("Countdown end");
-    this.gameState.getGameMatch()?.setState(MatchStateType.InProgress);
+    this.gameState.getMatch()?.setState(MatchStateType.InProgress);
 
     this.alertObject?.hide();
     this.localCarObject?.reset();
@@ -320,13 +319,13 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private handleWaitingForPlayers(): void {
-    this.gameState.getGameMatch()?.setState(MatchStateType.WaitingPlayers);
+    this.gameState.getMatch()?.setState(MatchStateType.WaitingPlayers);
     this.scoreboardObject?.stopCountdown();
   }
 
   private detectScoresIfHost(): void {
-    const host = this.gameState.getGameMatch()?.isHost() ?? false;
-    const matchState = this.gameState.getGameMatch()?.getState();
+    const host = this.gameState.getMatch()?.isHost() ?? false;
+    const matchState = this.gameState.getMatch()?.getState();
 
     if (host && matchState === MatchStateType.InProgress) {
       this.detectScores();
@@ -339,8 +338,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
       return;
     }
 
-    const playersCount =
-      this.gameState.getGameMatch()?.getPlayers().length ?? 0;
+    const playersCount = this.gameState.getMatch()?.getPlayers().length ?? 0;
 
     if (playersCount < 2) {
       return;
@@ -367,7 +365,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.scoreboardObject?.stopCountdown();
 
     // Update match state
-    this.gameState.getGameMatch()?.setState(MatchStateType.GoalTime);
+    this.gameState.getMatch()?.setState(MatchStateType.GoalTime);
 
     // Score
     player.sumScore(1);
@@ -410,7 +408,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private updateScoreboard() {
-    const players = this.gameState.getGameMatch()?.getPlayers() ?? [];
+    const players = this.gameState.getMatch()?.getPlayers() ?? [];
 
     let totalScore = 0;
 
@@ -453,13 +451,13 @@ export class WorldScreen extends BaseCollidingGameScreen {
     this.scoreboardObject?.stopCountdown();
 
     // Update match state
-    this.gameState.getGameMatch()?.setState(MatchStateType.GoalTime);
+    this.gameState.getMatch()?.setState(MatchStateType.GoalTime);
 
     // Score
     const playerId = new TextDecoder().decode(arrayBuffer.slice(0, 36));
     const playerScore = new DataView(arrayBuffer).getInt32(36);
 
-    const player = this.gameState.getGameMatch()?.getPlayer(playerId) ?? null;
+    const player = this.gameState.getMatch()?.getPlayer(playerId) ?? null;
     player?.setScore(playerScore);
 
     // Score
@@ -484,7 +482,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
   }
 
   private detectGameEnd() {
-    if (this.gameState.getGameMatch()?.getState() === MatchStateType.GameOver) {
+    if (this.gameState.getMatch()?.getState() === MatchStateType.GameOver) {
       return;
     }
 
@@ -495,7 +493,7 @@ export class WorldScreen extends BaseCollidingGameScreen {
 
   private handleTimerEnd(): void {
     // Get all players and find the best player
-    const players = this.gameState.getGameMatch()?.getPlayers() || [];
+    const players = this.gameState.getMatch()?.getPlayers() || [];
 
     // Find the player with the highest score
     let winner = this.gameState.getGamePlayer();
@@ -539,14 +537,14 @@ export class WorldScreen extends BaseCollidingGameScreen {
     }
 
     const playerId = new TextDecoder().decode(arrayBuffer);
-    const player = this.gameState.getGameMatch()?.getPlayer(playerId) ?? null;
+    const player = this.gameState.getMatch()?.getPlayer(playerId) ?? null;
 
     this.handleGameOverStart(player);
   }
 
   private handleGameOverStart(winner: GamePlayer | null) {
     // Pause ball and countdown
-    this.gameState.getGameMatch()?.setState(MatchStateType.GameOver);
+    this.gameState.getMatch()?.setState(MatchStateType.GameOver);
     this.ballObject?.setInactive(true);
 
     // Determine winner details and show alert

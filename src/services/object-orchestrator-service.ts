@@ -30,7 +30,7 @@ export class ObjectOrchestrator {
     multiplayerScreen: MultiplayerScreen,
     deltaTimeStamp: number
   ): void {
-    if (this.gameState.getGameMatch() === null) {
+    if (this.gameState.getMatch() === null) {
       this.elapsedMilliseconds = 0;
       return;
     }
@@ -237,7 +237,7 @@ export class ObjectOrchestrator {
       return console.warn("Cannot deserialize object with id", objectid, error);
     }
 
-    const player = this.gameState.getGameMatch()?.getPlayer(ownerId) ?? null;
+    const player = this.gameState.getMatch()?.getPlayer(ownerId) ?? null;
 
     if (player === null) {
       return console.warn("Cannot find player with id", ownerId);

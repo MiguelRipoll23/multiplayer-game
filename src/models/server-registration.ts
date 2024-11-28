@@ -1,6 +1,6 @@
 import { RegistrationResponse } from "../services/interfaces/response/registration-response.js";
 
-export class GameRegistration {
+export class ServerRegistration {
   private authenticationToken: string;
   private sessionKey: string;
   private userId: string;

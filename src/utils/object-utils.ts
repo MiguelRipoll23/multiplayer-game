@@ -34,7 +34,7 @@ export class ObjectUtils {
     multiplayerObject: MultiplayerGameObject
   ) {
     if (multiplayerObject.getOwner() === null) {
-      const host = gameState.getGameMatch()?.getHost() ?? null;
+      const host = gameState.getMatch()?.getHost() ?? null;
       multiplayerObject.setOwner(host);
     }
   }

@@ -1,17 +1,18 @@
-import { GameRegistration } from "./game-registration.js";
+/* eslint-disable @typescript-eslint/no-wrapper-object-types */
+import { ServerRegistration } from "./server-registration.js";
 
 export class GameServer {
-  private gameRegistration: GameRegistration | null = null;
+  private serverRegistration: ServerRegistration | null = null;
   private configuration: Object | null = null;
 
   private connected: boolean = false;
 
-  getGameRegistration(): GameRegistration | null {
-    return this.gameRegistration;
+  getServerRegistration(): ServerRegistration | null {
+    return this.serverRegistration;
   }
 
-  setGameRegistration(gameRegistration: GameRegistration): void {
-    this.gameRegistration = gameRegistration;
+  setServerRegistration(serverRegistration: ServerRegistration): void {
+    this.serverRegistration = serverRegistration;
   }
 
   getConfiguration(): Object | null {

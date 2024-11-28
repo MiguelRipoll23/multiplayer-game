@@ -8,13 +8,13 @@ export class CryptoService {
   }
 
   public async encryptRequest(request: string): Promise<ArrayBuffer> {
-    const gameRegistration = this.gameServer.getGameRegistration();
+    const serverRegistration = this.gameServer.getServerRegistration();
 
-    if (gameRegistration === null) {
+    if (serverRegistration === null) {
       throw new Error("Game registration not found");
     }
 
-    const sessionKey = gameRegistration.getSessionKey();
+    const sessionKey = serverRegistration.getSessionKey();
 
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const data = new TextEncoder().encode(request);
@@ -52,13 +52,13 @@ export class CryptoService {
   }
 
   public async decryptResponse(response: ArrayBuffer): Promise<string> {
-    const gameRegistration = this.gameServer.getGameRegistration();
+    const serverRegistration = this.gameServer.getServerRegistration();
 
-    if (gameRegistration === null) {
+    if (serverRegistration === null) {
       throw new Error("Game registration not found");
     }
 
-    const sessionKey = gameRegistration.getSessionKey();
+    const sessionKey = serverRegistration.getSessionKey();
 
     const iv = response.slice(0, 12);
     const data = response.slice(12);

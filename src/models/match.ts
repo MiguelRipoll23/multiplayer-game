@@ -2,7 +2,7 @@ import { MatchAttributes } from "../services/interfaces/match-attributes.js";
 import { MatchStateType } from "../enums/match-state-type.js";
 import { GamePlayer } from "./game-player.js";
 
-export class GameMatch {
+export class Match {
   private host: boolean;
   private totalSlots: number;
   private attributes: MatchAttributes;

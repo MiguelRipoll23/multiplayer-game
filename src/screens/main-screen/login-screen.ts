@@ -11,7 +11,7 @@ import { CloseableMessageObject } from "../../objects/common/closeable-message-o
 import { GameState } from "../../models/game-state.js";
 import { PlayerUtils } from "../../utils/player-utils.js";
 import { EventType } from "../../types/event-type.js";
-import { EventProcessorService } from "../../services/events-processor-service.js";
+import { EventProcessorService } from "../../services/event-processor-service.js";
 
 export class LoginScreen extends BaseGameScreen {
   private gameState: GameState;

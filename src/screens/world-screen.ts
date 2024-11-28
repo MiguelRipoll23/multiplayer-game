@@ -22,7 +22,7 @@ import { MainMenuScreen } from "./main-screen/main-menu-screen.js";
 import { MatchStateType } from "../types/match-state-type.js";
 import { PlayerConnectedPayload } from "../services/interfaces/events/player-connected-payload.js";
 import { PlayerDisconnectedPayload } from "../services/interfaces/events/player-disconnected-payload.js";
-import { EventProcessorService } from "../services/events-processor-service.js";
+import { EventProcessorService } from "../services/event-processor-service.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {
   private gameState: GameState;

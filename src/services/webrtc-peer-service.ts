@@ -14,7 +14,7 @@ import { ConnectionStateType } from "../types/connection-state-type.js";
 import { LoggerUtils } from "../utils/logger-utils.js";
 import { MatchmakingService } from "./matchmaking-service.js";
 import { ObjectOrchestrator } from "./object-orchestrator-service.js";
-import { EventProcessorService } from "./events-processor-service.js";
+import { EventProcessorService } from "./event-processor-service.js";
 
 export class WebRTCPeerService {
   private logger: LoggerUtils;

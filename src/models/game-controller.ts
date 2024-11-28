@@ -1,7 +1,7 @@
 import { GAME_VERSION } from "../constants/game-constants.js";
 import { ApiService } from "../services/api-service.js";
 import { CryptoService } from "../services/crypto-service.js";
-import { EventProcessorService } from "../services/events-processor-service.js";
+import { EventProcessorService } from "../services/event-processor-service.js";
 import { MatchmakingService } from "../services/matchmaking-service.js";
 import { ObjectOrchestrator } from "../services/object-orchestrator-service.js";
 import { ScreenTransitionService } from "../services/screen-transition-service.js";

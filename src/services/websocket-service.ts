@@ -13,7 +13,7 @@ import {
   SESSION_DESCRIPTION_ID,
 } from "../constants/websocket-constants.js";
 import { WebRTCService } from "./webrtc-service.js";
-import { EventProcessorService } from "./events-processor-service.js";
+import { EventProcessorService } from "./event-processor-service.js";
 import { LocalEvent } from "../models/local-event.js";
 import { EventType } from "../types/event-type.js";
 import { ServerDisconnectedPayload } from "./interfaces/events/server-disconnected-payload.js";

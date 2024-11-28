@@ -1,4 +1,3 @@
-import { HOST_DISCONNECTED_EVENT } from "../constants/events-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { ApiService } from "./api-service.js";
 import { AdvertiseMatchRequest } from "./interfaces/request/advertise-match-request.js";
@@ -193,7 +192,7 @@ export class MatchmakingService {
       { player, matchmaking: true }
     );
 
-    this.gameController.getEventsProcessorService().addLocalEvent(localEvent);
+    this.gameController.getEventProcessorService().addLocalEvent(localEvent);
 
     this.sentSnapshotACK(peer);
   }
@@ -227,7 +226,7 @@ export class MatchmakingService {
       { player, matchmaking: false }
     );
 
-    this.gameController.getEventsProcessorService().addLocalEvent(localEvent);
+    this.gameController.getEventProcessorService().addLocalEvent(localEvent);
 
     this.advertiseMatch();
   }
@@ -290,7 +289,7 @@ export class MatchmakingService {
     );
 
     this.gameController
-      .getEventsProcessorService()
+      .getEventProcessorService()
       .addLocalEvent(playerDisconnectedEvent);
 
     this.advertiseMatch();
@@ -317,14 +316,16 @@ export class MatchmakingService {
       { player }
     );
 
-    this.gameController.getEventsProcessorService().addLocalEvent(localEvent);
+    this.gameController.getEventProcessorService().addLocalEvent(localEvent);
   }
 
   private handleHostDisconnected(peer: WebRTCPeer): void {
     console.log(`Host ${peer.getName()} disconnected`);
 
     this.gameState.setGameMatch(null);
-    dispatchEvent(new CustomEvent(HOST_DISCONNECTED_EVENT));
+
+    const localEvent = new LocalEvent(EventType.HostDisconnected, null);
+    this.gameController.getEventProcessorService().addLocalEvent(localEvent);
   }
 
   private async findMatches(): Promise<FindMatchesResponse[]> {
@@ -380,7 +381,7 @@ export class MatchmakingService {
     await this.apiService.advertiseMatch(body);
 
     const localEvent = new LocalEvent(EventType.MatchAdvertised, null);
-    this.gameController.getEventsProcessorService().addLocalEvent(localEvent);
+    this.gameController.getEventProcessorService().addLocalEvent(localEvent);
   }
 
   private async joinMatches(matches: FindMatchesResponse[]): Promise<void> {

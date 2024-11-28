@@ -1,8 +1,3 @@
-import {
-  HOST_DISCONNECTED_EVENT,
-  SERVER_DISCONNECTED_EVENT,
-  SERVER_NOTIFICATION_EVENT,
-} from "../constants/events-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
 import { GamePointer, PointerType } from "../models/game-pointer.js";
@@ -11,6 +6,9 @@ import { MainScreen } from "../screens/main-screen.js";
 import { GameKeyboard } from "../models/game-keyboard.js";
 import { LoginScreen } from "../screens/main-screen/login-screen.js";
 import { MainMenuScreen } from "../screens/main-screen/main-menu-screen.js";
+import { EventType } from "../types/event-type.js";
+import { ServerDisconnectedPayload } from "./interfaces/events/server-disconnected-payload.js";
+import { ServerNotificationPayload } from "./interfaces/events/server-notification-payload.js";
 
 export class GameLoopService {
   private context: CanvasRenderingContext2D;
@@ -74,7 +72,6 @@ export class GameLoopService {
 
   private addEventListeners(): void {
     this.addWindowEventListeners();
-    this.addCustomEventListeners();
     this.gamePointer.addEventListeners();
     this.gameKeyboard.addEventListeners();
   }
@@ -86,24 +83,10 @@ export class GameLoopService {
     });
   }
 
-  private addCustomEventListeners(): void {
-    window.addEventListener(SERVER_DISCONNECTED_EVENT, (event) => {
-      this.handleServerDisconnectedEvent(event as CustomEvent<any>);
-    });
-
-    window.addEventListener(SERVER_NOTIFICATION_EVENT, (event) => {
-      this.handleServerNotificationEvent(event as CustomEvent<any>);
-    });
-
-    window.addEventListener(HOST_DISCONNECTED_EVENT, () => {
-      this.handleHostDisconnectedEvent();
-    });
-  }
-
-  private handleServerDisconnectedEvent(event: CustomEvent<any>): void {
-    console.log(`Event ${SERVER_DISCONNECTED_EVENT} handled`, event);
-
-    if (event.detail.connectionLost) {
+  private handleServerDisconnectedEvent(
+    payload: ServerDisconnectedPayload
+  ): void {
+    if (payload.connectionLost) {
       alert("Connection to server was lost");
     } else {
       alert("Failed to connect to server");
@@ -112,14 +95,13 @@ export class GameLoopService {
     window.location.reload();
   }
 
-  private handleServerNotificationEvent(event: CustomEvent<any>): void {
-    console.log(`Event ${SERVER_NOTIFICATION_EVENT} handled`, event);
-
-    this.gameFrame.getNotificationObject()?.show(event.detail.text);
+  private handleServerNotificationEvent(
+    payload: ServerNotificationPayload
+  ): void {
+    this.gameFrame.getNotificationObject()?.show(payload.message);
   }
 
   private handleHostDisconnectedEvent(): void {
-    console.log(`Event ${HOST_DISCONNECTED_EVENT} handled`);
     alert("Host has disconnected");
 
     const mainScreen = new MainScreen(this.getGameController());
@@ -162,6 +144,8 @@ export class GameLoopService {
   }
 
   private update(deltaTimeStamp: DOMHighResTimeStamp): void {
+    this.listenForEvents();
+
     this.gameController
       .getTimers()
       .forEach((timer) => timer.update(deltaTimeStamp));
@@ -184,5 +168,28 @@ export class GameLoopService {
     this.gameFrame.getCurrentScreen()?.render(this.context);
     this.gameFrame.getNextScreen()?.render(this.context);
     this.gameFrame.getNotificationObject()?.render(this.context);
+  }
+
+  private listenForEvents(): void {
+    this.gameController
+      .getEventProcessorService()
+      .listenLocalEvent(
+        EventType.ServerDisconnected,
+        this.handleServerDisconnectedEvent.bind(this)
+      );
+
+    this.gameController
+      .getEventProcessorService()
+      .listenLocalEvent(
+        EventType.HostDisconnected,
+        this.handleHostDisconnectedEvent.bind(this)
+      );
+
+    this.gameController
+      .getEventProcessorService()
+      .listenLocalEvent(
+        EventType.ServerNotification,
+        this.handleServerNotificationEvent.bind(this)
+      );
   }
 }

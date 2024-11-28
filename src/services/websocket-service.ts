@@ -3,10 +3,6 @@ import {
   WEBSOCKET_ENDPOINT,
 } from "../constants/api-constants.js";
 import {
-  SERVER_DISCONNECTED_EVENT,
-  SERVER_NOTIFICATION_EVENT,
-} from "../constants/events-constants.js";
-import {
   NOTIFICATION_ID,
   TUNNEL_ID,
 } from "../constants/websocket-constants.js";
@@ -17,20 +13,22 @@ import {
   SESSION_DESCRIPTION_ID,
 } from "../constants/websocket-constants.js";
 import { WebRTCService } from "./webrtc-service.js";
-import { EventsProcessorService } from "./events-processor-service.js";
+import { EventProcessorService } from "./events-processor-service.js";
 import { LocalEvent } from "../models/local-event.js";
 import { EventType } from "../types/event-type.js";
+import { ServerDisconnectedPayload } from "./interfaces/events/server-disconnected-payload.js";
+import { ServerNotificationPayload } from "./interfaces/events/server-notification-payload.js";
 
 export class WebSocketService {
   private gameState: GameState;
-  private eventProcessorService: EventsProcessorService;
+  private eventProcessorService: EventProcessorService;
   private webrtcService: WebRTCService;
 
   private webSocket: WebSocket | null = null;
 
   constructor(gameController: GameController) {
     this.gameState = gameController.getGameState();
-    this.eventProcessorService = gameController.getEventsProcessorService();
+    this.eventProcessorService = gameController.getEventProcessorService();
     this.webrtcService = gameController.getWebRTCService();
   }
 
@@ -89,16 +87,18 @@ export class WebSocketService {
 
   private handleDisconnection(event: CloseEvent): void {
     console.log("Connection closed", event);
+    this.gameState.getGameServer().setConnected(false);
 
-    dispatchEvent(
-      new CustomEvent(SERVER_DISCONNECTED_EVENT, {
-        detail: {
-          connectionLost: this.gameState.getGameServer().isConnected(),
-        },
-      })
+    const payload = {
+      connectionLost: this.gameState.getGameServer().isConnected(),
+    };
+
+    const localEvent = new LocalEvent<ServerDisconnectedPayload>(
+      EventType.ServerDisconnected,
+      payload
     );
 
-    this.gameState.getGameServer().setConnected(false);
+    this.eventProcessorService.addLocalEvent(localEvent);
   }
 
   private handleMessage(data: ArrayBuffer) {
@@ -126,11 +126,13 @@ export class WebSocketService {
       return console.warn("Received empty notification");
     }
 
-    const text = new TextDecoder("utf-8").decode(payload);
-
-    dispatchEvent(
-      new CustomEvent(SERVER_NOTIFICATION_EVENT, { detail: { text } })
+    const message = new TextDecoder("utf-8").decode(payload);
+    const localEvent = new LocalEvent<ServerNotificationPayload>(
+      EventType.ServerNotification,
+      { message }
     );
+
+    this.eventProcessorService.addLocalEvent(localEvent);
   }
 
   private handleTunnelMessage(payload: ArrayBuffer | null) {

@@ -14,13 +14,13 @@ import { ConnectionStateType } from "../types/connection-state-type.js";
 import { LoggerUtils } from "../utils/logger-utils.js";
 import { MatchmakingService } from "./matchmaking-service.js";
 import { ObjectOrchestrator } from "./object-orchestrator-service.js";
-import { EventsProcessorService } from "./events-processor-service.js";
+import { EventProcessorService } from "./events-processor-service.js";
 
 export class WebRTCPeerService {
   private logger: LoggerUtils;
   private matchmakingService: MatchmakingService;
   private objectOrchestrator: ObjectOrchestrator;
-  private eventsProcessorService: EventsProcessorService;
+  private eventsProcessorService: EventProcessorService;
 
   private peerConnection: RTCPeerConnection;
   private iceCandidateQueue: RTCIceCandidateInit[] = [];
@@ -44,7 +44,7 @@ export class WebRTCPeerService {
     this.matchmakingService = this.gameController.getMatchmakingService();
     this.objectOrchestrator = this.gameController.getObjectOrchestrator();
     this.eventsProcessorService =
-      this.gameController.getEventsProcessorService();
+      this.gameController.getEventProcessorService();
 
     this.host =
       this.gameController.getGameState().getGameMatch()?.isHost() ?? false;

@@ -1,7 +1,7 @@
 import { GAME_VERSION } from "../constants/game-constants.js";
 import { ApiService } from "../services/api-service.js";
 import { CryptoService } from "../services/crypto-service.js";
-import { EventsProcessorService } from "../services/events-processor-service.js";
+import { EventProcessorService } from "../services/events-processor-service.js";
 import { MatchmakingService } from "../services/matchmaking-service.js";
 import { ObjectOrchestrator } from "../services/object-orchestrator-service.js";
 import { ScreenTransitionService } from "../services/screen-transition-service.js";
@@ -28,7 +28,7 @@ export class GameController {
   private readonly matchmakingService: MatchmakingService;
   private webRTCService: WebRTCService;
   private objectOrchestrator: ObjectOrchestrator;
-  private eventsProcessorService: EventsProcessorService;
+  private eventsProcessorService: EventProcessorService;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -43,7 +43,7 @@ export class GameController {
     this.cryptoService = new CryptoService(this.gameState.getGameServer());
     this.apiService = new ApiService(this);
     this.webRTCService = new WebRTCService(this);
-    this.eventsProcessorService = new EventsProcessorService(this);
+    this.eventsProcessorService = new EventProcessorService(this);
     this.webSocketService = new WebSocketService(this);
     this.matchmakingService = new MatchmakingService(this);
     this.objectOrchestrator = new ObjectOrchestrator(this);
@@ -132,7 +132,7 @@ export class GameController {
     return this.objectOrchestrator;
   }
 
-  public getEventsProcessorService(): EventsProcessorService {
+  public getEventProcessorService(): EventProcessorService {
     return this.eventsProcessorService;
   }
 }

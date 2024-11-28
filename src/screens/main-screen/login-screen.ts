@@ -9,17 +9,16 @@ import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 import { GameState } from "../../models/game-state.js";
-import { SERVER_DISCONNECTED_EVENT } from "../../constants/events-constants.js";
 import { PlayerUtils } from "../../utils/player-utils.js";
 import { EventType } from "../../types/event-type.js";
-import { EventsProcessorService } from "../../services/events-processor-service.js";
+import { EventProcessorService } from "../../services/events-processor-service.js";
 
 export class LoginScreen extends BaseGameScreen {
   private gameState: GameState;
   private apiService: ApiService;
   private cryptoService: CryptoService;
   private webSocketService: WebSocketService;
-  private eventsProcessorService: EventsProcessorService;
+  private eventProcessorService: EventProcessorService;
 
   private messageObject: MessageObject | null = null;
   private errorCloseableMessageObject: CloseableMessageObject | null = null;
@@ -31,9 +30,7 @@ export class LoginScreen extends BaseGameScreen {
     this.apiService = gameController.getApiService();
     this.cryptoService = gameController.getCryptoService();
     this.webSocketService = gameController.getWebSocketService();
-    this.eventsProcessorService = gameController.getEventsProcessorService();
-
-    this.addCustomEventListeners();
+    this.eventProcessorService = gameController.getEventProcessorService();
   }
 
   public override loadObjects(): void {
@@ -52,12 +49,6 @@ export class LoginScreen extends BaseGameScreen {
     this.listenForEvents();
     this.handleErrorCloseableMessageObject();
     super.update(deltaTimeStamp);
-  }
-
-  private addCustomEventListeners(): void {
-    window.addEventListener(SERVER_DISCONNECTED_EVENT, () => {
-      this.handleServerDisconnectedEvent();
-    });
   }
 
   private handleServerConnectedEvent(): void {
@@ -177,7 +168,7 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private listenForEvents(): void {
-    this.eventsProcessorService.listenLocalEvent(
+    this.eventProcessorService.listenLocalEvent(
       EventType.ServerConnected,
       this.handleServerConnectedEvent.bind(this)
     );

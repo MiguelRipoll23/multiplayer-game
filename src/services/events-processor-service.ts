@@ -7,7 +7,7 @@ import { WebRTCService } from "./webrtc-service.js";
 import { LocalEvent } from "../models/local-event.js";
 import { GameEvent } from "./interfaces/game-event.js";
 
-export class EventsProcessorService {
+export class EventProcessorService {
   private webrtcService: WebRTCService;
 
   private localEvents: LocalEvent[] = [];

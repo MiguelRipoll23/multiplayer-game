@@ -1,4 +1,13 @@
+import { GameController } from "../models/game-controller.js";
+import { ApiService } from "./api-service.js";
+
 export class PasskeyService {
+  private apiService: ApiService;
+
+  constructor(gameController: GameController) {
+    this.apiService = new ApiService(gameController);
+  }
+
   public async showAutofillUI(): Promise<void> {
     if (
       typeof window.PublicKeyCredential !== "undefined" &&
@@ -12,7 +21,7 @@ export class PasskeyService {
         try {
           // Retrieve authentication options for `navigator.credentials.get()`
           // from your server.
-          const authOptions = await this.getAuthenticationOptions();
+          const authOptions = await this.apiService.getAuthOptions();
           // This call to `navigator.credentials.get()` is "set and forget."
           // The Promise will only resolve if the user successfully interacts
           // with the browser's autofill UI to select a passkey.
@@ -20,7 +29,7 @@ export class PasskeyService {
             mediation: "conditional",
             publicKey: {
               ...authOptions,
-              // see note about userVerification below
+              challenge: new TextEncoder().encode(authOptions.challenge),
               userVerification: "preferred",
             },
           });

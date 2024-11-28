@@ -33,7 +33,7 @@ export class LoginScreen extends BaseGameScreen {
     this.cryptoService = gameController.getCryptoService();
     this.webSocketService = gameController.getWebSocketService();
     this.eventProcessorService = gameController.getEventProcessorService();
-    this.passkeyService = new PasskeyService();
+    this.passkeyService = new PasskeyService(gameController);
   }
 
   public override loadObjects(): void {
@@ -119,6 +119,8 @@ export class LoginScreen extends BaseGameScreen {
       "pointerup",
       this.handleRegisterClick.bind(this, usernameElement, dialogElement)
     );
+
+    this.passkeyService.showAutofillUI();
   }
 
   private handleRegisterClick(

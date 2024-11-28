@@ -9,6 +9,7 @@ import {
   VERSION_ENDPOINT,
   SCOREBOARD_SAVE_SCORE_PATH,
   SCOREBOARD_GET_RANKING_PATH,
+  AUTH_OPTIONS_ENDPOINT,
 } from "../constants/api-constants.js";
 import { FindMatchesResponse as FindMatchesResponse } from "../interfaces/response/find-matches-response.js";
 import { MessagesResponse } from "../interfaces/response/messages-response.js";
@@ -20,6 +21,7 @@ import { GameController } from "../models/game-controller.js";
 import { AdvertiseMatchRequest } from "../interfaces/request/advertise-match-request.js";
 import { FindMatchesRequest } from "../interfaces/request/find-matches-request.js";
 import { SaveScoreRequest } from "../interfaces/request/save-score-request.js";
+import { AuthOptionsResponse } from "../interfaces/response/auth-options-response.js";
 
 export class ApiService {
   private authenticationToken: string | null = null;
@@ -40,6 +42,19 @@ export class ApiService {
     console.log("Version response", versionResponse);
 
     return false;
+  }
+
+  public async getAuthOptions(): Promise<AuthOptionsResponse> {
+    const response = await fetch(API_BASE_URL + AUTH_OPTIONS_ENDPOINT);
+
+    if (response.ok === false) {
+      throw new Error("Failed to fetch auth options");
+    }
+
+    const authOptions = await response.json();
+    console.log("Auth options", authOptions);
+
+    return authOptions;
   }
 
   public async registerUser(name: string): Promise<RegistrationResponse> {

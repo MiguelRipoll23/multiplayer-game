@@ -21,7 +21,7 @@ export interface MultiplayerGameObject extends GameObject {
 }
 
 export interface StaticMultiplayerGameObject {
-  new (...args: any[]): MultiplayerGameObject;
+  new (...args: never[]): MultiplayerGameObject;
   getTypeId(): ObjectType;
   deserialize(id: string, data: ArrayBuffer): MultiplayerGameObject;
 }

@@ -2,7 +2,7 @@ import { HitboxObject } from "../common/hitbox-object.js";
 import { BaseAnimatedGameObject } from "./base-animated-object.js";
 
 type CollidableGameObjectConstructor = new (
-  ...args: any[]
+  ...args: never[]
 ) => BaseStaticCollidableGameObject;
 
 export class BaseStaticCollidableGameObject extends BaseAnimatedGameObject {

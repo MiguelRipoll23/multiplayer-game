@@ -2,9 +2,9 @@ import { GameController } from "../../models/game-controller.js";
 import { GamePointer } from "../../models/game-pointer.js";
 import { LayerType } from "../../enums/layer-type.js";
 import { BasePressableGameObject } from "../../objects/base/base-pressable-game-object.js";
-import { GameObject } from "../../objects/interfaces/game-object.js";
+import { GameObject } from "../../interfaces/object/game-object.js";
 import { ScreenManagerService } from "../../services/screen-manager-service.js";
-import { GameScreen } from "../interfaces/game-screen.js";
+import { GameScreen } from "../../interfaces/screen/game-screen.js";
 
 export class BaseGameScreen implements GameScreen {
   protected canvas: HTMLCanvasElement;

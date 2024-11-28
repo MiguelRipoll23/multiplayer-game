@@ -1,11 +1,11 @@
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
-import { MultiplayerGameObject } from "../objects/interfaces/multiplayer-game-object.js";
+import { MultiplayerGameObject } from "../interfaces/object/multiplayer-game-object.js";
 import { WebRTCService } from "./webrtc-service.js";
 import { GameState } from "../models/game-state.js";
-import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
+import { WebRTCPeer } from "../interfaces/webrtc-peer.js";
 import { ObjectUtils } from "../utils/object-utils.js";
-import { MultiplayerScreen } from "../screens/interfaces/multiplayer-screen.js";
+import { MultiplayerScreen } from "../interfaces/screen/multiplayer-screen.js";
 import { ObjectStateType } from "../enums/object-state-type.js";
 import { ScreenUtils } from "../utils/screen-utils.js";
 import { WebRTCType } from "../enums/webrtc-type.js";

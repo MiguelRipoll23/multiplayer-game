@@ -1,4 +1,4 @@
-import { GameEvent } from "../services/interfaces/game-event.js";
+import { GameEvent } from "../interfaces/event/game-event.js";
 import { EventType } from "../enums/event-type.js";
 
 export class LocalEvent<T = unknown> implements GameEvent {

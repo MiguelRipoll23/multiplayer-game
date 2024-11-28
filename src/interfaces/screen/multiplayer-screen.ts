@@ -1,7 +1,7 @@
 import {
   MultiplayerGameObject,
   StaticMultiplayerGameObject,
-} from "../../objects/interfaces/multiplayer-game-object.js";
+} from "../object/multiplayer-game-object.js";
 import { ScreenType } from "../../enums/screen-type.js";
 import { GameScreen } from "./game-screen.js";
 

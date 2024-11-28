@@ -8,8 +8,8 @@ import { WebRTCService } from "./webrtc-service.js";
 import { EventProcessorService } from "./event-processor-service.js";
 import { LocalEvent } from "../models/local-event.js";
 import { EventType } from "../enums/event-type.js";
-import { ServerDisconnectedPayload } from "./interfaces/events/server-disconnected-payload.js";
-import { ServerNotificationPayload } from "./interfaces/events/server-notification-payload.js";
+import { ServerDisconnectedPayload } from "../interfaces/event/server-disconnected-payload.js";
+import { ServerNotificationPayload } from "../interfaces/event/server-notification-payload.js";
 import { WebSocketType } from "../enums/websocket-type.js";
 import { TunnelType } from "../enums/tunnel-type.js";
 

@@ -10,16 +10,16 @@ import {
   SCOREBOARD_SAVE_SCORE_PATH,
   SCOREBOARD_GET_RANKING_PATH,
 } from "../constants/api-constants.js";
-import { AdvertiseMatchRequest } from "./interfaces/request/advertise-match-request.js";
-import { FindMatchRequest as FindMatchesRequest } from "./interfaces/request/find-matches-request.js";
-import { FindMatchesResponse as FindMatchesResponse } from "./interfaces/response/find-matches-response.js";
-import { MessagesResponse } from "./interfaces/response/messages-response.js";
-import { RegistrationResponse } from "./interfaces/response/registration-response.js";
-import { VersionResponse } from "./interfaces/response/version-response.js";
-import { SaveScoreRequest } from "./interfaces/request/save-score-request.js";
-import { RankingResponse } from "./interfaces/response/ranking-response.js";
+import { FindMatchesResponse as FindMatchesResponse } from "../interfaces/response/find-matches-response.js";
+import { MessagesResponse } from "../interfaces/response/messages-response.js";
+import { RegistrationResponse } from "../interfaces/response/registration-response.js";
+import { VersionResponse } from "../interfaces/response/version-response.js";
+import { RankingResponse } from "../interfaces/response/ranking-response.js";
 import { CryptoService } from "./crypto-service.js";
 import { GameController } from "../models/game-controller.js";
+import { AdvertiseMatchRequest } from "../interfaces/request/advertise-match-request.js";
+import { FindMatchesRequest } from "../interfaces/request/find-matches-request.js";
+import { SaveScoreRequest } from "../interfaces/request/save-score-request.js";
 
 export class ApiService {
   private authenticationToken: string | null = null;

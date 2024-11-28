@@ -1,6 +1,6 @@
 import { GamePlayer } from "../../models/game-player.js";
 import { ObjectType } from "../../enums/object-type.js";
-import { WebRTCPeer } from "../../services/interfaces/webrtc-peer.js";
+import { WebRTCPeer } from "../webrtc-peer.js";
 import { GameObject } from "./game-object.js";
 
 export interface MultiplayerGameObject extends GameObject {

@@ -1,7 +1,7 @@
 import { GameState } from "../models/game-state.js";
 import { ObjectStateType } from "../enums/object-state-type.js";
-import { MultiplayerGameObject } from "../objects/interfaces/multiplayer-game-object.js";
-import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
+import { MultiplayerGameObject } from "../interfaces/object/multiplayer-game-object.js";
+import { WebRTCPeer } from "../interfaces/webrtc-peer.js";
 
 export class ObjectUtils {
   public static skipLocalObject(

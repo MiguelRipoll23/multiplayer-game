@@ -1,5 +1,5 @@
 import { BaseAnimatedGameObject } from "./base/base-animated-object.js";
-import { RankingResponse } from "../services/interfaces/response/ranking-response.js";
+import { RankingResponse } from "../interfaces/response/ranking-response.js";
 
 export class RankingTableObject extends BaseAnimatedGameObject {
   private ranking: RankingResponse[] = [];
@@ -22,7 +22,11 @@ export class RankingTableObject extends BaseAnimatedGameObject {
       context.fillStyle = "white";
       context.fillText(`#${index + 1}`, startX, startY);
       context.fillText(player.player_name, startX + 50, startY);
-      context.fillText(player.total_score.toString(), context.canvas.width - 40, startY);
+      context.fillText(
+        player.total_score.toString(),
+        context.canvas.width - 40,
+        startY
+      );
       startY += 40;
 
       // Draw dashed line between rows

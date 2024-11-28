@@ -1,6 +1,6 @@
 import { NotificationObject } from "../objects/common/notification-object.js";
-import { GameScreen } from "../screens/interfaces/game-screen.js";
-import { ScreenManager } from "../screens/interfaces/screen-manager.js";
+import { GameScreen } from "../interfaces/screen/game-screen.js";
+import { ScreenManager } from "../interfaces/screen/screen-manager.js";
 
 export class GameFrame implements ScreenManager {
   private currentScreen: GameScreen | null = null;

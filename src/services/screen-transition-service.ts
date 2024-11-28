@@ -1,5 +1,5 @@
-import { GameScreen } from "../screens/interfaces/game-screen.js";
-import { ScreenManager } from "../screens/interfaces/screen-manager.js";
+import { GameScreen } from "../interfaces/screen/game-screen.js";
+import { ScreenManager } from "../interfaces/screen/screen-manager.js";
 
 export class ScreenTransitionService {
   private screenManager: ScreenManager;
@@ -33,7 +33,7 @@ export class ScreenTransitionService {
   public fadeOutAndIn(
     nextScreen: GameScreen,
     fadeOutDurationSeconds: number,
-    fadeInDurationSeconds: number,
+    fadeInDurationSeconds: number
   ): void {
     if (this.isNextScreenAlreadySet(nextScreen)) {
       console.warn("Ignoring duplicated transition to the same screen");
@@ -56,7 +56,7 @@ export class ScreenTransitionService {
 
   public crossfade(
     nextScreen: GameScreen,
-    crossfadeDurationSeconds: number,
+    crossfadeDurationSeconds: number
   ): void {
     if (this.isNextScreenAlreadySet(nextScreen)) {
       console.warn("Ignoring duplicated transition to the same screen");
@@ -100,7 +100,7 @@ export class ScreenTransitionService {
   private fadeOutCurrentScreen(currentScreen: GameScreen): void {
     const fadeOutOpacity = Math.min(
       1,
-      this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds,
+      this.elapsedTransitionMilliseconds / this.fadeOutDurationMilliseconds
     );
 
     if (fadeOutOpacity === 1) {
@@ -114,7 +114,7 @@ export class ScreenTransitionService {
   private fadeInNextScreen(nextScreen: GameScreen): void {
     const fadeInOpacity = Math.min(
       1,
-      this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds,
+      this.elapsedTransitionMilliseconds / this.fadeInDurationMilliseconds
     );
 
     nextScreen.setOpacity(fadeInOpacity);
@@ -133,7 +133,7 @@ export class ScreenTransitionService {
 
     const crossfadeOpacity = Math.min(
       1,
-      this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds,
+      this.elapsedTransitionMilliseconds / this.crossfadeDurationMilliseconds
     );
 
     nextScreen.setOpacity(crossfadeOpacity);

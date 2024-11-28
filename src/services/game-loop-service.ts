@@ -7,8 +7,8 @@ import { GameKeyboard } from "../models/game-keyboard.js";
 import { LoginScreen } from "../screens/main-screen/login-screen.js";
 import { MainMenuScreen } from "../screens/main-screen/main-menu-screen.js";
 import { EventType } from "../enums/event-type.js";
-import { ServerDisconnectedPayload } from "./interfaces/events/server-disconnected-payload.js";
-import { ServerNotificationPayload } from "./interfaces/events/server-notification-payload.js";
+import { ServerDisconnectedPayload } from "../interfaces/event/server-disconnected-payload.js";
+import { ServerNotificationPayload } from "../interfaces/event/server-notification-payload.js";
 
 export class GameLoopService {
   private context: CanvasRenderingContext2D;

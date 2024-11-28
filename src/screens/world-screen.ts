@@ -20,8 +20,8 @@ import { ScreenType } from "../enums/screen-type.js";
 import { MainScreen } from "./main-screen.js";
 import { MainMenuScreen } from "./main-screen/main-menu-screen.js";
 import { MatchStateType } from "../enums/match-state-type.js";
-import { PlayerConnectedPayload } from "../services/interfaces/events/player-connected-payload.js";
-import { PlayerDisconnectedPayload } from "../services/interfaces/events/player-disconnected-payload.js";
+import { PlayerConnectedPayload } from "../interfaces/event/player-connected-payload.js";
+import { PlayerDisconnectedPayload } from "../interfaces/event/player-disconnected-payload.js";
 import { EventProcessorService } from "../services/event-processor-service.js";
 
 export class WorldScreen extends BaseCollidingGameScreen {

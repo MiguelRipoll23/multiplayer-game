@@ -1,6 +1,6 @@
 import { GameFrame } from "../models/game-frame.js";
 import { BaseMultiplayerScreen } from "../screens/base/base-multiplayer-screen.js";
-import { MultiplayerScreen } from "../screens/interfaces/multiplayer-screen.js";
+import { MultiplayerScreen } from "../interfaces/screen/multiplayer-screen.js";
 
 export class ScreenUtils {
   public static getScreenById(

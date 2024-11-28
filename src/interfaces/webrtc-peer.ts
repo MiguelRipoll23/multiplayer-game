@@ -1,5 +1,5 @@
-import { GamePlayer } from "../../models/game-player.js";
-import { ConnectionStateType } from "../../enums/connection-state-type.js";
+import { GamePlayer } from "../models/game-player.js";
+import { ConnectionStateType } from "../enums/connection-state-type.js";
 
 export interface WebRTCPeer {
   getConnectionState(): ConnectionStateType;

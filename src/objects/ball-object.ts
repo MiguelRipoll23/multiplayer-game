@@ -1,8 +1,8 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
 import { CarObject } from "./car-object.js";
-import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
-import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
+import { MultiplayerGameObject } from "../interfaces/object/multiplayer-game-object.js";
+import { WebRTCPeer } from "../interfaces/webrtc-peer.js";
 import { ObjectType } from "../enums/object-type.js";
 import { GamePlayer } from "../models/game-player.js";
 

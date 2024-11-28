@@ -1,6 +1,6 @@
 import { HitboxObject } from "./common/hitbox-object.js";
 import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-game-object.js";
-import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
+import { WebRTCPeer } from "../interfaces/webrtc-peer.js";
 import { GamePlayer } from "../models/game-player.js";
 import {
   BLUE_TEAM_TRANSPARENCY_COLOR,

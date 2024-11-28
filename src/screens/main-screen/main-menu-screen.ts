@@ -4,7 +4,7 @@ import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
 import { ServerMessageWindowObject } from "../../objects/server-message-window-object.js";
 import { ApiService } from "../../services/api-service.js";
-import { MessagesResponse } from "../../services/interfaces/response/messages-response.js";
+import { MessagesResponse } from "../../interfaces/response/messages-response.js";
 import { ScreenTransitionService } from "../../services/screen-transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { LoadingScreen } from "../loading-screen.js";

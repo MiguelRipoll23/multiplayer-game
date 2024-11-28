@@ -45,7 +45,13 @@ export class ApiService {
   }
 
   public async getAuthOptions(): Promise<AuthOptionsResponse> {
-    const response = await fetch(API_BASE_URL + AUTH_OPTIONS_ENDPOINT);
+    const response = await fetch(API_BASE_URL + AUTH_OPTIONS_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
+    });
 
     if (response.ok === false) {
       throw new Error("Failed to fetch auth options");

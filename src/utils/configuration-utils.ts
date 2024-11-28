@@ -1,11 +1,12 @@
 import { GameState } from "../models/game-state.js";
+import { ConfigurationType } from "../types/configuration-type.js";
 
 export function getConfigurationKey<T>(
   key: string,
   defaultValue: T,
   gameState: GameState
 ): T {
-  const configuration: { [key: string]: any } | null = gameState
+  const configuration: ConfigurationType | null = gameState
     .getGameServer()
     .getConfiguration();
 
@@ -17,5 +18,5 @@ export function getConfigurationKey<T>(
     return defaultValue;
   }
 
-  return configuration[key];
+  return configuration[key] as T;
 }

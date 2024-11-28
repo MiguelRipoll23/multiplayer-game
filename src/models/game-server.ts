@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-wrapper-object-types */
+import { ConfigurationType } from "../types/configuration-type.js";
 import { ServerRegistration } from "./server-registration.js";
 
 export class GameServer {
   private serverRegistration: ServerRegistration | null = null;
-  private configuration: Object | null = null;
+  private configuration: ConfigurationType | null = null;
 
   private connected: boolean = false;
 
@@ -15,11 +15,11 @@ export class GameServer {
     this.serverRegistration = serverRegistration;
   }
 
-  getConfiguration(): Object | null {
+  getConfiguration(): ConfigurationType | null {
     return this.configuration;
   }
 
-  setConfiguration(configuration: Object): void {
+  setConfiguration(configuration: ConfigurationType): void {
     this.configuration = configuration;
   }
 

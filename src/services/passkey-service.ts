@@ -29,7 +29,9 @@ export class PasskeyService {
             mediation: "conditional",
             publicKey: {
               ...authOptions,
-              challenge: new TextEncoder().encode(authOptions.challenge),
+              challenge: Uint8Array.from(authOptions.challenge, (c) =>
+                c.charCodeAt(0)
+              ),
               userVerification: "preferred",
             },
           });
@@ -50,10 +52,46 @@ export class PasskeyService {
     }
   }
 
-  private async getAuthenticationOptions(): Promise<PublicKeyCredentialRequestOptions> {
-    // Retrieve authentication options from your server.
-    const response = await fetch("/auth-options");
-    return response.json();
+  public async createCredential(
+    name: string,
+    displayName: string
+  ): Promise<void> {
+    const authOptions = await this.apiService.getAuthOptions();
+
+    if (window.location.hostname === "localhost") {
+      authOptions.rp.id = "localhost";
+    }
+
+    const publicKey = {
+      ...authOptions,
+      challenge: Uint8Array.from(authOptions.challenge, (c) => c.charCodeAt(0)),
+      user: {
+        id: new Uint8Array(16),
+        name,
+        displayName,
+      },
+      pubKeyCredParams: authOptions.pubKeyCredParams.map((pkcp) => ({
+        type: pkcp.type,
+        alg: pkcp.alg,
+      })),
+    };
+
+    try {
+      const credential = await navigator.credentials.create({
+        publicKey,
+      });
+
+      if (credential === null) {
+        console.log("User canceled credential creation");
+        return;
+      }
+
+      // Send the response to your server for verification and
+      // authenticate the user if the response is valid.
+      await this.verifyAutoFillResponse(credential);
+    } catch (error) {
+      console.error("Error creating credential:", error);
+    }
   }
 
   private async verifyAutoFillResponse(credential: Credential): Promise<void> {

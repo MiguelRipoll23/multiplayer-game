@@ -139,11 +139,13 @@ export class LoginScreen extends BaseGameScreen {
     this.registerUser(username);
   }
 
-  private registerUser(username: string): void {
+  private registerUser(name: string): void {
+    this.passkeyService.createCredential(name, name);
+
     this.apiService
-      .registerUser(username)
+      .registerUser(name)
       .then((registrationResponse: RegistrationResponse) => {
-        this.gameState.getGamePlayer().setName(username);
+        this.gameState.getGamePlayer().setName(name);
 
         this.gameState
           .getGameServer()

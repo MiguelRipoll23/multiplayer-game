@@ -12,9 +12,9 @@ export interface AuthOptionsResponse {
     displayName: string;
   };
   pubKeyCredParams: Array<{
-    type: string;
+    type: "public-key";
     alg: number;
   }>;
   timeout: number;
-  attestation: string;
+  attestation: AttestationConveyancePreference | undefined;
 }

@@ -38,7 +38,7 @@ export class WebRTCService {
 
   public handleSessionDescriptionEvent(
     originToken: string,
-    rtcSessionDescription: any
+    rtcSessionDescription: RTCSessionDescriptionInit
   ): void {
     if (this.gameController.getGameState().getMatch()?.isHost()) {
       this.handlePeerOffer(originToken, rtcSessionDescription);

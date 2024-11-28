@@ -155,16 +155,26 @@ export class WebSocketService {
   private handleWebRTCMessage(
     originToken: string,
     type: TunnelType,
-    webrtcPayload: any
+    webrtcPayload: RTCIceCandidate | RTCSessionDescriptionInit
   ) {
     switch (type) {
       case TunnelType.IceCandidate:
+        if (webrtcPayload instanceof RTCIceCandidate === false) {
+          console.warn("Invalid ICE candidate payload", webrtcPayload);
+          return;
+        }
+
         return this.webrtcService.handleNewIceCandidate(
           originToken,
           webrtcPayload
         );
 
       case TunnelType.SessionDescription:
+        if (webrtcPayload instanceof RTCSessionDescription === false) {
+          console.warn("Invalid session description payload", webrtcPayload);
+          return;
+        }
+
         return this.webrtcService.handleSessionDescriptionEvent(
           originToken,
           webrtcPayload

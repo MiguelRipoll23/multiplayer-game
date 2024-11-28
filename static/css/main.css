@@ -31,3 +31,7 @@ dialog {
 dialog h1 {
   margin-top: 0;
 }
+
+input[type="text"] {
+  font-size: 16px;
+}

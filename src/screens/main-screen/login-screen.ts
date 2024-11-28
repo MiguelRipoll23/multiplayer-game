@@ -12,6 +12,7 @@ import { GameState } from "../../models/game-state.js";
 import { PlayerUtils } from "../../utils/player-utils.js";
 import { EventType } from "../../enums/event-type.js";
 import { EventProcessorService } from "../../services/event-processor-service.js";
+import { PasskeyService } from "../../services/passkey-service.js";
 
 export class LoginScreen extends BaseGameScreen {
   private gameState: GameState;
@@ -19,6 +20,7 @@ export class LoginScreen extends BaseGameScreen {
   private cryptoService: CryptoService;
   private webSocketService: WebSocketService;
   private eventProcessorService: EventProcessorService;
+  private passkeyService: PasskeyService;
 
   private messageObject: MessageObject | null = null;
   private errorCloseableMessageObject: CloseableMessageObject | null = null;
@@ -31,6 +33,7 @@ export class LoginScreen extends BaseGameScreen {
     this.cryptoService = gameController.getCryptoService();
     this.webSocketService = gameController.getWebSocketService();
     this.eventProcessorService = gameController.getEventProcessorService();
+    this.passkeyService = new PasskeyService();
   }
 
   public override loadObjects(): void {
@@ -54,10 +57,6 @@ export class LoginScreen extends BaseGameScreen {
   private handleServerConnectedEvent(): void {
     this.messageObject?.hide();
     this.transitionToMainMenuScreen();
-  }
-
-  private handleServerDisconnectedEvent(): void {
-    this.showError("Couldn't connect to the server");
   }
 
   private loadMessageObject(): void {
@@ -92,7 +91,7 @@ export class LoginScreen extends BaseGameScreen {
         }
 
         this.messageObject?.hide();
-        this.registerUser();
+        this.showDialog();
       })
       .catch((error) => {
         console.error(error);
@@ -100,17 +99,49 @@ export class LoginScreen extends BaseGameScreen {
       });
   }
 
-  private registerUser(): void {
-    const name = prompt("Player name:", PlayerUtils.getRandomName());
+  private showDialog(): void {
+    this.gameController.getGamePointer().setPreventDefault(false);
 
-    if (name === null) {
-      return this.registerUser();
+    const dialogElement = document.querySelector("dialog");
+    const usernameElement = document.querySelector("#username-input");
+
+    if (!dialogElement || !usernameElement) {
+      console.error("Dialog element or username element not found");
+      return;
     }
 
+    dialogElement.showModal();
+    usernameElement.setAttribute("value", PlayerUtils.getRandomName());
+
+    const registerButton = document.querySelector("#register-button");
+
+    registerButton?.addEventListener(
+      "pointerup",
+      this.handleRegisterClick.bind(this, usernameElement, dialogElement)
+    );
+  }
+
+  private handleRegisterClick(
+    usernameElement: Element,
+    dialogElement: HTMLDialogElement
+  ): void {
+    const username = usernameElement?.getAttribute("value") || "";
+
+    if (username === "") {
+      return;
+    }
+
+    dialogElement.close();
+    this.gameController.getGamePointer().setPreventDefault(true);
+
+    this.registerUser(username);
+  }
+
+  private registerUser(username: string): void {
     this.apiService
-      .registerUser(name)
+      .registerUser(username)
       .then((registrationResponse: RegistrationResponse) => {
-        this.gameState.getGamePlayer().setName(name);
+        this.gameState.getGamePlayer().setName(username);
 
         this.gameState
           .getGameServer()

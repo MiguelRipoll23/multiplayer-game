@@ -8,6 +8,22 @@
     <script type="module" src="./js/main.js" defer></script>
   </head>
   <body>
+    <dialog>
+      <h1>Player ID</h1>
+      <div>
+        <input
+          id="username-input"
+          type="text"
+          placeholder="Username"
+          autocomplete="username webauthn"
+        />
+        <button id="register-button">Register</button>
+      </div>
+      <hr />
+      <div>
+        <button id="sign-in-button">Sign in</button>
+      </div>
+    </dialog>
     <canvas id="canvas" tabindex="1"></canvas>
   </body>
 </html>

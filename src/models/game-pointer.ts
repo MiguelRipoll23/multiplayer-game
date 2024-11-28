@@ -11,6 +11,8 @@ export class GamePointer {
   private pressing: boolean = false;
   private pressed: boolean = false;
 
+  private preventDefault: boolean = true;
+
   public getX(): number {
     return this.x;
   }
@@ -41,6 +43,10 @@ export class GamePointer {
 
   public setInitialY(y: number): void {
     this.initialY = y;
+  }
+
+  public setPreventDefault(preventDefault: boolean): void {
+    this.preventDefault = preventDefault;
   }
 
   public isPressing(): boolean {
@@ -84,7 +90,9 @@ export class GamePointer {
     window.addEventListener(
       "touchstart",
       (event) => {
-        event.preventDefault();
+        if (this.preventDefault) {
+          event.preventDefault();
+        }
       },
       { passive: false }
     );
@@ -92,7 +100,9 @@ export class GamePointer {
     window.addEventListener(
       "touchmove",
       (event) => {
-        event.preventDefault();
+        if (this.preventDefault) {
+          event.preventDefault();
+        }
       },
       { passive: false }
     );
@@ -100,7 +110,10 @@ export class GamePointer {
     window.addEventListener(
       "pointermove",
       (event) => {
-        event.preventDefault();
+        if (this.preventDefault) {
+          event.preventDefault();
+        }
+
         this.setX(event.clientX);
         this.setY(event.clientY);
       },
@@ -110,7 +123,10 @@ export class GamePointer {
     window.addEventListener(
       "pointerdown",
       (event) => {
-        event.preventDefault();
+        if (this.preventDefault) {
+          event.preventDefault();
+        }
+
         this.setType(event.pointerType as PointerType);
         this.setX(event.clientX);
         this.setY(event.clientY);
@@ -124,7 +140,10 @@ export class GamePointer {
     window.addEventListener(
       "pointerup",
       (event) => {
-        event.preventDefault();
+        if (this.preventDefault) {
+          event.preventDefault();
+        }
+
         this.setX(event.clientX);
         this.setY(event.clientY);
         this.setPressing(false);

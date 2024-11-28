@@ -386,10 +386,10 @@ export class WebRTCPeerService {
         return this.matchmakingService.handleSnapshotACK(this);
 
       case WebRTCType.ObjectData:
-        return this.objectOrchestrator.handleRemoteData(this, payload);
+        return this.objectOrchestrator.handleObjectData(this, payload);
 
       case WebRTCType.EventData:
-        return this.eventProcessorService.handleRemoteEvent(this, payload);
+        return this.eventProcessorService.handleEventData(this, payload);
 
       case WebRTCType.GracefulDisconnect:
         return this.handleGracefulDisconnect();

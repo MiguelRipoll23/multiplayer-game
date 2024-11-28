@@ -50,7 +50,7 @@ export class ObjectOrchestrator {
     }
   }
 
-  public handleRemoteData(
+  public handleObjectData(
     webrtcPeer: WebRTCPeer,
     data: ArrayBuffer | null
   ): void {

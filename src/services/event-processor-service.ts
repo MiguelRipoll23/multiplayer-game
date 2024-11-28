@@ -32,7 +32,7 @@ export class EventProcessorService {
     });
   }
 
-  public handleRemoteEvent(webrtcPeer: WebRTCPeer, data: ArrayBuffer | null) {
+  public handleEventData(webrtcPeer: WebRTCPeer, data: ArrayBuffer | null) {
     if (data === null) {
       return console.warn("Received null data from peer");
     }

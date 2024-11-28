@@ -57,7 +57,9 @@ export class BaseGameObject implements GameObject {
     this.debug = debug;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public update(deltaTimeStamp: number): void {}
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public render(context: CanvasRenderingContext2D): void {}
 }

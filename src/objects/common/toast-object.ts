@@ -90,7 +90,6 @@ export class ToastObject extends BaseAnimatedGameObject {
   }
 
   private setPosition(): void {
-    const canvasHeight = this.canvas.height;
     this.x = (this.canvas.width - this.width) / 2;
     this.y = this.topMargin; // Set y position based on topMargin
   }

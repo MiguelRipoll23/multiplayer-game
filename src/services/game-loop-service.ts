@@ -1,6 +1,6 @@
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
-import { GamePointer, PointerType } from "../models/game-pointer.js";
+import { GamePointer } from "../models/game-pointer.js";
 import { NotificationObject } from "../objects/common/notification-object.js";
 import { MainScreen } from "../screens/main-screen.js";
 import { GameKeyboard } from "../models/game-keyboard.js";

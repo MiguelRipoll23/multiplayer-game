@@ -1,6 +1,5 @@
 import { ObjectType } from "../enums/object-type.js";
 import { CarObject } from "./car-object.js";
-import { GameObject } from "./interfaces/game-object.js";
 import { MultiplayerGameObject } from "./interfaces/multiplayer-game-object.js";
 
 export class RemoteCarObject extends CarObject {

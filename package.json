@@ -7,6 +7,7 @@
   "scripts": {
     "build": "cd static && tsc",
     "dev": "npm-run-all --parallel http-server tsc-watch",
+    "lint": "eslint -c eslint.config.js",
     "http-server": "http-server -c-1 ./static",
     "tsc-watch": "cd static && tsc --watch"
   },

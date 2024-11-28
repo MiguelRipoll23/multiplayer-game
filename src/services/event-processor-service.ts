@@ -26,7 +26,7 @@ export class EventProcessorService {
     this.localEvents.forEach((event) => {
       if (event.getId() === eventId) {
         console.log(`Local event ${EventType[eventId]} consumed`, event);
-        callback(event.getPayload());
+        callback(event.getPayload() as T);
         this.removeEvent(this.localEvents, event);
       }
     });

@@ -23,7 +23,7 @@ export class GearStickObject extends BaseGameObject {
     this.y = this.canvas.height - (this.SIZE + this.Y_OFFSET);
   }
 
-  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+  public override update(): void {
     this.handleTouchEvents();
     this.handleKeyboardEvents();
   }

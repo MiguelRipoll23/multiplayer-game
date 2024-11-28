@@ -21,10 +21,6 @@ export class GoalObject extends BaseStaticCollidableGameObject {
     super.load();
   }
 
-  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    // No update logic required
-  }
-
   public override render(context: CanvasRenderingContext2D): void {
     context.fillStyle = this.fillColor;
     context.strokeStyle = this.BORDER_COLOR;

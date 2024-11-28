@@ -40,7 +40,7 @@ export class ScreenManagerService implements ScreenManager {
     this.currentScreen = currentScreen;
   }
 
-  public setNextScreen(nextScreen: GameScreen | null, stack = true): void {
+  public setNextScreen(nextScreen: GameScreen | null): void {
     this.nextScreen = nextScreen;
     this.nextScreen?.setScreenManagerService(this);
 

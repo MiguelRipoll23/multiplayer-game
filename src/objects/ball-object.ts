@@ -72,7 +72,7 @@ export class BallObject
     return this.lastPlayer;
   }
 
-  public update(deltaTimeStamp: DOMHighResTimeStamp): void {
+  public update(): void {
     this.applyFriction();
     this.calculateMovement();
     this.updateHitbox();

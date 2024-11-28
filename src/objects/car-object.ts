@@ -3,9 +3,7 @@ import { BaseDynamicCollidableGameObject } from "./base/base-collidable-dynamic-
 import { WebRTCPeer } from "../services/interfaces/webrtc-peer.js";
 import { GamePlayer } from "../models/game-player.js";
 import {
-  BLUE_TEAM_COLOR,
   BLUE_TEAM_TRANSPARENCY_COLOR,
-  RED_TEAM_COLOR,
   RED_TEAM_TRANSPARENCY_COLOR,
 } from "../constants/colors-constants.js";
 

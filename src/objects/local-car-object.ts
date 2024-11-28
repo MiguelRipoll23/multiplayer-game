@@ -1,4 +1,3 @@
-import { BLUE_TEAM_COLOR } from "../constants/colors-constants.js";
 import { GameKeyboard } from "../models/game-keyboard.js";
 import { GamePointer } from "../models/game-pointer.js";
 import { ObjectType } from "../enums/object-type.js";

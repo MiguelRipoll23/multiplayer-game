@@ -21,7 +21,7 @@ export class JoystickObject extends BaseGameObject {
     super();
   }
 
-  public update(deltaTimeStamp: DOMHighResTimeStamp) {
+  public override update() {
     if (this.gamePointer.isTouch()) {
       this.handleGamePointerEvents();
       this.updateJoystickPosition();

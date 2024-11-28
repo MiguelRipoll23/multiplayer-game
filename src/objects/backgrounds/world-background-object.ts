@@ -4,7 +4,7 @@ import { GameObject } from "../interfaces/game-object.js";
 
 export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
   private readonly BACKGROUND_COLOR: string = "#00a000";
-  private readonly BOUNDARY_COOLOR: string = "#ffffff";
+  private readonly BOUNDARY_COLOR: string = "#ffffff";
 
   private fieldWidth: number = 0;
   private fieldHeight: number = 0;
@@ -40,10 +40,6 @@ export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
     this.centerY = this.canvas.height / 2;
   }
 
-  public override update(deltaTimeStamp: DOMHighResTimeStamp): void {
-    // No update logic required
-  }
-
   public override render(context: CanvasRenderingContext2D): void {
     // Set background color
     context.fillStyle = this.BACKGROUND_COLOR;
@@ -55,17 +51,17 @@ export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
       this.fieldX,
       this.fieldY,
       this.fieldWidth,
-      this.fieldHeight,
+      this.fieldHeight
     );
 
     // Draw boundary lines
-    context.strokeStyle = this.BOUNDARY_COOLOR;
+    context.strokeStyle = this.BOUNDARY_COLOR;
     context.lineWidth = 2;
     context.strokeRect(
       this.fieldX,
       this.fieldY,
       this.fieldWidth,
-      this.fieldHeight,
+      this.fieldHeight
     );
 
     // Draw midfield line
@@ -94,13 +90,13 @@ export class WorldBackgroundObject extends BaseStaticCollidableGameObject {
         this.fieldX,
         this.canvas.height - this.fieldY,
         this.fieldWidth,
-        1,
+        1
       ),
       new HitboxObject(
         this.canvas.width - this.fieldX,
         this.fieldY,
         1,
-        this.fieldHeight,
+        this.fieldHeight
       ),
       new HitboxObject(this.fieldX, this.fieldY, 1, this.fieldHeight),
     ]);

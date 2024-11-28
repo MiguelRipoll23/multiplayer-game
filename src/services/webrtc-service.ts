@@ -1,8 +1,5 @@
-import {
-  ICE_CANDIDATE_ID,
-  SESSION_DESCRIPTION_ID,
-} from "../constants/websocket-constants.js";
 import { GameController } from "../models/game-controller.js";
+import { TunnelType } from "../types/tunnel-type.js";
 import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { WebRTCPeerService } from "./webrtc-peer-service.js";
 
@@ -22,7 +19,7 @@ export class WebRTCService {
 
     const payload = new Uint8Array([
       ...tokenBytes,
-      SESSION_DESCRIPTION_ID,
+      TunnelType.SessionDescription,
       ...offerBytes,
     ]);
 
@@ -89,7 +86,7 @@ export class WebRTCService {
 
     const payload = new Uint8Array([
       ...tokenBytes,
-      SESSION_DESCRIPTION_ID,
+      TunnelType.SessionDescription,
       ...answerBytes,
     ]);
 
@@ -131,7 +128,7 @@ export class WebRTCService {
 
     const payload = new Uint8Array([
       ...Uint8Array.from(atob(token), (c) => c.charCodeAt(0)),
-      ICE_CANDIDATE_ID,
+      TunnelType.IceCandidate,
       ...candidateBytes,
     ]);
 

@@ -1,13 +1,3 @@
-import {
-  SNAPSHOT_ACK_ID,
-  SNAPSHOT_ID,
-  JOIN_REQUEST_ID,
-  JOIN_RESPONSE_ID,
-  OBJECT_ID,
-  PLAYER_ID,
-  EVENT_ID,
-  DISCONNECT_ID,
-} from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GamePlayer } from "../models/game-player.js";
 import { ConnectionStateType } from "../types/connection-state-type.js";
@@ -15,12 +5,13 @@ import { LoggerUtils } from "../utils/logger-utils.js";
 import { MatchmakingService } from "./matchmaking-service.js";
 import { ObjectOrchestrator } from "./object-orchestrator-service.js";
 import { EventProcessorService } from "./event-processor-service.js";
+import { WebRTCType } from "../types/webrtc-type.js";
 
 export class WebRTCPeerService {
   private logger: LoggerUtils;
   private matchmakingService: MatchmakingService;
   private objectOrchestrator: ObjectOrchestrator;
-  private eventsProcessorService: EventProcessorService;
+  private eventProcessorService: EventProcessorService;
 
   private peerConnection: RTCPeerConnection;
   private iceCandidateQueue: RTCIceCandidateInit[] = [];
@@ -43,8 +34,7 @@ export class WebRTCPeerService {
 
     this.matchmakingService = this.gameController.getMatchmakingService();
     this.objectOrchestrator = this.gameController.getObjectOrchestrator();
-    this.eventsProcessorService =
-      this.gameController.getEventProcessorService();
+    this.eventProcessorService = this.gameController.getEventProcessorService();
 
     this.host =
       this.gameController.getGameState().getGameMatch()?.isHost() ?? false;
@@ -380,28 +370,28 @@ export class WebRTCPeerService {
     }
 
     switch (id) {
-      case JOIN_REQUEST_ID:
+      case WebRTCType.JoinRequest:
         return this.matchmakingService.handleJoinRequest(this, payload);
 
-      case JOIN_RESPONSE_ID:
+      case WebRTCType.JoinResponse:
         return this.matchmakingService.handleJoinResponse(this, payload);
 
-      case PLAYER_ID:
+      case WebRTCType.PlayerConnection:
         return this.matchmakingService.handlePlayerConnection(this, payload);
 
-      case SNAPSHOT_ID:
-        return this.matchmakingService.handleSnapshot(this);
+      case WebRTCType.SnapshotEnd:
+        return this.matchmakingService.handleSnapshotEnd(this);
 
-      case SNAPSHOT_ACK_ID:
+      case WebRTCType.SnapshotACK:
         return this.matchmakingService.handleSnapshotACK(this);
 
-      case OBJECT_ID:
+      case WebRTCType.ObjectData:
         return this.objectOrchestrator.handleRemoteData(this, payload);
 
-      case EVENT_ID:
-        return this.eventsProcessorService.handleRemoteEvent(this, payload);
+      case WebRTCType.EventData:
+        return this.eventProcessorService.handleRemoteEvent(this, payload);
 
-      case DISCONNECT_ID:
+      case WebRTCType.GracefulDisconnect:
         return this.handleGracefulDisconnect();
 
       default: {
@@ -415,14 +405,14 @@ export class WebRTCPeerService {
       return false;
     }
 
-    return id > SNAPSHOT_ACK_ID;
+    return id > WebRTCType.SnapshotACK;
   }
 
   private sendDisconnectMessage(): void {
     const arrayBuffer = new ArrayBuffer(1);
 
     const dataView = new DataView(arrayBuffer);
-    dataView.setInt8(0, DISCONNECT_ID);
+    dataView.setInt8(0, WebRTCType.GracefulDisconnect);
 
     this.sendReliableOrderedMessage(arrayBuffer);
     console.log("Disconnect message sent");

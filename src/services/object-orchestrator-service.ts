@@ -1,4 +1,3 @@
-import { OBJECT_ID } from "../constants/webrtc-constants.js";
 import { GameController } from "../models/game-controller.js";
 import { GameFrame } from "../models/game-frame.js";
 import { MultiplayerGameObject } from "../objects/interfaces/multiplayer-game-object.js";
@@ -9,6 +8,7 @@ import { ObjectUtils } from "../utils/object-utils.js";
 import { MultiplayerScreen } from "../screens/interfaces/multiplayer-screen.js";
 import { ObjectStateType } from "../types/object-state-type.js";
 import { ScreenUtils } from "../utils/screen-utils.js";
+import { WebRTCType } from "../types/webrtc-type.js";
 
 export class ObjectOrchestrator {
   private readonly PERIODIC_MILLISECONDS = 500;
@@ -153,7 +153,7 @@ export class ObjectOrchestrator {
 
     // Write fixed-length fields
     let offset = 0;
-    dataView.setInt8(offset++, OBJECT_ID);
+    dataView.setInt8(offset++, WebRTCType.ObjectData);
     dataView.setInt8(offset++, screenId);
     dataView.setInt8(offset++, stateId);
     dataView.setInt8(offset++, layerId);

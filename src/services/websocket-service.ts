@@ -2,22 +2,16 @@ import {
   WEBSOCKET_BASE_URL,
   WEBSOCKET_ENDPOINT,
 } from "../constants/api-constants.js";
-import {
-  NOTIFICATION_ID,
-  TUNNEL_ID,
-} from "../constants/websocket-constants.js";
 import { GameState } from "../models/game-state.js";
 import { GameController } from "../models/game-controller.js";
-import {
-  ICE_CANDIDATE_ID,
-  SESSION_DESCRIPTION_ID,
-} from "../constants/websocket-constants.js";
 import { WebRTCService } from "./webrtc-service.js";
 import { EventProcessorService } from "./event-processor-service.js";
 import { LocalEvent } from "../models/local-event.js";
 import { EventType } from "../types/event-type.js";
 import { ServerDisconnectedPayload } from "./interfaces/events/server-disconnected-payload.js";
 import { ServerNotificationPayload } from "./interfaces/events/server-notification-payload.js";
+import { WebSocketType } from "../types/websocket-type.js";
+import { TunnelType } from "../types/tunnel-type.js";
 
 export class WebSocketService {
   private gameState: GameState;
@@ -53,7 +47,7 @@ export class WebSocketService {
   }
 
   public sendTunnelMessage(payload: Uint8Array) {
-    const message = new Uint8Array([TUNNEL_ID, ...payload]);
+    const message = new Uint8Array([WebSocketType.Tunnel, ...payload]);
     this.webSocket?.send(message);
 
     console.log("Sent tunnel message:", message);
@@ -109,10 +103,10 @@ export class WebSocketService {
     const payload = data.byteLength > 1 ? data.slice(1) : null;
 
     switch (id) {
-      case NOTIFICATION_ID:
+      case WebSocketType.Notification:
         return this.handleNotification(payload);
 
-      case TUNNEL_ID:
+      case WebSocketType.Tunnel:
         return this.handleTunnelMessage(payload);
 
       default: {
@@ -160,26 +154,24 @@ export class WebSocketService {
 
   private handleWebRTCMessage(
     originToken: string,
-    type: number,
+    type: TunnelType,
     webrtcPayload: any
   ) {
     switch (type) {
-      case SESSION_DESCRIPTION_ID: {
-        return this.webrtcService.handleSessionDescriptionEvent(
-          originToken,
-          webrtcPayload
-        );
-      }
-
-      case ICE_CANDIDATE_ID: {
+      case TunnelType.IceCandidate:
         return this.webrtcService.handleNewIceCandidate(
           originToken,
           webrtcPayload
         );
-      }
+
+      case TunnelType.SessionDescription:
+        return this.webrtcService.handleSessionDescriptionEvent(
+          originToken,
+          webrtcPayload
+        );
 
       default: {
-        console.warn("Unknown WebRTC message type", type);
+        console.warn("Unknown tunnel message type", type);
       }
     }
   }

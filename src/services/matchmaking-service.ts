@@ -5,13 +5,6 @@ import { FindMatchRequest as FindMatchesRequest } from "./interfaces/request/fin
 import { FindMatchesResponse } from "./interfaces/response/find-matches-response.js";
 import { TimerService } from "./timer-service.js";
 import { WebRTCService } from "./webrtc-service.js";
-import {
-  JOIN_REQUEST_ID,
-  JOIN_RESPONSE_ID,
-  SNAPSHOT_ID,
-  PLAYER_ID,
-  SNAPSHOT_ACK_ID,
-} from "../constants/webrtc-constants.js";
 import { GameMatch } from "../models/game-match.js";
 import { MATCH_ATTRIBUTES } from "../constants/matchmaking-constants.js";
 import { GamePlayer } from "../models/game-player.js";
@@ -24,6 +17,7 @@ import { EventType } from "../types/event-type.js";
 import { LocalEvent } from "../models/local-event.js";
 import { PlayerConnectedPayload } from "./interfaces/events/player-connected-payload.js";
 import { PlayerDisconnectedPayload } from "./interfaces/events/player-disconnected-payload.js";
+import { WebRTCType } from "../types/webrtc-type.js";
 
 export class MatchmakingService {
   private apiService: ApiService;
@@ -175,7 +169,7 @@ export class MatchmakingService {
     }
   }
 
-  public handleSnapshot(peer: WebRTCPeer): void {
+  public handleSnapshotEnd(peer: WebRTCPeer): void {
     console.log("Received snapshot from", peer.getName());
 
     this.findMatchesTimerService?.stop(false);
@@ -401,7 +395,7 @@ export class MatchmakingService {
     const playerNameBytes = new TextEncoder().encode(playerName);
 
     const payload = new Uint8Array([
-      JOIN_REQUEST_ID,
+      WebRTCType.JoinRequest,
       ...playerIdBytes,
       ...playerNameBytes,
     ]);
@@ -417,13 +411,17 @@ export class MatchmakingService {
   private sendJoinResponse(peer: WebRTCPeer, gameMatch: GameMatch): void {
     const state = gameMatch.getState();
     const totalSlots = gameMatch.getTotalSlots();
-    const payload = new Uint8Array([JOIN_RESPONSE_ID, state, totalSlots]);
+    const payload = new Uint8Array([
+      WebRTCType.JoinResponse,
+      state,
+      totalSlots,
+    ]);
 
     console.log("Sending join response to", peer.getName());
     peer.sendReliableOrderedMessage(payload, true);
 
     this.sendPlayerList(peer);
-    this.sendSnapshot(peer);
+    this.sendSnapshotEnd(peer);
   }
 
   private sendPlayerList(peer: WebRTCPeer): void {
@@ -464,7 +462,7 @@ export class MatchmakingService {
     const nameBytes = new TextEncoder().encode(name);
 
     const payload = new Uint8Array([
-      PLAYER_ID,
+      WebRTCType.PlayerConnection,
       connectionState,
       ...idBytes,
       host,
@@ -475,16 +473,16 @@ export class MatchmakingService {
     peer.sendReliableOrderedMessage(payload, skipQueue);
   }
 
-  private sendSnapshot(peer: WebRTCPeer): void {
-    console.log("Sending snapshot to", peer.getName());
+  private sendSnapshotEnd(peer: WebRTCPeer): void {
+    console.log("Sending snapshot end to", peer.getName());
 
-    const payload = new Uint8Array([SNAPSHOT_ID]);
+    const payload = new Uint8Array([WebRTCType.SnapshotEnd]);
     peer.sendReliableOrderedMessage(payload, true);
   }
 
   private sentSnapshotACK(peer: WebRTCPeer): void {
     console.log("Sending snapshot ACK to", peer.getName());
-    const payload = new Uint8Array([SNAPSHOT_ACK_ID]);
+    const payload = new Uint8Array([WebRTCType.SnapshotACK]);
     peer.sendReliableOrderedMessage(payload, true);
   }
 }

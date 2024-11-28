@@ -1,4 +1,3 @@
-import { EVENT_ID } from "../constants/webrtc-constants.js";
 import { EventType } from "../types/event-type.js";
 import { GameController } from "../models/game-controller.js";
 import { RemoteEvent } from "../models/remote-event.js";
@@ -6,6 +5,7 @@ import { WebRTCPeer } from "./interfaces/webrtc-peer.js";
 import { WebRTCService } from "./webrtc-service.js";
 import { LocalEvent } from "../models/local-event.js";
 import { GameEvent } from "./interfaces/game-event.js";
+import { WebRTCType } from "../types/webrtc-type.js";
 
 export class EventProcessorService {
   private webrtcService: WebRTCService;
@@ -91,7 +91,7 @@ export class EventProcessorService {
     const arrayBuffer = new ArrayBuffer(2 + dataBytesLength);
 
     const dataView = new DataView(arrayBuffer);
-    dataView.setInt8(0, EVENT_ID);
+    dataView.setInt8(0, WebRTCType.EventData);
     dataView.setUint8(1, id);
 
     if (data) {

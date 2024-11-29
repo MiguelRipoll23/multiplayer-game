@@ -11,7 +11,7 @@ export const WEBSOCKET_BASE_URL =
   API_WS_PROTOCOL + API_HOSTNAME + API_PATH + API_VERSION;
 
 export const VERSION_ENDPOINT = "/version";
-export const AUTH_OPTIONS_ENDPOINT = "/auth-options";
+export const AUTH_OPTIONS_ENDPOINT = "/registration-options";
 export const VERIFY_REGISTRATION_RESPONSE_ENDPOINT =
   "/verify-registration-response";
 export const VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT =

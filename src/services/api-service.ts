@@ -47,7 +47,7 @@ export class ApiService {
   }
 
   public async getRegistrationOptions(
-    username = null
+    username: string
   ): Promise<AuthOptionsResponse> {
     const response = await fetch(API_BASE_URL + REGISTRATION_OPTIONS_ENDPOINT, {
       method: "POST",
@@ -70,6 +70,7 @@ export class ApiService {
   }
 
   public async verifyRegistrationResponse(
+    username: string,
     credential: Credential
   ): Promise<void> {
     const response = await fetch(
@@ -79,7 +80,10 @@ export class ApiService {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(credential),
+        body: JSON.stringify({
+          username,
+          registrationResponse: credential,
+        }),
       }
     );
 

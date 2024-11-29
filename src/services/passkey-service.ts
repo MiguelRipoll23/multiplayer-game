@@ -21,7 +21,7 @@ export class PasskeyService {
         try {
           // Retrieve authentication options for `navigator.credentials.get()`
           // from your server.
-          const authOptions = await this.apiService.getRegistrationOptions();
+          const authOptions = await this.apiService.getRegistrationOptions("");
           // This call to `navigator.credentials.get()` is "set and forget."
           // The Promise will only resolve if the user successfully interacts
           // with the browser's autofill UI to select a passkey.
@@ -44,9 +44,12 @@ export class PasskeyService {
 
           // Send the response to your server for verification and
           // authenticate the user if the response is valid.
-          await this.apiService.verifyRegistrationResponse(webAuthnResponse);
-        } catch (err) {
-          console.error("Error with conditional UI:", err);
+          await this.apiService.verifyRegistrationResponse(
+            "",
+            webAuthnResponse
+          );
+        } catch (error) {
+          console.error("Error with conditional UI:", error);
         }
       }
     }
@@ -57,7 +60,7 @@ export class PasskeyService {
     displayName: string
   ): Promise<void> {
     console.log("Creating credential for", name);
-    const authOptions = await this.apiService.getRegistrationOptions();
+    const authOptions = await this.apiService.getRegistrationOptions(name);
 
     if (window.location.hostname === "localhost") {
       authOptions.rp.id = "localhost";
@@ -89,7 +92,7 @@ export class PasskeyService {
 
       // Send the response to your server for verification and
       // authenticate the user if the response is valid.
-      await this.apiService.verifyRegistrationResponse(credential);
+      await this.apiService.verifyRegistrationResponse(name, credential);
     } catch (error) {
       console.error("Error creating credential:", error);
     }
@@ -97,7 +100,7 @@ export class PasskeyService {
 
   public async authenticateUser(): Promise<void> {
     console.log("Authenticating user");
-    const authOptions = await this.apiService.getRegistrationOptions();
+    const authOptions = await this.apiService.getRegistrationOptions("");
 
     if (window.location.hostname === "localhost") {
       authOptions.rp.id = "localhost";

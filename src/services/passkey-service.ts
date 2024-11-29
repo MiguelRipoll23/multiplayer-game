@@ -21,7 +21,7 @@ export class PasskeyService {
         try {
           // Retrieve authentication options for `navigator.credentials.get()`
           // from your server.
-          const authOptions = await this.apiService.getAuthOptions();
+          const authOptions = await this.apiService.getRegistrationOptions();
           // This call to `navigator.credentials.get()` is "set and forget."
           // The Promise will only resolve if the user successfully interacts
           // with the browser's autofill UI to select a passkey.
@@ -57,7 +57,7 @@ export class PasskeyService {
     displayName: string
   ): Promise<void> {
     console.log("Creating credential for", name);
-    const authOptions = await this.apiService.getAuthOptions();
+    const authOptions = await this.apiService.getRegistrationOptions();
 
     if (window.location.hostname === "localhost") {
       authOptions.rp.id = "localhost";
@@ -97,7 +97,7 @@ export class PasskeyService {
 
   public async authenticateUser(): Promise<void> {
     console.log("Authenticating user");
-    const authOptions = await this.apiService.getAuthOptions();
+    const authOptions = await this.apiService.getRegistrationOptions();
 
     if (window.location.hostname === "localhost") {
       authOptions.rp.id = "localhost";

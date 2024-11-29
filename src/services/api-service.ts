@@ -9,7 +9,7 @@ import {
   VERSION_ENDPOINT,
   SCOREBOARD_SAVE_SCORE_PATH,
   SCOREBOARD_GET_RANKING_PATH,
-  AUTH_OPTIONS_ENDPOINT,
+  AUTH_OPTIONS_ENDPOINT as REGISTRATION_OPTIONS_ENDPOINT,
   VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
   VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,
 } from "../constants/api-constants.js";
@@ -46,13 +46,17 @@ export class ApiService {
     return false;
   }
 
-  public async getAuthOptions(): Promise<AuthOptionsResponse> {
-    const response = await fetch(API_BASE_URL + AUTH_OPTIONS_ENDPOINT, {
+  public async getRegistrationOptions(
+    username = ""
+  ): Promise<AuthOptionsResponse> {
+    const response = await fetch(API_BASE_URL + REGISTRATION_OPTIONS_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify({
+        username,
+      }),
     });
 
     if (response.ok === false) {

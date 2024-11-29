@@ -11,11 +11,11 @@ export const WEBSOCKET_BASE_URL =
   API_WS_PROTOCOL + API_HOSTNAME + API_PATH + API_VERSION;
 
 export const VERSION_ENDPOINT = "/version";
-export const AUTH_OPTIONS_ENDPOINT = "/registration-options";
+export const AUTH_OPTIONS_ENDPOINT = "/passkey/registration-options";
 export const VERIFY_REGISTRATION_RESPONSE_ENDPOINT =
-  "/verify-registration-response";
+  "/passkey/verify-registration-response";
 export const VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT =
-  "/verify-authentication-response";
+  "/passkey/verify-authentication-response";
 export const REGISTER_ENDPOINT = "/register";
 export const CONFIGURATION_ENDPOINT = "/configuration";
 export const WEBSOCKET_ENDPOINT = "/websocket";

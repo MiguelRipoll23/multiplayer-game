@@ -120,6 +120,13 @@ export class LoginScreen extends BaseGameScreen {
       this.handleRegisterClick.bind(this, usernameElement, dialogElement)
     );
 
+    const signInButton = document.querySelector("#sign-in-button");
+
+    signInButton?.addEventListener(
+      "pointerup",
+      this.handleSignInClick.bind(this, dialogElement)
+    );
+
     this.passkeyService.showAutofillUI();
   }
 
@@ -137,6 +144,12 @@ export class LoginScreen extends BaseGameScreen {
     this.gameController.getGamePointer().setPreventDefault(true);
 
     this.registerUser(username);
+  }
+
+  private async handleSignInClick(
+    _dialogElement: HTMLDialogElement
+  ): Promise<void> {
+    await this.passkeyService.authenticateUser();
   }
 
   private registerUser(name: string): void {

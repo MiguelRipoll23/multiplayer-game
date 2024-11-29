@@ -12,6 +12,10 @@ export const WEBSOCKET_BASE_URL =
 
 export const VERSION_ENDPOINT = "/version";
 export const AUTH_OPTIONS_ENDPOINT = "/auth-options";
+export const VERIFY_REGISTRATION_RESPONSE_ENDPOINT =
+  "/verify-registration-response";
+export const VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT =
+  "/verify-authentication-response";
 export const REGISTER_ENDPOINT = "/register";
 export const CONFIGURATION_ENDPOINT = "/configuration";
 export const WEBSOCKET_ENDPOINT = "/websocket";

@@ -10,6 +10,8 @@ import {
   SCOREBOARD_SAVE_SCORE_PATH,
   SCOREBOARD_GET_RANKING_PATH,
   AUTH_OPTIONS_ENDPOINT,
+  VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
+  VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,
 } from "../constants/api-constants.js";
 import { FindMatchesResponse as FindMatchesResponse } from "../interfaces/response/find-matches-response.js";
 import { MessagesResponse } from "../interfaces/response/messages-response.js";
@@ -61,6 +63,48 @@ export class ApiService {
     console.log("Auth options", authOptions);
 
     return authOptions;
+  }
+
+  public async verifyRegistrationResponse(
+    credential: Credential
+  ): Promise<void> {
+    const response = await fetch(
+      API_BASE_URL + VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credential),
+      }
+    );
+
+    if (response.ok === false) {
+      throw new Error("Failed to verify registration response");
+    }
+
+    console.log("Registration response verified");
+  }
+
+  public async verifyAuthenticationResponse(
+    credential: Credential
+  ): Promise<void> {
+    const response = await fetch(
+      API_BASE_URL + VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credential),
+      }
+    );
+
+    if (response.ok === false) {
+      throw new Error("Failed to verify authentication response");
+    }
+
+    console.log("Authentication response verified");
   }
 
   public async registerUser(name: string): Promise<RegistrationResponse> {

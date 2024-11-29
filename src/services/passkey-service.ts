@@ -44,7 +44,7 @@ export class PasskeyService {
 
           // Send the response to your server for verification and
           // authenticate the user if the response is valid.
-          await this.verifyAutoFillResponse(webAuthnResponse);
+          await this.apiService.verifyRegistrationResponse(webAuthnResponse);
         } catch (err) {
           console.error("Error with conditional UI:", err);
         }
@@ -56,6 +56,7 @@ export class PasskeyService {
     name: string,
     displayName: string
   ): Promise<void> {
+    console.log("Creating credential for", name);
     const authOptions = await this.apiService.getAuthOptions();
 
     if (window.location.hostname === "localhost") {
@@ -88,23 +89,40 @@ export class PasskeyService {
 
       // Send the response to your server for verification and
       // authenticate the user if the response is valid.
-      await this.verifyAutoFillResponse(credential);
+      await this.apiService.verifyRegistrationResponse(credential);
     } catch (error) {
       console.error("Error creating credential:", error);
     }
   }
 
-  private async verifyAutoFillResponse(credential: Credential): Promise<void> {
-    // Send the response to your server for verification and
-    // authenticate the user if the response is valid.
-    const response = await fetch("/verify", {
-      method: "POST",
-      body: JSON.stringify(credential),
-    });
-    if (response.ok) {
-      console.log("User authenticated successfully");
-    } else {
-      console.error("User authentication failed");
+  public async authenticateUser(): Promise<void> {
+    console.log("Authenticating user");
+    const authOptions = await this.apiService.getAuthOptions();
+
+    if (window.location.hostname === "localhost") {
+      authOptions.rp.id = "localhost";
+    }
+
+    const publicKey = {
+      ...authOptions,
+      challenge: Uint8Array.from(authOptions.challenge, (c) => c.charCodeAt(0)),
+    };
+
+    try {
+      const credential = await navigator.credentials.get({
+        publicKey,
+      });
+
+      if (credential === null) {
+        console.log("User canceled authentication");
+        return;
+      }
+
+      // Send the response to your server for verification and
+      // authenticate the user if the response is valid.
+      await this.apiService.verifyAuthenticationResponse(credential);
+    } catch (error) {
+      console.error("Error authenticating user:", error);
     }
   }
 }

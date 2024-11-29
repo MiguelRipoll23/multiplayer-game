@@ -62,13 +62,16 @@ export class PasskeyService {
     console.log("Creating credential for", name);
     const authOptions = await this.apiService.getRegistrationOptions(name);
 
-    if (window.location.hostname === "localhost") {
-      authOptions.rp.id = "localhost";
+    const challengeBase64Decoded = atob(authOptions.challenge);
+    const challenge = new Uint8Array(challengeBase64Decoded.length);
+
+    for (let i = 0; i < challengeBase64Decoded.length; i++) {
+      challenge[i] = challengeBase64Decoded.charCodeAt(i);
     }
 
     const publicKey = {
       ...authOptions,
-      challenge: Uint8Array.from(authOptions.challenge, (c) => c.charCodeAt(0)),
+      challenge,
       user: {
         id: new Uint8Array(16),
         name,

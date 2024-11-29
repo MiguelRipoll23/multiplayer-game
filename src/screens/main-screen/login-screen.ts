@@ -147,9 +147,14 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private async handleSignInClick(
-    _dialogElement: HTMLDialogElement
+    dialogElement: HTMLDialogElement
   ): Promise<void> {
     await this.passkeyService.authenticateUser();
+
+    dialogElement.close();
+    this.gameController.getGamePointer().setPreventDefault(true);
+
+    this.registerUser("test");
   }
 
   private registerUser(name: string): void {

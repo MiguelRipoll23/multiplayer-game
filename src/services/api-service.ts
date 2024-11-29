@@ -47,7 +47,7 @@ export class ApiService {
   }
 
   public async getRegistrationOptions(
-    username = ""
+    username = null
   ): Promise<AuthOptionsResponse> {
     const response = await fetch(API_BASE_URL + REGISTRATION_OPTIONS_ENDPOINT, {
       method: "POST",

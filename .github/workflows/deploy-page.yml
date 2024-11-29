@@ -21,9 +21,6 @@ jobs:
       - name: Bundle project
         run: npm run bundle
 
-      - name: Build project
-        run: npm run build
-
       - name: Upload artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3

@@ -26,6 +26,7 @@ dialog {
   padding: 20px;
   border-radius: 6px;
   text-align: center;
+  top: -100px;
 }
 
 dialog h1 {
@@ -33,5 +34,25 @@ dialog h1 {
 }
 
 input[type="text"] {
+  width: 100%;
   font-size: 16px;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+}
+
+button {
+  width: 100%;
+  padding: 10px 0;
+  border: 0;
+  background: #4a90e2;
+  border-radius: 4px;
+  font-family: system-ui;
+  font-weight: bold;
+  color: #fff;
+  font-size: 16px;
+}
+
+button:hover {
+  background: #7ed321;
 }

@@ -21,7 +21,7 @@ export class PasskeyService {
         try {
           // Retrieve authentication options for `navigator.credentials.get()`
           // from your server.
-          const authOptions = await this.apiService.getRegistrationOptions("");
+          const authOptions = await this.apiService.getAuthenticationOptions("");
           // This call to `navigator.credentials.get()` is "set and forget."
           // The Promise will only resolve if the user successfully interacts
           // with the browser's autofill UI to select a passkey.

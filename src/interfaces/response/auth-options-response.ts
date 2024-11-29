@@ -1,5 +1,3 @@
-// PublicKeyCredentialRequestOptions
-
 export interface AuthOptionsResponse {
   challenge: string;
   rp: {
@@ -17,4 +15,9 @@ export interface AuthOptionsResponse {
   }>;
   timeout: number;
   attestation: AttestationConveyancePreference | undefined;
+  allowCredentials: Array<{
+    type: "public-key";
+    id: string;
+    transports: string[];
+  }>;
 }

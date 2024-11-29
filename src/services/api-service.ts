@@ -12,6 +12,7 @@ import {
   AUTH_OPTIONS_ENDPOINT as REGISTRATION_OPTIONS_ENDPOINT,
   VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
   VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,
+  AUTH_OPTIONS_ENDPOINT,
 } from "../constants/api-constants.js";
 import { FindMatchesResponse as FindMatchesResponse } from "../interfaces/response/find-matches-response.js";
 import { MessagesResponse } from "../interfaces/response/messages-response.js";
@@ -65,6 +66,29 @@ export class ApiService {
 
     const authOptions = await response.json();
     console.log("Auth options", authOptions);
+
+    return authOptions;
+  }
+
+  public async getAuthenticationOptions(
+    username: string
+  ): Promise<AuthOptionsResponse> {
+    const response = await fetch(API_BASE_URL + AUTH_OPTIONS_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+      }),
+    });
+
+    if (response.ok === false) {
+      throw new Error("Failed to fetch authentication options");
+    }
+
+    const authOptions = await response.json();
+    console.log("Authentication options", authOptions);
 
     return authOptions;
   }

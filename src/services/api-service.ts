@@ -9,10 +9,10 @@ import {
   VERSION_ENDPOINT,
   SCOREBOARD_SAVE_SCORE_PATH,
   SCOREBOARD_GET_RANKING_PATH,
-  AUTH_OPTIONS_ENDPOINT as REGISTRATION_OPTIONS_ENDPOINT,
+  REGISTRATION_OPTIONS_ENDPOINT,
   VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
   VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,
-  AUTH_OPTIONS_ENDPOINT,
+  AUTHENTICATION_OPTIONS_ENDPOINT
 } from "../constants/api-constants.js";
 import { FindMatchesResponse as FindMatchesResponse } from "../interfaces/response/find-matches-response.js";
 import { MessagesResponse } from "../interfaces/response/messages-response.js";
@@ -73,7 +73,7 @@ export class ApiService {
   public async getAuthenticationOptions(
     username: string
   ): Promise<AuthOptionsResponse> {
-    const response = await fetch(API_BASE_URL + AUTH_OPTIONS_ENDPOINT, {
+    const response = await fetch(API_BASE_URL + AUTHENTICATION_OPTIONS_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

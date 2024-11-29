@@ -11,7 +11,7 @@ export const WEBSOCKET_BASE_URL =
   API_WS_PROTOCOL + API_HOSTNAME + API_PATH + API_VERSION;
 
 export const VERSION_ENDPOINT = "/version";
-export const AUTH_OPTIONS_ENDPOINT = "/passkey/registration-options";
+export const REGISTRATION_OPTIONS_ENDPOINT = "/passkey/registration-options";
 export const VERIFY_REGISTRATION_RESPONSE_ENDPOINT =
   "/passkey/verify-registration-response";
 export const VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT =
@@ -27,3 +27,4 @@ export const MATCHES_REMOVE_ENDPOINT = "/matches/remove";
 export const SCOREBOARD_PATH = "/scoreboard";
 export const SCOREBOARD_SAVE_SCORE_PATH = `${SCOREBOARD_PATH}/saveScore`;
 export const SCOREBOARD_GET_RANKING_PATH = `${SCOREBOARD_PATH}/getRanking`;
+export const AUTHENTICATION_OPTIONS_ENDPOINT = "/passkeys/authentication-options";

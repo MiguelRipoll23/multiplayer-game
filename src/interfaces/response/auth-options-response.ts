@@ -1,5 +1,3 @@
-// PublicKeyCredentialRequestOptions
-
 export interface AuthOptionsResponse {
   challenge: string;
   rp: {

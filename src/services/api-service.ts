@@ -12,7 +12,7 @@ import {
   REGISTRATION_OPTIONS_ENDPOINT,
   VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
   VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,
-  AUTHENTICATION_OPTIONS_ENDPOINT
+  AUTHENTICATION_OPTIONS_ENDPOINT,
 } from "../constants/api-constants.js";
 import { FindMatchesResponse as FindMatchesResponse } from "../interfaces/response/find-matches-response.js";
 import { MessagesResponse } from "../interfaces/response/messages-response.js";
@@ -24,7 +24,7 @@ import { GameController } from "../models/game-controller.js";
 import { AdvertiseMatchRequest } from "../interfaces/request/advertise-match-request.js";
 import { FindMatchesRequest } from "../interfaces/request/find-matches-request.js";
 import { SaveScoreRequest } from "../interfaces/request/save-score-request.js";
-import { AuthOptionsResponse } from "../interfaces/response/auth-options-response.js";
+import { AuthenticationOptionsResponse } from "../interfaces/response/authentication-options-response.js";
 
 export class ApiService {
   private authenticationToken: string | null = null;
@@ -49,7 +49,7 @@ export class ApiService {
 
   public async getRegistrationOptions(
     username: string
-  ): Promise<AuthOptionsResponse> {
+  ): Promise<AuthenticationOptionsResponse> {
     const response = await fetch(API_BASE_URL + REGISTRATION_OPTIONS_ENDPOINT, {
       method: "POST",
       headers: {
@@ -64,33 +64,10 @@ export class ApiService {
       throw new Error("Failed to fetch auth options");
     }
 
-    const authOptions = await response.json();
-    console.log("Auth options", authOptions);
+    const registrationOptions = await response.json();
+    console.log("Registration options", registrationOptions);
 
-    return authOptions;
-  }
-
-  public async getAuthenticationOptions(
-    username: string
-  ): Promise<AuthOptionsResponse> {
-    const response = await fetch(API_BASE_URL + AUTHENTICATION_OPTIONS_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-      }),
-    });
-
-    if (response.ok === false) {
-      throw new Error("Failed to fetch authentication options");
-    }
-
-    const authOptions = await response.json();
-    console.log("Authentication options", authOptions);
-
-    return authOptions;
+    return registrationOptions;
   }
 
   public async verifyRegistrationResponse(
@@ -115,7 +92,34 @@ export class ApiService {
       throw new Error("Failed to verify registration response");
     }
 
-    console.log("Registration response verified");
+    const registrationResponse = await response.json();
+    console.log("Registration response", registrationResponse);
+  }
+
+  public async getAuthenticationOptions(
+    username: string | null
+  ): Promise<AuthenticationOptionsResponse> {
+    const response = await fetch(
+      API_BASE_URL + AUTHENTICATION_OPTIONS_ENDPOINT,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+        }),
+      }
+    );
+
+    if (response.ok === false) {
+      throw new Error("Failed to fetch authentication options");
+    }
+
+    const authenticationOptions = await response.json();
+    console.log("Authentication options", authenticationOptions);
+
+    return authenticationOptions;
   }
 
   public async verifyAuthenticationResponse(
@@ -136,7 +140,8 @@ export class ApiService {
       throw new Error("Failed to verify authentication response");
     }
 
-    console.log("Authentication response verified");
+    const authenticationResponse = await response.json();
+    console.log("Authentication response", authenticationResponse);
   }
 
   public async registerUser(name: string): Promise<RegistrationResponse> {

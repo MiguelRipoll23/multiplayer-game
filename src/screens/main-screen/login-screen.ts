@@ -143,6 +143,7 @@ export class LoginScreen extends BaseGameScreen {
     dialogElement.close();
     this.gameController.getGamePointer().setPreventDefault(true);
 
+    this.passkeyService.createCredential(username, username);
     this.registerUser(username);
   }
 
@@ -158,8 +159,6 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private registerUser(name: string): void {
-    this.passkeyService.createCredential(name, name);
-
     this.apiService
       .registerUser(name)
       .then((registrationResponse: RegistrationResponse) => {

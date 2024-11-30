@@ -13,9 +13,11 @@ export const WEBSOCKET_BASE_URL =
 export const VERSION_ENDPOINT = "/version";
 export const REGISTRATION_OPTIONS_ENDPOINT = "/passkey/registration-options";
 export const VERIFY_REGISTRATION_RESPONSE_ENDPOINT =
-  "/passkey/verify-registration-response";
+  "/passkey/registration-response/verify";
+export const AUTHENTICATION_OPTIONS_ENDPOINT =
+  "/passkey/authentication-options";
 export const VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT =
-  "/passkey/verify-authentication-response";
+  "/passkey/authentication-response/verify";
 export const REGISTER_ENDPOINT = "/register";
 export const CONFIGURATION_ENDPOINT = "/configuration";
 export const WEBSOCKET_ENDPOINT = "/websocket";
@@ -23,8 +25,6 @@ export const MESSAGES_ENDPOINT = "/messages";
 export const MATCHES_FIND_ENDPOINT = "/matches/find";
 export const MATCHES_ADVERTISE_ENDPOINT = "/matches/advertise";
 export const MATCHES_REMOVE_ENDPOINT = "/matches/remove";
-
 export const SCOREBOARD_PATH = "/scoreboard";
 export const SCOREBOARD_SAVE_SCORE_PATH = `${SCOREBOARD_PATH}/saveScore`;
 export const SCOREBOARD_GET_RANKING_PATH = `${SCOREBOARD_PATH}/getRanking`;
-export const AUTHENTICATION_OPTIONS_ENDPOINT = "/passkeys/authentication-options";

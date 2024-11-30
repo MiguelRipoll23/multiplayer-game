@@ -1,4 +1,4 @@
-export interface AuthOptionsResponse {
+export interface AuthenticationOptionsResponse {
   challenge: string;
   rp: {
     id: string;

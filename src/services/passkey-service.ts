@@ -21,7 +21,9 @@ export class PasskeyService {
         try {
           // Retrieve authentication options for `navigator.credentials.get()`
           // from your server.
-          const authOptions = await this.apiService.getAuthenticationOptions("");
+          const authOptions = await this.apiService.getAuthenticationOptions(
+            null
+          );
           // This call to `navigator.credentials.get()` is "set and forget."
           // The Promise will only resolve if the user successfully interacts
           // with the browser's autofill UI to select a passkey.
@@ -44,10 +46,7 @@ export class PasskeyService {
 
           // Send the response to your server for verification and
           // authenticate the user if the response is valid.
-          await this.apiService.verifyRegistrationResponse(
-            "",
-            webAuthnResponse
-          );
+          await this.apiService.verifyAuthenticationResponse(webAuthnResponse);
         } catch (error) {
           console.error("Error with conditional UI:", error);
         }
@@ -102,16 +101,14 @@ export class PasskeyService {
   }
 
   public async authenticateUser(): Promise<void> {
-    console.log("Authenticating user");
-    const authOptions = await this.apiService.getRegistrationOptions("");
-
-    if (window.location.hostname === "localhost") {
-      authOptions.rp.id = "localhost";
-    }
+    const authenticationOptions =
+      await this.apiService.getAuthenticationOptions(null);
 
     const publicKey = {
-      ...authOptions,
-      challenge: Uint8Array.from(authOptions.challenge, (c) => c.charCodeAt(0)),
+      ...authenticationOptions,
+      challenge: Uint8Array.from(authenticationOptions.challenge, (c) =>
+        c.charCodeAt(0)
+      ),
     };
 
     try {

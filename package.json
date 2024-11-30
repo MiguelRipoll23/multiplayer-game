@@ -5,10 +5,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npm-run-all --parallel http-server bundle",
     "lint": "eslint -c eslint.config.js",
+    "dev": "npm-run-all --parallel http-server bundle-dev",
     "http-server": "http-server -c-1 ./static",
-    "bundle": "esbuild src/main.ts --bundle --outfile=static/js/bundle.js --watch"
+    "bundle-dev": "esbuild src/main.ts --bundle --outfile=static/js/bundle.js --watch"
+    "bundle": "esbuild src/main.ts --bundle --outfile=static/js/bundle.js"
   },
   "author": "",
   "license": "ISC",

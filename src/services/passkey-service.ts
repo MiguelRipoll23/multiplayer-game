@@ -40,7 +40,7 @@ export class PasskeyService {
           // The Promise will only resolve if the user successfully interacts
           // with the browser's autofill UI to select a passkey.
           const webAuthnResponse = await navigator.credentials.get({
-            mediation: "optional",
+            mediation: "conditional",
             publicKey: {
               ...authenticationOptions,
               challenge: this.challengeToUint8Array(

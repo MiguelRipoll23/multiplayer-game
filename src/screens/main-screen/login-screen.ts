@@ -133,7 +133,7 @@ export class LoginScreen extends BaseGameScreen {
 
     this.passkeyService.registerPasskey(username, username).catch((error) => {
       console.error(error);
-      this.showError("An error occurred while registering to the server");
+      alert(error);
     });
   }
 
@@ -142,7 +142,7 @@ export class LoginScreen extends BaseGameScreen {
 
     this.passkeyService.usePasskey().catch((error) => {
       console.error(error);
-      this.showError("An error occurred while signing in to the server");
+      alert(error);
     });
   }
 

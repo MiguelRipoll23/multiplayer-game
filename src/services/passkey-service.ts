@@ -1,12 +1,23 @@
+import { EventType } from "../enums/event-type.js";
+import { AuthenticationResponse } from "../interfaces/response/authentication_response.js";
 import { GameController } from "../models/game-controller.js";
+import { GameState } from "../models/game-state.js";
+import { LocalEvent } from "../models/local-event.js";
+import { ServerRegistration } from "../models/server-registration.js";
 import { ApiService } from "./api-service.js";
+import { EventProcessorService } from "./event-processor-service.js";
 
 export class PasskeyService {
+  private gameState: GameState;
   private apiService: ApiService;
+  private eventProcessorService: EventProcessorService;
+
   private requestId: string;
 
   constructor(gameController: GameController) {
-    this.apiService = new ApiService(gameController);
+    this.gameState = gameController.getGameState();
+    this.apiService = gameController.getApiService();
+    this.eventProcessorService = gameController.getEventProcessorService();
     this.requestId = crypto.randomUUID();
   }
 
@@ -29,7 +40,7 @@ export class PasskeyService {
           // The Promise will only resolve if the user successfully interacts
           // with the browser's autofill UI to select a passkey.
           const webAuthnResponse = await navigator.credentials.get({
-            mediation: "conditional",
+            mediation: "optional",
             publicKey: {
               ...authenticationOptions,
               challenge: this.challengeToUint8Array(
@@ -47,10 +58,12 @@ export class PasskeyService {
 
           // Send the response to your server for verification and
           // authenticate the user if the response is valid.
-          await this.apiService.verifyAuthenticationResponse(
+          const response = await this.apiService.verifyAuthenticationResponse(
             this.requestId,
             webAuthnResponse
           );
+
+          this.handleAuthenticationResponse(response);
         } catch (error) {
           console.error("Error with conditional UI:", error);
         }
@@ -58,7 +71,7 @@ export class PasskeyService {
     }
   }
 
-  public async createCredential(
+  public async registerPasskey(
     name: string,
     displayName: string
   ): Promise<void> {
@@ -81,25 +94,23 @@ export class PasskeyService {
       })),
     };
 
-    try {
-      const credential = await navigator.credentials.create({
-        publicKey,
-      });
+    const credential = await navigator.credentials.create({
+      publicKey,
+    });
 
-      if (credential === null) {
-        console.log("User canceled credential creation");
-        return;
-      }
-
-      // Send the response to your server for verification and
-      // authenticate the user if the response is valid.
-      await this.apiService.verifyRegistrationResponse(name, credential);
-    } catch (error) {
-      console.error("Error creating credential:", error);
+    if (credential === null) {
+      throw new Error("User canceled credential creation");
     }
+
+    const response = await this.apiService.verifyRegistrationResponse(
+      name,
+      credential
+    );
+
+    this.handleAuthenticationResponse(response);
   }
 
-  public async authenticateUser(): Promise<void> {
+  public async usePasskey(): Promise<void> {
     const authenticationOptions =
       await this.apiService.getAuthenticationOptions(this.requestId);
 
@@ -108,25 +119,20 @@ export class PasskeyService {
       challenge: this.challengeToUint8Array(authenticationOptions.challenge),
     };
 
-    try {
-      const credential = await navigator.credentials.get({
-        publicKey,
-      });
+    const credential = await navigator.credentials.get({
+      publicKey,
+    });
 
-      if (credential === null) {
-        console.log("User canceled authentication");
-        return;
-      }
-
-      // Send the response to your server for verification and
-      // authenticate the user if the response is valid.
-      await this.apiService.verifyAuthenticationResponse(
-        this.requestId,
-        credential
-      );
-    } catch (error) {
-      console.error("Error authenticating user:", error);
+    if (credential === null) {
+      throw new Error("User canceled credential request");
     }
+
+    const response = await this.apiService.verifyAuthenticationResponse(
+      this.requestId,
+      credential
+    );
+
+    this.handleAuthenticationResponse(response);
   }
 
   private challengeToUint8Array(challenge: string): Uint8Array {
@@ -136,5 +142,17 @@ export class PasskeyService {
       "="
     );
     return Uint8Array.from(atob(paddedBase64), (c) => c.charCodeAt(0));
+  }
+
+  private handleAuthenticationResponse(response: AuthenticationResponse): void {
+    this.apiService.setAuthenticationToken(response.authentication_token);
+    this.gameState.getGamePlayer().setName(response.display_name);
+
+    this.gameState
+      .getGameServer()
+      .setServerRegistration(new ServerRegistration(response));
+
+    const localEvent = new LocalEvent(EventType.ServerAuthenticated, null);
+    this.eventProcessorService.addLocalEvent(localEvent);
   }
 }

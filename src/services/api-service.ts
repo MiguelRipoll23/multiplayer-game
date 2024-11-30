@@ -5,7 +5,6 @@ import {
   MATCHES_FIND_ENDPOINT,
   MATCHES_REMOVE_ENDPOINT,
   MESSAGES_ENDPOINT,
-  REGISTER_ENDPOINT,
   VERSION_ENDPOINT,
   SCOREBOARD_SAVE_SCORE_PATH,
   SCOREBOARD_GET_RANKING_PATH,
@@ -16,7 +15,7 @@ import {
 } from "../constants/api-constants.js";
 import { FindMatchesResponse as FindMatchesResponse } from "../interfaces/response/find-matches-response.js";
 import { MessagesResponse } from "../interfaces/response/messages-response.js";
-import { RegistrationResponse } from "../interfaces/response/registration-response.js";
+import { AuthenticationResponse } from "../interfaces/response/authentication_response.js";
 import { VersionResponse } from "../interfaces/response/version-response.js";
 import { RankingResponse } from "../interfaces/response/ranking-response.js";
 import { CryptoService } from "./crypto-service.js";
@@ -32,6 +31,10 @@ export class ApiService {
 
   constructor(gameController: GameController) {
     this.cryptoService = gameController.getCryptoService();
+  }
+
+  public setAuthenticationToken(authenticationToken: string): void {
+    this.authenticationToken = authenticationToken;
   }
 
   public async checkForUpdates(): Promise<boolean> {
@@ -73,7 +76,7 @@ export class ApiService {
   public async verifyRegistrationResponse(
     username: string,
     credential: Credential
-  ): Promise<void> {
+  ): Promise<AuthenticationResponse> {
     const response = await fetch(
       API_BASE_URL + VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
       {
@@ -92,8 +95,10 @@ export class ApiService {
       throw new Error("Failed to verify registration response");
     }
 
-    const registrationResponse = await response.json();
+    const registrationResponse: AuthenticationResponse = await response.json();
     console.log("Registration response", registrationResponse);
+
+    return registrationResponse;
   }
 
   public async getAuthenticationOptions(
@@ -125,7 +130,7 @@ export class ApiService {
   public async verifyAuthenticationResponse(
     requestId: string,
     credential: Credential
-  ): Promise<void> {
+  ): Promise<AuthenticationResponse> {
     const response = await fetch(
       API_BASE_URL + VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,
       {
@@ -144,31 +149,12 @@ export class ApiService {
       throw new Error("Failed to verify authentication response");
     }
 
-    const authenticationResponse = await response.json();
+    const authenticationResponse: AuthenticationResponse =
+      await response.json();
+
     console.log("Authentication response", authenticationResponse);
-  }
 
-  public async registerUser(name: string): Promise<RegistrationResponse> {
-    const response = await fetch(API_BASE_URL + REGISTER_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-      }),
-    });
-
-    if (response.ok === false) {
-      throw new Error("Failed to register user");
-    }
-
-    const registrationResponse: RegistrationResponse = await response.json();
-    console.log("Registration response", registrationResponse);
-
-    this.authenticationToken = registrationResponse.authentication_token;
-
-    return registrationResponse;
+    return authenticationResponse;
   }
 
   public async getConfiguration(): Promise<ArrayBuffer> {

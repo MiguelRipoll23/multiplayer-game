@@ -3,13 +3,10 @@ import { CryptoService } from "../../services/crypto-service.js";
 import { WebSocketService } from "../../services/websocket-service.js";
 import { ApiService } from "../../services/api-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
-import { RegistrationResponse } from "../../interfaces/response/registration-response.js";
-import { ServerRegistration } from "../../models/server-registration.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
 import { CloseableMessageObject } from "../../objects/common/closeable-message-object.js";
 import { GameState } from "../../models/game-state.js";
-import { PlayerUtils } from "../../utils/player-utils.js";
 import { EventType } from "../../enums/event-type.js";
 import { EventProcessorService } from "../../services/event-processor-service.js";
 import { PasskeyService } from "../../services/passkey-service.js";
@@ -25,6 +22,8 @@ export class LoginScreen extends BaseGameScreen {
   private messageObject: MessageObject | null = null;
   private errorCloseableMessageObject: CloseableMessageObject | null = null;
 
+  private dialogElement: HTMLDialogElement | null = null;
+
   constructor(gameController: GameController) {
     super(gameController);
 
@@ -34,6 +33,8 @@ export class LoginScreen extends BaseGameScreen {
     this.webSocketService = gameController.getWebSocketService();
     this.eventProcessorService = gameController.getEventProcessorService();
     this.passkeyService = new PasskeyService(gameController);
+
+    this.dialogElement = document.querySelector("dialog");
   }
 
   public override loadObjects(): void {
@@ -100,83 +101,53 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private showDialog(): void {
+    this.passkeyService.showAutofillUI();
     this.gameController.getGamePointer().setPreventDefault(false);
 
-    const dialogElement = document.querySelector("dialog");
-    const usernameElement = document.querySelector("#username-input");
-
-    if (!dialogElement || !usernameElement) {
-      console.error("Dialog element or username element not found");
-      return;
-    }
-
-    dialogElement.showModal();
-    usernameElement.setAttribute("value", PlayerUtils.getRandomName());
+    const usernameElement: HTMLInputElement | null =
+      document.querySelector("#username-input");
 
     const registerButton = document.querySelector("#register-button");
 
-    registerButton?.addEventListener(
-      "pointerup",
-      this.handleRegisterClick.bind(this, usernameElement, dialogElement)
-    );
+    registerButton?.addEventListener("pointerup", () => {
+      const username = usernameElement?.value ?? "";
+      this.handleRegisterClick(username);
+    });
 
     const signInButton = document.querySelector("#sign-in-button");
 
-    signInButton?.addEventListener(
-      "pointerup",
-      this.handleSignInClick.bind(this, dialogElement)
-    );
+    signInButton?.addEventListener("pointerup", () => {
+      this.handleSignInClick();
+    });
 
-    this.passkeyService.showAutofillUI();
+    this.dialogElement?.showModal();
   }
 
-  private handleRegisterClick(
-    usernameElement: Element,
-    dialogElement: HTMLDialogElement
-  ): void {
-    const username = usernameElement?.getAttribute("value") || "";
-
-    if (username === "") {
+  private handleRegisterClick(username: string): void {
+    console.log("Registering with username", username);
+    if (username.trim() === "") {
       return;
     }
 
-    dialogElement.close();
     this.gameController.getGamePointer().setPreventDefault(true);
 
-    this.passkeyService.createCredential(username, username);
-    this.registerUser(username);
+    this.passkeyService.registerPasskey(username, username).catch((error) => {
+      console.error(error);
+      this.showError("An error occurred while registering to the server");
+    });
   }
 
-  private async handleSignInClick(
-    dialogElement: HTMLDialogElement
-  ): Promise<void> {
-    await this.passkeyService.authenticateUser();
-
-    dialogElement.close();
+  private async handleSignInClick(): Promise<void> {
     this.gameController.getGamePointer().setPreventDefault(true);
 
-    this.registerUser("test");
-  }
-
-  private registerUser(name: string): void {
-    this.apiService
-      .registerUser(name)
-      .then((registrationResponse: RegistrationResponse) => {
-        this.gameState.getGamePlayer().setName(name);
-
-        this.gameState
-          .getGameServer()
-          .setServerRegistration(new ServerRegistration(registrationResponse));
-
-        this.downloadConfiguration();
-      })
-      .catch((error) => {
-        console.error(error);
-        this.showError("An error occurred while registering to the server");
-      });
+    this.passkeyService.usePasskey().catch((error) => {
+      console.error(error);
+      this.showError("An error occurred while signing in to the server");
+    });
   }
 
   private downloadConfiguration(): void {
+    this.dialogElement?.close();
     this.messageObject?.show("Downloading configuration...");
 
     this.apiService
@@ -220,6 +191,11 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private listenForEvents(): void {
+    this.eventProcessorService.listenLocalEvent(
+      EventType.ServerAuthenticated,
+      this.downloadConfiguration.bind(this)
+    );
+
     this.eventProcessorService.listenLocalEvent(
       EventType.ServerConnected,
       this.handleServerConnectedEvent.bind(this)

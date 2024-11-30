@@ -1,4 +1,4 @@
-import { RegistrationResponse } from "../interfaces/response/registration-response.js";
+import { AuthenticationResponse } from "../interfaces/response/authentication_response.js";
 
 export class ServerRegistration {
   private authenticationToken: string;
@@ -7,7 +7,7 @@ export class ServerRegistration {
   private publicIp: string;
   private iceServers: RTCIceServer[];
 
-  constructor(registrationResponse: RegistrationResponse) {
+  constructor(registrationResponse: AuthenticationResponse) {
     this.authenticationToken = registrationResponse.authentication_token;
     this.sessionKey = registrationResponse.session_key;
     this.userId = registrationResponse.user_id;

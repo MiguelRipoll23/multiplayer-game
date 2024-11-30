@@ -97,7 +97,7 @@ export class ApiService {
   }
 
   public async getAuthenticationOptions(
-    username: string | null
+    requestId: string
   ): Promise<AuthenticationOptionsResponse> {
     const response = await fetch(
       API_BASE_URL + AUTHENTICATION_OPTIONS_ENDPOINT,
@@ -107,7 +107,7 @@ export class ApiService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username,
+          requestId,
         }),
       }
     );
@@ -123,6 +123,7 @@ export class ApiService {
   }
 
   public async verifyAuthenticationResponse(
+    requestId: string,
     credential: Credential
   ): Promise<void> {
     const response = await fetch(
@@ -132,7 +133,10 @@ export class ApiService {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(credential),
+        body: JSON.stringify({
+          requestId,
+          authenticationResponse: credential,
+        }),
       }
     );
 

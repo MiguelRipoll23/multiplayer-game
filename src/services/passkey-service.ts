@@ -3,9 +3,11 @@ import { ApiService } from "./api-service.js";
 
 export class PasskeyService {
   private apiService: ApiService;
+  private requestId: string;
 
   constructor(gameController: GameController) {
     this.apiService = new ApiService(gameController);
+    this.requestId = crypto.randomUUID();
   }
 
   public async showAutofillUI(): Promise<void> {
@@ -21,18 +23,17 @@ export class PasskeyService {
         try {
           // Retrieve authentication options for `navigator.credentials.get()`
           // from your server.
-          const authOptions = await this.apiService.getAuthenticationOptions(
-            null
-          );
+          const authenticationOptions =
+            await this.apiService.getAuthenticationOptions(this.requestId);
           // This call to `navigator.credentials.get()` is "set and forget."
           // The Promise will only resolve if the user successfully interacts
           // with the browser's autofill UI to select a passkey.
           const webAuthnResponse = await navigator.credentials.get({
             mediation: "conditional",
             publicKey: {
-              ...authOptions,
-              challenge: Uint8Array.from(authOptions.challenge, (c) =>
-                c.charCodeAt(0)
+              ...authenticationOptions,
+              challenge: this.challengeToUint8Array(
+                authenticationOptions.challenge
               ),
               userVerification: "preferred",
             },
@@ -46,7 +47,10 @@ export class PasskeyService {
 
           // Send the response to your server for verification and
           // authenticate the user if the response is valid.
-          await this.apiService.verifyAuthenticationResponse(webAuthnResponse);
+          await this.apiService.verifyAuthenticationResponse(
+            this.requestId,
+            webAuthnResponse
+          );
         } catch (error) {
           console.error("Error with conditional UI:", error);
         }
@@ -59,24 +63,19 @@ export class PasskeyService {
     displayName: string
   ): Promise<void> {
     console.log("Creating credential for", name);
-    const authOptions = await this.apiService.getRegistrationOptions(name);
-
-    const challengeBase64Decoded = atob(authOptions.challenge);
-    const challenge = new Uint8Array(challengeBase64Decoded.length);
-
-    for (let i = 0; i < challengeBase64Decoded.length; i++) {
-      challenge[i] = challengeBase64Decoded.charCodeAt(i);
-    }
+    const registrationOptions = await this.apiService.getRegistrationOptions(
+      name
+    );
 
     const publicKey = {
-      ...authOptions,
-      challenge,
+      ...registrationOptions,
+      challenge: this.challengeToUint8Array(registrationOptions.challenge),
       user: {
         id: new Uint8Array(16),
         name,
         displayName,
       },
-      pubKeyCredParams: authOptions.pubKeyCredParams.map((pkcp) => ({
+      pubKeyCredParams: registrationOptions.pubKeyCredParams.map((pkcp) => ({
         type: pkcp.type,
         alg: pkcp.alg,
       })),
@@ -102,13 +101,11 @@ export class PasskeyService {
 
   public async authenticateUser(): Promise<void> {
     const authenticationOptions =
-      await this.apiService.getAuthenticationOptions(null);
+      await this.apiService.getAuthenticationOptions(this.requestId);
 
     const publicKey = {
       ...authenticationOptions,
-      challenge: Uint8Array.from(authenticationOptions.challenge, (c) =>
-        c.charCodeAt(0)
-      ),
+      challenge: this.challengeToUint8Array(authenticationOptions.challenge),
     };
 
     try {
@@ -123,9 +120,21 @@ export class PasskeyService {
 
       // Send the response to your server for verification and
       // authenticate the user if the response is valid.
-      await this.apiService.verifyAuthenticationResponse(credential);
+      await this.apiService.verifyAuthenticationResponse(
+        this.requestId,
+        credential
+      );
     } catch (error) {
       console.error("Error authenticating user:", error);
     }
+  }
+
+  private challengeToUint8Array(challenge: string): Uint8Array {
+    const base64 = challenge.replace(/-/g, "+").replace(/_/g, "/");
+    const paddedBase64 = base64.padEnd(
+      base64.length + ((4 - (base64.length % 4)) % 4),
+      "="
+    );
+    return Uint8Array.from(atob(paddedBase64), (c) => c.charCodeAt(0));
   }
 }

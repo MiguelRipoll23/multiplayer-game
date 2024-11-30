@@ -101,7 +101,7 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private showDialog(): void {
-    this.passkeyService.showAutofillUI();
+    this.passkeyService.showAutofillUI().catch((error) => alert(error));
     this.gameController.getGamePointer().setPreventDefault(false);
 
     const usernameElement: HTMLInputElement | null =

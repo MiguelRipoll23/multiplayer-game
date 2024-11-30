@@ -23,51 +23,42 @@ export class PasskeyService {
 
   public async showAutofillUI(): Promise<void> {
     if (
-      typeof window.PublicKeyCredential !== "undefined" &&
-      typeof window.PublicKeyCredential.isConditionalMediationAvailable ===
+      typeof window.PublicKeyCredential === "undefined" ||
+      typeof window.PublicKeyCredential.isConditionalMediationAvailable !==
         "function"
     ) {
-      const available =
-        await PublicKeyCredential.isConditionalMediationAvailable();
+      return;
+    }
 
-      if (available) {
-        try {
-          // Retrieve authentication options for `navigator.credentials.get()`
-          // from your server.
-          const authenticationOptions =
-            await this.apiService.getAuthenticationOptions(this.requestId);
-          // This call to `navigator.credentials.get()` is "set and forget."
-          // The Promise will only resolve if the user successfully interacts
-          // with the browser's autofill UI to select a passkey.
-          const webAuthnResponse = await navigator.credentials.get({
-            mediation: "optional",
-            publicKey: {
-              ...authenticationOptions,
-              challenge: this.challengeToUint8Array(
-                authenticationOptions.challenge
-              ),
-              userVerification: "preferred",
-            },
-          });
+    const available =
+      await PublicKeyCredential.isConditionalMediationAvailable();
 
-          if (webAuthnResponse === null) {
-            // The user closed the autofill UI without selecting a passkey.
-            console.log("User closed the autofill UI");
-            return;
-          }
+    if (available) {
+      const authenticationOptions =
+        await this.apiService.getAuthenticationOptions(this.requestId);
 
-          // Send the response to your server for verification and
-          // authenticate the user if the response is valid.
-          const response = await this.apiService.verifyAuthenticationResponse(
-            this.requestId,
-            webAuthnResponse
-          );
+      const webAuthnResponse = await navigator.credentials.get({
+        mediation: "optional",
+        publicKey: {
+          ...authenticationOptions,
+          challenge: this.challengeToUint8Array(
+            authenticationOptions.challenge
+          ),
+          userVerification: "preferred",
+        },
+      });
 
-          this.handleAuthenticationResponse(response);
-        } catch (error) {
-          console.error("Error with conditional UI:", error);
-        }
+      if (webAuthnResponse === null) {
+        console.log("User closed the autofill UI");
+        return;
       }
+
+      const response = await this.apiService.verifyAuthenticationResponse(
+        this.requestId,
+        webAuthnResponse
+      );
+
+      this.handleAuthenticationResponse(response);
     }
   }
 

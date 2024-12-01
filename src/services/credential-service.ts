@@ -158,7 +158,7 @@ export class CredentialService {
     const { id, type, rawId, response } = credential;
 
     return {
-      id: this.base64UrlEncode(new TextEncoder().encode(id)), // Base64 URL encode the `id`
+      id: this.base64UrlEncode(rawId),
       type,
       rawId: this.base64UrlEncode(rawId),
       response: {

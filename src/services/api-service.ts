@@ -57,7 +57,6 @@ export class ApiService {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Origin: window.location.origin,
       },
       body: JSON.stringify({
         username,
@@ -84,7 +83,6 @@ export class ApiService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Origin: window.location.origin,
         },
         body: JSON.stringify({
           username,
@@ -112,7 +110,6 @@ export class ApiService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Origin: window.location.origin,
         },
         body: JSON.stringify({
           requestId,
@@ -140,7 +137,6 @@ export class ApiService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Origin: window.location.origin,
         },
         body: JSON.stringify({
           requestId,

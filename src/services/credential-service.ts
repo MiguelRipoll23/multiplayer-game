@@ -7,7 +7,7 @@ import { ServerRegistration } from "../models/server-registration.js";
 import { ApiService } from "./api-service.js";
 import { EventProcessorService } from "./event-processor-service.js";
 
-export class PasskeyService {
+export class CredentialService {
   private gameState: GameState;
   private apiService: ApiService;
   private eventProcessorService: EventProcessorService;
@@ -62,11 +62,10 @@ export class PasskeyService {
     }
   }
 
-  public async registerPasskey(
+  public async registerCredential(
     name: string,
     displayName: string
   ): Promise<void> {
-    console.log("Creating credential for", name);
     const registrationOptions = await this.apiService.getRegistrationOptions(
       name
     );
@@ -103,7 +102,7 @@ export class PasskeyService {
     this.handleAuthenticationResponse(response);
   }
 
-  public async usePasskey(): Promise<void> {
+  public async useCredential(): Promise<void> {
     const authenticationOptions =
       await this.apiService.getAuthenticationOptions(this.requestId);
 

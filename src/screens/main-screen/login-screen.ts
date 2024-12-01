@@ -9,7 +9,7 @@ import { CloseableMessageObject } from "../../objects/common/closeable-message-o
 import { GameState } from "../../models/game-state.js";
 import { EventType } from "../../enums/event-type.js";
 import { EventProcessorService } from "../../services/event-processor-service.js";
-import { PasskeyService } from "../../services/passkey-service.js";
+import { CredentialService } from "../../services/credential-service.js";
 
 export class LoginScreen extends BaseGameScreen {
   private gameState: GameState;
@@ -17,7 +17,7 @@ export class LoginScreen extends BaseGameScreen {
   private cryptoService: CryptoService;
   private webSocketService: WebSocketService;
   private eventProcessorService: EventProcessorService;
-  private passkeyService: PasskeyService;
+  private credentialService: CredentialService;
 
   private messageObject: MessageObject | null = null;
   private errorCloseableMessageObject: CloseableMessageObject | null = null;
@@ -32,7 +32,7 @@ export class LoginScreen extends BaseGameScreen {
     this.cryptoService = gameController.getCryptoService();
     this.webSocketService = gameController.getWebSocketService();
     this.eventProcessorService = gameController.getEventProcessorService();
-    this.passkeyService = new PasskeyService(gameController);
+    this.credentialService = new CredentialService(gameController);
 
     this.dialogElement = document.querySelector("dialog");
   }
@@ -101,7 +101,7 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private showDialog(): void {
-    this.passkeyService.showAutofillUI().catch((error) => alert(error));
+    this.credentialService.showAutofillUI().catch((error) => alert(error));
     this.gameController.getGamePointer().setPreventDefault(false);
 
     const usernameElement: HTMLInputElement | null =
@@ -131,16 +131,18 @@ export class LoginScreen extends BaseGameScreen {
 
     this.gameController.getGamePointer().setPreventDefault(true);
 
-    this.passkeyService.registerPasskey(username, username).catch((error) => {
-      console.error(error);
-      alert(error);
-    });
+    this.credentialService
+      .registerCredential(username, username)
+      .catch((error) => {
+        console.error(error);
+        alert(error);
+      });
   }
 
   private async handleSignInClick(): Promise<void> {
     this.gameController.getGamePointer().setPreventDefault(true);
 
-    this.passkeyService.usePasskey().catch((error) => {
+    this.credentialService.useCredential().catch((error) => {
       console.error(error);
       alert(error);
     });

@@ -124,12 +124,9 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private handleRegisterClick(username: string): void {
-    console.log("Registering with username", username);
     if (username.trim() === "") {
       return;
     }
-
-    this.gameController.getGamePointer().setPreventDefault(true);
 
     this.credentialService
       .registerCredential(username, username)
@@ -140,8 +137,6 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private async handleSignInClick(): Promise<void> {
-    this.gameController.getGamePointer().setPreventDefault(true);
-
     this.credentialService.useCredential().catch((error) => {
       console.error(error);
       alert(error);
@@ -149,6 +144,8 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private downloadConfiguration(): void {
+    this.gameController.getGamePointer().setPreventDefault(true);
+    
     this.dialogElement?.close();
     this.messageObject?.show("Downloading configuration...");
 

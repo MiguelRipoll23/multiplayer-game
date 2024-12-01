@@ -40,11 +40,9 @@ export class CredentialService {
       const webAuthnResponse = await navigator.credentials.get({
         mediation: "optional",
         publicKey: {
-          ...authenticationOptions,
           challenge: this.challengeToUint8Array(
             authenticationOptions.challenge
           ),
-          userVerification: "preferred",
         },
       });
 
@@ -107,7 +105,6 @@ export class CredentialService {
       await this.apiService.getAuthenticationOptions(this.requestId);
 
     const publicKey = {
-      ...authenticationOptions,
       challenge: this.challengeToUint8Array(authenticationOptions.challenge),
     };
 

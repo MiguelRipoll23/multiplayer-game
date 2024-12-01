@@ -64,21 +64,6 @@ export class CredentialService {
     name: string,
     displayName: string
   ): Promise<void> {
-    const savedCredential = this.recoverSavedCredential();
-    if (savedCredential) {
-      try {
-        const response = await this.apiService.verifyRegistrationResponse(
-          name,
-          savedCredential
-        );
-        this.handleAuthenticationResponse(response);
-        return;
-      } catch (error) {
-        console.error("Failed to reuse saved credential", error);
-        localStorage.removeItem("savedCredential");
-      }
-    }
-
     const registrationOptions = await this.apiService.getRegistrationOptions(
       name
     );
@@ -105,18 +90,12 @@ export class CredentialService {
       throw new Error("User canceled credential creation");
     }
 
-    try {
-      const response = await this.apiService.verifyRegistrationResponse(
-        name,
-        this.serializeCredential(credential)
-      );
+    const response = await this.apiService.verifyRegistrationResponse(
+      name,
+      this.serializeCredential(credential)
+    );
 
-      this.handleAuthenticationResponse(response);
-    } catch (error) {
-      console.error("Registration verification failed, saving credential", error);
-      this.saveCredentialToLocalStorage(this.serializeCredential(credential));
-      throw error;
-    }
+    this.handleAuthenticationResponse(response);
   }
 
   public async useCredential(): Promise<void> {
@@ -194,14 +173,5 @@ export class CredentialService {
           : null,
       },
     };
-  }
-
-  private saveCredentialToLocalStorage(credential: SerializedCredential): void {
-    localStorage.setItem("savedCredential", JSON.stringify(credential));
-  }
-
-  private recoverSavedCredential(): SerializedCredential | null {
-    const savedCredential = localStorage.getItem("savedCredential");
-    return savedCredential ? JSON.parse(savedCredential) : null;
   }
 }

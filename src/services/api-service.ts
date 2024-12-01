@@ -24,6 +24,7 @@ import { AdvertiseMatchRequest } from "../interfaces/request/advertise-match-req
 import { FindMatchesRequest } from "../interfaces/request/find-matches-request.js";
 import { SaveScoreRequest } from "../interfaces/request/save-score-request.js";
 import { AuthenticationOptionsResponse } from "../interfaces/response/authentication-options-response.js";
+import { SerializedCredential } from "../interfaces/response/authentication_response.js";
 
 export class ApiService {
   private authenticationToken: string | null = null;
@@ -75,7 +76,7 @@ export class ApiService {
 
   public async verifyRegistrationResponse(
     username: string,
-    credential: Credential
+    credential: SerializedCredential
   ): Promise<AuthenticationResponse> {
     const response = await fetch(
       API_BASE_URL + VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
@@ -129,7 +130,7 @@ export class ApiService {
 
   public async verifyAuthenticationResponse(
     requestId: string,
-    credential: Credential
+    credential: SerializedCredential
   ): Promise<AuthenticationResponse> {
     const response = await fetch(
       API_BASE_URL + VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,

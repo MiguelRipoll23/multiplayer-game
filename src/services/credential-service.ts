@@ -53,7 +53,7 @@ export class CredentialService {
 
       const response = await this.apiService.verifyAuthenticationResponse(
         this.requestId,
-        webAuthnResponse
+        this.serializeCredential(webAuthnResponse)
       );
 
       this.handleAuthenticationResponse(response);
@@ -90,11 +90,9 @@ export class CredentialService {
       throw new Error("User canceled credential creation");
     }
 
-    alert(`Credential created: ${JSON.stringify(credential)}`); // Pa63e
-
     const response = await this.apiService.verifyRegistrationResponse(
       name,
-      credential
+      this.serializeCredential(credential)
     );
 
     this.handleAuthenticationResponse(response);
@@ -116,11 +114,9 @@ export class CredentialService {
       throw new Error("User canceled credential request");
     }
 
-    alert(`Credential used: ${JSON.stringify(credential)}`); // P7ed6
-
     const response = await this.apiService.verifyAuthenticationResponse(
       this.requestId,
-      credential
+      this.serializeCredential(credential)
     );
 
     this.handleAuthenticationResponse(response);
@@ -145,5 +141,37 @@ export class CredentialService {
 
     const localEvent = new LocalEvent(EventType.ServerAuthenticated, null);
     this.eventProcessorService.addLocalEvent(localEvent);
+  }
+
+  private base64UrlEncode(data: ArrayBuffer): string {
+    return btoa(String.fromCharCode(...new Uint8Array(data)))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, ""); // Remove padding
+  }
+
+  private serializeCredential(credential: PublicKeyCredential): SerializedCredential {
+    const { id, type, rawId, response } = credential;
+
+    return {
+      id: this.base64UrlEncode(rawId),
+      type,
+      rawId: this.base64UrlEncode(rawId),
+      response: {
+        clientDataJSON: this.base64UrlEncode(response.clientDataJSON),
+        attestationObject: (response as AuthenticatorAttestationResponse).attestationObject
+          ? this.base64UrlEncode((response as AuthenticatorAttestationResponse).attestationObject!)
+          : null,
+        authenticatorData: (response as AuthenticatorAssertionResponse).authenticatorData
+          ? this.base64UrlEncode((response as AuthenticatorAssertionResponse).authenticatorData!)
+          : null,
+        signature: (response as AuthenticatorAssertionResponse).signature
+          ? this.base64UrlEncode((response as AuthenticatorAssertionResponse).signature!)
+          : null,
+        userHandle: (response as AuthenticatorAssertionResponse).userHandle
+          ? this.base64UrlEncode((response as AuthenticatorAssertionResponse).userHandle!)
+          : null,
+      },
+    };
   }
 }

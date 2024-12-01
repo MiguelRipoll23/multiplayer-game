@@ -90,8 +90,6 @@ export class CredentialService {
       throw new Error("User canceled credential creation");
     }
 
-    alert(`Credential created: ${JSON.stringify(credential)}`); // Pa63e
-
     const response = await this.apiService.verifyRegistrationResponse(
       name,
       this.serializeCredential(credential)
@@ -115,8 +113,6 @@ export class CredentialService {
     if (credential === null) {
       throw new Error("User canceled credential request");
     }
-
-    alert(`Credential used: ${JSON.stringify(credential)}`); // P7ed6
 
     const response = await this.apiService.verifyAuthenticationResponse(
       this.requestId,

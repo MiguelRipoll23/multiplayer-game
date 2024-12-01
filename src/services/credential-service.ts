@@ -153,7 +153,7 @@ export class CredentialService {
 
   private serializeCredential(credential: PublicKeyCredential): any {
     return {
-      id: credential.id,
+      id: this.base64UrlEncode(credential.id),
       type: credential.type,
       rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
       response: {
@@ -171,5 +171,9 @@ export class CredentialService {
           : null,
       },
     };
+  }
+
+  private base64UrlEncode(input: string): string {
+    return btoa(input).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   }
 }

@@ -90,11 +90,13 @@ export class CredentialService {
       throw new Error("User canceled credential creation");
     }
 
-    alert(`Credential created: ${JSON.stringify(credential)}`); // Pa63e
+    alert(`Credential created: ${JSON.stringify(credential)}`);
+
+    const serializedCredential = this.serializeCredential(credential);
 
     const response = await this.apiService.verifyRegistrationResponse(
       name,
-      credential
+      serializedCredential
     );
 
     this.handleAuthenticationResponse(response);
@@ -116,11 +118,13 @@ export class CredentialService {
       throw new Error("User canceled credential request");
     }
 
-    alert(`Credential used: ${JSON.stringify(credential)}`); // P7ed6
+    alert(`Credential used: ${JSON.stringify(credential)}`);
+
+    const serializedCredential = this.serializeCredential(credential);
 
     const response = await this.apiService.verifyAuthenticationResponse(
       this.requestId,
-      credential
+      serializedCredential
     );
 
     this.handleAuthenticationResponse(response);
@@ -145,5 +149,27 @@ export class CredentialService {
 
     const localEvent = new LocalEvent(EventType.ServerAuthenticated, null);
     this.eventProcessorService.addLocalEvent(localEvent);
+  }
+
+  private serializeCredential(credential: PublicKeyCredential): any {
+    return {
+      id: credential.id,
+      type: credential.type,
+      rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+      response: {
+        clientDataJSON: btoa(
+          String.fromCharCode(...new Uint8Array(credential.response.clientDataJSON))
+        ),
+        authenticatorData: credential.response.authenticatorData
+          ? btoa(String.fromCharCode(...new Uint8Array(credential.response.authenticatorData)))
+          : null,
+        signature: credential.response.signature
+          ? btoa(String.fromCharCode(...new Uint8Array(credential.response.signature)))
+          : null,
+        userHandle: credential.response.userHandle
+          ? btoa(String.fromCharCode(...new Uint8Array(credential.response.userHandle)))
+          : null,
+      },
+    };
   }
 }

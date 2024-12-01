@@ -75,7 +75,7 @@ export class ApiService {
 
   public async verifyRegistrationResponse(
     username: string,
-    credential: Credential
+    credential: any
   ): Promise<AuthenticationResponse> {
     const response = await fetch(
       API_BASE_URL + VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
@@ -129,7 +129,7 @@ export class ApiService {
 
   public async verifyAuthenticationResponse(
     requestId: string,
-    credential: Credential
+    credential: any
   ): Promise<AuthenticationResponse> {
     const response = await fetch(
       API_BASE_URL + VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,

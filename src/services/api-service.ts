@@ -93,6 +93,8 @@ export class ApiService {
     );
 
     if (response.ok === false) {
+      console.error("Failed to verify registration response, saving credential");
+      localStorage.setItem("savedCredential", JSON.stringify(credential));
       throw new Error("Failed to verify registration response");
     }
 

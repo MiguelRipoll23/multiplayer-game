@@ -48,13 +48,16 @@ export class CredentialService {
           authenticationOptionsRequest
         );
 
+      const publicKey = {
+        ...authenticationOptions,
+        challenge: WebAuthnUtils.challengeToUint8Array(
+          authenticationOptions.challenge
+        ),
+      };
+
       const credential = await navigator.credentials.get({
-        mediation: "optional",
-        publicKey: {
-          challenge: WebAuthnUtils.challengeToUint8Array(
-            authenticationOptions.challenge
-          ),
-        },
+        mediation: "conditional",
+        publicKey,
       });
 
       if (credential === null) {
@@ -77,7 +80,7 @@ export class CredentialService {
     }
   }
 
-  public async get(): Promise<void> {
+  public async getCredential(): Promise<void> {
     const authenticationOptionsRequest: AuthenticationOptionsRequest = {
       requestId: this.requestId,
     };
@@ -88,6 +91,7 @@ export class CredentialService {
       );
 
     const publicKey = {
+      ...authenticationOptions,
       challenge: WebAuthnUtils.challengeToUint8Array(
         authenticationOptions.challenge
       ),
@@ -115,7 +119,10 @@ export class CredentialService {
     this.handleAuthenticationResponse(response);
   }
 
-  public async create(name: string, displayName: string): Promise<void> {
+  public async createCredential(
+    name: string,
+    displayName: string
+  ): Promise<void> {
     const registrationOptionsRequest: RegistrationOptionsRequest = {
       username: name,
     };

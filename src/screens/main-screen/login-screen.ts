@@ -128,14 +128,16 @@ export class LoginScreen extends BaseGameScreen {
       return;
     }
 
-    this.credentialService.create(username, username).catch((error) => {
-      console.error(error);
-      alert(error.message);
-    });
+    this.credentialService
+      .createCredential(username, username)
+      .catch((error) => {
+        console.error(error);
+        alert(error.message);
+      });
   }
 
   private async handleSignInClick(): Promise<void> {
-    this.credentialService.get().catch((error) => {
+    this.credentialService.getCredential().catch((error) => {
       console.error(error);
       alert(error.message);
     });

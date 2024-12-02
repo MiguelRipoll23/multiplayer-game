@@ -23,7 +23,7 @@ export class RankingTableObject extends BaseAnimatedGameObject {
       context.fillText(`#${index + 1}`, startX, startY);
       context.fillText(player.player_name, startX + 50, startY);
       context.fillText(
-        player.total_score.toString(),
+        player.score.toString(),
         context.canvas.width - 40,
         startY
       );

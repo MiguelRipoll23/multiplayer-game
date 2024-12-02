@@ -130,17 +130,21 @@ export class CredentialService {
       registrationOptionsRequest
     );
 
+    const challenge = registrationOptions.challenge;
+    const userId = registrationOptions.user.id;
+    const pubKeyCredParams = registrationOptions.pubKeyCredParams;
+
     const publicKey = {
       ...registrationOptions,
       challenge: WebAuthnUtils.challengeToUint8Array(
-        registrationOptions.challenge
+        challenge
       ),
       user: {
-        id: new Uint8Array(16),
+        id: new TextEncoder().encode(userId),
         name,
         displayName,
       },
-      pubKeyCredParams: registrationOptions.pubKeyCredParams.map((pkcp) => ({
+      pubKeyCredParams: pubKeyCredParams.map((pkcp) => ({
         type: pkcp.type,
         alg: pkcp.alg,
       })),

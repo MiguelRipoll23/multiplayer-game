@@ -121,7 +121,6 @@ export class CredentialService {
     name: string,
     displayName: string
   ): Promise<void> {
-    console.log("Creating credential for", name);
     const registrationOptionsRequest: RegistrationOptionsRequest = {
       username: name,
     };
@@ -130,13 +129,15 @@ export class CredentialService {
       registrationOptionsRequest
     );
 
+    const userId = crypto.randomUUID();
+
     const publicKey = {
       ...registrationOptions,
       challenge: WebAuthnUtils.challengeToUint8Array(
         registrationOptions.challenge
       ),
       user: {
-        id: new Uint8Array(16),
+        id: new TextEncoder().encode(userId),
         name,
         displayName,
       },

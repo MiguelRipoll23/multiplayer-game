@@ -101,7 +101,7 @@ export class LoginScreen extends BaseGameScreen {
   }
 
   private showDialog(): void {
-    this.credentialService.showAutofillUI().catch((error) => alert(error));
+    this.credentialService.showAutofillUI();
     this.gameController.getGamePointer().setPreventDefault(false);
 
     const usernameElement: HTMLInputElement | null =
@@ -128,16 +128,14 @@ export class LoginScreen extends BaseGameScreen {
       return;
     }
 
-    this.credentialService
-      .registerCredential(username, username)
-      .catch((error) => {
-        console.error(error);
-        alert(error);
-      });
+    this.credentialService.create(username, username).catch((error) => {
+      console.error(error);
+      alert(error);
+    });
   }
 
   private async handleSignInClick(): Promise<void> {
-    this.credentialService.useCredential().catch((error) => {
+    this.credentialService.get().catch((error) => {
       console.error(error);
       alert(error);
     });
@@ -145,7 +143,7 @@ export class LoginScreen extends BaseGameScreen {
 
   private downloadConfiguration(): void {
     this.gameController.getGamePointer().setPreventDefault(true);
-    
+
     this.dialogElement?.close();
     this.messageObject?.show("Downloading configuration...");
 

@@ -24,7 +24,10 @@ import { AdvertiseMatchRequest } from "../interfaces/request/advertise-match-req
 import { FindMatchesRequest } from "../interfaces/request/find-matches-request.js";
 import { SaveScoreRequest } from "../interfaces/request/save-score-request.js";
 import { AuthenticationOptionsResponse } from "../interfaces/response/authentication-options-response.js";
-import { SerializedCredential } from "../interfaces/response/authentication_response.js";
+import { VerifyRegistrationRequest } from "../interfaces/request/verify-registration-request.js";
+import { RegistrationOptionsRequest } from "../interfaces/request/registration-options-request.js";
+import { AuthenticationOptionsRequest } from "../interfaces/request/authentication-options.js";
+import { VerifyAuthenticationRequest } from "../interfaces/request/verify-authentication-request.js";
 
 export class ApiService {
   private authenticationToken: string | null = null;
@@ -52,16 +55,14 @@ export class ApiService {
   }
 
   public async getRegistrationOptions(
-    username: string
+    registrationOptionsRequest: RegistrationOptionsRequest
   ): Promise<AuthenticationOptionsResponse> {
     const response = await fetch(API_BASE_URL + REGISTRATION_OPTIONS_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        username,
-      }),
+      body: JSON.stringify(registrationOptionsRequest),
     });
 
     if (response.ok === false) {
@@ -74,9 +75,8 @@ export class ApiService {
     return registrationOptions;
   }
 
-  public async verifyRegistrationResponse(
-    username: string,
-    credential: SerializedCredential
+  public async verifyRegistration(
+    verifyRegistrationRequest: VerifyRegistrationRequest
   ): Promise<AuthenticationResponse> {
     const response = await fetch(
       API_BASE_URL + VERIFY_REGISTRATION_RESPONSE_ENDPOINT,
@@ -85,10 +85,7 @@ export class ApiService {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          username,
-          registrationResponse: credential,
-        }),
+        body: JSON.stringify(verifyRegistrationRequest),
       }
     );
 
@@ -103,7 +100,7 @@ export class ApiService {
   }
 
   public async getAuthenticationOptions(
-    requestId: string
+    authenticationOptionsRequest: AuthenticationOptionsRequest
   ): Promise<AuthenticationOptionsResponse> {
     const response = await fetch(
       API_BASE_URL + AUTHENTICATION_OPTIONS_ENDPOINT,
@@ -112,9 +109,7 @@ export class ApiService {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          requestId,
-        }),
+        body: JSON.stringify(authenticationOptionsRequest),
       }
     );
 
@@ -129,8 +124,7 @@ export class ApiService {
   }
 
   public async verifyAuthenticationResponse(
-    requestId: string,
-    credential: SerializedCredential
+    verifyAuthenticationRequest: VerifyAuthenticationRequest
   ): Promise<AuthenticationResponse> {
     const response = await fetch(
       API_BASE_URL + VERIFY_AUTHENTICATION_RESPONSE_ENDPOINT,
@@ -139,15 +133,13 @@ export class ApiService {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          requestId,
-          authenticationResponse: credential,
-        }),
+        body: JSON.stringify(verifyAuthenticationRequest),
       }
     );
 
     if (response.ok === false) {
-      throw new Error("Failed to verify authentication response");
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message);
     }
 
     const authenticationResponse: AuthenticationResponse =

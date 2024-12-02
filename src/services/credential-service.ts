@@ -1,9 +1,14 @@
 import { EventType } from "../enums/event-type.js";
+import { AuthenticationOptionsRequest } from "../interfaces/request/authentication-options.js";
+import { RegistrationOptionsRequest } from "../interfaces/request/registration-options-request.js";
+import { VerifyAuthenticationRequest } from "../interfaces/request/verify-authentication-request.js";
+import { VerifyRegistrationRequest } from "../interfaces/request/verify-registration-request.js";
 import { AuthenticationResponse } from "../interfaces/response/authentication_response.js";
 import { GameController } from "../models/game-controller.js";
 import { GameState } from "../models/game-state.js";
 import { LocalEvent } from "../models/local-event.js";
 import { ServerRegistration } from "../models/server-registration.js";
+import { WebAuthnUtils } from "../utils/webauthn-utils.js";
 import { ApiService } from "./api-service.js";
 import { EventProcessorService } from "./event-processor-service.js";
 
@@ -34,43 +39,96 @@ export class CredentialService {
       await PublicKeyCredential.isConditionalMediationAvailable();
 
     if (available) {
-      const authenticationOptions =
-        await this.apiService.getAuthenticationOptions(this.requestId);
+      const authenticationOptionsRequest: AuthenticationOptionsRequest = {
+        requestId: this.requestId,
+      };
 
-      const webAuthnResponse = await navigator.credentials.get({
+      const authenticationOptions =
+        await this.apiService.getAuthenticationOptions(
+          authenticationOptionsRequest
+        );
+
+      const credential = await navigator.credentials.get({
         mediation: "optional",
         publicKey: {
-          challenge: this.challengeToUint8Array(
+          challenge: WebAuthnUtils.challengeToUint8Array(
             authenticationOptions.challenge
           ),
         },
       });
 
-      if (webAuthnResponse === null) {
+      if (credential === null) {
         console.log("User closed the autofill UI");
         return;
       }
 
+      const verifyAuthenticationRequest: VerifyAuthenticationRequest = {
+        requestId: this.requestId,
+        credential: WebAuthnUtils.serializeCredential(
+          credential as PublicKeyCredential
+        ),
+      };
+
       const response = await this.apiService.verifyAuthenticationResponse(
-        this.requestId,
-        this.serializeCredential(webAuthnResponse)
+        verifyAuthenticationRequest
       );
 
       this.handleAuthenticationResponse(response);
     }
   }
 
-  public async registerCredential(
-    name: string,
-    displayName: string
-  ): Promise<void> {
+  public async get(): Promise<void> {
+    const authenticationOptionsRequest: AuthenticationOptionsRequest = {
+      requestId: this.requestId,
+    };
+
+    const authenticationOptions =
+      await this.apiService.getAuthenticationOptions(
+        authenticationOptionsRequest
+      );
+
+    const publicKey = {
+      challenge: WebAuthnUtils.challengeToUint8Array(
+        authenticationOptions.challenge
+      ),
+    };
+
+    const credential = await navigator.credentials.get({
+      publicKey,
+    });
+
+    if (credential === null) {
+      throw new Error("User canceled credential request");
+    }
+
+    const verifyAuthenticationRequest: VerifyAuthenticationRequest = {
+      requestId: this.requestId,
+      credential: WebAuthnUtils.serializeCredential(
+        credential as PublicKeyCredential
+      ),
+    };
+
+    const response = await this.apiService.verifyAuthenticationResponse(
+      verifyAuthenticationRequest
+    );
+
+    this.handleAuthenticationResponse(response);
+  }
+
+  public async create(name: string, displayName: string): Promise<void> {
+    const registrationOptionsRequest: RegistrationOptionsRequest = {
+      username: name,
+    };
+
     const registrationOptions = await this.apiService.getRegistrationOptions(
-      name
+      registrationOptionsRequest
     );
 
     const publicKey = {
       ...registrationOptions,
-      challenge: this.challengeToUint8Array(registrationOptions.challenge),
+      challenge: WebAuthnUtils.challengeToUint8Array(
+        registrationOptions.challenge
+      ),
       user: {
         id: new Uint8Array(16),
         name,
@@ -90,45 +148,18 @@ export class CredentialService {
       throw new Error("User canceled credential creation");
     }
 
-    const response = await this.apiService.verifyRegistrationResponse(
-      name,
-      this.serializeCredential(credential)
-    );
-
-    this.handleAuthenticationResponse(response);
-  }
-
-  public async useCredential(): Promise<void> {
-    const authenticationOptions =
-      await this.apiService.getAuthenticationOptions(this.requestId);
-
-    const publicKey = {
-      challenge: this.challengeToUint8Array(authenticationOptions.challenge),
+    const verifyRegistrationRequest: VerifyRegistrationRequest = {
+      username: name,
+      credential: WebAuthnUtils.serializeCredential(
+        credential as PublicKeyCredential
+      ),
     };
 
-    const credential = await navigator.credentials.get({
-      publicKey,
-    });
-
-    if (credential === null) {
-      throw new Error("User canceled credential request");
-    }
-
-    const response = await this.apiService.verifyAuthenticationResponse(
-      this.requestId,
-      this.serializeCredential(credential)
+    const response = await this.apiService.verifyRegistration(
+      verifyRegistrationRequest
     );
 
     this.handleAuthenticationResponse(response);
-  }
-
-  private challengeToUint8Array(challenge: string): Uint8Array {
-    const base64 = challenge.replace(/-/g, "+").replace(/_/g, "/");
-    const paddedBase64 = base64.padEnd(
-      base64.length + ((4 - (base64.length % 4)) % 4),
-      "="
-    );
-    return Uint8Array.from(atob(paddedBase64), (c) => c.charCodeAt(0));
   }
 
   private handleAuthenticationResponse(response: AuthenticationResponse): void {
@@ -141,37 +172,5 @@ export class CredentialService {
 
     const localEvent = new LocalEvent(EventType.ServerAuthenticated, null);
     this.eventProcessorService.addLocalEvent(localEvent);
-  }
-
-  private base64UrlEncode(data: ArrayBuffer): string {
-    return btoa(String.fromCharCode(...new Uint8Array(data)))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, ""); // Remove padding
-  }
-
-  private serializeCredential(credential: PublicKeyCredential): SerializedCredential {
-    const { id, type, rawId, response } = credential;
-
-    return {
-      id: this.base64UrlEncode(rawId),
-      type,
-      rawId: this.base64UrlEncode(rawId),
-      response: {
-        clientDataJSON: this.base64UrlEncode(response.clientDataJSON),
-        attestationObject: (response as AuthenticatorAttestationResponse).attestationObject
-          ? this.base64UrlEncode((response as AuthenticatorAttestationResponse).attestationObject!)
-          : null,
-        authenticatorData: (response as AuthenticatorAssertionResponse).authenticatorData
-          ? this.base64UrlEncode((response as AuthenticatorAssertionResponse).authenticatorData!)
-          : null,
-        signature: (response as AuthenticatorAssertionResponse).signature
-          ? this.base64UrlEncode((response as AuthenticatorAssertionResponse).signature!)
-          : null,
-        userHandle: (response as AuthenticatorAssertionResponse).userHandle
-          ? this.base64UrlEncode((response as AuthenticatorAssertionResponse).userHandle!)
-          : null,
-      },
-    };
   }
 }

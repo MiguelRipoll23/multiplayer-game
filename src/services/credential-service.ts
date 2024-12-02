@@ -49,14 +49,13 @@ export class CredentialService {
         );
 
       const publicKey = {
-        ...authenticationOptions,
         challenge: WebAuthnUtils.challengeToUint8Array(
           authenticationOptions.challenge
         ),
       };
 
       const credential = await navigator.credentials.get({
-        mediation: "conditional",
+        mediation: "optional",
         publicKey,
       });
 
@@ -91,7 +90,6 @@ export class CredentialService {
       );
 
     const publicKey = {
-      ...authenticationOptions,
       challenge: WebAuthnUtils.challengeToUint8Array(
         authenticationOptions.challenge
       ),
@@ -123,6 +121,7 @@ export class CredentialService {
     name: string,
     displayName: string
   ): Promise<void> {
+    console.log("Creating credential for", name);
     const registrationOptionsRequest: RegistrationOptionsRequest = {
       username: name,
     };

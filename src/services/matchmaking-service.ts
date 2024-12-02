@@ -228,9 +228,8 @@ export class MatchmakingService {
   public async savePlayerScore(): Promise<void> {
     const gamePlayer = this.gameState.getGamePlayer();
     const score = gamePlayer.getScore();
-    const hash = crypto.randomUUID();
 
-    const saveScoreRequest: SaveScoreRequest = { score, hash };
+    const saveScoreRequest: SaveScoreRequest = { score };
     await this.apiService.saveScore(saveScoreRequest);
   }
 

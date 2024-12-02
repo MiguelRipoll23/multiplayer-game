@@ -35,7 +35,7 @@ export class RankingTableObject extends BaseAnimatedGameObject {
         context.setLineDash([5, 5]);
         context.beginPath();
         context.moveTo(startX, startY - 27.5);
-        context.lineTo(context.canvas.width - 30, startY - 27.5);
+        context.lineTo(context.canvas.width - 28, startY - 27.5);
         context.stroke();
       }
     });

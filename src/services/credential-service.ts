@@ -121,8 +121,8 @@ export class CredentialService {
     name: string,
     displayName: string
   ): Promise<void> {
-    console.log("Creating credential for", name);
     const registrationOptionsRequest: RegistrationOptionsRequest = {
+      requestId: this.requestId,
       username: name,
     };
 

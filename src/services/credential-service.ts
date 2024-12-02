@@ -136,9 +136,7 @@ export class CredentialService {
 
     const publicKey = {
       ...registrationOptions,
-      challenge: WebAuthnUtils.challengeToUint8Array(
-        challenge
-      ),
+      challenge: WebAuthnUtils.challengeToUint8Array(challenge),
       user: {
         id: new TextEncoder().encode(userId),
         name,
@@ -159,6 +157,7 @@ export class CredentialService {
     }
 
     const verifyRegistrationRequest: VerifyRegistrationRequest = {
+      requestId: this.requestId,
       username: name,
       registrationResponse: WebAuthnUtils.serializeCredential(
         credential as PublicKeyCredential

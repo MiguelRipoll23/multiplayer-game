@@ -1,4 +1,4 @@
 export interface RegistrationOptionsRequest {
   requestId: string;
-  username: string;
+  displayName: string;
 }

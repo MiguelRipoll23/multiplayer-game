@@ -123,7 +123,7 @@ export class CredentialService {
   ): Promise<void> {
     const registrationOptionsRequest: RegistrationOptionsRequest = {
       requestId: this.requestId,
-      username: name,
+      displayName: displayName,
     };
 
     const registrationOptions = await this.apiService.getRegistrationOptions(
@@ -158,7 +158,7 @@ export class CredentialService {
 
     const verifyRegistrationRequest: VerifyRegistrationRequest = {
       requestId: this.requestId,
-      username: name,
+      displayName: name,
       registrationResponse: WebAuthnUtils.serializeCredential(
         credential as PublicKeyCredential
       ),

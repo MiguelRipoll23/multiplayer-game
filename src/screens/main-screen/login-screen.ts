@@ -1,7 +1,7 @@
 import { MessageObject } from "../../objects/common/message-object.js";
 import { CryptoService } from "../../services/crypto-service.js";
 import { WebSocketService } from "../../services/websocket-service.js";
-import { ApiService } from "../../services/api-service.js";
+import { APIService } from "../../services/api-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
 import { MainMenuScreen } from "./main-menu-screen.js";
 import { GameController } from "../../models/game-controller.js";
@@ -13,7 +13,7 @@ import { CredentialService } from "../../services/credential-service.js";
 
 export class LoginScreen extends BaseGameScreen {
   private gameState: GameState;
-  private apiService: ApiService;
+  private apiService: APIService;
   private cryptoService: CryptoService;
   private webSocketService: WebSocketService;
   private eventProcessorService: EventProcessorService;
@@ -130,14 +130,14 @@ export class LoginScreen extends BaseGameScreen {
 
     this.credentialService.create(username, username).catch((error) => {
       console.error(error);
-      alert(error);
+      alert(error.message);
     });
   }
 
   private async handleSignInClick(): Promise<void> {
     this.credentialService.get().catch((error) => {
       console.error(error);
-      alert(error);
+      alert(error.message);
     });
   }
 

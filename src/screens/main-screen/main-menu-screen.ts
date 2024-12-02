@@ -3,7 +3,7 @@ import { CloseableMessageObject } from "../../objects/common/closeable-message-o
 import { MenuOptionObject } from "../../objects/common/menu-option-object.js";
 import { TitleObject } from "../../objects/common/title-object.js";
 import { ServerMessageWindowObject } from "../../objects/server-message-window-object.js";
-import { ApiService } from "../../services/api-service.js";
+import { APIService } from "../../services/api-service.js";
 import { MessagesResponse } from "../../interfaces/response/messages-response.js";
 import { ScreenTransitionService } from "../../services/screen-transition-service.js";
 import { BaseGameScreen } from "../base/base-game-screen.js";
@@ -13,7 +13,7 @@ import { ScoreboardScreen } from "./scoreboard-screen.js";
 export class MainMenuScreen extends BaseGameScreen {
   private MENU_OPTIONS_TEXT: string[] = ["Join game", "Scoreboard", "Settings"];
 
-  private apiService: ApiService;
+  private apiService: APIService;
   private transitionService: ScreenTransitionService;
 
   private messagesResponse: MessagesResponse[] | null = null;

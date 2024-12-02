@@ -28,8 +28,9 @@ import { VerifyRegistrationRequest } from "../interfaces/request/verify-registra
 import { RegistrationOptionsRequest } from "../interfaces/request/registration-options-request.js";
 import { AuthenticationOptionsRequest } from "../interfaces/request/authentication-options.js";
 import { VerifyAuthenticationRequest } from "../interfaces/request/verify-authentication-request.js";
+import { APIUtils } from "../utils/api-utilts.js";
 
-export class ApiService {
+export class APIService {
   private authenticationToken: string | null = null;
   private cryptoService: CryptoService;
 
@@ -66,7 +67,7 @@ export class ApiService {
     });
 
     if (response.ok === false) {
-      throw new Error("Failed to fetch auth options");
+      await APIUtils.throwAPIError(response);
     }
 
     const registrationOptions = await response.json();
@@ -90,7 +91,7 @@ export class ApiService {
     );
 
     if (response.ok === false) {
-      throw new Error("Failed to verify registration response");
+      await APIUtils.throwAPIError(response);
     }
 
     const registrationResponse: AuthenticationResponse = await response.json();
@@ -114,7 +115,7 @@ export class ApiService {
     );
 
     if (response.ok === false) {
-      throw new Error("Failed to fetch authentication options");
+      await APIUtils.throwAPIError(response);
     }
 
     const authenticationOptions = await response.json();
@@ -138,8 +139,7 @@ export class ApiService {
     );
 
     if (response.ok === false) {
-      const errorResponse = await response.json();
-      throw new Error(errorResponse.message);
+      await APIUtils.throwAPIError(response);
     }
 
     const authenticationResponse: AuthenticationResponse =

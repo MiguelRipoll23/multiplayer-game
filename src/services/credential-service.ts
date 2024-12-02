@@ -9,12 +9,12 @@ import { GameState } from "../models/game-state.js";
 import { LocalEvent } from "../models/local-event.js";
 import { ServerRegistration } from "../models/server-registration.js";
 import { WebAuthnUtils } from "../utils/webauthn-utils.js";
-import { ApiService } from "./api-service.js";
+import { APIService } from "./api-service.js";
 import { EventProcessorService } from "./event-processor-service.js";
 
 export class CredentialService {
   private gameState: GameState;
-  private apiService: ApiService;
+  private apiService: APIService;
   private eventProcessorService: EventProcessorService;
 
   private requestId: string;
@@ -64,7 +64,7 @@ export class CredentialService {
 
       const verifyAuthenticationRequest: VerifyAuthenticationRequest = {
         requestId: this.requestId,
-        credential: WebAuthnUtils.serializeCredential(
+        authenticationResponse: WebAuthnUtils.serializeCredential(
           credential as PublicKeyCredential
         ),
       };
@@ -103,7 +103,7 @@ export class CredentialService {
 
     const verifyAuthenticationRequest: VerifyAuthenticationRequest = {
       requestId: this.requestId,
-      credential: WebAuthnUtils.serializeCredential(
+      authenticationResponse: WebAuthnUtils.serializeCredential(
         credential as PublicKeyCredential
       ),
     };
@@ -150,7 +150,7 @@ export class CredentialService {
 
     const verifyRegistrationRequest: VerifyRegistrationRequest = {
       username: name,
-      credential: WebAuthnUtils.serializeCredential(
+      registrationResponse: WebAuthnUtils.serializeCredential(
         credential as PublicKeyCredential
       ),
     };

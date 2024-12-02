@@ -1,5 +1,5 @@
 import { GAME_VERSION } from "../constants/game-constants.js";
-import { ApiService } from "../services/api-service.js";
+import { APIService } from "../services/api-service.js";
 import { CryptoService } from "../services/crypto-service.js";
 import { EventProcessorService } from "../services/event-processor-service.js";
 import { MatchmakingService } from "../services/matchmaking-service.js";
@@ -22,7 +22,7 @@ export class GameController {
   private timers: TimerService[] = [];
 
   private readonly transitionService: ScreenTransitionService;
-  private readonly apiService: ApiService;
+  private readonly apiService: APIService;
   private readonly cryptoService: CryptoService;
   private readonly webSocketService: WebSocketService;
   private readonly matchmakingService: MatchmakingService;
@@ -41,7 +41,7 @@ export class GameController {
 
     this.transitionService = new ScreenTransitionService(this.gameFrame);
     this.cryptoService = new CryptoService(this.gameState.getGameServer());
-    this.apiService = new ApiService(this);
+    this.apiService = new APIService(this);
     this.webRTCService = new WebRTCService(this);
     this.eventsProcessorService = new EventProcessorService(this);
     this.webSocketService = new WebSocketService(this);
@@ -108,7 +108,7 @@ export class GameController {
     return this.transitionService;
   }
 
-  public getApiService(): ApiService {
+  public getApiService(): APIService {
     return this.apiService;
   }
 

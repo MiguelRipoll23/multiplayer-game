@@ -1,5 +1,5 @@
 import { GameController } from "../models/game-controller.js";
-import { ApiService } from "./api-service.js";
+import { APIService } from "./api-service.js";
 import { FindMatchesResponse } from "../interfaces/response/find-matches-response.js";
 import { TimerService } from "./timer-service.js";
 import { WebRTCService } from "./webrtc-service.js";
@@ -20,7 +20,7 @@ import { FindMatchesRequest } from "../interfaces/request/find-matches-request.j
 import { SaveScoreRequest } from "../interfaces/request/save-score-request.js";
 
 export class MatchmakingService {
-  private apiService: ApiService;
+  private apiService: APIService;
   private webrtcService: WebRTCService;
 
   private gameState: GameState;
